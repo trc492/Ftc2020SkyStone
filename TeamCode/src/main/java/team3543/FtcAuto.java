@@ -137,21 +137,14 @@ public class FtcAuto extends FtcOpMode
 
                 robot.detectionSuccessCount++;
                 robot.targetInfo = targetInfo;
-                if (robot.detectionIntervalStartTime == 0)
-                {
-                    //
-                    // This is the first time we detected target.
-                    //
-                    robot.detectionIntervalStartTime = currNanoTime;
-                }
-                else
+                if (robot.detectionIntervalStartTime != 0)
                 {
                     //
                     // Sum the interval between each successful detection.
                     //
                     robot.detectionIntervalTotalTime += currNanoTime - robot.detectionIntervalStartTime;
-                    robot.detectionIntervalStartTime = currNanoTime;
                 }
+                robot.detectionIntervalStartTime = currNanoTime;
             }
             else
             {
@@ -271,7 +264,6 @@ public class FtcAuto extends FtcOpMode
         strategyMenu.addChoice("Distance Drive", Strategy.DISTANCE_DRIVE, false, driveDistanceMenu);
         strategyMenu.addChoice("Timed Drive", Strategy.TIMED_DRIVE, false, driveTimeMenu);
         strategyMenu.addChoice("Do nothing", Strategy.DO_NOTHING, false);
-
         //
         // Traverse menus.
         //
@@ -287,7 +279,6 @@ public class FtcAuto extends FtcOpMode
         driveDistance = driveDistanceMenu.getCurrentValue();
         driveTime = driveTimeMenu.getCurrentValue();
         drivePower = drivePowerMenu.getCurrentValue();
-
         //
         // Show choices.
         //

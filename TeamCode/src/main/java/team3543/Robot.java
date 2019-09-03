@@ -51,6 +51,9 @@ import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocaliz
 
 public class Robot implements FtcMenu.MenuButtons
 {
+    //
+    // Feature switches.
+    //
     public static final boolean USE_SPEECH = true;
     public static final boolean MONITOR_BATTERY = false;
     public static final boolean USE_VUFORIA = false;
@@ -69,8 +72,8 @@ public class Robot implements FtcMenu.MenuButtons
     //
     // Sensors.
     //
-    public FtcBNO055Imu imu = null;
-    public TrcGyro gyro = null;
+    public FtcBNO055Imu imu;
+    public TrcGyro gyro;
     public double targetHeading = 0.0;
     //
     // Vision subsystems.
@@ -85,16 +88,16 @@ public class Robot implements FtcMenu.MenuButtons
     //
     // DriveBase subsystem.
     //
-    public FtcDcMotor leftFrontWheel = null;
-    public FtcDcMotor rightFrontWheel = null;
-    public FtcDcMotor leftRearWheel = null;
-    public FtcDcMotor rightRearWheel = null;
+    public FtcDcMotor leftFrontWheel;
+    public FtcDcMotor rightFrontWheel;
+    public FtcDcMotor leftRearWheel;
+    public FtcDcMotor rightRearWheel;
 
-    public TrcMecanumDriveBase driveBase = null;
-    public TrcPidController encoderXPidCtrl = null;
-    public TrcPidController encoderYPidCtrl = null;
-    public TrcPidController gyroPidCtrl = null;
-    public TrcPidDrive pidDrive = null;
+    public TrcMecanumDriveBase driveBase;
+    public TrcPidController encoderXPidCtrl;
+    public TrcPidController encoderYPidCtrl;
+    public TrcPidController gyroPidCtrl;
+    public TrcPidDrive pidDrive;
 
     public TrcPidController.PidCoefficients tunePidCoeff = new TrcPidController.PidCoefficients();
 
