@@ -28,6 +28,10 @@ import trclib.TrcRobot;
 import trclib.TrcStateMachine;
 import trclib.TrcTimer;
 
+/**
+ * This class implements a generic timed drive command. The command drives the robot in the given direction
+ * for the given amount of time.
+ */
 public class CmdTimedDrive implements TrcRobot.RobotCommand
 {
     private enum State
@@ -49,9 +53,23 @@ public class CmdTimedDrive implements TrcRobot.RobotCommand
     private TrcTimer timer;
     private TrcStateMachine<State> sm;
 
+    /**
+     * Constructor: Create an instance of the object.
+     *
+     * @param robot specifies the robot object for providing access to various global objects.
+     * @param delay specifies delay in seconds before timed drive starts. 0 means no delay.
+     * @param driveTime specifies the amount of drive time in seconds.
+     * @param xDrivePower specifies the motor power in the X direction.
+     * @param yDrivePower specifies the motor power in the Y direction.
+     * @param turnPower specifies the motor power for turning.
+     */
     public CmdTimedDrive(
             Robot robot, double delay, double driveTime, double xDrivePower, double yDrivePower, double turnPower)
     {
+        robot.globalTracer.traceInfo(
+                moduleName, "delay=%.3f, time=%.1f, xPower=%.1f, yPower=%.1f, turnPower=%.1f",
+                delay, driveTime, xDrivePower, yDrivePower, turnPower);
+
         this.robot = robot;
         this.delay = delay;
         this.driveTime = driveTime;
@@ -68,6 +86,33 @@ public class CmdTimedDrive implements TrcRobot.RobotCommand
     // Implements the TrcRobot.AutoStrategy interface.
     //
 
+    /**
+     * This method checks if the current RobotCommand  is running.
+     *
+     * @return true if the command is running, false otherwise.
+     */
+    @Override
+    public boolean isActive()
+    {
+        return sm.isEnabled();
+    }   //isActive
+
+    /**
+     * This method cancels the command if it is active.
+     */
+    @Override
+    public void cancel()
+    {
+        robot.driveBase.stop();
+        sm.stop();
+    }   //cancel
+
+    /**
+     * This method must be called periodically by the caller to drive the command sequence forward.
+     *
+     * @param elapsedTime specifies the elapsed time in seconds since the start of the robot mode.
+     * @return true if the command sequence is completed, false otherwise.
+     */
     @Override
     public boolean cmdPeriodic(double elapsedTime)
     {

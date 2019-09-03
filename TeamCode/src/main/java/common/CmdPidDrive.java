@@ -137,6 +137,29 @@ public class CmdPidDrive implements TrcRobot.RobotCommand
     //
 
     /**
+     * This method checks if the current RobotCommand  is running.
+     *
+     * @return true if the command is running, false otherwise.
+     */
+    public boolean isActive()
+    {
+        return sm.isEnabled();
+    }   //isActive
+
+    /**
+     * This method cancels the command if it is active.
+     */
+    @Override
+    public void cancel()
+    {
+        if (robot.pidDrive.isActive())
+        {
+            robot.pidDrive.cancel();
+        }
+        sm.stop();
+    }   //cancel
+
+    /**
      * This method must be called periodically by the caller to drive the command sequence forward.
      *
      * @param elapsedTime specifies the elapsed time in seconds since the start of the robot mode.
