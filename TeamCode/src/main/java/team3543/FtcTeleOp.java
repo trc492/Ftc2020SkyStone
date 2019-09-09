@@ -33,16 +33,9 @@ import trclib.TrcRobot;
 @TeleOp(name="TeleOp", group="FtcTeleOp")
 public class FtcTeleOp extends FtcOpMode implements TrcGameController.ButtonHandler
 {
-    protected enum DriveMode
-    {
-        TANK_MODE,
-        MECANUM_MODE,
-    }   //enum DriveMode
-
     protected static String moduleName = "FtcTeleOp";
     protected HalDashboard dashboard;
     protected Robot robot;
-    protected DriveMode driveMode;
 
     protected FtcGamepad driverGamepad;
     protected FtcGamepad operatorGamepad;
@@ -63,7 +56,6 @@ public class FtcTeleOp extends FtcOpMode implements TrcGameController.ButtonHand
         //
         dashboard = robot.dashboard;
         robot = new Robot(TrcRobot.getRunMode());
-        driveMode = DriveMode.MECANUM_MODE;
         //
         // Initializing Gamepads.
         //
@@ -97,7 +89,7 @@ public class FtcTeleOp extends FtcOpMode implements TrcGameController.ButtonHand
         //
         // DriveBase subsystem.
         //
-        switch (driveMode)
+        switch (robot.driveMode)
         {
             case TANK_MODE:
                 double leftPower = driverGamepad.getLeftStickY(true)*drivePowerScale;
@@ -107,7 +99,7 @@ public class FtcTeleOp extends FtcOpMode implements TrcGameController.ButtonHand
                         leftPower, rightPower, Boolean.toString(invertedDrive));
                 break;
 
-            case MECANUM_MODE:
+            case HOLONOMIC_MODE:
                 double x = driverGamepad.getLeftStickX(true)*drivePowerScale;
                 double y = driverGamepad.getRightStickY(true)*drivePowerScale;
                 double rot = (driverGamepad.getRightTrigger(true) -

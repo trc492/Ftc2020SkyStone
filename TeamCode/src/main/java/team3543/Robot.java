@@ -51,6 +51,12 @@ import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocaliz
 
 public class Robot implements FtcMenu.MenuButtons
 {
+    protected enum DriveMode
+    {
+        TANK_MODE,
+        HOLONOMIC_MODE,
+    }   //enum DriveMode
+
     //
     // Feature switches.
     //
@@ -94,6 +100,7 @@ public class Robot implements FtcMenu.MenuButtons
     public FtcDcMotor rightRearWheel;
 
     public TrcMecanumDriveBase driveBase;
+    public DriveMode driveMode;
     public TrcPidController encoderXPidCtrl;
     public TrcPidController encoderYPidCtrl;
     public TrcPidController gyroPidCtrl;
@@ -231,6 +238,7 @@ public class Robot implements FtcMenu.MenuButtons
 
         driveBase = new TrcMecanumDriveBase(leftFrontWheel, leftRearWheel, rightFrontWheel, rightRearWheel, gyro);
         driveBase.setPositionScales(RobotInfo.ENCODER_X_INCHES_PER_COUNT, RobotInfo.ENCODER_Y_INCHES_PER_COUNT);
+        driveMode = DriveMode.HOLONOMIC_MODE;
 
         //
         // Initialize PID drive.
