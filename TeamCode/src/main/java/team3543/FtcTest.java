@@ -376,15 +376,14 @@ public class FtcTest extends FtcTeleOp
 
         if (robot.tensorFlowVision != null)
         {
-            TensorFlowVision.TargetInfo targetInfo;
+            TensorFlowVision.TargetInfo[] targetsInfo;
 
-            targetInfo = robot.tensorFlowVision.getTargetInfo(
-                    TensorFlowVision.LABEL_GOLD_MINERAL, TensorFlowVision.NUM_EXPECTED_TARGETS);
-            robot.dashboard.displayPrintf(14, "Gold: %s", targetInfo);
-
-            targetInfo = robot.tensorFlowVision.getTargetInfo(
-                    TensorFlowVision.LABEL_SILVER_MINERAL, TensorFlowVision.NUM_EXPECTED_TARGETS);
-            robot.dashboard.displayPrintf(15, "Silver: %s", targetInfo);
+            targetsInfo = robot.tensorFlowVision.getDetectedTargetsInfo(Robot.LABEL_FIRST_ELEMENT);
+            robot.dashboard.displayPrintf(14, "SkyStone1: %s", targetsInfo[0]);
+            if (targetsInfo.length > 1)
+            {
+                robot.dashboard.displayPrintf(15, "SkyStone2: %s", targetsInfo[1]);
+            }
         }
     }   //doVisionTest
 

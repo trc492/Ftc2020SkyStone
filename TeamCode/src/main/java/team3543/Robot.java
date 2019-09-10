@@ -65,6 +65,11 @@ public class Robot implements FtcMenu.MenuButtons
     public static final boolean USE_VUFORIA = false;
     public static final boolean USE_TENSORFLOW = true;
     public static final boolean USE_VELOCITY_CONTROL = false;
+
+    private static final String TFOD_MODEL_ASSET = "Skystone.tflite";
+    private static final double TFOD_MIN_CONFIDENCE = 0.8;
+    public static final String LABEL_FIRST_ELEMENT = "Stone";
+    public static final String LABEL_SECOND_ELEMENT = "Skystone";
     //
     // Global objects.
     //
@@ -86,7 +91,7 @@ public class Robot implements FtcMenu.MenuButtons
     //
     public VuforiaVision vuforiaVision = null;
     public TensorFlowVision tensorFlowVision = null;
-    public TensorFlowVision.TargetInfo targetInfo = null;
+    public TensorFlowVision.TargetInfo[] targetsInfo = null;
     public long detectionIntervalTotalTime = 0;
     public long detectionIntervalStartTime = 0;
     public int detectionSuccessCount = 0;
@@ -194,7 +199,9 @@ public class Robot implements FtcMenu.MenuButtons
             int tfodMonitorViewId = opMode.hardwareMap.appContext.getResources().getIdentifier(
                     "tfodMonitorViewId", "id", opMode.hardwareMap.appContext.getPackageName());
             final VuforiaLocalizer.CameraDirection CAMERA_DIR = BACK;
-            tensorFlowVision = new TensorFlowVision(-1/*tfodMonitorViewId*/, CAMERA_DIR, globalTracer);
+            tensorFlowVision = new TensorFlowVision(
+                    -1/*tfodMonitorViewId*/, CAMERA_DIR, TFOD_MIN_CONFIDENCE,
+                    TFOD_MODEL_ASSET, LABEL_FIRST_ELEMENT, LABEL_SECOND_ELEMENT, globalTracer);
             tensorFlowVision.setEnabled(true);
             globalTracer.traceInfo(moduleName, "Enabling TensorFlow.");
         }

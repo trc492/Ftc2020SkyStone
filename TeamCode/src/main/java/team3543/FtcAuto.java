@@ -127,16 +127,15 @@ public class FtcAuto extends FtcOpMode
             // TensorFlowVision impacts performance, so we will only do this during init period not in autonomous
             // period.
             //
-            TensorFlowVision.TargetInfo targetInfo =
-                    robot.tensorFlowVision.getTargetInfo(
-                            TensorFlowVision.LABEL_GOLD_MINERAL, TensorFlowVision.NUM_EXPECTED_TARGETS);
+            TensorFlowVision.TargetInfo[] targetsInfo =
+                    robot.tensorFlowVision.getDetectedTargetsInfo(Robot.LABEL_FIRST_ELEMENT);
 
-            if (targetInfo != null)
+            if (targetsInfo != null)
             {
                 long currNanoTime = TrcUtil.getCurrentTimeNanos();
 
                 robot.detectionSuccessCount++;
-                robot.targetInfo = targetInfo;
+                robot.targetsInfo = targetsInfo;
                 if (robot.detectionIntervalStartTime != 0)
                 {
                     //
@@ -171,10 +170,10 @@ public class FtcAuto extends FtcOpMode
         {
             String msg;
 
-            if (robot.targetInfo != null)
+            if (robot.targetsInfo != null)
             {
                 msg = String.format(Locale.US, "Target found at position %d",
-                        robot.targetInfo.rect.centerX());
+                        robot.targetsInfo[0].rect.centerX());
             }
             else
             {
