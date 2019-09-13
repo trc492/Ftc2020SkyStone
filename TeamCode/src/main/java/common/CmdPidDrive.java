@@ -22,7 +22,6 @@
 
 package common;
 
-import team3543.Robot;
 import trclib.TrcEvent;
 import trclib.TrcPidController;
 import trclib.TrcPidController.PidCoefficients;
@@ -94,7 +93,8 @@ public class CmdPidDrive implements TrcRobot.RobotCommand
             double drivePowerLimit, boolean tuneMode)
     {
         robot.globalTracer.traceInfo(
-                moduleName, "pidDrive=%s, delay=%.3f, xDist=%.1f, yDist=%.1f, heading=%.1f, powerLimit=%.1f, testMode=%s",
+                moduleName,
+                "pidDrive=%s, delay=%.3f, xDist=%.1f, yDist=%.1f, heading=%.1f, powerLimit=%.1f, testMode=%s",
                 pidDrive, delay, xDistance, yDistance, heading, drivePowerLimit, tuneMode);
 
         this.robot = robot;

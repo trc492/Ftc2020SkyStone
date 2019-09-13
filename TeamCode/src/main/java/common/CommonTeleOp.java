@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 Titan Robotics Club (http://www.titanrobotics.com)
+ * Copyright (c) 2018 Titan Robotics Club (http://www.titanrobotics.com)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -20,9 +20,7 @@
  * SOFTWARE.
  */
 
-package team3543;
-
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+package common;
 
 import ftclib.FtcGamepad;
 import ftclib.FtcOpMode;
@@ -30,16 +28,23 @@ import hallib.HalDashboard;
 import trclib.TrcGameController;
 import trclib.TrcRobot;
 
-@TeleOp(name="TeleOp", group="FtcTeleOp")
-public class FtcTeleOp extends FtcOpMode implements TrcGameController.ButtonHandler
+public abstract class CommonTeleOp extends FtcOpMode implements TrcGameController.ButtonHandler
 {
-    protected static String moduleName = "FtcTeleOp";
+    protected enum DriveMode
+    {
+        TANK_MODE,
+        HOLONOMIC_MODE,
+    }   //enum DriveMode
+
+    protected String moduleName = null;
+    protected Robot robot = null;
+
     protected HalDashboard dashboard;
-    protected Robot robot;
 
     protected FtcGamepad driverGamepad;
     protected FtcGamepad operatorGamepad;
 
+    protected DriveMode driveMode = DriveMode.HOLONOMIC_MODE;
     protected double drivePowerScale = 1.0;
     protected boolean invertedDrive = false;
 
@@ -52,10 +57,8 @@ public class FtcTeleOp extends FtcOpMode implements TrcGameController.ButtonHand
     {
         //
         // Initializing robot objects.
-        // FtcTeleOp is also extended by FtcTest so we cannot assume runMode is TELEOP.
         //
         dashboard = robot.dashboard;
-        robot = new Robot(TrcRobot.getRunMode());
         //
         // Initializing Gamepads.
         //
@@ -89,7 +92,7 @@ public class FtcTeleOp extends FtcOpMode implements TrcGameController.ButtonHand
         //
         // DriveBase subsystem.
         //
-        switch (robot.driveMode)
+        switch (driveMode)
         {
             case TANK_MODE:
                 double leftPower = driverGamepad.getLeftStickY(true)*drivePowerScale;
@@ -116,81 +119,4 @@ public class FtcTeleOp extends FtcOpMode implements TrcGameController.ButtonHand
                 robot.driveBase.getHeading());
     }   //runPeriodic
 
-    //
-    // Implements TrcGameController.ButtonHandler interface.
-    //
-
-    @Override
-    public void buttonEvent(TrcGameController gamepad, int button, boolean pressed)
-    {
-        dashboard.displayPrintf(
-                7, "%s: %04x->%s", gamepad.toString(), button, pressed? "Pressed": "Released");
-        if (gamepad == driverGamepad)
-        {
-            switch (button)
-            {
-                case FtcGamepad.GAMEPAD_A:
-                    break;
-
-                case FtcGamepad.GAMEPAD_B:
-                    break;
-
-                case FtcGamepad.GAMEPAD_X:
-                    break;
-
-                case FtcGamepad.GAMEPAD_Y:
-                    break;
-
-                case FtcGamepad.GAMEPAD_LBUMPER:
-                    drivePowerScale = pressed? 0.5: 1.0;
-                    break;
-
-                case FtcGamepad.GAMEPAD_RBUMPER:
-                    invertedDrive = pressed;
-                    break;
-            }
-        }
-        else if (gamepad == operatorGamepad)
-        {
-            switch (button)
-            {
-                case FtcGamepad.GAMEPAD_A:
-                    break;
-
-                case FtcGamepad.GAMEPAD_B:
-                    break;
-
-                case FtcGamepad.GAMEPAD_X:
-                    break;
-
-                case FtcGamepad.GAMEPAD_Y:
-                    break;
-
-                case FtcGamepad.GAMEPAD_LBUMPER:
-                    break;
-
-                case FtcGamepad.GAMEPAD_RBUMPER:
-                    break;
-
-                case FtcGamepad.GAMEPAD_DPAD_UP:
-                    break;
-
-                case FtcGamepad.GAMEPAD_DPAD_DOWN:
-                    break;
-
-                case FtcGamepad.GAMEPAD_DPAD_LEFT:
-                    break;
-
-                case FtcGamepad.GAMEPAD_DPAD_RIGHT:
-                    break;
-
-                case FtcGamepad.GAMEPAD_BACK:
-                    break;
-
-                case FtcGamepad.GAMEPAD_START:
-                   break;
-            }
-        }
-    }   //buttonEvent
-
-}   //class FtcTeleOp
+}   //class CommonTeleOp

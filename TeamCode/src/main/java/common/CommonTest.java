@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 Titan Robotics Club (http://www.titanrobotics.com)
+ * Copyright (c) 2018 Titan Robotics Club (http://www.titanrobotics.com)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -20,38 +20,22 @@
  * SOFTWARE.
  */
 
-package team3543;
-
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+package common;
 
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
 import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
-import common.CmdPidDrive;
-import common.CmdTimedDrive;
 import ftclib.FtcChoiceMenu;
-import ftclib.FtcGamepad;
 import ftclib.FtcMenu;
 import ftclib.FtcValueMenu;
 import trclib.TrcEvent;
-import trclib.TrcGameController;
 import trclib.TrcStateMachine;
 import trclib.TrcTimer;
 import trclib.TrcUtil;
 
-@TeleOp(name="Test", group="FtcTest")
-public class FtcTest extends FtcTeleOp
+public class CommonTest
 {
-    private static final String moduleName = "FtcTest";
-    //
-    // Made the following menus static so their values will persist across different runs of PID tuning.
-    //
-    private static FtcValueMenu tuneKpMenu = null;
-    private static FtcValueMenu tuneKiMenu = null;
-    private static FtcValueMenu tuneKdMenu = null;
-    private static FtcValueMenu tuneKfMenu = null;
-
     private enum Test
     {
         SENSORS_TEST,
@@ -72,6 +56,16 @@ public class FtcTest extends FtcTeleOp
         STOP,
         DONE
     }   //enum State
+
+    protected String moduleName = null;
+    protected Robot robot = null;
+    //
+    // Made the following menus static so their values will persist across different runs of PID tuning.
+    //
+    private static FtcValueMenu tuneKpMenu = null;
+    private static FtcValueMenu tuneKiMenu = null;
+    private static FtcValueMenu tuneKdMenu = null;
+    private static FtcValueMenu tuneKfMenu = null;
 
     //
     // State machine.
@@ -94,17 +88,13 @@ public class FtcTest extends FtcTeleOp
     private int motorIndex = 0;
 
     //
-    // Implements FtcOpMode abstract method.
+    // Implements FtcOpMode interface.
     //
 
-    @Override
-    public void initRobot()
+    public void init(String moduleName, Robot robot)
     {
-        //
-        // TeleOp initialization.
-        //
-        super.initRobot();
-
+        this.moduleName = moduleName;
+        this.robot = robot;
         //
         // Initialize additional objects.
         //
@@ -114,7 +104,7 @@ public class FtcTest extends FtcTeleOp
         //
         // Test menus.
         //
-        doMenus();
+        doTestMenus();
 
         switch (test)
         {
@@ -175,13 +165,13 @@ public class FtcTest extends FtcTeleOp
         }
 
         sm.start(State.START);
-    }   //initRobot
+    }   //init
 
-    //
-    // Overrides TrcRobot.RobotMode methods.
-    //
+    public boolean shouldRunTeleOpPeriodic()
+    {
+        return test == Test.SENSORS_TEST;
+    }   //shouldRunTeleOpPeriodic
 
-    @Override
     public void runPeriodic(double elapsedTime)
     {
         //
@@ -193,7 +183,6 @@ public class FtcTest extends FtcTeleOp
                 //
                 // Allow TeleOp to run so we can control the robot in sensors test mode.
                 //
-                super.runPeriodic(elapsedTime);
                 doSensorsTest();
                 doVisionTest();
                 break;
@@ -204,11 +193,11 @@ public class FtcTest extends FtcTeleOp
         }
     }   //runPeriodic
 
-    @Override
     public void runContinuous(double elapsedTime)
     {
         State state = sm.getState();
-        robot.dashboard.displayPrintf(8, "%s: %s", test.toString(), state != null? state.toString(): "STOPPED!");
+        robot.dashboard.displayPrintf(
+                8, "%s: %s", test.toString(), state != null? state.toString(): "STOPPED!");
 
         switch (test)
         {
@@ -247,7 +236,7 @@ public class FtcTest extends FtcTeleOp
         }
     }   //runContinuous
 
-    private void doMenus()
+    private void doTestMenus()
     {
         //
         // Create menus.
@@ -331,7 +320,7 @@ public class FtcTest extends FtcTeleOp
         // Show choices.
         //
         robot.dashboard.displayPrintf(0, "Test: %s", testMenu.getCurrentChoiceText());
-    }   //doMenus
+    }   //doTestMenus
 
     /**
      * This method reads all sensors and prints out their values. This is a very useful diagnostic tool to check
@@ -378,11 +367,18 @@ public class FtcTest extends FtcTeleOp
         {
             TensorFlowVision.TargetInfo[] targetsInfo;
 
-            targetsInfo = robot.tensorFlowVision.getDetectedTargetsInfo(Robot.LABEL_FIRST_ELEMENT);
-            robot.dashboard.displayPrintf(14, "SkyStone1: %s", targetsInfo[0]);
-            if (targetsInfo.length > 1)
+            targetsInfo = robot.tensorFlowVision.getDetectedTargetsInfo(TensorFlowVision.LABEL_SKYSTONE);
+            if (targetsInfo != null)
             {
-                robot.dashboard.displayPrintf(15, "SkyStone2: %s", targetsInfo[1]);
+                robot.dashboard.displayPrintf(14, "%s %s",
+                        targetsInfo[0], targetsInfo.length > 1 ? targetsInfo[1] : "");
+            }
+
+            targetsInfo = robot.tensorFlowVision.getDetectedTargetsInfo(TensorFlowVision.LABEL_STONE);
+            if (targetsInfo != null)
+            {
+                robot.dashboard.displayPrintf(15, "%s %s",
+                        targetsInfo[0], targetsInfo.length > 1 ? targetsInfo[1] : "");
             }
         }
     }   //doVisionTest
@@ -515,61 +511,4 @@ public class FtcTest extends FtcTeleOp
         }
     }   //doMotorsTest
 
-    //
-    // Overrides TrcGameController.ButtonHandler in FtcTeleOp.
-    //
-
-    @Override
-    public void buttonEvent(TrcGameController gamepad, int button, boolean pressed)
-    {
-        boolean processed = false;
-        //
-        // In addition to or instead of the gamepad controls handled by FtcTeleOp, we can add to or override the
-        // FtcTeleOp gamepad actions.
-        //
-        dashboard.displayPrintf(
-                7, "%s: %04x->%s", gamepad.toString(), button, pressed? "Pressed": "Released");
-        if (gamepad == driverGamepad)
-        {
-            switch (button)
-            {
-                case FtcGamepad.GAMEPAD_DPAD_UP:
-                    break;
-
-                case FtcGamepad.GAMEPAD_DPAD_DOWN:
-                    break;
-
-                case FtcGamepad.GAMEPAD_DPAD_LEFT:
-                    break;
-
-                case FtcGamepad.GAMEPAD_DPAD_RIGHT:
-                    break;
-            }
-        }
-        else if (gamepad == operatorGamepad)
-        {
-            switch (button)
-            {
-                case FtcGamepad.GAMEPAD_DPAD_UP:
-                    break;
-
-                case FtcGamepad.GAMEPAD_DPAD_DOWN:
-                    break;
-
-                case FtcGamepad.GAMEPAD_DPAD_LEFT:
-                    break;
-
-                case FtcGamepad.GAMEPAD_DPAD_RIGHT:
-                    break;
-            }
-        }
-        //
-        // If the control was not processed by this method, pass it back to FtcTeleOp.
-        //
-        if (!processed)
-        {
-            super.buttonEvent(gamepad, button, pressed);
-        }
-    }   //buttonEvent
-
-}   //class FtcTest
+}   //class CommonTest

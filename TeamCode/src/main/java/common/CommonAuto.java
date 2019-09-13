@@ -20,15 +20,11 @@
  * SOFTWARE.
  */
 
-package team3543;
-
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+package common;
 
 import java.util.Date;
 import java.util.Locale;
 
-import common.CmdPidDrive;
-import common.CmdTimedDrive;
 import ftclib.FtcChoiceMenu;
 import ftclib.FtcMenu;
 import ftclib.FtcOpMode;
@@ -36,11 +32,8 @@ import ftclib.FtcValueMenu;
 import trclib.TrcRobot;
 import trclib.TrcUtil;
 
-@Autonomous(name="Autonomous", group="FtcAuto")
-public class FtcAuto extends FtcOpMode
+public abstract class CommonAuto extends FtcOpMode
 {
-    private static final boolean USE_TRACELOG = true;
-
     public enum MatchType
     {
         PRACTICE,
@@ -55,80 +48,27 @@ public class FtcAuto extends FtcOpMode
         BLUE_ALLIANCE
     }   //enum Alliance
 
-    public enum Strategy
-    {
-        DISTANCE_DRIVE,
-        TIMED_DRIVE,
-        DO_NOTHING
-    }   //enum Strategy
+    protected static final boolean USE_TRACELOG = true;
 
-    private static final String moduleName = "FtcAuto";
-    private Robot robot;
-
-    private TrcRobot.RobotCommand autoCommand = null;
-    private MatchType matchType = MatchType.PRACTICE;
-    private int matchNumber = 0;
-    private Alliance alliance = Alliance.RED_ALLIANCE;
-    private double delay = 0.0;
-    private Strategy strategy = Strategy.DO_NOTHING;
-    private double driveDistance = 0.0;
-    private double driveTime = 0.0;
-    private double drivePower = 0.0;
+    protected String moduleName = null;
+    protected Robot robot = null;
+    protected MatchType matchType = MatchType.PRACTICE;
+    protected int matchNumber = 0;
+    protected Alliance alliance = Alliance.RED_ALLIANCE;
+    protected double delay = 0.0;
+    protected TrcRobot.RobotCommand autoCommand = null;
 
     //
     // Implements FtcOpMode abstract method.
     //
 
     @Override
-    public void initRobot()
-    {
-        //
-        // Initializing robot objects.
-        //
-        robot = new Robot(TrcRobot.getRunMode());
-        //
-        // Choice menus.
-        //
-        doMenus();
-
-        if (USE_TRACELOG)
-        {
-            String filePrefix = String.format(Locale.US, "%s%02d", matchType, matchNumber);
-            robot.globalTracer.openTraceLog("/sdcard/FIRST/tracelog", filePrefix);
-        }
-
-        //
-        // Strategies.
-        //
-        switch (strategy)
-        {
-            case DISTANCE_DRIVE:
-                autoCommand = new CmdPidDrive(
-                        robot, robot.pidDrive, delay, 0.0, driveDistance*12.0, 0.0);
-                break;
-
-            case TIMED_DRIVE:
-                autoCommand = new CmdTimedDrive(robot, delay, driveTime, 0.0, drivePower, 0.0);
-                break;
-
-            case DO_NOTHING:
-            default:
-                autoCommand = null;
-                break;
-        }
-    }   //initRobot
-
-    @Override
     public void initPeriodic()
     {
         if (robot.tensorFlowVision != null)
         {
-            //
-            // TensorFlowVision impacts performance, so we will only do this during init period not in autonomous
-            // period.
-            //
             TensorFlowVision.TargetInfo[] targetsInfo =
-                    robot.tensorFlowVision.getDetectedTargetsInfo(Robot.LABEL_FIRST_ELEMENT);
+                    robot.tensorFlowVision.getDetectedTargetsInfo(TensorFlowVision.LABEL_SKYSTONE);
 
             if (targetsInfo != null)
             {
@@ -136,14 +76,21 @@ public class FtcAuto extends FtcOpMode
 
                 robot.detectionSuccessCount++;
                 robot.targetsInfo = targetsInfo;
-                if (robot.detectionIntervalStartTime != 0)
+                if (robot.detectionIntervalStartTime == 0)
+                {
+                    //
+                    // This is the first time we detected target.
+                    //
+                    robot.detectionIntervalStartTime = currNanoTime;
+                }
+                else
                 {
                     //
                     // Sum the interval between each successful detection.
                     //
                     robot.detectionIntervalTotalTime += currNanoTime - robot.detectionIntervalStartTime;
+                    robot.detectionIntervalStartTime = currNanoTime;
                 }
-                robot.detectionIntervalStartTime = currNanoTime;
             }
             else
             {
@@ -172,20 +119,17 @@ public class FtcAuto extends FtcOpMode
 
             if (robot.targetsInfo != null)
             {
-                msg = String.format(Locale.US, "Target found at position %d",
-                        robot.targetsInfo[0].rect.centerX());
+                msg = String.format(Locale.US, "Sky Stone found at position %d",
+                        (robot.targetsInfo[0].rect.left + robot.targetsInfo[0].rect.right)/2);
             }
             else
             {
-                msg = "Target not found";
+                msg = "Sky Stone not found";
             }
             robot.globalTracer.traceInfo(moduleName, "%s: DetectionAvgTime=%.3f, SuccessCount=%d, FailedCount=%d",
                     msg, robot.detectionIntervalTotalTime/robot.detectionSuccessCount/1000000000.0,
                     robot.detectionSuccessCount, robot.detectionFailedCount);
             robot.globalTracer.traceInfo(moduleName, "Shutting down TensorFlow.");
-            //
-            // We are done with TensorFlow, shut it down so it doesn't affect autonomous performance.
-            //
             robot.tensorFlowVision.shutdown();
             robot.tensorFlowVision = null;
         }
@@ -207,7 +151,7 @@ public class FtcAuto extends FtcOpMode
         }
         printPerformanceMetrics(robot.globalTracer);
 
-        if (USE_TRACELOG)
+        if (robot.globalTracer.tracerLogIsOpened())
         {
             robot.globalTracer.closeTraceLog();
         }
@@ -222,10 +166,10 @@ public class FtcAuto extends FtcOpMode
         }
     }   //runContinuous
 
-    private void doMenus()
+    protected void doMatchMenus()
     {
         //
-        // Create menus.
+        // Construct menus.
         //
         FtcChoiceMenu<MatchType> matchTypeMenu = new FtcChoiceMenu<>("Match type:", null, robot);
         FtcValueMenu matchNumberMenu = new FtcValueMenu(
@@ -235,20 +179,8 @@ public class FtcAuto extends FtcOpMode
         FtcValueMenu delayMenu = new FtcValueMenu(
                 "Delay time:", allianceMenu, robot,
                 0.0, 30.0, 1.0, 0.0, " %.0f sec");
-        FtcChoiceMenu<Strategy> strategyMenu = new FtcChoiceMenu<>("Strategies:", delayMenu, robot);
-        FtcValueMenu driveDistanceMenu = new FtcValueMenu(
-                "Distance:", strategyMenu, robot,
-                -12.0, 12.0, 0.5, 4.0, " %.0f ft");
-        FtcValueMenu driveTimeMenu = new FtcValueMenu(
-                "Drive time:", strategyMenu, robot,
-                0.0, 30.0, 1.0, 5.0, " %.0f sec");
-        FtcValueMenu drivePowerMenu = new FtcValueMenu(
-                "Drive power:", strategyMenu, robot,
-                -1.0, 1.0, 0.1, 0.5, " %.1f");
 
         matchNumberMenu.setChildMenu(allianceMenu);
-        delayMenu.setChildMenu(strategyMenu);
-        driveTimeMenu.setChildMenu(drivePowerMenu);
         //
         // Populate choice menus.
         //
@@ -259,10 +191,6 @@ public class FtcAuto extends FtcOpMode
 
         allianceMenu.addChoice("Red", Alliance.RED_ALLIANCE, true, delayMenu);
         allianceMenu.addChoice("Blue", Alliance.BLUE_ALLIANCE, false, delayMenu);
-
-        strategyMenu.addChoice("Distance Drive", Strategy.DISTANCE_DRIVE, false, driveDistanceMenu);
-        strategyMenu.addChoice("Timed Drive", Strategy.TIMED_DRIVE, false, driveTimeMenu);
-        strategyMenu.addChoice("Do nothing", Strategy.DO_NOTHING, false);
         //
         // Traverse menus.
         //
@@ -274,19 +202,17 @@ public class FtcAuto extends FtcOpMode
         matchNumber = (int)matchNumberMenu.getCurrentValue();
         alliance = allianceMenu.getCurrentChoiceObject();
         delay = delayMenu.getCurrentValue();
-        strategy = strategyMenu.getCurrentChoiceObject();
-        driveDistance = driveDistanceMenu.getCurrentValue();
-        driveTime = driveTimeMenu.getCurrentValue();
-        drivePower = drivePowerMenu.getCurrentValue();
         //
         // Show choices.
         //
-        robot.dashboard.displayPrintf(1, "== Match: %s ==",
-                matchType.toString() + "_" + matchNumber);
-        robot.dashboard.displayPrintf(2, "Auto Strategy: %s", strategyMenu.getCurrentChoiceText());
-        robot.dashboard.displayPrintf(3, "Alliance=%s,Delay=%.0f sec", alliance.toString(), delay);
-        robot.dashboard.displayPrintf(4, "Drive: distance=%.0f ft,Time=%.0f,Power=%.1f",
-                driveDistance, driveTime, drivePower);
-    }   //doMenus
+        robot.dashboard.displayPrintf(1, "Match %s: %s, delay=%.0f",
+                matchType.toString() + "_" + matchNumber, alliance, delay);
+    }   //doMatchMenus
 
-}   //class FtcAuto
+    protected void createTraceLog()
+    {
+        String filePrefix = String.format(Locale.US, "%s%02d", matchType, matchNumber);
+        robot.globalTracer.openTraceLog("/sdcard/FIRST/tracelog", filePrefix);
+    }   //createTraceLog
+
+}   //class CommonAuto

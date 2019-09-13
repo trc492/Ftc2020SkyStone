@@ -22,7 +22,6 @@
 
 package common;
 
-import team3543.Robot;
 import trclib.TrcEvent;
 import trclib.TrcRobot;
 import trclib.TrcStateMachine;
