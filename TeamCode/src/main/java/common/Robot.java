@@ -25,6 +25,9 @@ package common;
 import android.speech.tts.TextToSpeech;
 
 import org.firstinspires.ftc.robotcontroller.internal.FtcRobotControllerActivity;
+import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 
 import ftclib.FtcAndroidTone;
 import ftclib.FtcBNO055Imu;
@@ -40,6 +43,12 @@ import trclib.TrcGyro;
 import trclib.TrcPidController;
 import trclib.TrcPidDrive;
 import trclib.TrcRobot;
+import trclib.TrcUtil;
+
+import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.DEGREES;
+import static org.firstinspires.ftc.robotcore.external.navigation.AxesOrder.YZX;
+import static org.firstinspires.ftc.robotcore.external.navigation.AxesReference.EXTRINSIC;
+import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection.BACK;
 
 public class Robot implements FtcMenu.MenuButtons
 {
@@ -208,6 +217,85 @@ public class Robot implements FtcMenu.MenuButtons
             textToSpeech.speak(sentence, TextToSpeech.QUEUE_FLUSH, null);
         }
     }   //speak
+
+    protected void initVuforia(
+            VuforiaLocalizer.CameraDirection cameraDir, boolean phoneIsPortrait, boolean showCameraView,
+            double robotLength, double robotWidth, double phoneFrontOffset, double phoneLeftOffset,
+            double phoneHeightOffset)
+    {
+        final int cameraViewId = !showCameraView ? -1 :
+                opMode.hardwareMap.appContext.getResources().getIdentifier(
+                        "cameraMonitorViewId", "id", opMode.hardwareMap.appContext.getPackageName());
+        float phoneXRotate;
+        float phoneYRotate;
+        float phoneZRotate = 0.0f;
+        /*
+         * Create a transformation matrix describing where the phone is on the robot.
+         *
+         * The coordinate frame for the robot looks the same as the field.
+         * The robot's "forward" direction is facing out along X axis, with the LEFT side facing out along the
+         * Y axis. Z is UP on the robot.  This equates to a bearing angle of Zero degrees.
+         *
+         * The phone starts out lying flat, with the screen facing Up and with the physical top of the phone
+         * pointing to the LEFT side of the Robot.  It's very important when you test this code that the top
+         * of the camera is pointing to the left side of the  robot.  The rotation angles don't work if you flip
+         * the phone.
+         *
+         * If using the rear (High Res) camera:
+         * We need to rotate the camera around it's long axis to bring the rear camera forward.
+         * This requires a negative 90 degree rotation on the Y axis
+         *
+         * If using the Front (Low Res) camera
+         * We need to rotate the camera around it's long axis to bring the FRONT camera forward.
+         * This requires a Positive 90 degree rotation on the Y axis
+         *
+         * Next, translate the camera lens to where it is on the robot.
+         * In this example, it is centered (left to right), but 110 mm forward of the middle of the robot, and
+         * 200 mm above ground level.
+         */
+        final int CAMERA_FORWARD_DISPLACEMENT = (int)((robotLength/2.0 - phoneFrontOffset)* TrcUtil.MM_PER_INCH);
+        final int CAMERA_VERTICAL_DISPLACEMENT = (int)(phoneHeightOffset*TrcUtil.MM_PER_INCH);
+        final int CAMERA_LEFT_DISPLACEMENT = (int)((robotWidth/2.0 - phoneLeftOffset)*TrcUtil.MM_PER_INCH);
+        //
+        // Create a transformation matrix describing where the phone is on the robot.
+        //
+        // NOTE !!!!  It's very important that you turn OFF your phone's Auto-Screen-Rotation option.
+        // Lock it into Portrait for these numbers to work.
+        //
+        // Info:  The coordinate frame for the robot looks the same as the field.
+        // The robot's "forward" direction is facing out along X axis, with the LEFT side facing out along the Y axis.
+        // Z is UP on the robot.  This equates to a bearing angle of Zero degrees.
+        //
+        // The phone starts out lying flat, with the screen facing Up and with the physical top of the phone
+        // pointing to the LEFT side of the Robot.
+        // The two examples below assume that the camera is facing forward out the front of the robot.
+
+        // We need to rotate the camera around it's long axis to bring the correct camera forward.
+        phoneYRotate = cameraDir == BACK ? -90.0f : 90.0f;
+
+        // Rotate the phone vertical about the X axis if it's in portrait mode
+        phoneXRotate = phoneIsPortrait ? 90.0f : 0.0f;
+
+        // Next, translate the camera lens to where it is on the robot.
+        // In this example, it is centered (left to right), but forward of the middle of the robot, and above ground level.
+
+        OpenGLMatrix robotFromCamera = OpenGLMatrix
+                .translation(CAMERA_FORWARD_DISPLACEMENT, CAMERA_LEFT_DISPLACEMENT, CAMERA_VERTICAL_DISPLACEMENT)
+                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, YZX, DEGREES,
+                        phoneYRotate, phoneZRotate, phoneXRotate));
+
+        vuforiaVision = new VuforiaVision(this, cameraViewId, cameraDir, robotFromCamera);
+    }   //initVuforia
+
+    protected void initTensorFlow(VuforiaLocalizer.CameraDirection cameraDir, boolean showCameraView)
+    {
+        int tfodMonitorViewId = !showCameraView ? -1 :
+                opMode.hardwareMap.appContext.getResources().getIdentifier(
+                        "tfodMonitorViewId", "id", opMode.hardwareMap.appContext.getPackageName());
+        tensorFlowVision = new TensorFlowVision(tfodMonitorViewId, cameraDir, globalTracer);
+        tensorFlowVision.setEnabled(true);
+        globalTracer.traceInfo(moduleName, "Enabling TensorFlow.");
+    }   //initTensorFlow
 
     //
     // Implements FtcMenu.MenuButtons interface.

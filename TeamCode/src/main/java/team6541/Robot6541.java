@@ -22,23 +22,15 @@
 
 package team6541;
 
-import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
-import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 
 import common.Robot;
-import common.TensorFlowVision;
-import common.VuforiaVision;
 import ftclib.FtcDcMotor;
 import trclib.TrcMecanumDriveBase;
 import trclib.TrcPidController;
 import trclib.TrcPidDrive;
 import trclib.TrcRobot;
-import trclib.TrcUtil;
 
-import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.DEGREES;
-import static org.firstinspires.ftc.robotcore.external.navigation.AxesOrder.YZX;
-import static org.firstinspires.ftc.robotcore.external.navigation.AxesReference.EXTRINSIC;
 import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection.BACK;
 
 public class Robot6541 extends Robot
@@ -51,6 +43,15 @@ public class Robot6541 extends Robot
     public static final boolean USE_VUFORIA = false;
     public static final boolean USE_TENSORFLOW = true;
     public static final boolean USE_VELOCITY_CONTROL = false;
+
+    private final VuforiaLocalizer.CameraDirection CAMERA_DIR = BACK;
+    private final boolean PHONE_IS_PORTRAIT = false;
+    private final boolean SHOW_CAMERA_VIEW = true;
+    private final double ROBOT_LENGTH = 17.5;           //Robot length in inches
+    private final double ROBOT_WIDTH = 17.5;            //Robot width in inches
+    private final double PHONE_FRONT_OFFSET = 0.75;     //Phone offset from front of robot in inches
+    private final double PHONE_HEIGHT_OFFSET = 6.25;    //Phone offset from the floor in inches
+    private final double PHONE_LEFT_OFFSET = 8.75;      //Phone offset from the left side of the robot in inches
     //
     // Global objects.
     //
@@ -67,96 +68,16 @@ public class Robot6541 extends Robot
         //
         if (USE_VUFORIA)
         {
-            final int cameraViewId = opMode.hardwareMap.appContext.getResources().getIdentifier(
-                    "cameraMonitorViewId", "id", opMode.hardwareMap.appContext.getPackageName());
-            final VuforiaLocalizer.CameraDirection CAMERA_DIR = BACK;
-            final boolean PHONE_IS_PORTRAIT = false;
-            float phoneXRotate;
-            float phoneYRotate;
-            float phoneZRotate = 0.0f;
-            //
-            // IMPORTANT:  For Phone Camera, set 1) the camera source and 2) the orientation,
-            // based on how your phone is mounted:
-            // 1) Camera Source.  Valid choices are:  BACK (behind screen) or FRONT (selfie side)
-            // 2) Phone Orientation. Choices are: PHONE_IS_PORTRAIT = true (portrait) or
-            //                                    PHONE_IS_PORTRAIT = false (landscape)
-            //
-            // NOTE: If you are running on a CONTROL HUB, with only one USB WebCam, you must select CAMERA_DIR = BACK;
-            // and PHONE_IS_PORTRAIT = false;
-            //
-            /*
-             * Create a transformation matrix describing where the phone is on the robot.
-             *
-             * The coordinate frame for the robot looks the same as the field.
-             * The robot's "forward" direction is facing out along X axis, with the LEFT side facing out along the
-             * Y axis. Z is UP on the robot.  This equates to a bearing angle of Zero degrees.
-             *
-             * The phone starts out lying flat, with the screen facing Up and with the physical top of the phone
-             * pointing to the LEFT side of the Robot.  It's very important when you test this code that the top
-             * of the camera is pointing to the left side of the  robot.  The rotation angles don't work if you flip
-             * the phone.
-             *
-             * If using the rear (High Res) camera:
-             * We need to rotate the camera around it's long axis to bring the rear camera forward.
-             * This requires a negative 90 degree rotation on the Y axis
-             *
-             * If using the Front (Low Res) camera
-             * We need to rotate the camera around it's long axis to bring the FRONT camera forward.
-             * This requires a Positive 90 degree rotation on the Y axis
-             *
-             * Next, translate the camera lens to where it is on the robot.
-             * In this example, it is centered (left to right), but 110 mm forward of the middle of the robot, and
-             * 200 mm above ground level.
-             */
-            final double ROBOT_LENGTH = 17.5;           //Robot length in inches
-            final double ROBOT_WIDTH = 17.5;            //Robot width in inches
-            final double PHONE_FRONT_OFFSET = 0.75;     //Phone offset from front of robot in inches
-            final double PHONE_HEIGHT_OFFSET = 6.25;    //Phone offset from the floor in inches
-            final double PHONE_LEFT_OFFSET = 8.75;      //Phone offset from the left side of the robot in inches
-            final int CAMERA_FORWARD_DISPLACEMENT = (int)((ROBOT_LENGTH/2.0 - PHONE_FRONT_OFFSET)*TrcUtil.MM_PER_INCH);
-            final int CAMERA_VERTICAL_DISPLACEMENT = (int)(PHONE_HEIGHT_OFFSET*TrcUtil.MM_PER_INCH);
-            final int CAMERA_LEFT_DISPLACEMENT = (int)((ROBOT_WIDTH/2.0 - PHONE_LEFT_OFFSET)*TrcUtil.MM_PER_INCH);
-            //
-            // Create a transformation matrix describing where the phone is on the robot.
-            //
-            // NOTE !!!!  It's very important that you turn OFF your phone's Auto-Screen-Rotation option.
-            // Lock it into Portrait for these numbers to work.
-            //
-            // Info:  The coordinate frame for the robot looks the same as the field.
-            // The robot's "forward" direction is facing out along X axis, with the LEFT side facing out along the Y axis.
-            // Z is UP on the robot.  This equates to a bearing angle of Zero degrees.
-            //
-            // The phone starts out lying flat, with the screen facing Up and with the physical top of the phone
-            // pointing to the LEFT side of the Robot.
-            // The two examples below assume that the camera is facing forward out the front of the robot.
-
-            // We need to rotate the camera around it's long axis to bring the correct camera forward.
-            phoneYRotate = CAMERA_DIR == BACK ? -90.0f : 90.0f;
-
-            // Rotate the phone vertical about the X axis if it's in portrait mode
-            phoneXRotate = PHONE_IS_PORTRAIT ? 90.0f : 0.0f;
-
-            // Next, translate the camera lens to where it is on the robot.
-            // In this example, it is centered (left to right), but forward of the middle of the robot, and above ground level.
-
-            OpenGLMatrix robotFromCamera = OpenGLMatrix
-                    .translation(CAMERA_FORWARD_DISPLACEMENT, CAMERA_LEFT_DISPLACEMENT, CAMERA_VERTICAL_DISPLACEMENT)
-                    .multiplied(Orientation.getRotationMatrix(EXTRINSIC, YZX, DEGREES,
-                            phoneYRotate, phoneZRotate, phoneXRotate));
-
-            vuforiaVision = new VuforiaVision(this, cameraViewId, CAMERA_DIR, robotFromCamera);
+            initVuforia(CAMERA_DIR, PHONE_IS_PORTRAIT, SHOW_CAMERA_VIEW, ROBOT_LENGTH, ROBOT_WIDTH,
+                    PHONE_FRONT_OFFSET,
+                    PHONE_LEFT_OFFSET, PHONE_HEIGHT_OFFSET);
         }
         //
         // TensorFlow slows down our threads really badly, so don't enable it if we don't need it.
         //
         if (USE_TENSORFLOW && (runMode == TrcRobot.RunMode.AUTO_MODE || runMode == TrcRobot.RunMode.TEST_MODE))
         {
-            int tfodMonitorViewId = opMode.hardwareMap.appContext.getResources().getIdentifier(
-                    "tfodMonitorViewId", "id", opMode.hardwareMap.appContext.getPackageName());
-            final VuforiaLocalizer.CameraDirection CAMERA_DIR = BACK;
-            tensorFlowVision = new TensorFlowVision(tfodMonitorViewId, CAMERA_DIR, globalTracer);
-            tensorFlowVision.setEnabled(true);
-            globalTracer.traceInfo(moduleName, "Enabling TensorFlow.");
+            initTensorFlow(CAMERA_DIR, SHOW_CAMERA_VIEW);
         }
         //
         // Initialize DriveBase.
