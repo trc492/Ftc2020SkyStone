@@ -81,6 +81,19 @@ public class Robot3543 extends Robot
         //
         // Initialize DriveBase.
         //
+        initDriveBase();
+        //
+        // Initialize other subsystems.
+        //
+
+        //
+        // Tell the driver initialization is complete.
+        //
+        speak("Init complete!");
+    }   //Robot3543
+
+    private void initDriveBase()
+    {
         leftFrontWheel = new FtcDcMotor("lfWheel");
         rightFrontWheel = new FtcDcMotor("rfWheel");
         leftRearWheel = new FtcDcMotor("lrWheel");
@@ -144,14 +157,6 @@ public class Robot3543 extends Robot
         pidDrive.setStallTimeout(RobotInfo3543.PIDDRIVE_STALL_TIMEOUT);
         pidDrive.setBeep(androidTone);
         pidDrive.setMsgTracer(globalTracer, true);
-        //
-        // Initialize other subsystems.
-        //
-
-        //
-        // Tell the driver initialization is complete.
-        //
-        speak("Init complete!");
-    }   //Robot3543
+    }   //initDriveBase
 
 }   //class Robot3543

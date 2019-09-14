@@ -82,6 +82,19 @@ public class Robot6541 extends Robot
         //
         // Initialize DriveBase.
         //
+        initDriveBase();
+        //
+        // Initialize other subsystems.
+        //
+
+        //
+        // Tell the driver initialization is complete.
+        //
+        speak("Init complete!");
+    }   //Robot6541
+
+    private void initDriveBase()
+    {
         leftFrontWheel = new FtcDcMotor("lfWheel");
         rightFrontWheel = new FtcDcMotor("rfWheel");
         leftRearWheel = new FtcDcMotor("lrWheel");
@@ -145,14 +158,6 @@ public class Robot6541 extends Robot
         pidDrive.setStallTimeout(RobotInfo6541.PIDDRIVE_STALL_TIMEOUT);
         pidDrive.setBeep(androidTone);
         pidDrive.setMsgTracer(globalTracer, true);
-        //
-        // Initialize other subsystems.
-        //
-
-        //
-        // Tell the driver initialization is complete.
-        //
-        speak("Init complete!");
-    }   //Robot6541
+    }   //initDriveBase
 
 }   //class Robot6541
