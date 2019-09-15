@@ -20,11 +20,11 @@
  * SOFTWARE.
  */
 
-package team3543;
+package team6541;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 
-class RobotInfo
+class RobotInfo6541
 {
     //
     // DriveBase subsystem.
@@ -67,4 +67,4 @@ class RobotInfo
 
     static final double PIDDRIVE_STALL_TIMEOUT                  = 0.5;      //in seconds.
 
-}   //class RobotInfo
+}   //class RobotInfo6541

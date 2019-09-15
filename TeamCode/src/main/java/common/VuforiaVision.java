@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-package team3543;
+package common;
 
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
 import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
@@ -44,10 +44,23 @@ public class VuforiaVision
     // Since ImageTarget trackables use mm to specify their dimensions, we must use mm for all the physical dimension.
     // We will define some constants and conversions here.
     //
-    // Width of the FTC field (from the center point to the outer panels)
-    private static final float FTC_FIELD_WIDTH_MM  = (12*6) * (float)TrcUtil.MM_PER_INCH;   //6 ft. in mm
+
     // Height of the center of the target image above the floor.
-    private static final float TARGET_HEIGHT_MM = (6) * (float)TrcUtil.MM_PER_INCH;         //6 inches in mm
+    private static final float mmTargetHeight = 6.0f * (float)TrcUtil.MM_PER_INCH;
+
+    // Constant for Stone Target.
+    private static final float stoneZ = 2.0f * (float)TrcUtil.MM_PER_INCH;
+
+    // Constants for the center support targets.
+    private static final float bridgeZ = 6.42f * (float)TrcUtil.MM_PER_INCH;
+    private static final float bridgeY = 23.0f * (float)TrcUtil.MM_PER_INCH;
+    private static final float bridgeX = 5.18f * (float)TrcUtil.MM_PER_INCH;
+    private static final float bridgeRotY = 59.0f;  // Units are degrees
+    private static final float bridgeRotZ = 180.0f;
+
+    // Constants for perimeter targets
+    private static final float halfField = 72.0f * (float)TrcUtil.MM_PER_INCH;
+    private static final float quadField = 36.0f * (float)TrcUtil.MM_PER_INCH;
 
     private Robot robot;
     private FtcVuforia vuforia;
@@ -62,7 +75,7 @@ public class VuforiaVision
                 "XLxQOpz1tbM4ex1sl1EbF25olEZ3w9xXZ1QaqMP+5T63VqTwvkgKbtM+dS+tLi8EHMvJ2viYf6WwOE776e0s3QNfl/XvONM" +
                 "XS4ZtEWLNeiSEMTCdO9bdeaxnSb2RfErcmjadAThDWf6PC9HrMRHLmgfcFaZlj5JN+figOjgKhyQZeYYrcDEm0lICN5kAr2" +
                 "pdfNKNOii3A80eXyTVDfPGfzTwVa4eNBY/SgmoIdBbMPb3hfZBOz7GVoVHHQWbCNbzm31p1OY+zqPPWMfzzpyiJ4mA9bLTQ";
-        final String TRACKABLE_IMAGES_FILE = "RoverRuckus";
+        final String TRACKABLE_IMAGES_FILE = "Skystone";
 
         this.robot = robot;
         vuforia = new FtcVuforia(VUFORIA_LICENSE_KEY, cameraViewId, cameraDir);
@@ -70,7 +83,7 @@ public class VuforiaVision
 
         /*
          * In order for localization to work, we need to tell the system where each target is on the field, and
-         * where the phone resides on the robot. These specifications are in the form of <em>transformation matrices.</em>
+         * where the phone resides on the robot.  These specifications are in the form of <em>transformation matrices.</em>
          * Transformation matrices are a central, important concept in the math here involved in localization.
          * See <a href="https://en.wikipedia.org/wiki/Transformation_matrix">Transformation Matrix</a>
          * for detailed information. Commonly, you'll encounter transformation matrices as instances
@@ -82,60 +95,82 @@ public class VuforiaVision
          *       where the Blue Alliance Station is. (Positive is from the center, towards the BlueAlliance station)
          *     - The Z axis runs from the floor, upwards towards the ceiling.  (Positive is above the floor)
          *
-         * This Rover Ruckus sample places a specific target in the middle of each perimeter wall.
-         *
          * Before being transformed, each target image is conceptually located at the origin of the field's
          *  coordinate system (the center of the field), facing up.
          */
 
-        /*
-         * To place the BlueRover target in the middle of the blue perimeter wall:
-         * - First we rotate it 90 around the field's X axis to flip it upright.
-         * - Then, we translate it along the Y axis to the blue perimeter wall.
-         */
-        OpenGLMatrix blueRoverLocationOnField = OpenGLMatrix
-                .translation(0, FTC_FIELD_WIDTH_MM, TARGET_HEIGHT_MM)
-                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, 0));
+        // Set the position of the Stone Target.  Since it's not fixed in position, assume it's at the field origin.
+        // Rotated it to to face forward, and raised it to sit on the ground correctly.
+        // This can be used for generic target-centric approach algorithms
+        OpenGLMatrix stoneTargetLocation = OpenGLMatrix
+                .translation(0, 0, stoneZ)
+                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, -90));
 
-        /*
-         * To place the RedFootprint target in the middle of the red perimeter wall:
-         * - First we rotate it 90 around the field's X axis to flip it upright.
-         * - Second, we rotate it 180 around the field's Z axis so the image is flat against the red perimeter wall
-         *   and facing inwards to the center of the field.
-         * - Then, we translate it along the negative Y axis to the red perimeter wall.
-         */
-        OpenGLMatrix redFootprintLocationOnField = OpenGLMatrix
-                .translation(0, -FTC_FIELD_WIDTH_MM, TARGET_HEIGHT_MM)
+        //Set the position of the bridge support targets with relation to origin (center of field)
+        OpenGLMatrix blueFrontBridgeLocation = OpenGLMatrix
+                .translation(-bridgeX, bridgeY, bridgeZ)
+                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 0, bridgeRotY, bridgeRotZ));
+
+        OpenGLMatrix blueRearBridgeLocation = OpenGLMatrix
+                .translation(-bridgeX, bridgeY, bridgeZ)
+                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 0, -bridgeRotY, bridgeRotZ));
+
+        OpenGLMatrix redFrontBridgeLocation = OpenGLMatrix
+                .translation(-bridgeX, -bridgeY, bridgeZ)
+                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 0, -bridgeRotY, 0));
+
+        OpenGLMatrix redRearBridgeLocation = OpenGLMatrix
+                .translation(bridgeX, -bridgeY, bridgeZ)
+                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 0, bridgeRotY, 0));
+
+        //Set the position of the perimeter targets with relation to origin (center of field)
+        OpenGLMatrix redPerimeter1Location = OpenGLMatrix
+                .translation(quadField, -halfField, mmTargetHeight)
                 .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, 180));
 
-        /*
-         * To place the FrontCraters target in the middle of the front perimeter wall:
-         * - First we rotate it 90 around the field's X axis to flip it upright.
-         * - Second, we rotate it 90 around the field's Z axis so the image is flat against the front wall
-         *   and facing inwards to the center of the field.
-         * - Then, we translate it along the negative X axis to the front perimeter wall.
-         */
-        OpenGLMatrix frontCratersLocationOnField = OpenGLMatrix
-                .translation(-FTC_FIELD_WIDTH_MM, 0, TARGET_HEIGHT_MM)
+        OpenGLMatrix redPerimeter2Location = OpenGLMatrix
+                .translation(-quadField, -halfField, mmTargetHeight)
+                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, 180));
+
+        OpenGLMatrix frontPerimeter1Location = OpenGLMatrix
+                .translation(-halfField, -quadField, mmTargetHeight)
                 .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0 , 90));
 
-        /*
-         * To place the BackSpace target in the middle of the back perimeter wall:
-         * - First we rotate it 90 around the field's X axis to flip it upright.
-         * - Second, we rotate it -90 around the field's Z axis so the image is flat against the back wall
-         *   and facing inwards to the center of the field.
-         * - Then, we translate it along the X axis to the back perimeter wall.
-         */
-        OpenGLMatrix backSpaceLocationOnField = OpenGLMatrix
-                .translation(FTC_FIELD_WIDTH_MM, 0, TARGET_HEIGHT_MM)
+        OpenGLMatrix frontPerimeter2Location = OpenGLMatrix
+                .translation(-halfField, quadField, mmTargetHeight)
+                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, 90));
+
+        OpenGLMatrix bluePerimeter1Location = OpenGLMatrix
+                .translation(-quadField, halfField, mmTargetHeight)
+                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, 0));
+
+        OpenGLMatrix bluePerimeter2Location = OpenGLMatrix
+                .translation(quadField, halfField, mmTargetHeight)
+                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, 0));
+
+        OpenGLMatrix rearPerimeter1Location = OpenGLMatrix
+                .translation(halfField, quadField, mmTargetHeight)
+                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0 , -90));
+
+        OpenGLMatrix rearPerimeter2Location = OpenGLMatrix
+                .translation(halfField, -quadField, mmTargetHeight)
                 .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, -90));
 
         FtcVuforia.TargetInfo[] imageTargetsInfo =
         {
-                new FtcVuforia.TargetInfo(0, "Blue-Rover", false, blueRoverLocationOnField),
-                new FtcVuforia.TargetInfo(1, "Red-Footprint", false, blueRoverLocationOnField),
-                new FtcVuforia.TargetInfo(2, "Front-Craters", false, frontCratersLocationOnField),
-                new FtcVuforia.TargetInfo(3, "Back-Space", false, backSpaceLocationOnField)
+                new FtcVuforia.TargetInfo(0, "Stone Target", false, stoneTargetLocation),
+                new FtcVuforia.TargetInfo(1, "Blue Rear Bridge", false, blueRearBridgeLocation),
+                new FtcVuforia.TargetInfo(2, "Red Rear Bridge", false, redRearBridgeLocation),
+                new FtcVuforia.TargetInfo(3, "Red Front Bridge", false, redFrontBridgeLocation),
+                new FtcVuforia.TargetInfo(4, "Blue Front Bridge", false, blueFrontBridgeLocation),
+                new FtcVuforia.TargetInfo(5, "Red Perimeter 1", false, redPerimeter1Location),
+                new FtcVuforia.TargetInfo(6, "Red Perimeter 2", false, redPerimeter2Location),
+                new FtcVuforia.TargetInfo(7, "Front Perimeter 1", false, frontPerimeter1Location),
+                new FtcVuforia.TargetInfo(8, "Front Perimeter 2", false, frontPerimeter2Location),
+                new FtcVuforia.TargetInfo(9, "Blue Perimeter 1", false, bluePerimeter1Location),
+                new FtcVuforia.TargetInfo(10, "Blue Perimeter 2", false, bluePerimeter2Location),
+                new FtcVuforia.TargetInfo(11, "Rear Perimeter 1", false, rearPerimeter1Location),
+                new FtcVuforia.TargetInfo(12, "Rear Perimeter 2", false, rearPerimeter2Location)
         };
 
         vuforia.addTargetList(TRACKABLE_IMAGES_FILE, imageTargetsInfo, phoneLocation);
@@ -144,13 +179,6 @@ public class VuforiaVision
         {
             imageTargets[i] = vuforia.getTarget(imageTargetsInfo[i].name);
         }
-
-//        FtcVuforia.TargetInfo[] objectTargetsInfo =
-//        {
-//                new FtcVuforia.TargetInfo(0, "Team-Marker", true, null)
-//        };
-//
-//        vuforia.addTargetList(TRACKABLE_OBJECTS_FILE, objectTargetsInfo, null);
     }   //VuforiaVision
 
     public void setEnabled(boolean enabled)

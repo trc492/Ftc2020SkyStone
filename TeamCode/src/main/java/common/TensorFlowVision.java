@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-package team3543;
+package common;
 
 import android.graphics.Rect;
 
@@ -40,6 +40,11 @@ import trclib.TrcDbgTrace;
 
 public class TensorFlowVision
 {
+    private static final String TFOD_MODEL_ASSET = "Skystone.tflite";
+    private static final double TFOD_MIN_CONFIDENCE = 0.8;
+    public static final String LABEL_STONE = "Stone";
+    public static final String LABEL_SKYSTONE = "Skystone";
+
     public class TargetInfo
     {
         String label;
@@ -73,9 +78,7 @@ public class TensorFlowVision
     private FtcVuforia vuforia;
     private TFObjectDetector tfod;
 
-    public TensorFlowVision(
-            int tfodMonitorViewId, VuforiaLocalizer.CameraDirection cameraDir, double minConfidence,
-            String modelAsset, String firstObjectLabel, String secondObjectLabel, TrcDbgTrace tracer)
+    public TensorFlowVision(int tfodMonitorViewId, VuforiaLocalizer.CameraDirection cameraDir, TrcDbgTrace tracer)
     {
         final String VUFORIA_LICENSE_KEY =
                 "ATu19Kj/////AAAAGcw4SDCVwEBSiKcUtdmQd2aOugrxo/OgeBJUt7XwMSi3e0KSZaylbsTnWp8EBxyA5o/00JFJVDY1OxJ" +
@@ -91,9 +94,9 @@ public class TensorFlowVision
             TFObjectDetector.Parameters tfodParameters =
                     tfodMonitorViewId == -1?
                             new TFObjectDetector.Parameters() : new TFObjectDetector.Parameters(tfodMonitorViewId);
-            tfodParameters.minimumConfidence = minConfidence;
+            tfodParameters.minimumConfidence = TFOD_MIN_CONFIDENCE;
             tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia.getLocalizer());
-            tfod.loadModelFromAsset(modelAsset, firstObjectLabel, secondObjectLabel);
+            tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABEL_STONE, LABEL_SKYSTONE);
         }
         else
         {
@@ -162,6 +165,9 @@ public class TensorFlowVision
             }
             else if (targets.size() == 0)
             {
+                //
+                // No target found.
+                //
                 targets = null;
             }
         }
@@ -171,8 +177,8 @@ public class TensorFlowVision
             for (int i = 0; i < targets.size(); i++)
             {
                 Recognition obj = targets.get(i);
-                tracer.traceInfo(funcName, "Stones: [%d/%d: %s]: x=%.0f, y=%.0f, w=%.0f, h=%.0f",
-                        i, targets.size(), obj.getLabel(), obj.getTop(),
+                tracer.traceInfo(funcName, "[%d] %s: x=%.0f, y=%.0f, w=%.0f, h=%.0f",
+                       i, obj.getLabel(), obj.getTop(),
                         obj.getImageWidth() - obj.getRight(), obj.getHeight(), obj.getWidth());
             }
         }
@@ -200,13 +206,15 @@ public class TensorFlowVision
 
     public TargetInfo[] getDetectedTargetsInfo(String label)
     {
-        final String funcName = "getDetectedTargetsInfo";
         ArrayList<Recognition> targets = getDetectedTargets(label);
         TargetInfo[] targetsInfo = targets != null && targets.size() > 0 ? new TargetInfo[targets.size()] : null;
 
-        for (int i = 0; i < targets.size(); i++)
+        if (targetsInfo != null)
         {
-            targetsInfo[i] = getTargetInfo(targets.get(i));
+            for (int i = 0; i < targets.size(); i++)
+            {
+                targetsInfo[i] = getTargetInfo(targets.get(i));
+            }
         }
 
         return targetsInfo;
