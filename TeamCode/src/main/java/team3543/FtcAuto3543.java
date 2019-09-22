@@ -77,12 +77,18 @@ public class FtcAuto3543 extends CommonAuto
         switch (strategy)
         {
             case DISTANCE_DRIVE:
-                autoCommand = new CmdPidDrive(
-                        robot, robot.pidDrive, delay, 0.0, driveDistance*12.0, 0.0);
+                if (robot.driveBase != null)
+                {
+                    autoCommand = new CmdPidDrive(
+                            robot, robot.pidDrive, delay, 0.0, driveDistance * 12.0, 0.0);
+                }
                 break;
 
             case TIMED_DRIVE:
-                autoCommand = new CmdTimedDrive(robot, delay, driveTime, 0.0, drivePower, 0.0);
+                if (robot.driveBase != null)
+                {
+                    autoCommand = new CmdTimedDrive(robot, delay, driveTime, 0.0, drivePower, 0.0);
+                }
                 break;
 
             case DO_NOTHING:

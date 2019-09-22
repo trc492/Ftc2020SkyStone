@@ -43,6 +43,7 @@ public class Robot3543 extends Robot
     public static final boolean USE_VUFORIA = false;
     public static final boolean USE_TENSORFLOW = true;
     public static final boolean USE_VELOCITY_CONTROL = false;
+    public static final boolean HAVE_DRIVE_BASE = true;
 
     private final VuforiaLocalizer.CameraDirection CAMERA_DIR = BACK;
     private final boolean PHONE_IS_PORTRAIT = false;
@@ -81,7 +82,10 @@ public class Robot3543 extends Robot
         //
         // Initialize DriveBase.
         //
-        initDriveBase();
+        if (HAVE_DRIVE_BASE)
+        {
+            initDriveBase();
+        }
         //
         // Initialize other subsystems.
         //

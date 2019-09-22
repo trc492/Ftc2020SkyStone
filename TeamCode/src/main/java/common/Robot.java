@@ -87,17 +87,17 @@ public class Robot implements FtcMenu.MenuButtons
     //
     // DriveBase subsystem.
     //
-    public FtcDcMotor leftFrontWheel;
-    public FtcDcMotor rightFrontWheel;
-    public FtcDcMotor leftRearWheel;
-    public FtcDcMotor rightRearWheel;
+    public FtcDcMotor leftFrontWheel = null;
+    public FtcDcMotor rightFrontWheel = null;
+    public FtcDcMotor leftRearWheel = null;
+    public FtcDcMotor rightRearWheel = null;
 
-    public TrcDriveBase driveBase;
-    public DriveMode driveMode;
-    public TrcPidController encoderXPidCtrl;
-    public TrcPidController encoderYPidCtrl;
-    public TrcPidController gyroPidCtrl;
-    public TrcPidDrive pidDrive;
+    public TrcDriveBase driveBase = null;
+    public DriveMode driveMode = DriveMode.HOLONOMIC_MODE;
+    public TrcPidController encoderXPidCtrl = null;
+    public TrcPidController encoderYPidCtrl = null;
+    public TrcPidController gyroPidCtrl = null;
+    public TrcPidDrive pidDrive = null;
 
     public TrcPidController.PidCoefficients tunePidCoeff = new TrcPidController.PidCoefficients();
     //
@@ -154,7 +154,7 @@ public class Robot implements FtcMenu.MenuButtons
         //
         // Enable odometry only for autonomous or test modes.
         //
-        if (runMode == TrcRobot.RunMode.AUTO_MODE || runMode == TrcRobot.RunMode.TEST_MODE)
+        if (driveBase != null && (runMode == TrcRobot.RunMode.AUTO_MODE || runMode == TrcRobot.RunMode.TEST_MODE))
         {
             driveBase.setOdometryEnabled(true);
         }
@@ -185,28 +185,34 @@ public class Robot implements FtcMenu.MenuButtons
             tensorFlowVision = null;
         }
 
-        driveBase.setOdometryEnabled(false);
+        if (driveBase != null)
+        {
+            driveBase.setOdometryEnabled(false);
+        }
     }   //stopMode
 
     public void traceStateInfo(double elapsedTime, String stateName, double xDistance, double yDistance, double heading)
     {
-        if (battery != null)
+        if (driveBase != null)
         {
-            globalTracer.traceInfo(
-                    moduleName,
-                    "[%5.3f] >>>>> %s: xPos=%6.2f/%6.2f,yPos=%6.2f/%6.2f,heading=%6.1f/%6.1f,volt=%5.2fV(%5.2fV)",
-                    elapsedTime, stateName,
-                    driveBase.getXPosition(), xDistance, driveBase.getYPosition(), yDistance, driveBase.getHeading(),
-                    heading, battery.getVoltage(), battery.getLowestVoltage());
-        }
-        else
-        {
-            globalTracer.traceInfo(
-                    moduleName,
-                    "[%5.3f] >>>>> %s: xPos=%6.2f/%6.2f,yPos=%6.2f/%6.2f,heading=%6.1f/%6.1f",
-                    elapsedTime, stateName,
-                    driveBase.getXPosition(), xDistance, driveBase.getYPosition(), yDistance, driveBase.getHeading(),
-                    heading);
+            if (battery != null)
+            {
+                globalTracer.traceInfo(
+                        moduleName,
+                        "[%5.3f] >>>>> %s: xPos=%6.2f/%6.2f,yPos=%6.2f/%6.2f,heading=%6.1f/%6.1f,volt=%5.2fV(%5.2fV)",
+                        elapsedTime, stateName,
+                        driveBase.getXPosition(), xDistance, driveBase.getYPosition(), yDistance, driveBase.getHeading(),
+                        heading, battery.getVoltage(), battery.getLowestVoltage());
+            }
+            else
+            {
+                globalTracer.traceInfo(
+                        moduleName,
+                        "[%5.3f] >>>>> %s: xPos=%6.2f/%6.2f,yPos=%6.2f/%6.2f,heading=%6.1f/%6.1f",
+                        elapsedTime, stateName,
+                        driveBase.getXPosition(), xDistance, driveBase.getYPosition(), yDistance, driveBase.getHeading(),
+                        heading);
+            }
         }
     }   //traceStateInfo
 

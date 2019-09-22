@@ -109,49 +109,73 @@ public class CommonTest
         switch (test)
         {
             case X_TIMED_DRIVE:
-                timedDriveCommand = new CmdTimedDrive(
-                        robot, 0.0, driveTime, drivePower, 0.0, 0.0);
+                if (robot.driveBase != null)
+                {
+                    timedDriveCommand = new CmdTimedDrive(
+                            robot, 0.0, driveTime, drivePower, 0.0, 0.0);
+                }
                 break;
 
             case Y_TIMED_DRIVE:
-                timedDriveCommand = new CmdTimedDrive(
-                        robot, 0.0, driveTime, 0.0, drivePower, 0.0);
+                if (robot.driveBase != null)
+                {
+                    timedDriveCommand = new CmdTimedDrive(
+                            robot, 0.0, driveTime, 0.0, drivePower, 0.0);
+                }
                 break;
 
             case X_DISTANCE_DRIVE:
-                pidDriveCommand = new CmdPidDrive(
-                        robot, robot.pidDrive, 0.0, driveDistance*12.0, 0.0, 0.0,
-                        drivePower, false);
+                if (robot.driveBase != null)
+                {
+                    pidDriveCommand = new CmdPidDrive(
+                            robot, robot.pidDrive, 0.0, driveDistance * 12.0, 0.0, 0.0,
+                            drivePower, false);
+                }
                 break;
 
             case Y_DISTANCE_DRIVE:
-                pidDriveCommand = new CmdPidDrive(
-                        robot, robot.pidDrive, 0.0, 0.0, driveDistance*12.0, 0.0,
-                        drivePower, false);
+                if (robot.driveBase != null)
+                {
+                    pidDriveCommand = new CmdPidDrive(
+                            robot, robot.pidDrive, 0.0, 0.0, driveDistance * 12.0, 0.0,
+                            drivePower, false);
+                }
                 break;
 
             case GYRO_TURN:
-                pidDriveCommand = new CmdPidDrive(
-                        robot, robot.pidDrive, 0.0, 0.0, 0.0, turnDegrees,
-                        drivePower, false);
+                if (robot.driveBase != null)
+                {
+                    pidDriveCommand = new CmdPidDrive(
+                            robot, robot.pidDrive, 0.0, 0.0, 0.0, turnDegrees,
+                            drivePower, false);
+                }
                 break;
 
             case TUNE_X_PID:
-                pidDriveCommand = new CmdPidDrive(
-                        robot, robot.pidDrive, 0.0, driveDistance*12.0, 0.0, 0.0,
-                        drivePower, true);
+                if (robot.driveBase != null)
+                {
+                    pidDriveCommand = new CmdPidDrive(
+                            robot, robot.pidDrive, 0.0, driveDistance * 12.0, 0.0, 0.0,
+                            drivePower, true);
+                }
                 break;
 
             case TUNE_Y_PID:
-                pidDriveCommand = new CmdPidDrive(
-                        robot, robot.pidDrive, 0.0, 0.0, driveDistance*12.0, 0.0,
-                        drivePower, true);
+                if (robot.driveBase != null)
+                {
+                    pidDriveCommand = new CmdPidDrive(
+                            robot, robot.pidDrive, 0.0, 0.0, driveDistance * 12.0, 0.0,
+                            drivePower, true);
+                }
                 break;
 
             case TUNE_TURN_PID:
-                pidDriveCommand = new CmdPidDrive(
-                        robot, robot.pidDrive, 0.0, 0.0, 0.0, turnDegrees,
-                        drivePower, true);
+                if (robot.driveBase != null)
+                {
+                    pidDriveCommand = new CmdPidDrive(
+                            robot, robot.pidDrive, 0.0, 0.0, 0.0, turnDegrees,
+                            drivePower, true);
+                }
                 break;
         }
         //
@@ -188,7 +212,10 @@ public class CommonTest
                 break;
 
             case MOTORS_TEST:
-                doMotorsTest();
+                if (robot.driveBase != null)
+                {
+                    doMotorsTest();
+                }
                 break;
         }
     }   //runPeriodic
@@ -203,17 +230,20 @@ public class CommonTest
         {
             case X_TIMED_DRIVE:
             case Y_TIMED_DRIVE:
-                double lfEnc = robot.leftFrontWheel.getPosition();
-                double rfEnc = robot.rightFrontWheel.getPosition();
-                double lrEnc = robot.leftRearWheel.getPosition();
-                double rrEnc = robot.rightRearWheel.getPosition();
-                robot.dashboard.displayPrintf(9, "Timed Drive: %.0f sec", driveTime);
-                robot.dashboard.displayPrintf(10, "Enc:lf=%.0f,rf=%.0f", lfEnc, rfEnc);
-                robot.dashboard.displayPrintf(11, "Enc:lr=%.0f,rr=%.0f", lrEnc, rrEnc);
-                robot.dashboard.displayPrintf(12, "average=%f", (lfEnc + rfEnc + lrEnc + rrEnc)/4.0);
-                robot.dashboard.displayPrintf(13, "xPos=%.1f,yPos=%.1f,heading=%.1f",
-                        robot.driveBase.getXPosition(), robot.driveBase.getYPosition(), robot.driveBase.getHeading());
-                timedDriveCommand.cmdPeriodic(elapsedTime);
+                if (robot.driveBase != null)
+                {
+                    double lfEnc = robot.leftFrontWheel.getPosition();
+                    double rfEnc = robot.rightFrontWheel.getPosition();
+                    double lrEnc = robot.leftRearWheel.getPosition();
+                    double rrEnc = robot.rightRearWheel.getPosition();
+                    robot.dashboard.displayPrintf(9, "Timed Drive: %.0f sec", driveTime);
+                    robot.dashboard.displayPrintf(10, "Enc:lf=%.0f,rf=%.0f", lfEnc, rfEnc);
+                    robot.dashboard.displayPrintf(11, "Enc:lr=%.0f,rr=%.0f", lrEnc, rrEnc);
+                    robot.dashboard.displayPrintf(12, "average=%f", (lfEnc + rfEnc + lrEnc + rrEnc)/4.0);
+                    robot.dashboard.displayPrintf(13, "xPos=%.1f,yPos=%.1f,heading=%.1f",
+                            robot.driveBase.getXPosition(), robot.driveBase.getYPosition(), robot.driveBase.getHeading());
+                    timedDriveCommand.cmdPeriodic(elapsedTime);
+                }
                 break;
 
             case X_DISTANCE_DRIVE:
@@ -222,16 +252,19 @@ public class CommonTest
             case TUNE_X_PID:
             case TUNE_Y_PID:
             case TUNE_TURN_PID:
-                robot.dashboard.displayPrintf(9, "xPos=%.1f,yPos=%.1f,heading=%.1f",
-                        robot.driveBase.getXPosition(), robot.driveBase.getYPosition(), robot.driveBase.getHeading());
-                if (robot.encoderXPidCtrl != null)
+                if (robot.driveBase != null)
                 {
-                    robot.encoderXPidCtrl.displayPidInfo(10);
-                }
-                robot.encoderYPidCtrl.displayPidInfo(12);
-                robot.gyroPidCtrl.displayPidInfo(14);
+                    robot.dashboard.displayPrintf(9, "xPos=%.1f,yPos=%.1f,heading=%.1f",
+                            robot.driveBase.getXPosition(), robot.driveBase.getYPosition(), robot.driveBase.getHeading());
+                    if (robot.encoderXPidCtrl != null)
+                    {
+                        robot.encoderXPidCtrl.displayPidInfo(10);
+                    }
+                    robot.encoderYPidCtrl.displayPidInfo(12);
+                    robot.gyroPidCtrl.displayPidInfo(14);
 
-                pidDriveCommand.cmdPeriodic(elapsedTime);
+                    pidDriveCommand.cmdPeriodic(elapsedTime);
+                }
                 break;
         }
     }   //runContinuous
