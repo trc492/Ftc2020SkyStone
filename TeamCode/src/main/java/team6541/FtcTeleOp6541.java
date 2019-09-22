@@ -29,7 +29,7 @@ import ftclib.FtcGamepad;
 import trclib.TrcGameController;
 import trclib.TrcRobot;
 
-@TeleOp(name="FtcTeleOp6541", group="TeleOp")
+@TeleOp(name="FtcTeleOp6541", group="FtcTeleOp")
 public class FtcTeleOp6541 extends CommonTeleOp
 {
     private static final String MODULE_NAME = "FtcTeleOp6541";

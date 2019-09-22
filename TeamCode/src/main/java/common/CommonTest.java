@@ -30,6 +30,7 @@ import ftclib.FtcChoiceMenu;
 import ftclib.FtcMenu;
 import ftclib.FtcValueMenu;
 import trclib.TrcEvent;
+import trclib.TrcLoopPerformanceMonitor;
 import trclib.TrcStateMachine;
 import trclib.TrcTimer;
 import trclib.TrcUtil;
@@ -59,6 +60,7 @@ public class CommonTest
 
     protected String moduleName = null;
     protected Robot robot = null;
+    protected TrcLoopPerformanceMonitor loopPerformanceMonitor = null;
     //
     // Made the following menus static so their values will persist across different runs of PID tuning.
     //
@@ -91,10 +93,14 @@ public class CommonTest
     // Implements FtcOpMode interface.
     //
 
-    public void init(String moduleName, Robot robot)
+    public void init(String moduleName, Robot robot, boolean monitorLoopTime)
     {
         this.moduleName = moduleName;
         this.robot = robot;
+        if (monitorLoopTime)
+        {
+            loopPerformanceMonitor = new TrcLoopPerformanceMonitor("TestLoopMonitor", 1.0);
+        }
         //
         // Initialize additional objects.
         //
@@ -266,6 +272,16 @@ public class CommonTest
                     pidDriveCommand.cmdPeriodic(elapsedTime);
                 }
                 break;
+        }
+
+        if (loopPerformanceMonitor != null)
+        {
+            loopPerformanceMonitor.update();
+            robot.dashboard.displayPrintf(
+                    6, "Period: %.3f/%.3f/%3f, Frequency: %.2f/%.2f/%.2f",
+                    loopPerformanceMonitor.getMinPeriod(), loopPerformanceMonitor.getAveragePeriod(),
+                    loopPerformanceMonitor.getMaxPeriod(), loopPerformanceMonitor.getMinFrequency(),
+                    loopPerformanceMonitor.getAverageFrequency(), loopPerformanceMonitor.getMaxFrequency());
         }
     }   //runContinuous
 
