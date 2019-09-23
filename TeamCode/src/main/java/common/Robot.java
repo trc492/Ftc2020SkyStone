@@ -68,6 +68,7 @@ public class Robot implements FtcMenu.MenuButtons
     public FtcAndroidTone androidTone;
     public TextToSpeech textToSpeech = null;
     public FtcRobotBattery battery = null;
+    public boolean haveRobot;
     //
     // Sensors.
     //
@@ -104,7 +105,8 @@ public class Robot implements FtcMenu.MenuButtons
     // Other common subsystems.
     //
 
-    public Robot(TrcRobot.RunMode runMode, String robotName, boolean useSpeech, boolean useBatteryMonitor)
+    public Robot(TrcRobot.RunMode runMode, String robotName, boolean useSpeech, boolean useBatteryMonitor,
+                 boolean haveRobot)
     {
         //
         // Initialize global objects.
@@ -117,6 +119,7 @@ public class Robot implements FtcMenu.MenuButtons
         dashboard.setTextView(
                 ((FtcRobotControllerActivity)opMode.hardwareMap.appContext).findViewById(R.id.textOpMode));
         androidTone = new FtcAndroidTone("AndroidTone");
+        this.haveRobot = haveRobot;
 
         if (useSpeech)
         {
@@ -131,8 +134,11 @@ public class Robot implements FtcMenu.MenuButtons
         //
         // Initialize sensors.
         //
-        imu = new FtcBNO055Imu("imu");
-        gyro = imu.gyro;
+        if (haveRobot)
+        {
+            imu = new FtcBNO055Imu("imu");
+            gyro = imu.gyro;
+        }
     }   //Robot
 
     public void startMode(TrcRobot.RunMode runMode)
@@ -141,8 +147,11 @@ public class Robot implements FtcMenu.MenuButtons
         //
         // Since the IMU gyro is giving us cardinal heading, we need to enable its cardinal to cartesian converter.
         //
-        gyro.setEnabled(true);
-        targetHeading = 0.0;
+        if (haveRobot)
+        {
+            gyro.setEnabled(true);
+            targetHeading = 0.0;
+        }
         //
         // Vision generally will impact performance, so we only enable it if it's needed such as in autonomous.
         //
@@ -165,7 +174,10 @@ public class Robot implements FtcMenu.MenuButtons
         //
         // Disable the gyro integrator.
         //
-        gyro.setEnabled(false);
+        if (haveRobot)
+        {
+            gyro.setEnabled(false);
+        }
 
         if (textToSpeech != null)
         {

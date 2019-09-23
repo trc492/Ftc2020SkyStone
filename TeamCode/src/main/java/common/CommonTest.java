@@ -115,7 +115,7 @@ public class CommonTest
         switch (test)
         {
             case X_TIMED_DRIVE:
-                if (robot.driveBase != null)
+                if (robot.haveRobot)
                 {
                     timedDriveCommand = new CmdTimedDrive(
                             robot, 0.0, driveTime, drivePower, 0.0, 0.0);
@@ -123,7 +123,7 @@ public class CommonTest
                 break;
 
             case Y_TIMED_DRIVE:
-                if (robot.driveBase != null)
+                if (robot.haveRobot)
                 {
                     timedDriveCommand = new CmdTimedDrive(
                             robot, 0.0, driveTime, 0.0, drivePower, 0.0);
@@ -131,7 +131,7 @@ public class CommonTest
                 break;
 
             case X_DISTANCE_DRIVE:
-                if (robot.driveBase != null)
+                if (robot.haveRobot)
                 {
                     pidDriveCommand = new CmdPidDrive(
                             robot, robot.pidDrive, 0.0, driveDistance * 12.0, 0.0, 0.0,
@@ -140,7 +140,7 @@ public class CommonTest
                 break;
 
             case Y_DISTANCE_DRIVE:
-                if (robot.driveBase != null)
+                if (robot.haveRobot)
                 {
                     pidDriveCommand = new CmdPidDrive(
                             robot, robot.pidDrive, 0.0, 0.0, driveDistance * 12.0, 0.0,
@@ -149,7 +149,7 @@ public class CommonTest
                 break;
 
             case GYRO_TURN:
-                if (robot.driveBase != null)
+                if (robot.haveRobot)
                 {
                     pidDriveCommand = new CmdPidDrive(
                             robot, robot.pidDrive, 0.0, 0.0, 0.0, turnDegrees,
@@ -158,7 +158,7 @@ public class CommonTest
                 break;
 
             case TUNE_X_PID:
-                if (robot.driveBase != null)
+                if (robot.haveRobot)
                 {
                     pidDriveCommand = new CmdPidDrive(
                             robot, robot.pidDrive, 0.0, driveDistance * 12.0, 0.0, 0.0,
@@ -167,7 +167,7 @@ public class CommonTest
                 break;
 
             case TUNE_Y_PID:
-                if (robot.driveBase != null)
+                if (robot.haveRobot)
                 {
                     pidDriveCommand = new CmdPidDrive(
                             robot, robot.pidDrive, 0.0, 0.0, driveDistance * 12.0, 0.0,
@@ -176,7 +176,7 @@ public class CommonTest
                 break;
 
             case TUNE_TURN_PID:
-                if (robot.driveBase != null)
+                if (robot.haveRobot)
                 {
                     pidDriveCommand = new CmdPidDrive(
                             robot, robot.pidDrive, 0.0, 0.0, 0.0, turnDegrees,
@@ -199,7 +199,7 @@ public class CommonTest
 
     public boolean shouldRunTeleOpPeriodic()
     {
-        return test == Test.SENSORS_TEST;
+        return robot.haveRobot && test == Test.SENSORS_TEST;
     }   //shouldRunTeleOpPeriodic
 
     public void runPeriodic(double elapsedTime)
@@ -218,7 +218,7 @@ public class CommonTest
                 break;
 
             case MOTORS_TEST:
-                if (robot.driveBase != null)
+                if (robot.haveRobot)
                 {
                     doMotorsTest();
                 }
@@ -236,7 +236,7 @@ public class CommonTest
         {
             case X_TIMED_DRIVE:
             case Y_TIMED_DRIVE:
-                if (robot.driveBase != null)
+                if (robot.haveRobot)
                 {
                     double lfEnc = robot.leftFrontWheel.getPosition();
                     double rfEnc = robot.rightFrontWheel.getPosition();
@@ -258,7 +258,7 @@ public class CommonTest
             case TUNE_X_PID:
             case TUNE_Y_PID:
             case TUNE_TURN_PID:
-                if (robot.driveBase != null)
+                if (robot.haveRobot)
                 {
                     robot.dashboard.displayPrintf(9, "xPos=%.1f,yPos=%.1f,heading=%.1f",
                             robot.driveBase.getXPosition(), robot.driveBase.getYPosition(), robot.driveBase.getHeading());
@@ -383,9 +383,13 @@ public class CommonTest
         // Read all sensors and display on the dashboard.
         // Drive the robot around to sample different locations of the field.
         //
-        robot.dashboard.displayPrintf(9, LABEL_WIDTH, "Enc: ", "lf=%.0f,rf=%.0f,lr=%.0f,rr=%.0f",
-                robot.leftFrontWheel.getPosition(), robot.rightFrontWheel.getPosition(),
-                robot.leftRearWheel.getPosition(), robot.rightRearWheel.getPosition());
+        if (robot.haveRobot)
+        {
+            robot.dashboard.displayPrintf(
+                    9, LABEL_WIDTH, "Enc: ", "lf=%.0f,rf=%.0f,lr=%.0f,rr=%.0f",
+                    robot.leftFrontWheel.getPosition(), robot.rightFrontWheel.getPosition(),
+                    robot.leftRearWheel.getPosition(), robot.rightRearWheel.getPosition());
+        }
 
         if (robot.gyro != null)
         {
