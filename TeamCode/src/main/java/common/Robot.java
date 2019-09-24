@@ -104,8 +104,8 @@ public class Robot
     // Other common subsystems.
     //
 
-    public Robot(TrcRobot.RunMode runMode, String robotName, boolean useSpeech, boolean useBatteryMonitor,
-                 boolean hasRobot)
+    public Robot(
+            TrcRobot.RunMode runMode, String robotName, boolean useSpeech, boolean useBatteryMonitor, boolean hasRobot)
     {
         //
         // Initialize global objects.

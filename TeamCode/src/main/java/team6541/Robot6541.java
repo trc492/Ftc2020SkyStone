@@ -43,7 +43,7 @@ public class Robot6541 extends Robot
     public static final boolean USE_VUFORIA = false;
     public static final boolean USE_TENSORFLOW = true;
     public static final boolean USE_VELOCITY_CONTROL = false;
-    public static final boolean HAVE_ROBOT = false;
+    public static final boolean HAS_ROBOT = false;
 
     private final VuforiaLocalizer.CameraDirection CAMERA_DIR = BACK;
     private final boolean PHONE_IS_PORTRAIT = false;
@@ -63,7 +63,7 @@ public class Robot6541 extends Robot
 
     public Robot6541(TrcRobot.RunMode runMode)
     {
-        super(runMode, robotName, USE_SPEECH, USE_BATTERY_MONITOR, HAVE_ROBOT);
+        super(runMode, robotName, USE_SPEECH, USE_BATTERY_MONITOR, HAS_ROBOT);
         //
         // Initialize vision subsystems.
         //
@@ -82,7 +82,7 @@ public class Robot6541 extends Robot
         //
         // Initialize DriveBase.
         //
-        if (hasRobot)
+        if (HAS_ROBOT)
         {
             initDriveBase();
         }
