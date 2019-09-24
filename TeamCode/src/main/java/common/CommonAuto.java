@@ -171,14 +171,14 @@ public abstract class CommonAuto extends FtcOpMode
         //
         // Construct menus.
         //
-        FtcChoiceMenu<MatchType> matchTypeMenu = new FtcChoiceMenu<>("Match type:", null, robot);
+        FtcChoiceMenu<MatchType> matchTypeMenu = new FtcChoiceMenu<>("Match type:", null);
         FtcValueMenu matchNumberMenu = new FtcValueMenu(
-                "Match number:", matchTypeMenu, robot,
-                1.0, 50.0, 1.0, 1.0, "%.0f");
-        FtcChoiceMenu<Alliance> allianceMenu = new FtcChoiceMenu<>("Alliance:", matchNumberMenu, robot);
+                "Match number:", matchTypeMenu, 1.0, 50.0, 1.0, 1.0,
+                "%.0f");
+        FtcChoiceMenu<Alliance> allianceMenu = new FtcChoiceMenu<>("Alliance:", matchNumberMenu);
         FtcValueMenu delayMenu = new FtcValueMenu(
-                "Delay time:", allianceMenu, robot,
-                0.0, 30.0, 1.0, 0.0, " %.0f sec");
+                "Delay time:", allianceMenu, 0.0, 30.0, 1.0, 0.0,
+                " %.0f sec");
 
         matchNumberMenu.setChildMenu(allianceMenu);
         //

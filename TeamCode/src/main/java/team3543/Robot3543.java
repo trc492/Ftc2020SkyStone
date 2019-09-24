@@ -82,7 +82,7 @@ public class Robot3543 extends Robot
         //
         // Initialize DriveBase.
         //
-        if (haveRobot)
+        if (hasRobot)
         {
             initDriveBase();
         }

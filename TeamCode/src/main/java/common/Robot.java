@@ -32,7 +32,6 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import ftclib.FtcAndroidTone;
 import ftclib.FtcBNO055Imu;
 import ftclib.FtcDcMotor;
-import ftclib.FtcMenu;
 import ftclib.FtcOpMode;
 import ftclib.FtcRobotBattery;
 import hallib.HalDashboard;
@@ -50,7 +49,7 @@ import static org.firstinspires.ftc.robotcore.external.navigation.AxesOrder.YZX;
 import static org.firstinspires.ftc.robotcore.external.navigation.AxesReference.EXTRINSIC;
 import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection.BACK;
 
-public class Robot implements FtcMenu.MenuButtons
+public class Robot
 {
     protected enum DriveMode
     {
@@ -68,7 +67,7 @@ public class Robot implements FtcMenu.MenuButtons
     public FtcAndroidTone androidTone;
     public TextToSpeech textToSpeech = null;
     public FtcRobotBattery battery = null;
-    public boolean haveRobot;
+    public boolean hasRobot;
     //
     // Sensors.
     //
@@ -106,7 +105,7 @@ public class Robot implements FtcMenu.MenuButtons
     //
 
     public Robot(TrcRobot.RunMode runMode, String robotName, boolean useSpeech, boolean useBatteryMonitor,
-                 boolean haveRobot)
+                 boolean hasRobot)
     {
         //
         // Initialize global objects.
@@ -119,7 +118,7 @@ public class Robot implements FtcMenu.MenuButtons
         dashboard.setTextView(
                 ((FtcRobotControllerActivity)opMode.hardwareMap.appContext).findViewById(R.id.textOpMode));
         androidTone = new FtcAndroidTone("AndroidTone");
-        this.haveRobot = haveRobot;
+        this.hasRobot = hasRobot;
 
         if (useSpeech)
         {
@@ -134,7 +133,7 @@ public class Robot implements FtcMenu.MenuButtons
         //
         // Initialize sensors.
         //
-        if (haveRobot)
+        if (hasRobot)
         {
             imu = new FtcBNO055Imu("imu");
             gyro = imu.gyro;
@@ -147,7 +146,7 @@ public class Robot implements FtcMenu.MenuButtons
         //
         // Since the IMU gyro is giving us cardinal heading, we need to enable its cardinal to cartesian converter.
         //
-        if (haveRobot)
+        if (gyro != null)
         {
             gyro.setEnabled(true);
             targetHeading = 0.0;
@@ -174,7 +173,7 @@ public class Robot implements FtcMenu.MenuButtons
         //
         // Disable the gyro integrator.
         //
-        if (haveRobot)
+        if (gyro != null)
         {
             gyro.setEnabled(false);
         }
@@ -314,45 +313,5 @@ public class Robot implements FtcMenu.MenuButtons
         tensorFlowVision.setEnabled(true);
         globalTracer.traceInfo(moduleName, "Enabling TensorFlow.");
     }   //initTensorFlow
-
-    //
-    // Implements FtcMenu.MenuButtons interface.
-    //
-
-    @Override
-    public boolean isMenuUpButton()
-    {
-        return opMode.gamepad1.dpad_up;
-    }   //isMenuUpButton
-
-    @Override
-    public boolean isMenuDownButton()
-    {
-        return opMode.gamepad1.dpad_down;
-    }   //isMenuDownButton
-
-    @Override
-    public boolean isMenuAltUpButton()
-    {
-        return opMode.gamepad1.left_bumper;
-    }   //isMenuAltUpButton
-
-    @Override
-    public boolean isMenuAltDownButton()
-    {
-        return opMode.gamepad1.right_bumper;
-    }   //isMenuAltDownButton
-
-    @Override
-    public boolean isMenuEnterButton()
-    {
-        return opMode.gamepad1.dpad_right;
-    }   //isMenuEnterButton
-
-    @Override
-    public boolean isMenuBackButton()
-    {
-        return opMode.gamepad1.dpad_left;
-    }   //isMenuBackButton
 
 }   //class Robot

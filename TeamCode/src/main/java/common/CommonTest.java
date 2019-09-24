@@ -115,7 +115,7 @@ public class CommonTest
         switch (test)
         {
             case X_TIMED_DRIVE:
-                if (robot.haveRobot)
+                if (robot.hasRobot)
                 {
                     timedDriveCommand = new CmdTimedDrive(
                             robot, 0.0, driveTime, drivePower, 0.0, 0.0);
@@ -123,7 +123,7 @@ public class CommonTest
                 break;
 
             case Y_TIMED_DRIVE:
-                if (robot.haveRobot)
+                if (robot.hasRobot)
                 {
                     timedDriveCommand = new CmdTimedDrive(
                             robot, 0.0, driveTime, 0.0, drivePower, 0.0);
@@ -131,7 +131,7 @@ public class CommonTest
                 break;
 
             case X_DISTANCE_DRIVE:
-                if (robot.haveRobot)
+                if (robot.hasRobot)
                 {
                     pidDriveCommand = new CmdPidDrive(
                             robot, robot.pidDrive, 0.0, driveDistance * 12.0, 0.0, 0.0,
@@ -140,7 +140,7 @@ public class CommonTest
                 break;
 
             case Y_DISTANCE_DRIVE:
-                if (robot.haveRobot)
+                if (robot.hasRobot)
                 {
                     pidDriveCommand = new CmdPidDrive(
                             robot, robot.pidDrive, 0.0, 0.0, driveDistance * 12.0, 0.0,
@@ -149,7 +149,7 @@ public class CommonTest
                 break;
 
             case GYRO_TURN:
-                if (robot.haveRobot)
+                if (robot.hasRobot)
                 {
                     pidDriveCommand = new CmdPidDrive(
                             robot, robot.pidDrive, 0.0, 0.0, 0.0, turnDegrees,
@@ -158,7 +158,7 @@ public class CommonTest
                 break;
 
             case TUNE_X_PID:
-                if (robot.haveRobot)
+                if (robot.hasRobot)
                 {
                     pidDriveCommand = new CmdPidDrive(
                             robot, robot.pidDrive, 0.0, driveDistance * 12.0, 0.0, 0.0,
@@ -167,7 +167,7 @@ public class CommonTest
                 break;
 
             case TUNE_Y_PID:
-                if (robot.haveRobot)
+                if (robot.hasRobot)
                 {
                     pidDriveCommand = new CmdPidDrive(
                             robot, robot.pidDrive, 0.0, 0.0, driveDistance * 12.0, 0.0,
@@ -176,7 +176,7 @@ public class CommonTest
                 break;
 
             case TUNE_TURN_PID:
-                if (robot.haveRobot)
+                if (robot.hasRobot)
                 {
                     pidDriveCommand = new CmdPidDrive(
                             robot, robot.pidDrive, 0.0, 0.0, 0.0, turnDegrees,
@@ -199,7 +199,7 @@ public class CommonTest
 
     public boolean shouldRunTeleOpPeriodic()
     {
-        return robot.haveRobot && test == Test.SENSORS_TEST;
+        return robot.hasRobot && test == Test.SENSORS_TEST;
     }   //shouldRunTeleOpPeriodic
 
     public void runPeriodic(double elapsedTime)
@@ -218,7 +218,7 @@ public class CommonTest
                 break;
 
             case MOTORS_TEST:
-                if (robot.haveRobot)
+                if (robot.hasRobot)
                 {
                     doMotorsTest();
                 }
@@ -236,7 +236,7 @@ public class CommonTest
         {
             case X_TIMED_DRIVE:
             case Y_TIMED_DRIVE:
-                if (robot.haveRobot)
+                if (robot.hasRobot)
                 {
                     double lfEnc = robot.leftFrontWheel.getPosition();
                     double rfEnc = robot.rightFrontWheel.getPosition();
@@ -258,7 +258,7 @@ public class CommonTest
             case TUNE_X_PID:
             case TUNE_Y_PID:
             case TUNE_TURN_PID:
-                if (robot.haveRobot)
+                if (robot.hasRobot)
                 {
                     robot.dashboard.displayPrintf(9, "xPos=%.1f,yPos=%.1f,heading=%.1f",
                             robot.driveBase.getXPosition(), robot.driveBase.getYPosition(), robot.driveBase.getHeading());
@@ -290,46 +290,46 @@ public class CommonTest
         //
         // Create menus.
         //
-        FtcChoiceMenu<Test> testMenu = new FtcChoiceMenu<>("Tests:", null, robot);
+        FtcChoiceMenu<Test> testMenu = new FtcChoiceMenu<>("Tests:", null);
         FtcValueMenu driveTimeMenu = new FtcValueMenu(
-                "Drive time:", testMenu, robot, 1.0, 10.0, 1.0, 4.0,
+                "Drive time:", testMenu, 1.0, 10.0, 1.0, 4.0,
                 " %.0f sec");
         FtcValueMenu drivePowerMenu = new FtcValueMenu(
-                "Drive power:", testMenu, robot, 0.0, 1.0, 0.1, 0.5,
+                "Drive power:", testMenu, 0.0, 1.0, 0.1, 0.5,
                 " %.1f");
         FtcValueMenu driveDistanceMenu = new FtcValueMenu(
-                "Drive distance:", testMenu, robot, -10.0, 10.0, 0.5, 4.0,
+                "Drive distance:", testMenu, -10.0, 10.0, 0.5, 4.0,
                 " %.1f ft");
         FtcValueMenu turnDegreesMenu = new FtcValueMenu(
-                "Turn degrees:", testMenu, robot, -360.0, 360.0, 5.0, 90.0,
+                "Turn degrees:", testMenu, -360.0, 360.0, 5.0, 90.0,
                 " %.0f deg");
 
         if (tuneKpMenu == null)
         {
             tuneKpMenu = new FtcValueMenu(
-                    "Kp:", testMenu, robot, 0.0, 1.0, 0.001,
-                    robot.tunePidCoeff.kP, " %f");
+                    "Kp:", testMenu, 0.0, 1.0, 0.001, robot.tunePidCoeff.kP,
+                    " %f");
         }
 
         if (tuneKiMenu == null)
         {
             tuneKiMenu = new FtcValueMenu(
-                    "Ki:", testMenu, robot, 0.0, 1.0, 0.0001,
-                    robot.tunePidCoeff.kI, " %f");
+                    "Ki:", testMenu, 0.0, 1.0, 0.0001, robot.tunePidCoeff.kI,
+                    " %f");
         }
 
         if (tuneKdMenu == null)
         {
             tuneKdMenu = new FtcValueMenu(
-                    "Kd:", testMenu, robot, 0.0, 1.0, 0.0001,
-                    robot.tunePidCoeff.kD, " %f");
+                    "Kd:", testMenu, 0.0, 1.0, 0.0001, robot.tunePidCoeff.kD,
+                    " %f");
         }
 
         if (tuneKfMenu == null)
         {
             tuneKfMenu = new FtcValueMenu(
-                    "Kf:", testMenu, robot, 0.0, 1.0, 0.001,
-                    robot.tunePidCoeff.kF, " %f");
+                    "Kf:", testMenu, 0.0, 1.0, 0.001, robot.tunePidCoeff.kF,
+                    " %f");
         }
 
         //
@@ -383,7 +383,7 @@ public class CommonTest
         // Read all sensors and display on the dashboard.
         // Drive the robot around to sample different locations of the field.
         //
-        if (robot.haveRobot)
+        if (robot.hasRobot)
         {
             robot.dashboard.displayPrintf(
                     9, LABEL_WIDTH, "Enc: ", "lf=%.0f,rf=%.0f,lr=%.0f,rr=%.0f",
