@@ -39,6 +39,7 @@ import ftclib.FtcVuforia;
 import trclib.TrcDbgTrace;
 import trclib.TrcHomographyMapper;
 
+import org.opencv.core.Core;
 import org.opencv.core.Point;
 
 public class TensorFlowVision
@@ -142,6 +143,8 @@ public class TensorFlowVision
             throw new UnsupportedOperationException("This device is not compatible with TensorFlow Object Detection.");
         }
 
+        System.loadLibrary("opencv_java3");// initialize OpenCV UwU
+
         homographyMapper = new TrcHomographyMapper(
                 // Camera coordinates: top left, top right, bottom left and bottom right
                 new Point(0.0, 0.0), new Point(cameraWidth, 0.0),
@@ -151,6 +154,7 @@ public class TensorFlowVision
                 new Point(tr_x, tr_y),
                 new Point(bl_x, bl_y),
                 new Point(br_x, br_y));
+
     }   //TensorFlowVision
 
     public void setEnabled(boolean enabled)
