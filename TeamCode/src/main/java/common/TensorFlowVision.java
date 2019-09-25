@@ -39,7 +39,6 @@ import ftclib.FtcVuforia;
 import trclib.TrcDbgTrace;
 import trclib.TrcHomographyMapper;
 
-import org.opencv.core.Core;
 import org.opencv.core.Point;
 
 public class TensorFlowVision
@@ -48,6 +47,7 @@ public class TensorFlowVision
     private static final double TFOD_MIN_CONFIDENCE = 0.8;
     public static final String LABEL_STONE = "Stone";
     public static final String LABEL_SKYSTONE = "Skystone";
+    public static final String OPENCV_NATIVE_LIBRARY_NAME = "opencv_java3";
 
     public class TargetInfo
     {
@@ -79,7 +79,7 @@ public class TensorFlowVision
             this.imageWidth = imageWidth;
             this.imageHeight = imageHeight;
             this.worldCoordinates = worldCoordinates;
-        }   //T
+        }   //TargetInfo
 
         @Override
         public String toString()
@@ -143,7 +143,7 @@ public class TensorFlowVision
             throw new UnsupportedOperationException("This device is not compatible with TensorFlow Object Detection.");
         }
 
-        System.loadLibrary("opencv_java3");// initialize OpenCV UwU
+        System.loadLibrary(OPENCV_NATIVE_LIBRARY_NAME);// initialize OpenCV UwU
 
         homographyMapper = new TrcHomographyMapper(
                 // Camera coordinates: top left, top right, bottom left and bottom right
