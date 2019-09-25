@@ -244,9 +244,10 @@ public class TensorFlowVision
         Rect targetRect = new Rect(
                 (int)target.getTop(), (int)(target.getImageWidth() - target.getRight()),
                 (int)target.getHeight(), (int)target.getWidth());
+        Point homographyMappedPoint = homographyMapper.mapPoint(new Point((int)target.getTop(), (int)(target.getImageWidth() - target.getRight())));
         TargetInfo targetInfo = new TargetInfo(
                 target.getLabel(), targetRect, target.estimateAngleToObject(AngleUnit.DEGREES),
-                target.getConfidence(), target.getImageHeight(), target.getImageWidth());
+                target.getConfidence(), target.getImageHeight(), target.getImageWidth(), homographyMappedPoint);
 
         if (tracer != null)
         {
