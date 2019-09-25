@@ -67,7 +67,6 @@ class RobotInfo3543
 
     static final double PIDDRIVE_STALL_TIMEOUT                  = 0.5;      //in seconds.
 
-    public static final boolean CAMERA_ORIENTATION  = false; // false = landscape, true = portrait
     public static final double CAMERA_HEIGHT        = 720.0; // in pixels.
     public static final double CAMERA_WIDTH         = 1280.0; // in pixels.
 
