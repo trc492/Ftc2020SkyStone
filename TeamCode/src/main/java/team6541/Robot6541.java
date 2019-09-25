@@ -77,7 +77,18 @@ public class Robot6541 extends Robot
         //
         if (USE_TENSORFLOW && (runMode == TrcRobot.RunMode.AUTO_MODE || runMode == TrcRobot.RunMode.TEST_MODE))
         {
-            initTensorFlow(CAMERA_DIR, SHOW_CAMERA_VIEW);
+            initTensorFlow(CAMERA_DIR,
+                    SHOW_CAMERA_VIEW,
+                    RobotInfo6541.CAMERA_WIDTH,
+                    RobotInfo6541.CAMERA_HEIGHT,
+                    RobotInfo6541.HOMOGRAPHY_WORLD_TOPLEFT_X,
+                    RobotInfo6541.HOMOGRAPHY_WORLD_TOPLEFT_Y,
+                    RobotInfo6541.HOMOGRAPHY_WORLD_TOPRIGHT_X,
+                    RobotInfo6541.HOMOGRAPHY_WORLD_TOPRIGHT_Y,
+                    RobotInfo6541.HOMOGRAPHY_WORLD_BOTTOMLEFT_X,
+                    RobotInfo6541.HOMOGRAPHY_WORLD_BOTTOMLEFT_Y,
+                    RobotInfo6541.HOMOGRAPHY_WORLD_BOTTOMRIGHT_X,
+                    RobotInfo6541.HOMOGRAPHY_WORLD_BOTTOMRIGHT_Y);
         }
         //
         // Initialize DriveBase.

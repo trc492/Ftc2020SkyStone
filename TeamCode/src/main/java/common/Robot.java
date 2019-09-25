@@ -304,12 +304,36 @@ public class Robot
         vuforiaVision = new VuforiaVision(this, cameraViewId, cameraDir, robotFromCamera);
     }   //initVuforia
 
-    protected void initTensorFlow(VuforiaLocalizer.CameraDirection cameraDir, boolean showCameraView)
+    // TODO: Take in teamNum from team-specific Robot class.
+    protected void initTensorFlow(VuforiaLocalizer.CameraDirection cameraDir,
+                                  boolean showCameraView,
+                                  double cameraWidth,
+                                  double cameraHeight,
+                                  double tl_x,
+                                  double tl_y,
+                                  double tr_x,
+                                  double tr_y,
+                                  double bl_x,
+                                  double bl_y,
+                                  double br_x,
+                                  double br_y)
     {
         int tfodMonitorViewId = !showCameraView ? -1 :
                 opMode.hardwareMap.appContext.getResources().getIdentifier(
                         "tfodMonitorViewId", "id", opMode.hardwareMap.appContext.getPackageName());
-        tensorFlowVision = new TensorFlowVision(tfodMonitorViewId, cameraDir, globalTracer);
+        tensorFlowVision = new TensorFlowVision(tfodMonitorViewId,
+                                                cameraDir,
+                                                globalTracer,
+                                                cameraWidth,
+                                                cameraHeight,
+                                                tl_x,
+                                                tl_y,
+                                                tr_x,
+                                                tr_y,
+                                                bl_x,
+                                                bl_y,
+                                                br_x,
+                                                br_y);
         tensorFlowVision.setEnabled(true);
         globalTracer.traceInfo(moduleName, "Enabling TensorFlow.");
     }   //initTensorFlow

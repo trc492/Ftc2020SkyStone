@@ -67,4 +67,20 @@ class RobotInfo3543
 
     static final double PIDDRIVE_STALL_TIMEOUT                  = 0.5;      //in seconds.
 
+    public static final boolean CAMERA_ORIENTATION  = false; // false = landscape, true = portrait
+    public static final double CAMERA_HEIGHT        = 720.0; // in pixels.
+    public static final double CAMERA_WIDTH         = 1280.0; // in pixels.
+
+    // These should be in real-world robot coordinates. Needs calibration after camera is actually mounted in position.
+    // Measurement unit: inches
+    // TODO: Tune all of this
+    public static final double HOMOGRAPHY_WORLD_TOPLEFT_X          = -61.0;
+    public static final double HOMOGRAPHY_WORLD_TOPLEFT_Y          = 83.0;
+    public static final double HOMOGRAPHY_WORLD_TOPRIGHT_X         = 33.0;
+    public static final double HOMOGRAPHY_WORLD_TOPRIGHT_Y         = 83.0;
+    public static final double HOMOGRAPHY_WORLD_BOTTOMLEFT_X       = -39.5;
+    public static final double HOMOGRAPHY_WORLD_BOTTOMLEFT_Y       = 19.0;
+    public static final double HOMOGRAPHY_WORLD_BOTTOMRIGHT_X      = 12.0;
+    public static final double HOMOGRAPHY_WORLD_BOTTOMRIGHT_Y      = 19.0;
+
 }   //class RobotInfo3543

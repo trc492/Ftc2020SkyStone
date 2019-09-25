@@ -37,6 +37,9 @@ import java.util.Locale;
 
 import ftclib.FtcVuforia;
 import trclib.TrcDbgTrace;
+import trclib.TrcHomographyMapper;
+
+import org.opencv.core.Point;
 
 public class TensorFlowVision
 {
@@ -53,6 +56,7 @@ public class TensorFlowVision
         double confidence;
         int imageWidth;
         int imageHeight;
+        Point worldCoordinates;
 
         TargetInfo(String label, Rect rect, double angle, double confidence, int imageWidth, int imageHeight)
         {
@@ -62,23 +66,58 @@ public class TensorFlowVision
             this.confidence = confidence;
             this.imageWidth = imageWidth;
             this.imageHeight = imageHeight;
+            this.worldCoordinates = null;
         }   //TargetInfo
+
+        TargetInfo(String label, Rect rect, double angle, double confidence, int imageWidth, int imageHeight, Point worldCoordinates)
+        {
+            this.label = label;
+            this.rect = rect;
+            this.angle = angle;
+            this.confidence = confidence;
+            this.imageWidth = imageWidth;
+            this.imageHeight = imageHeight;
+            this.worldCoordinates = worldCoordinates;
+        }   //T
 
         @Override
         public String toString()
         {
-            return String.format(
-                    Locale.US, "%s: Rect[%d,%d,%d,%d], angle=%.1f, confidence=%.3f, image(%d,%d)",
-                    label, rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top, angle, confidence,
-                    imageWidth, imageHeight);
+            if (worldCoordinates == null)
+            {
+                return String.format(
+                        Locale.US, "%s: Rect[%d,%d,%d,%d] angle=%.1f, confidence=%.3f, image(%d,%d)",
+                        label, rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top, angle, confidence,
+                        imageWidth, imageHeight);
+            }
+            else
+            {
+                return String.format(
+                        Locale.US, "%s: Rect[%d,%d,%d,%d] IrlPos[%.2f,%.2f] angle=%.1f, confidence=%.3f, image(%d,%d)",
+                        label, rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top, worldCoordinates.x, worldCoordinates.y, angle, confidence,
+                        imageWidth, imageHeight);
+            }
+
         }
     }   //class TargetInfo
 
     private TrcDbgTrace tracer;
     private FtcVuforia vuforia;
     private TFObjectDetector tfod;
+    private TrcHomographyMapper homographyMapper;
 
-    public TensorFlowVision(int tfodMonitorViewId, VuforiaLocalizer.CameraDirection cameraDir, TrcDbgTrace tracer)
+    public TensorFlowVision(int tfodMonitorViewId, VuforiaLocalizer.CameraDirection cameraDir, TrcDbgTrace tracer,
+                            double cameraWidth,
+                            double cameraHeight,
+                            double tl_x,
+                            double tl_y,
+                            double tr_x,
+                            double tr_y,
+                            double bl_x,
+                            double bl_y,
+                            double br_x,
+                            double br_y
+                            )
     {
         final String VUFORIA_LICENSE_KEY =
                 "ATu19Kj/////AAAAGcw4SDCVwEBSiKcUtdmQd2aOugrxo/OgeBJUt7XwMSi3e0KSZaylbsTnWp8EBxyA5o/00JFJVDY1OxJ" +
@@ -102,6 +141,16 @@ public class TensorFlowVision
         {
             throw new UnsupportedOperationException("This device is not compatible with TensorFlow Object Detection.");
         }
+
+        homographyMapper = new TrcHomographyMapper(
+                // Camera coordinates: top left, top right, bottom left and bottom right
+                new Point(0.0, 0.0), new Point(cameraWidth, 0.0),
+                new Point(0.0, cameraHeight), new Point(cameraWidth, cameraHeight),
+                // World coordinates: top left, top right, bottom left and bottom right.
+                new Point(tl_x, tl_y),
+                new Point(tr_x, tr_y),
+                new Point(bl_x, bl_y),
+                new Point(br_x, br_y));
     }   //TensorFlowVision
 
     public void setEnabled(boolean enabled)
