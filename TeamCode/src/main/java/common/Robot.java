@@ -32,7 +32,6 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import ftclib.FtcAndroidTone;
 import ftclib.FtcBNO055Imu;
 import ftclib.FtcDcMotor;
-import ftclib.FtcMenu;
 import ftclib.FtcOpMode;
 import ftclib.FtcRobotBattery;
 import hallib.HalDashboard;
@@ -50,7 +49,7 @@ import static org.firstinspires.ftc.robotcore.external.navigation.AxesOrder.YZX;
 import static org.firstinspires.ftc.robotcore.external.navigation.AxesReference.EXTRINSIC;
 import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection.BACK;
 
-public class Robot implements FtcMenu.MenuButtons
+public class Robot
 {
     protected enum DriveMode
     {
@@ -68,6 +67,7 @@ public class Robot implements FtcMenu.MenuButtons
     public FtcAndroidTone androidTone;
     public TextToSpeech textToSpeech = null;
     public FtcRobotBattery battery = null;
+    public boolean hasRobot;
     //
     // Sensors.
     //
@@ -87,24 +87,25 @@ public class Robot implements FtcMenu.MenuButtons
     //
     // DriveBase subsystem.
     //
-    public FtcDcMotor leftFrontWheel;
-    public FtcDcMotor rightFrontWheel;
-    public FtcDcMotor leftRearWheel;
-    public FtcDcMotor rightRearWheel;
+    public FtcDcMotor leftFrontWheel = null;
+    public FtcDcMotor rightFrontWheel = null;
+    public FtcDcMotor leftRearWheel = null;
+    public FtcDcMotor rightRearWheel = null;
 
-    public TrcDriveBase driveBase;
-    public DriveMode driveMode;
-    public TrcPidController encoderXPidCtrl;
-    public TrcPidController encoderYPidCtrl;
-    public TrcPidController gyroPidCtrl;
-    public TrcPidDrive pidDrive;
+    public TrcDriveBase driveBase = null;
+    public DriveMode driveMode = DriveMode.HOLONOMIC_MODE;
+    public TrcPidController encoderXPidCtrl = null;
+    public TrcPidController encoderYPidCtrl = null;
+    public TrcPidController gyroPidCtrl = null;
+    public TrcPidDrive pidDrive = null;
 
     public TrcPidController.PidCoefficients tunePidCoeff = new TrcPidController.PidCoefficients();
     //
     // Other common subsystems.
     //
 
-    public Robot(TrcRobot.RunMode runMode, String robotName, boolean useSpeech, boolean useBatteryMonitor)
+    public Robot(
+            TrcRobot.RunMode runMode, String robotName, boolean useSpeech, boolean useBatteryMonitor, boolean hasRobot)
     {
         //
         // Initialize global objects.
@@ -117,6 +118,7 @@ public class Robot implements FtcMenu.MenuButtons
         dashboard.setTextView(
                 ((FtcRobotControllerActivity)opMode.hardwareMap.appContext).findViewById(R.id.textOpMode));
         androidTone = new FtcAndroidTone("AndroidTone");
+        this.hasRobot = hasRobot;
 
         if (useSpeech)
         {
@@ -131,8 +133,11 @@ public class Robot implements FtcMenu.MenuButtons
         //
         // Initialize sensors.
         //
-        imu = new FtcBNO055Imu("imu");
-        gyro = imu.gyro;
+        if (hasRobot)
+        {
+            imu = new FtcBNO055Imu("imu");
+            gyro = imu.gyro;
+        }
     }   //Robot
 
     public void startMode(TrcRobot.RunMode runMode)
@@ -141,8 +146,11 @@ public class Robot implements FtcMenu.MenuButtons
         //
         // Since the IMU gyro is giving us cardinal heading, we need to enable its cardinal to cartesian converter.
         //
-        gyro.setEnabled(true);
-        targetHeading = 0.0;
+        if (gyro != null)
+        {
+            gyro.setEnabled(true);
+            targetHeading = 0.0;
+        }
         //
         // Vision generally will impact performance, so we only enable it if it's needed such as in autonomous.
         //
@@ -154,7 +162,7 @@ public class Robot implements FtcMenu.MenuButtons
         //
         // Enable odometry only for autonomous or test modes.
         //
-        if (runMode == TrcRobot.RunMode.AUTO_MODE || runMode == TrcRobot.RunMode.TEST_MODE)
+        if (driveBase != null && (runMode == TrcRobot.RunMode.AUTO_MODE || runMode == TrcRobot.RunMode.TEST_MODE))
         {
             driveBase.setOdometryEnabled(true);
         }
@@ -165,7 +173,10 @@ public class Robot implements FtcMenu.MenuButtons
         //
         // Disable the gyro integrator.
         //
-        gyro.setEnabled(false);
+        if (gyro != null)
+        {
+            gyro.setEnabled(false);
+        }
 
         if (textToSpeech != null)
         {
@@ -185,28 +196,34 @@ public class Robot implements FtcMenu.MenuButtons
             tensorFlowVision = null;
         }
 
-        driveBase.setOdometryEnabled(false);
+        if (driveBase != null)
+        {
+            driveBase.setOdometryEnabled(false);
+        }
     }   //stopMode
 
     public void traceStateInfo(double elapsedTime, String stateName, double xDistance, double yDistance, double heading)
     {
-        if (battery != null)
+        if (driveBase != null)
         {
-            globalTracer.traceInfo(
-                    moduleName,
-                    "[%5.3f] >>>>> %s: xPos=%6.2f/%6.2f,yPos=%6.2f/%6.2f,heading=%6.1f/%6.1f,volt=%5.2fV(%5.2fV)",
-                    elapsedTime, stateName,
-                    driveBase.getXPosition(), xDistance, driveBase.getYPosition(), yDistance, driveBase.getHeading(),
-                    heading, battery.getVoltage(), battery.getLowestVoltage());
-        }
-        else
-        {
-            globalTracer.traceInfo(
-                    moduleName,
-                    "[%5.3f] >>>>> %s: xPos=%6.2f/%6.2f,yPos=%6.2f/%6.2f,heading=%6.1f/%6.1f",
-                    elapsedTime, stateName,
-                    driveBase.getXPosition(), xDistance, driveBase.getYPosition(), yDistance, driveBase.getHeading(),
-                    heading);
+            if (battery != null)
+            {
+                globalTracer.traceInfo(
+                        moduleName,
+                        "[%5.3f] >>>>> %s: xPos=%6.2f/%6.2f,yPos=%6.2f/%6.2f,heading=%6.1f/%6.1f,volt=%5.2fV(%5.2fV)",
+                        elapsedTime, stateName,
+                        driveBase.getXPosition(), xDistance, driveBase.getYPosition(), yDistance, driveBase.getHeading(),
+                        heading, battery.getVoltage(), battery.getLowestVoltage());
+            }
+            else
+            {
+                globalTracer.traceInfo(
+                        moduleName,
+                        "[%5.3f] >>>>> %s: xPos=%6.2f/%6.2f,yPos=%6.2f/%6.2f,heading=%6.1f/%6.1f",
+                        elapsedTime, stateName,
+                        driveBase.getXPosition(), xDistance, driveBase.getYPosition(), yDistance, driveBase.getHeading(),
+                        heading);
+            }
         }
     }   //traceStateInfo
 
@@ -296,45 +313,5 @@ public class Robot implements FtcMenu.MenuButtons
         tensorFlowVision.setEnabled(true);
         globalTracer.traceInfo(moduleName, "Enabling TensorFlow.");
     }   //initTensorFlow
-
-    //
-    // Implements FtcMenu.MenuButtons interface.
-    //
-
-    @Override
-    public boolean isMenuUpButton()
-    {
-        return opMode.gamepad1.dpad_up;
-    }   //isMenuUpButton
-
-    @Override
-    public boolean isMenuDownButton()
-    {
-        return opMode.gamepad1.dpad_down;
-    }   //isMenuDownButton
-
-    @Override
-    public boolean isMenuAltUpButton()
-    {
-        return opMode.gamepad1.left_bumper;
-    }   //isMenuAltUpButton
-
-    @Override
-    public boolean isMenuAltDownButton()
-    {
-        return opMode.gamepad1.right_bumper;
-    }   //isMenuAltDownButton
-
-    @Override
-    public boolean isMenuEnterButton()
-    {
-        return opMode.gamepad1.dpad_right;
-    }   //isMenuEnterButton
-
-    @Override
-    public boolean isMenuBackButton()
-    {
-        return opMode.gamepad1.dpad_left;
-    }   //isMenuBackButton
 
 }   //class Robot

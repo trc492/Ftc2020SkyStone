@@ -28,10 +28,11 @@ import common.CommonTest;
 import ftclib.FtcGamepad;
 import trclib.TrcGameController;
 
-@TeleOp(name="FtcTest6541", group="Test")
+@TeleOp(name="FtcTest6541", group="FtcTest")
 public class FtcTest6541 extends FtcTeleOp6541
 {
     private static final String MODULE_NAME = "FtcTest6541";
+    private static final boolean MONITOR_LOOP_TIME = true;
     private CommonTest commonTest = new CommonTest();
 
     //
@@ -47,7 +48,7 @@ public class FtcTest6541 extends FtcTeleOp6541
         super.initRobot();
 
         moduleName = MODULE_NAME;
-        commonTest.init(MODULE_NAME, robot);
+        commonTest.init(MODULE_NAME, robot, MONITOR_LOOP_TIME);
     }   //initRobot
 
     //

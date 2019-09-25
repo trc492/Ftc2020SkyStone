@@ -32,7 +32,7 @@ import ftclib.FtcMenu;
 import ftclib.FtcValueMenu;
 import trclib.TrcRobot;
 
-@Autonomous(name="FtcAuto6541", group="Autonomous")
+@Autonomous(name="FtcAuto6541", group="FtcAuto")
 public class FtcAuto6541 extends CommonAuto
 {
     public enum Strategy
@@ -77,12 +77,18 @@ public class FtcAuto6541 extends CommonAuto
         switch (strategy)
         {
             case DISTANCE_DRIVE:
-                autoCommand = new CmdPidDrive(
-                        robot, robot.pidDrive, delay, 0.0, driveDistance*12.0, 0.0);
+                if (robot.hasRobot)
+                {
+                    autoCommand = new CmdPidDrive(
+                            robot, robot.pidDrive, delay, 0.0, driveDistance * 12.0, 0.0);
+                }
                 break;
 
             case TIMED_DRIVE:
-                autoCommand = new CmdTimedDrive(robot, delay, driveTime, 0.0, drivePower, 0.0);
+                if (robot.hasRobot)
+                {
+                    autoCommand = new CmdTimedDrive(robot, delay, driveTime, 0.0, drivePower, 0.0);
+                }
                 break;
 
             case DO_NOTHING:
@@ -97,16 +103,16 @@ public class FtcAuto6541 extends CommonAuto
         //
         // Construct menus.
         //
-        FtcChoiceMenu<Strategy> strategyMenu = new FtcChoiceMenu<>("Strategies:", null, robot);
+        FtcChoiceMenu<Strategy> strategyMenu = new FtcChoiceMenu<>("Strategies:", null);
         FtcValueMenu driveDistanceMenu = new FtcValueMenu(
-                "Distance:", strategyMenu, robot,
-                -12.0, 12.0, 0.5, 4.0, " %.0f ft");
+                "Distance:", strategyMenu, -12.0, 12.0, 0.5, 4.0,
+                " %.0f ft");
         FtcValueMenu driveTimeMenu = new FtcValueMenu(
-                "Drive time:", strategyMenu, robot,
-                0.0, 30.0, 1.0, 5.0, " %.0f sec");
+                "Drive time:", strategyMenu, 0.0, 30.0, 1.0, 5.0,
+                " %.0f sec");
         FtcValueMenu drivePowerMenu = new FtcValueMenu(
-                "Drive power:", strategyMenu, robot,
-                -1.0, 1.0, 0.1, 0.5, " %.1f");
+                "Drive power:", strategyMenu, -1.0, 1.0, 0.1, 0.5,
+                " %.1f");
 
         driveTimeMenu.setChildMenu(drivePowerMenu);
         //

@@ -43,6 +43,7 @@ public class Robot3543 extends Robot
     public static final boolean USE_VUFORIA = false;
     public static final boolean USE_TENSORFLOW = true;
     public static final boolean USE_VELOCITY_CONTROL = false;
+    public static final boolean HAS_ROBOT = false;
 
     private final VuforiaLocalizer.CameraDirection CAMERA_DIR = BACK;
     private final boolean PHONE_IS_PORTRAIT = false;
@@ -62,7 +63,7 @@ public class Robot3543 extends Robot
 
     public Robot3543(TrcRobot.RunMode runMode)
     {
-        super(runMode, robotName, USE_SPEECH, USE_BATTERY_MONITOR);
+        super(runMode, robotName, USE_SPEECH, USE_BATTERY_MONITOR, HAS_ROBOT);
         //
         // Initialize vision subsystems.
         //
@@ -81,7 +82,10 @@ public class Robot3543 extends Robot
         //
         // Initialize DriveBase.
         //
-        initDriveBase();
+        if (HAS_ROBOT)
+        {
+            initDriveBase();
+        }
         //
         // Initialize other subsystems.
         //

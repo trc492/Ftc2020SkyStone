@@ -30,6 +30,7 @@ import ftclib.FtcChoiceMenu;
 import ftclib.FtcMenu;
 import ftclib.FtcValueMenu;
 import trclib.TrcEvent;
+import trclib.TrcLoopPerformanceMonitor;
 import trclib.TrcStateMachine;
 import trclib.TrcTimer;
 import trclib.TrcUtil;
@@ -59,6 +60,7 @@ public class CommonTest
 
     protected String moduleName = null;
     protected Robot robot = null;
+    protected TrcLoopPerformanceMonitor loopPerformanceMonitor = null;
     //
     // Made the following menus static so their values will persist across different runs of PID tuning.
     //
@@ -91,10 +93,14 @@ public class CommonTest
     // Implements FtcOpMode interface.
     //
 
-    public void init(String moduleName, Robot robot)
+    public void init(String moduleName, Robot robot, boolean monitorLoopTime)
     {
         this.moduleName = moduleName;
         this.robot = robot;
+        if (monitorLoopTime)
+        {
+            loopPerformanceMonitor = new TrcLoopPerformanceMonitor("TestLoopMonitor", 1.0);
+        }
         //
         // Initialize additional objects.
         //
@@ -109,49 +115,73 @@ public class CommonTest
         switch (test)
         {
             case X_TIMED_DRIVE:
-                timedDriveCommand = new CmdTimedDrive(
-                        robot, 0.0, driveTime, drivePower, 0.0, 0.0);
+                if (robot.hasRobot)
+                {
+                    timedDriveCommand = new CmdTimedDrive(
+                            robot, 0.0, driveTime, drivePower, 0.0, 0.0);
+                }
                 break;
 
             case Y_TIMED_DRIVE:
-                timedDriveCommand = new CmdTimedDrive(
-                        robot, 0.0, driveTime, 0.0, drivePower, 0.0);
+                if (robot.hasRobot)
+                {
+                    timedDriveCommand = new CmdTimedDrive(
+                            robot, 0.0, driveTime, 0.0, drivePower, 0.0);
+                }
                 break;
 
             case X_DISTANCE_DRIVE:
-                pidDriveCommand = new CmdPidDrive(
-                        robot, robot.pidDrive, 0.0, driveDistance*12.0, 0.0, 0.0,
-                        drivePower, false);
+                if (robot.hasRobot)
+                {
+                    pidDriveCommand = new CmdPidDrive(
+                            robot, robot.pidDrive, 0.0, driveDistance * 12.0, 0.0, 0.0,
+                            drivePower, false);
+                }
                 break;
 
             case Y_DISTANCE_DRIVE:
-                pidDriveCommand = new CmdPidDrive(
-                        robot, robot.pidDrive, 0.0, 0.0, driveDistance*12.0, 0.0,
-                        drivePower, false);
+                if (robot.hasRobot)
+                {
+                    pidDriveCommand = new CmdPidDrive(
+                            robot, robot.pidDrive, 0.0, 0.0, driveDistance * 12.0, 0.0,
+                            drivePower, false);
+                }
                 break;
 
             case GYRO_TURN:
-                pidDriveCommand = new CmdPidDrive(
-                        robot, robot.pidDrive, 0.0, 0.0, 0.0, turnDegrees,
-                        drivePower, false);
+                if (robot.hasRobot)
+                {
+                    pidDriveCommand = new CmdPidDrive(
+                            robot, robot.pidDrive, 0.0, 0.0, 0.0, turnDegrees,
+                            drivePower, false);
+                }
                 break;
 
             case TUNE_X_PID:
-                pidDriveCommand = new CmdPidDrive(
-                        robot, robot.pidDrive, 0.0, driveDistance*12.0, 0.0, 0.0,
-                        drivePower, true);
+                if (robot.hasRobot)
+                {
+                    pidDriveCommand = new CmdPidDrive(
+                            robot, robot.pidDrive, 0.0, driveDistance * 12.0, 0.0, 0.0,
+                            drivePower, true);
+                }
                 break;
 
             case TUNE_Y_PID:
-                pidDriveCommand = new CmdPidDrive(
-                        robot, robot.pidDrive, 0.0, 0.0, driveDistance*12.0, 0.0,
-                        drivePower, true);
+                if (robot.hasRobot)
+                {
+                    pidDriveCommand = new CmdPidDrive(
+                            robot, robot.pidDrive, 0.0, 0.0, driveDistance * 12.0, 0.0,
+                            drivePower, true);
+                }
                 break;
 
             case TUNE_TURN_PID:
-                pidDriveCommand = new CmdPidDrive(
-                        robot, robot.pidDrive, 0.0, 0.0, 0.0, turnDegrees,
-                        drivePower, true);
+                if (robot.hasRobot)
+                {
+                    pidDriveCommand = new CmdPidDrive(
+                            robot, robot.pidDrive, 0.0, 0.0, 0.0, turnDegrees,
+                            drivePower, true);
+                }
                 break;
         }
         //
@@ -169,7 +199,7 @@ public class CommonTest
 
     public boolean shouldRunTeleOpPeriodic()
     {
-        return test == Test.SENSORS_TEST;
+        return robot.hasRobot && test == Test.SENSORS_TEST;
     }   //shouldRunTeleOpPeriodic
 
     public void runPeriodic(double elapsedTime)
@@ -188,7 +218,10 @@ public class CommonTest
                 break;
 
             case MOTORS_TEST:
-                doMotorsTest();
+                if (robot.hasRobot)
+                {
+                    doMotorsTest();
+                }
                 break;
         }
     }   //runPeriodic
@@ -203,17 +236,20 @@ public class CommonTest
         {
             case X_TIMED_DRIVE:
             case Y_TIMED_DRIVE:
-                double lfEnc = robot.leftFrontWheel.getPosition();
-                double rfEnc = robot.rightFrontWheel.getPosition();
-                double lrEnc = robot.leftRearWheel.getPosition();
-                double rrEnc = robot.rightRearWheel.getPosition();
-                robot.dashboard.displayPrintf(9, "Timed Drive: %.0f sec", driveTime);
-                robot.dashboard.displayPrintf(10, "Enc:lf=%.0f,rf=%.0f", lfEnc, rfEnc);
-                robot.dashboard.displayPrintf(11, "Enc:lr=%.0f,rr=%.0f", lrEnc, rrEnc);
-                robot.dashboard.displayPrintf(12, "average=%f", (lfEnc + rfEnc + lrEnc + rrEnc)/4.0);
-                robot.dashboard.displayPrintf(13, "xPos=%.1f,yPos=%.1f,heading=%.1f",
-                        robot.driveBase.getXPosition(), robot.driveBase.getYPosition(), robot.driveBase.getHeading());
-                timedDriveCommand.cmdPeriodic(elapsedTime);
+                if (robot.hasRobot)
+                {
+                    double lfEnc = robot.leftFrontWheel.getPosition();
+                    double rfEnc = robot.rightFrontWheel.getPosition();
+                    double lrEnc = robot.leftRearWheel.getPosition();
+                    double rrEnc = robot.rightRearWheel.getPosition();
+                    robot.dashboard.displayPrintf(9, "Timed Drive: %.0f sec", driveTime);
+                    robot.dashboard.displayPrintf(10, "Enc:lf=%.0f,rf=%.0f", lfEnc, rfEnc);
+                    robot.dashboard.displayPrintf(11, "Enc:lr=%.0f,rr=%.0f", lrEnc, rrEnc);
+                    robot.dashboard.displayPrintf(12, "average=%f", (lfEnc + rfEnc + lrEnc + rrEnc)/4.0);
+                    robot.dashboard.displayPrintf(13, "xPos=%.1f,yPos=%.1f,heading=%.1f",
+                            robot.driveBase.getXPosition(), robot.driveBase.getYPosition(), robot.driveBase.getHeading());
+                    timedDriveCommand.cmdPeriodic(elapsedTime);
+                }
                 break;
 
             case X_DISTANCE_DRIVE:
@@ -222,17 +258,30 @@ public class CommonTest
             case TUNE_X_PID:
             case TUNE_Y_PID:
             case TUNE_TURN_PID:
-                robot.dashboard.displayPrintf(9, "xPos=%.1f,yPos=%.1f,heading=%.1f",
-                        robot.driveBase.getXPosition(), robot.driveBase.getYPosition(), robot.driveBase.getHeading());
-                if (robot.encoderXPidCtrl != null)
+                if (robot.hasRobot)
                 {
-                    robot.encoderXPidCtrl.displayPidInfo(10);
-                }
-                robot.encoderYPidCtrl.displayPidInfo(12);
-                robot.gyroPidCtrl.displayPidInfo(14);
+                    robot.dashboard.displayPrintf(9, "xPos=%.1f,yPos=%.1f,heading=%.1f",
+                            robot.driveBase.getXPosition(), robot.driveBase.getYPosition(), robot.driveBase.getHeading());
+                    if (robot.encoderXPidCtrl != null)
+                    {
+                        robot.encoderXPidCtrl.displayPidInfo(10);
+                    }
+                    robot.encoderYPidCtrl.displayPidInfo(12);
+                    robot.gyroPidCtrl.displayPidInfo(14);
 
-                pidDriveCommand.cmdPeriodic(elapsedTime);
+                    pidDriveCommand.cmdPeriodic(elapsedTime);
+                }
                 break;
+        }
+
+        if (loopPerformanceMonitor != null)
+        {
+            loopPerformanceMonitor.update();
+            robot.dashboard.displayPrintf(
+                    6, "Period: %.3f/%.3f/%3f, Frequency: %.2f/%.2f/%.2f",
+                    loopPerformanceMonitor.getMinPeriod(), loopPerformanceMonitor.getAveragePeriod(),
+                    loopPerformanceMonitor.getMaxPeriod(), loopPerformanceMonitor.getMinFrequency(),
+                    loopPerformanceMonitor.getAverageFrequency(), loopPerformanceMonitor.getMaxFrequency());
         }
     }   //runContinuous
 
@@ -241,46 +290,46 @@ public class CommonTest
         //
         // Create menus.
         //
-        FtcChoiceMenu<Test> testMenu = new FtcChoiceMenu<>("Tests:", null, robot);
+        FtcChoiceMenu<Test> testMenu = new FtcChoiceMenu<>("Tests:", null);
         FtcValueMenu driveTimeMenu = new FtcValueMenu(
-                "Drive time:", testMenu, robot, 1.0, 10.0, 1.0, 4.0,
+                "Drive time:", testMenu, 1.0, 10.0, 1.0, 4.0,
                 " %.0f sec");
         FtcValueMenu drivePowerMenu = new FtcValueMenu(
-                "Drive power:", testMenu, robot, 0.0, 1.0, 0.1, 0.5,
+                "Drive power:", testMenu, 0.0, 1.0, 0.1, 0.5,
                 " %.1f");
         FtcValueMenu driveDistanceMenu = new FtcValueMenu(
-                "Drive distance:", testMenu, robot, -10.0, 10.0, 0.5, 4.0,
+                "Drive distance:", testMenu, -10.0, 10.0, 0.5, 4.0,
                 " %.1f ft");
         FtcValueMenu turnDegreesMenu = new FtcValueMenu(
-                "Turn degrees:", testMenu, robot, -360.0, 360.0, 5.0, 90.0,
+                "Turn degrees:", testMenu, -360.0, 360.0, 5.0, 90.0,
                 " %.0f deg");
 
         if (tuneKpMenu == null)
         {
             tuneKpMenu = new FtcValueMenu(
-                    "Kp:", testMenu, robot, 0.0, 1.0, 0.001,
-                    robot.tunePidCoeff.kP, " %f");
+                    "Kp:", testMenu, 0.0, 1.0, 0.001, robot.tunePidCoeff.kP,
+                    " %f");
         }
 
         if (tuneKiMenu == null)
         {
             tuneKiMenu = new FtcValueMenu(
-                    "Ki:", testMenu, robot, 0.0, 1.0, 0.0001,
-                    robot.tunePidCoeff.kI, " %f");
+                    "Ki:", testMenu, 0.0, 1.0, 0.0001, robot.tunePidCoeff.kI,
+                    " %f");
         }
 
         if (tuneKdMenu == null)
         {
             tuneKdMenu = new FtcValueMenu(
-                    "Kd:", testMenu, robot, 0.0, 1.0, 0.0001,
-                    robot.tunePidCoeff.kD, " %f");
+                    "Kd:", testMenu, 0.0, 1.0, 0.0001, robot.tunePidCoeff.kD,
+                    " %f");
         }
 
         if (tuneKfMenu == null)
         {
             tuneKfMenu = new FtcValueMenu(
-                    "Kf:", testMenu, robot, 0.0, 1.0, 0.001,
-                    robot.tunePidCoeff.kF, " %f");
+                    "Kf:", testMenu, 0.0, 1.0, 0.001, robot.tunePidCoeff.kF,
+                    " %f");
         }
 
         //
@@ -334,9 +383,13 @@ public class CommonTest
         // Read all sensors and display on the dashboard.
         // Drive the robot around to sample different locations of the field.
         //
-        robot.dashboard.displayPrintf(9, LABEL_WIDTH, "Enc: ", "lf=%.0f,rf=%.0f,lr=%.0f,rr=%.0f",
-                robot.leftFrontWheel.getPosition(), robot.rightFrontWheel.getPosition(),
-                robot.leftRearWheel.getPosition(), robot.rightRearWheel.getPosition());
+        if (robot.hasRobot)
+        {
+            robot.dashboard.displayPrintf(
+                    9, LABEL_WIDTH, "Enc: ", "lf=%.0f,rf=%.0f,lr=%.0f,rr=%.0f",
+                    robot.leftFrontWheel.getPosition(), robot.rightFrontWheel.getPosition(),
+                    robot.leftRearWheel.getPosition(), robot.rightRearWheel.getPosition());
+        }
 
         if (robot.gyro != null)
         {
@@ -367,18 +420,26 @@ public class CommonTest
         {
             TensorFlowVision.TargetInfo[] targetsInfo;
 
-            targetsInfo = robot.tensorFlowVision.getDetectedTargetsInfo(TensorFlowVision.LABEL_SKYSTONE);
+            targetsInfo = robot.tensorFlowVision.getDetectedTargetsInfo(null);
             if (targetsInfo != null)
             {
-                robot.dashboard.displayPrintf(14, "%s %s",
-                        targetsInfo[0], targetsInfo.length > 1 ? targetsInfo[1] : "");
-            }
+                String skystoneLine = "";
+                String stoneLine = "";
 
-            targetsInfo = robot.tensorFlowVision.getDetectedTargetsInfo(TensorFlowVision.LABEL_STONE);
-            if (targetsInfo != null)
-            {
-                robot.dashboard.displayPrintf(15, "%s %s",
-                        targetsInfo[0], targetsInfo.length > 1 ? targetsInfo[1] : "");
+                for (int i = 0; i < targetsInfo.length; i++)
+                {
+                    if (targetsInfo[i].label.equals(TensorFlowVision.LABEL_SKYSTONE))
+                    {
+                        skystoneLine += String.format(" %d: %s", i, targetsInfo[i]);
+                    }
+                    else if (targetsInfo[i].label.equals(TensorFlowVision.LABEL_STONE))
+                    {
+                        stoneLine += String.format(" %d: %s", i, targetsInfo[i]);
+                    }
+                }
+
+                robot.dashboard.displayPrintf(14, skystoneLine);
+                robot.dashboard.displayPrintf(15, stoneLine);
             }
         }
     }   //doVisionTest

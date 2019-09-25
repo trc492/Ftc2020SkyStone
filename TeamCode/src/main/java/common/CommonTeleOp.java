@@ -92,31 +92,34 @@ public abstract class CommonTeleOp extends FtcOpMode implements TrcGameControlle
         //
         // DriveBase subsystem.
         //
-        switch (driveMode)
+        if (robot.driveBase != null)
         {
-            case TANK_MODE:
-                double leftPower = driverGamepad.getLeftStickY(true)*drivePowerScale;
-                double rightPower = driverGamepad.getRightStickY(true)*drivePowerScale;
-                robot.driveBase.tankDrive(leftPower, rightPower, invertedDrive);
-                dashboard.displayPrintf(1, "Tank:left=%.1f,right=%.1f,inv=%s",
-                        leftPower, rightPower, Boolean.toString(invertedDrive));
-                break;
+            switch (driveMode)
+            {
+                case TANK_MODE:
+                    double leftPower = driverGamepad.getLeftStickY(true)*drivePowerScale;
+                    double rightPower = driverGamepad.getRightStickY(true)*drivePowerScale;
+                    robot.driveBase.tankDrive(leftPower, rightPower, invertedDrive);
+                    dashboard.displayPrintf(1, "Tank:left=%.1f,right=%.1f,inv=%s",
+                            leftPower, rightPower, Boolean.toString(invertedDrive));
+                    break;
 
-            case HOLONOMIC_MODE:
-                double x = driverGamepad.getLeftStickX(true)*drivePowerScale;
-                double y = driverGamepad.getRightStickY(true)*drivePowerScale;
-                double rot = (driverGamepad.getRightTrigger(true) -
-                        driverGamepad.getLeftTrigger(true))*drivePowerScale;
-                robot.driveBase.holonomicDrive(x, y, rot, invertedDrive);
-                dashboard.displayPrintf(1, "Mecan:x=%.1f,y=%.1f,rot=%.1f,inv=%s",
-                        x, y, rot, Boolean.toString(invertedDrive));
-                break;
+                case HOLONOMIC_MODE:
+                    double x = driverGamepad.getLeftStickX(true)*drivePowerScale;
+                    double y = driverGamepad.getRightStickY(true)*drivePowerScale;
+                    double rot = (driverGamepad.getRightTrigger(true) -
+                            driverGamepad.getLeftTrigger(true))*drivePowerScale;
+                    robot.driveBase.holonomicDrive(x, y, rot, invertedDrive);
+                    dashboard.displayPrintf(1, "Mecan:x=%.1f,y=%.1f,rot=%.1f,inv=%s",
+                            x, y, rot, Boolean.toString(invertedDrive));
+                    break;
+            }
+
+            dashboard.displayPrintf(2, "DriveBase: x=%.2f,y=%.2f,heading=%.2f",
+                    robot.driveBase.getXPosition(),
+                    robot.driveBase.getYPosition(),
+                    robot.driveBase.getHeading());
         }
-
-        dashboard.displayPrintf(2, "DriveBase: x=%.2f,y=%.2f,heading=%.2f",
-                robot.driveBase.getXPosition(),
-                robot.driveBase.getYPosition(),
-                robot.driveBase.getHeading());
     }   //runPeriodic
 
 }   //class CommonTeleOp
