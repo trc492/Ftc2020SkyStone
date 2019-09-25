@@ -77,7 +77,16 @@ public class Robot3543 extends Robot
         //
         if (USE_TENSORFLOW && (runMode == TrcRobot.RunMode.AUTO_MODE || runMode == TrcRobot.RunMode.TEST_MODE))
         {
-            initTensorFlow(CAMERA_DIR, SHOW_CAMERA_VIEW);
+            initTensorFlow(CAMERA_DIR, SHOW_CAMERA_VIEW, RobotInfo3543.CAMERA_WIDTH,
+                    RobotInfo3543.CAMERA_HEIGHT,
+                    RobotInfo3543.HOMOGRAPHY_WORLD_TOPLEFT_X,
+                    RobotInfo3543.HOMOGRAPHY_WORLD_TOPLEFT_Y,
+                    RobotInfo3543.HOMOGRAPHY_WORLD_TOPRIGHT_X,
+                    RobotInfo3543.HOMOGRAPHY_WORLD_TOPRIGHT_Y,
+                    RobotInfo3543.HOMOGRAPHY_WORLD_BOTTOMLEFT_X,
+                    RobotInfo3543.HOMOGRAPHY_WORLD_BOTTOMLEFT_Y,
+                    RobotInfo3543.HOMOGRAPHY_WORLD_BOTTOMRIGHT_X,
+                    RobotInfo3543.HOMOGRAPHY_WORLD_BOTTOMRIGHT_Y);
         }
         //
         // Initialize DriveBase.
