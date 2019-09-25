@@ -149,9 +149,19 @@ public class TensorFlowVision
         if (updatedRecognitions != null)
         {
             targets = new ArrayList<>();
-            for (Recognition object : updatedRecognitions)
+            for (int i = 0; i < updatedRecognitions.size(); i++)
             {
-                if (object.getLabel().equals(label))
+                Recognition object = updatedRecognitions.get(i);
+                boolean foundIt = label == null || label.equals(object.getLabel());
+
+                if (tracer != null)
+                {
+                    tracer.traceInfo(funcName, "[%d] %s: x=%.0f, y=%.0f, w=%.0f, h=%.0f, foundIt=%s",
+                            i, object.getLabel(), object.getTop(), object.getImageWidth() - object.getRight(),
+                            object.getHeight(), object.getWidth(), foundIt);
+                }
+
+                if (foundIt)
                 {
                     targets.add(object);
                 }
@@ -169,17 +179,6 @@ public class TensorFlowVision
                 // No target found.
                 //
                 targets = null;
-            }
-        }
-
-        if (tracer != null && targets != null)
-        {
-            for (int i = 0; i < targets.size(); i++)
-            {
-                Recognition obj = targets.get(i);
-                tracer.traceInfo(funcName, "[%d] %s: x=%.0f, y=%.0f, w=%.0f, h=%.0f",
-                       i, obj.getLabel(), obj.getTop(),
-                        obj.getImageWidth() - obj.getRight(), obj.getHeight(), obj.getWidth());
             }
         }
 

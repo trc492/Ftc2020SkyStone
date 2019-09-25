@@ -420,18 +420,26 @@ public class CommonTest
         {
             TensorFlowVision.TargetInfo[] targetsInfo;
 
-            targetsInfo = robot.tensorFlowVision.getDetectedTargetsInfo(TensorFlowVision.LABEL_SKYSTONE);
+            targetsInfo = robot.tensorFlowVision.getDetectedTargetsInfo(null);
             if (targetsInfo != null)
             {
-                robot.dashboard.displayPrintf(14, "%s %s",
-                        targetsInfo[0], targetsInfo.length > 1 ? targetsInfo[1] : "");
-            }
+                String skystoneLine = "";
+                String stoneLine = "";
 
-            targetsInfo = robot.tensorFlowVision.getDetectedTargetsInfo(TensorFlowVision.LABEL_STONE);
-            if (targetsInfo != null)
-            {
-                robot.dashboard.displayPrintf(15, "%s %s",
-                        targetsInfo[0], targetsInfo.length > 1 ? targetsInfo[1] : "");
+                for (int i = 0; i < targetsInfo.length; i++)
+                {
+                    if (targetsInfo[i].label.equals(TensorFlowVision.LABEL_SKYSTONE))
+                    {
+                        skystoneLine += String.format(" %d: %s", i, targetsInfo[i]);
+                    }
+                    else if (targetsInfo[i].label.equals(TensorFlowVision.LABEL_STONE))
+                    {
+                        stoneLine += String.format(" %d: %s", i, targetsInfo[i]);
+                    }
+                }
+
+                robot.dashboard.displayPrintf(14, skystoneLine);
+                robot.dashboard.displayPrintf(15, stoneLine);
             }
         }
     }   //doVisionTest
