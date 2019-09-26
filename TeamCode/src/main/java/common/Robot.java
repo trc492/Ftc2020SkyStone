@@ -34,11 +34,13 @@ import ftclib.FtcBNO055Imu;
 import ftclib.FtcDcMotor;
 import ftclib.FtcOpMode;
 import ftclib.FtcRobotBattery;
+import ftclib.FtcVuforia;
 import hallib.HalDashboard;
 import team3543.R;
 import trclib.TrcDbgTrace;
 import trclib.TrcDriveBase;
 import trclib.TrcGyro;
+import trclib.TrcHomographyMapper;
 import trclib.TrcPidController;
 import trclib.TrcPidDrive;
 import trclib.TrcRobot;
@@ -57,6 +59,7 @@ public class Robot
         HOLONOMIC_MODE,
     }   //enum DriveMode
 
+    private static final String OPENCV_NATIVE_LIBRARY_NAME = "opencv_java3";
     //
     // Global objects.
     //
@@ -77,6 +80,7 @@ public class Robot
     //
     // Vision subsystems.
     //
+    public FtcVuforia vuforia = null;
     public VuforiaVision vuforiaVision = null;
     public TensorFlowVision tensorFlowVision = null;
     public TensorFlowVision.TargetInfo[] targetsInfo = null;
@@ -105,7 +109,8 @@ public class Robot
     //
 
     public Robot(
-            TrcRobot.RunMode runMode, String robotName, boolean useSpeech, boolean useBatteryMonitor, boolean hasRobot)
+            TrcRobot.RunMode runMode, String robotName, VuforiaLocalizer.CameraDirection cameraDir,
+            boolean showVuforiaView, boolean useVision, boolean useSpeech, boolean useBatteryMonitor, boolean hasRobot)
     {
         //
         // Initialize global objects.
@@ -119,6 +124,20 @@ public class Robot
                 ((FtcRobotControllerActivity)opMode.hardwareMap.appContext).findViewById(R.id.textOpMode));
         androidTone = new FtcAndroidTone("AndroidTone");
         this.hasRobot = hasRobot;
+
+        if (useVision)
+        {
+            final String VUFORIA_LICENSE_KEY =
+                    "ATu19Kj/////AAAAGcw4SDCVwEBSiKcUtdmQd2aOugrxo/OgeBJUt7XwMSi3e0KSZaylbsTnWp8EBxyA5o/00JFJVDY1OxJ" +
+                    "XLxQOpz1tbM4ex1sl1EbF25olEZ3w9xXZ1QaqMP+5T63VqTwvkgKbtM+dS+tLi8EHMvJ2viYf6WwOE776e0s3QNfl/XvONM" +
+                    "XS4ZtEWLNeiSEMTCdO9bdeaxnSb2RfErcmjadAThDWf6PC9HrMRHLmgfcFaZlj5JN+figOjgKhyQZeYYrcDEm0lICN5kAr2" +
+                    "pdfNKNOii3A80eXyTVDfPGfzTwVa4eNBY/SgmoIdBbMPb3hfZBOz7GVoVHHQWbCNbzm31p1OY+zqPPWMfzzpyiJ4mA9bLTQ";
+
+            int cameraViewId = !showVuforiaView ? -1 :
+                    opMode.hardwareMap.appContext.getResources().getIdentifier(
+                            "cameraMonitorViewId", "id", opMode.hardwareMap.appContext.getPackageName());
+            vuforia = new FtcVuforia(VUFORIA_LICENSE_KEY, cameraViewId, cameraDir);
+        }
 
         if (useSpeech)
         {
@@ -236,13 +255,9 @@ public class Robot
     }   //speak
 
     protected void initVuforia(
-            VuforiaLocalizer.CameraDirection cameraDir, boolean phoneIsPortrait, boolean showCameraView,
-            double robotLength, double robotWidth, double phoneFrontOffset, double phoneLeftOffset,
-            double phoneHeightOffset)
+            VuforiaLocalizer.CameraDirection cameraDir, boolean phoneIsPortrait, double robotLength, double robotWidth,
+            double phoneFrontOffset, double phoneLeftOffset, double phoneHeightOffset)
     {
-        final int cameraViewId = !showCameraView ? -1 :
-                opMode.hardwareMap.appContext.getResources().getIdentifier(
-                        "cameraMonitorViewId", "id", opMode.hardwareMap.appContext.getPackageName());
         float phoneXRotate;
         float phoneYRotate;
         float phoneZRotate = 0.0f;
@@ -301,39 +316,21 @@ public class Robot
                 .multiplied(Orientation.getRotationMatrix(EXTRINSIC, YZX, DEGREES,
                         phoneYRotate, phoneZRotate, phoneXRotate));
 
-        vuforiaVision = new VuforiaVision(this, cameraViewId, cameraDir, robotFromCamera);
+        vuforiaVision = new VuforiaVision(this, vuforia, robotFromCamera);
     }   //initVuforia
 
     // TODO: Take in teamNum from team-specific Robot class.
-    protected void initTensorFlow(VuforiaLocalizer.CameraDirection cameraDir,
-                                  boolean showCameraView,
-                                  double cameraWidth,
-                                  double cameraHeight,
-                                  double tl_x,
-                                  double tl_y,
-                                  double tr_x,
-                                  double tr_y,
-                                  double bl_x,
-                                  double bl_y,
-                                  double br_x,
-                                  double br_y)
+    protected void initTensorFlow(
+            boolean showTensorFlowView, double cameraWidth, double cameraHeight,
+            TrcHomographyMapper.Rectangle worldRect)
     {
-        int tfodMonitorViewId = !showCameraView ? -1 :
+        System.loadLibrary(OPENCV_NATIVE_LIBRARY_NAME);//CodeReview: Is this the right place to load OpenCV?!
+
+        int tfodMonitorViewId = !showTensorFlowView ? -1 :
                 opMode.hardwareMap.appContext.getResources().getIdentifier(
                         "tfodMonitorViewId", "id", opMode.hardwareMap.appContext.getPackageName());
-        tensorFlowVision = new TensorFlowVision(tfodMonitorViewId,
-                                                cameraDir,
-                                                globalTracer,
-                                                cameraWidth,
-                                                cameraHeight,
-                                                tl_x,
-                                                tl_y,
-                                                tr_x,
-                                                tr_y,
-                                                bl_x,
-                                                bl_y,
-                                                br_x,
-                                                br_y);
+        tensorFlowVision = new TensorFlowVision(
+                vuforia, tfodMonitorViewId, cameraWidth, cameraHeight, worldRect, globalTracer);
         tensorFlowVision.setEnabled(true);
         globalTracer.traceInfo(moduleName, "Enabling TensorFlow.");
     }   //initTensorFlow

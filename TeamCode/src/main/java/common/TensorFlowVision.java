@@ -22,13 +22,12 @@
 
 package common;
 
-import android.graphics.Rect;
-
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
+import org.opencv.core.Point;
+import org.opencv.core.Rect;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -39,15 +38,12 @@ import ftclib.FtcVuforia;
 import trclib.TrcDbgTrace;
 import trclib.TrcHomographyMapper;
 
-import org.opencv.core.Point;
-
 public class TensorFlowVision
 {
     private static final String TFOD_MODEL_ASSET = "Skystone.tflite";
     private static final double TFOD_MIN_CONFIDENCE = 0.8;
     public static final String LABEL_STONE = "Stone";
     public static final String LABEL_SKYSTONE = "Skystone";
-    public static final String OPENCV_NATIVE_LIBRARY_NAME = "opencv_java3";
 
     public class TargetInfo
     {
@@ -57,78 +53,57 @@ public class TensorFlowVision
         double confidence;
         int imageWidth;
         int imageHeight;
-        Point worldCoordinates;
+        Point targetCenter; // CodeReview: what exactly is worldCoordinates??? Target is a rect and we are reducing
+                            // it to a point??? Hmm, I was expecting homography to give me more info than this.
+                            // I may be mistaken of how homography works.
+
+        TargetInfo(String label, Rect rect, double angle, double confidence, int imageWidth, int imageHeight,
+                   Point targetCenter)
+        {
+            this.label = label;
+            this.rect = rect;
+            this.angle = angle;
+            this.confidence = confidence;
+            this.imageWidth = imageWidth;
+            this.imageHeight = imageHeight;
+            this.targetCenter = targetCenter;
+        }   //TargetInfo
 
         TargetInfo(String label, Rect rect, double angle, double confidence, int imageWidth, int imageHeight)
         {
-            this.label = label;
-            this.rect = rect;
-            this.angle = angle;
-            this.confidence = confidence;
-            this.imageWidth = imageWidth;
-            this.imageHeight = imageHeight;
-            this.worldCoordinates = null;
-        }   //TargetInfo
-
-        TargetInfo(String label, Rect rect, double angle, double confidence, int imageWidth, int imageHeight, Point worldCoordinates)
-        {
-            this.label = label;
-            this.rect = rect;
-            this.angle = angle;
-            this.confidence = confidence;
-            this.imageWidth = imageWidth;
-            this.imageHeight = imageHeight;
-            this.worldCoordinates = worldCoordinates;
+            this(label, rect, angle, confidence, imageWidth, imageHeight, null);
         }   //TargetInfo
 
         @Override
         public String toString()
         {
-            if (worldCoordinates == null)
+            if (targetCenter == null)
             {
-                return String.format(
-                        Locale.US, "%s: Rect[%d,%d,%d,%d] angle=%.1f, confidence=%.3f, image(%d,%d)",
-                        label, rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top, angle, confidence,
-                        imageWidth, imageHeight);
+                return String.format(Locale.US,
+                        "%s: Rectangle[%d,%d,%d,%d] angle=%.1f, confidence=%.3f, image(%d,%d)",
+                        label, rect.x, rect.y, rect.width, rect.height, angle, confidence, imageWidth, imageHeight);
             }
             else
             {
-                return String.format(
-                        Locale.US, "%s: Rect[%d,%d,%d,%d] IrlPos[%.2f,%.2f] angle=%.1f, confidence=%.3f, image(%d,%d)",
-                        label, rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top, worldCoordinates.x, worldCoordinates.y, angle, confidence,
-                        imageWidth, imageHeight);
+                return String.format(Locale.US,
+                        "%s: Rectangle[%d,%d,%d,%d] centerPos[%.2f,%.2f] angle=%.1f, confidence=%.3f, image(%d,%d)",
+                        label, rect.x, rect.y, rect.width, rect.height, targetCenter.x,
+                        targetCenter.y, angle, confidence, imageWidth, imageHeight);
             }
-
         }
     }   //class TargetInfo
 
-    private TrcDbgTrace tracer;
     private FtcVuforia vuforia;
+    private TrcDbgTrace tracer;
     private TFObjectDetector tfod;
     private TrcHomographyMapper homographyMapper;
 
-    public TensorFlowVision(int tfodMonitorViewId, VuforiaLocalizer.CameraDirection cameraDir, TrcDbgTrace tracer,
-                            double cameraWidth,
-                            double cameraHeight,
-                            double tl_x,
-                            double tl_y,
-                            double tr_x,
-                            double tr_y,
-                            double bl_x,
-                            double bl_y,
-                            double br_x,
-                            double br_y
-                            )
+    public TensorFlowVision(
+            FtcVuforia vuforia, int tfodMonitorViewId, double cameraWidth, double cameraHeight,
+            TrcHomographyMapper.Rectangle worldRect, TrcDbgTrace tracer)
     {
-        final String VUFORIA_LICENSE_KEY =
-                "ATu19Kj/////AAAAGcw4SDCVwEBSiKcUtdmQd2aOugrxo/OgeBJUt7XwMSi3e0KSZaylbsTnWp8EBxyA5o/00JFJVDY1OxJ" +
-                "XLxQOpz1tbM4ex1sl1EbF25olEZ3w9xXZ1QaqMP+5T63VqTwvkgKbtM+dS+tLi8EHMvJ2viYf6WwOE776e0s3QNfl/XvONM" +
-                "XS4ZtEWLNeiSEMTCdO9bdeaxnSb2RfErcmjadAThDWf6PC9HrMRHLmgfcFaZlj5JN+figOjgKhyQZeYYrcDEm0lICN5kAr2" +
-                "pdfNKNOii3A80eXyTVDfPGfzTwVa4eNBY/SgmoIdBbMPb3hfZBOz7GVoVHHQWbCNbzm31p1OY+zqPPWMfzzpyiJ4mA9bLTQ";
-
+        this.vuforia = vuforia;
         this.tracer = tracer;
-        vuforia = new FtcVuforia(VUFORIA_LICENSE_KEY, -1, cameraDir);
-
         if (ClassFactory.getInstance().canCreateTFObjectDetector())
         {
             TFObjectDetector.Parameters tfodParameters =
@@ -143,18 +118,11 @@ public class TensorFlowVision
             throw new UnsupportedOperationException("This device is not compatible with TensorFlow Object Detection.");
         }
 
-        System.loadLibrary(OPENCV_NATIVE_LIBRARY_NAME);// initialize OpenCV UwU
-
-        homographyMapper = new TrcHomographyMapper(
-                // Camera coordinates: top left, top right, bottom left and bottom right
+        // Camera coordinates: top left, top right, bottom left and bottom right
+        TrcHomographyMapper.Rectangle cameraRect = new TrcHomographyMapper.Rectangle(
                 new Point(0.0, 0.0), new Point(cameraWidth, 0.0),
-                new Point(0.0, cameraHeight), new Point(cameraWidth, cameraHeight),
-                // World coordinates: top left, top right, bottom left and bottom right.
-                new Point(tl_x, tl_y),
-                new Point(tr_x, tr_y),
-                new Point(bl_x, bl_y),
-                new Point(br_x, br_y));
-
+                new Point(0.0, cameraHeight), new Point(cameraWidth, cameraHeight));
+        homographyMapper = new TrcHomographyMapper(cameraRect, worldRect);
     }   //TensorFlowVision
 
     public void setEnabled(boolean enabled)
@@ -244,10 +212,11 @@ public class TensorFlowVision
         Rect targetRect = new Rect(
                 (int)target.getTop(), (int)(target.getImageWidth() - target.getRight()),
                 (int)target.getHeight(), (int)target.getWidth());
-        Point homographyMappedPoint = homographyMapper.mapPoint(new Point((int)target.getTop(), (int)(target.getImageWidth() - target.getRight())));
+        Point targetCenter = homographyMapper.mapPoint(
+                new Point((targetRect.x + targetRect.width)/2, (targetRect.y + targetRect.height)/2));
         TargetInfo targetInfo = new TargetInfo(
                 target.getLabel(), targetRect, target.estimateAngleToObject(AngleUnit.DEGREES),
-                target.getConfidence(), target.getImageHeight(), target.getImageWidth(), homographyMappedPoint);
+                target.getConfidence(), target.getImageHeight(), target.getImageWidth(), targetCenter);
 
         if (tracer != null)
         {

@@ -26,6 +26,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 
 import common.Robot;
 import ftclib.FtcDcMotor;
+import trclib.TrcHomographyMapper;
 import trclib.TrcMecanumDriveBase;
 import trclib.TrcPidController;
 import trclib.TrcPidDrive;
@@ -38,21 +39,22 @@ public class Robot3543 extends Robot
     //
     // Feature switches.
     //
-    public static final boolean USE_SPEECH = true;
-    public static final boolean USE_BATTERY_MONITOR = false;
-    public static final boolean USE_VUFORIA = false;
-    public static final boolean USE_TENSORFLOW = true;
-    public static final boolean USE_VELOCITY_CONTROL = false;
-    public static final boolean HAS_ROBOT = false;
+    private static final boolean USE_SPEECH = true;
+    private static final boolean USE_BATTERY_MONITOR = false;
+    private static final boolean USE_VUFORIA = false;
+    private static final boolean USE_TENSORFLOW = true;
+    private static final boolean SHOW_VUFORIA_VIEW = false;
+    private static final boolean SHOW_TENSORFLOW_VIEW = true;
+    private static final boolean USE_VELOCITY_CONTROL = false;
+    private static final boolean HAS_ROBOT = false;
 
-    private final VuforiaLocalizer.CameraDirection CAMERA_DIR = BACK;
-    private final boolean PHONE_IS_PORTRAIT = false;
-    private final boolean SHOW_CAMERA_VIEW = true;
-    private final double ROBOT_LENGTH = 17.5;           //Robot length in inches
-    private final double ROBOT_WIDTH = 17.5;            //Robot width in inches
-    private final double PHONE_FRONT_OFFSET = 0.75;     //Phone offset from front of robot in inches
-    private final double PHONE_HEIGHT_OFFSET = 6.25;    //Phone offset from the floor in inches
-    private final double PHONE_LEFT_OFFSET = 8.75;      //Phone offset from the left side of the robot in inches
+    private static final VuforiaLocalizer.CameraDirection CAMERA_DIR = BACK;
+    private static final boolean PHONE_IS_PORTRAIT = false;
+    private static final double ROBOT_LENGTH = 17.5;        //Robot length in inches
+    private static final double ROBOT_WIDTH = 17.5;         //Robot width in inches
+    private static final double PHONE_FRONT_OFFSET = 0.75;  //Phone offset from front of robot in inches
+    private static final double PHONE_HEIGHT_OFFSET = 6.25; //Phone offset from the floor in inches
+    private static final double PHONE_LEFT_OFFSET = 8.75;   //Phone offset from the left side of the robot in inches
     //
     // Global objects.
     //
@@ -63,30 +65,32 @@ public class Robot3543 extends Robot
 
     public Robot3543(TrcRobot.RunMode runMode)
     {
-        super(runMode, robotName, USE_SPEECH, USE_BATTERY_MONITOR, HAS_ROBOT);
+        super(runMode, robotName, CAMERA_DIR,
+              SHOW_VUFORIA_VIEW, USE_VUFORIA || USE_TENSORFLOW, USE_SPEECH, USE_BATTERY_MONITOR, HAS_ROBOT);
         //
         // Initialize vision subsystems.
         //
-        if (USE_VUFORIA)
+        if (USE_VUFORIA && vuforia != null)
         {
-            initVuforia(CAMERA_DIR, PHONE_IS_PORTRAIT, SHOW_CAMERA_VIEW, ROBOT_LENGTH, ROBOT_WIDTH, PHONE_FRONT_OFFSET,
-                    PHONE_LEFT_OFFSET, PHONE_HEIGHT_OFFSET);
+            initVuforia(
+                    CAMERA_DIR, PHONE_IS_PORTRAIT, ROBOT_LENGTH, ROBOT_WIDTH, PHONE_FRONT_OFFSET, PHONE_LEFT_OFFSET,
+                    PHONE_HEIGHT_OFFSET);
         }
         //
         // TensorFlow slows down our threads really badly, so don't enable it if we don't need it.
         //
-        if (USE_TENSORFLOW && (runMode == TrcRobot.RunMode.AUTO_MODE || runMode == TrcRobot.RunMode.TEST_MODE))
+        if (USE_TENSORFLOW && vuforia != null &&
+            (runMode == TrcRobot.RunMode.AUTO_MODE || runMode == TrcRobot.RunMode.TEST_MODE))
         {
-            initTensorFlow(CAMERA_DIR, SHOW_CAMERA_VIEW, RobotInfo3543.CAMERA_WIDTH,
-                    RobotInfo3543.CAMERA_HEIGHT,
-                    RobotInfo3543.HOMOGRAPHY_WORLD_TOPLEFT_X,
-                    RobotInfo3543.HOMOGRAPHY_WORLD_TOPLEFT_Y,
-                    RobotInfo3543.HOMOGRAPHY_WORLD_TOPRIGHT_X,
-                    RobotInfo3543.HOMOGRAPHY_WORLD_TOPRIGHT_Y,
-                    RobotInfo3543.HOMOGRAPHY_WORLD_BOTTOMLEFT_X,
-                    RobotInfo3543.HOMOGRAPHY_WORLD_BOTTOMLEFT_Y,
-                    RobotInfo3543.HOMOGRAPHY_WORLD_BOTTOMRIGHT_X,
-                    RobotInfo3543.HOMOGRAPHY_WORLD_BOTTOMRIGHT_Y);
+            initTensorFlow(SHOW_TENSORFLOW_VIEW, RobotInfo3543.CAMERA_WIDTH, RobotInfo3543.CAMERA_HEIGHT,
+                    new TrcHomographyMapper.Rectangle(RobotInfo3543.HOMOGRAPHY_WORLD_TOPLEFT_X,
+                                                      RobotInfo3543.HOMOGRAPHY_WORLD_TOPLEFT_Y,
+                                                      RobotInfo3543.HOMOGRAPHY_WORLD_TOPRIGHT_X,
+                                                      RobotInfo3543.HOMOGRAPHY_WORLD_TOPRIGHT_Y,
+                                                      RobotInfo3543.HOMOGRAPHY_WORLD_BOTTOMLEFT_X,
+                                                      RobotInfo3543.HOMOGRAPHY_WORLD_BOTTOMLEFT_Y,
+                                                      RobotInfo3543.HOMOGRAPHY_WORLD_BOTTOMRIGHT_X,
+                                                      RobotInfo3543.HOMOGRAPHY_WORLD_BOTTOMRIGHT_Y));
         }
         //
         // Initialize DriveBase.

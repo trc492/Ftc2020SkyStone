@@ -13,6 +13,3 @@
 
 // Include common definitions from above.
 apply from: '../build.common.gradle'
-dependencies {
-    compile project(path: ':OpenCVLib310')
-}
