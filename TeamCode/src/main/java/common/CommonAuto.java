@@ -120,7 +120,7 @@ public abstract class CommonAuto extends FtcOpMode
             if (robot.targetsInfo != null)
             {
                 msg = String.format(Locale.US, "Sky Stone found at position %d",
-                        (robot.targetsInfo[0].rect.left + robot.targetsInfo[0].rect.right)/2);
+                        robot.targetsInfo[0].rect.x + robot.targetsInfo[0].rect.width/2);
             }
             else
             {

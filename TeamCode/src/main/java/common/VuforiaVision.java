@@ -25,7 +25,6 @@ package common;
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
 import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
 
 import ftclib.FtcVuforia;
@@ -67,18 +66,12 @@ public class VuforiaVision
     private VuforiaTrackable[] imageTargets;
     private OpenGLMatrix lastRobotLocation = null;
 
-    public VuforiaVision(
-            Robot robot, int cameraViewId, VuforiaLocalizer.CameraDirection cameraDir, OpenGLMatrix phoneLocation)
+    public VuforiaVision(Robot robot, FtcVuforia vuforia, OpenGLMatrix phoneLocation)
     {
-        final String VUFORIA_LICENSE_KEY =
-                "ATu19Kj/////AAAAGcw4SDCVwEBSiKcUtdmQd2aOugrxo/OgeBJUt7XwMSi3e0KSZaylbsTnWp8EBxyA5o/00JFJVDY1OxJ" +
-                "XLxQOpz1tbM4ex1sl1EbF25olEZ3w9xXZ1QaqMP+5T63VqTwvkgKbtM+dS+tLi8EHMvJ2viYf6WwOE776e0s3QNfl/XvONM" +
-                "XS4ZtEWLNeiSEMTCdO9bdeaxnSb2RfErcmjadAThDWf6PC9HrMRHLmgfcFaZlj5JN+figOjgKhyQZeYYrcDEm0lICN5kAr2" +
-                "pdfNKNOii3A80eXyTVDfPGfzTwVa4eNBY/SgmoIdBbMPb3hfZBOz7GVoVHHQWbCNbzm31p1OY+zqPPWMfzzpyiJ4mA9bLTQ";
         final String TRACKABLE_IMAGES_FILE = "Skystone";
 
         this.robot = robot;
-        vuforia = new FtcVuforia(VUFORIA_LICENSE_KEY, cameraViewId, cameraDir);
+        this.vuforia = vuforia;
         vuforia.configVideoSource(IMAGE_WIDTH, IMAGE_HEIGHT, FRAME_QUEUE_CAPACITY);
 
         /*

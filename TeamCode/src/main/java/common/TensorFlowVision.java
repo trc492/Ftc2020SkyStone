@@ -22,13 +22,12 @@
 
 package common;
 
-import android.graphics.Rect;
-
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
+import org.opencv.core.Point;
+import org.opencv.core.Rect;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -37,6 +36,7 @@ import java.util.Locale;
 
 import ftclib.FtcVuforia;
 import trclib.TrcDbgTrace;
+import trclib.TrcHomographyMapper;
 
 public class TensorFlowVision
 {
@@ -53,8 +53,10 @@ public class TensorFlowVision
         double confidence;
         int imageWidth;
         int imageHeight;
+        Point targetBottomCenter;
 
-        TargetInfo(String label, Rect rect, double angle, double confidence, int imageWidth, int imageHeight)
+        TargetInfo(String label, Rect rect, double angle, double confidence, int imageWidth, int imageHeight,
+                   Point targetBottomCenter)
         {
             this.label = label;
             this.rect = rect;
@@ -62,33 +64,30 @@ public class TensorFlowVision
             this.confidence = confidence;
             this.imageWidth = imageWidth;
             this.imageHeight = imageHeight;
+            this.targetBottomCenter = targetBottomCenter;
         }   //TargetInfo
 
         @Override
         public String toString()
         {
-            return String.format(
-                    Locale.US, "%s: Rect[%d,%d,%d,%d], angle=%.1f, confidence=%.3f, image(%d,%d)",
-                    label, rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top, angle, confidence,
-                    imageWidth, imageHeight);
+            return String.format(Locale.US,
+                    "%s: Rectangle[%d,%d,%d,%d] targetPos[%.2f,%.2f] angle=%.1f, confidence=%.3f, image(%d,%d)",
+                    label, rect.x, rect.y, rect.width, rect.height, targetBottomCenter.x,
+                    targetBottomCenter.y, angle, confidence, imageWidth, imageHeight);
         }
     }   //class TargetInfo
 
-    private TrcDbgTrace tracer;
     private FtcVuforia vuforia;
+    private TrcDbgTrace tracer;
     private TFObjectDetector tfod;
+    private TrcHomographyMapper homographyMapper;
 
-    public TensorFlowVision(int tfodMonitorViewId, VuforiaLocalizer.CameraDirection cameraDir, TrcDbgTrace tracer)
+    public TensorFlowVision(
+            FtcVuforia vuforia, int tfodMonitorViewId, double cameraWidth, double cameraHeight,
+            TrcHomographyMapper.Rectangle worldRect, TrcDbgTrace tracer)
     {
-        final String VUFORIA_LICENSE_KEY =
-                "ATu19Kj/////AAAAGcw4SDCVwEBSiKcUtdmQd2aOugrxo/OgeBJUt7XwMSi3e0KSZaylbsTnWp8EBxyA5o/00JFJVDY1OxJ" +
-                "XLxQOpz1tbM4ex1sl1EbF25olEZ3w9xXZ1QaqMP+5T63VqTwvkgKbtM+dS+tLi8EHMvJ2viYf6WwOE776e0s3QNfl/XvONM" +
-                "XS4ZtEWLNeiSEMTCdO9bdeaxnSb2RfErcmjadAThDWf6PC9HrMRHLmgfcFaZlj5JN+figOjgKhyQZeYYrcDEm0lICN5kAr2" +
-                "pdfNKNOii3A80eXyTVDfPGfzTwVa4eNBY/SgmoIdBbMPb3hfZBOz7GVoVHHQWbCNbzm31p1OY+zqPPWMfzzpyiJ4mA9bLTQ";
-
+        this.vuforia = vuforia;
         this.tracer = tracer;
-        vuforia = new FtcVuforia(VUFORIA_LICENSE_KEY, -1, cameraDir);
-
         if (ClassFactory.getInstance().canCreateTFObjectDetector())
         {
             TFObjectDetector.Parameters tfodParameters =
@@ -102,6 +101,12 @@ public class TensorFlowVision
         {
             throw new UnsupportedOperationException("This device is not compatible with TensorFlow Object Detection.");
         }
+
+        // Camera coordinates: top left, top right, bottom left and bottom right
+        TrcHomographyMapper.Rectangle cameraRect = new TrcHomographyMapper.Rectangle(
+                new Point(0.0, 0.0), new Point(cameraWidth, 0.0),
+                new Point(0.0, cameraHeight), new Point(cameraWidth, cameraHeight));
+        homographyMapper = new TrcHomographyMapper(cameraRect, worldRect);
     }   //TensorFlowVision
 
     public void setEnabled(boolean enabled)
@@ -188,12 +193,22 @@ public class TensorFlowVision
     public TargetInfo getTargetInfo(Recognition target)
     {
         final String funcName = "getTargetInfo";
+        //
+        // The phone is set to portrait mode but mounted in counter-clockwise landscape orientation. This means the
+        // camera top in portrait mode is actually left in the actual phone orientation.
+        //  phone orientation x = camera top
+        //  pbone orientation y = camera imageWidth - camera right
+        //  phone orientation width = camera height
+        //  phone orientation height = camera width
+        //
         Rect targetRect = new Rect(
                 (int)target.getTop(), (int)(target.getImageWidth() - target.getRight()),
                 (int)target.getHeight(), (int)target.getWidth());
+        Point targetBottomCenter = homographyMapper.mapPoint(
+                new Point(targetRect.x + targetRect.width/2, targetRect.y + targetRect.height));
         TargetInfo targetInfo = new TargetInfo(
                 target.getLabel(), targetRect, target.estimateAngleToObject(AngleUnit.DEGREES),
-                target.getConfidence(), target.getImageHeight(), target.getImageWidth());
+                target.getConfidence(), target.getImageHeight(), target.getImageWidth(), targetBottomCenter);
 
         if (tracer != null)
         {
