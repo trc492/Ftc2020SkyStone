@@ -67,27 +67,13 @@ public class TensorFlowVision
             this.targetBottomCenter = targetBottomCenter;
         }   //TargetInfo
 
-        TargetInfo(String label, Rect rect, double angle, double confidence, int imageWidth, int imageHeight)
-        {
-            this(label, rect, angle, confidence, imageWidth, imageHeight, null);
-        }   //TargetInfo
-
         @Override
         public String toString()
         {
-            if (targetBottomCenter == null)
-            {
-                return String.format(Locale.US,
-                        "%s: Rectangle[%d,%d,%d,%d] angle=%.1f, confidence=%.3f, image(%d,%d)",
-                        label, rect.x, rect.y, rect.width, rect.height, angle, confidence, imageWidth, imageHeight);
-            }
-            else
-            {
-                return String.format(Locale.US,
-                        "%s: Rectangle[%d,%d,%d,%d] targetPos[%.2f,%.2f] angle=%.1f, confidence=%.3f, image(%d,%d)",
-                        label, rect.x, rect.y, rect.width, rect.height, targetBottomCenter.x,
-                        targetBottomCenter.y, angle, confidence, imageWidth, imageHeight);
-            }
+            return String.format(Locale.US,
+                    "%s: Rectangle[%d,%d,%d,%d] targetPos[%.2f,%.2f] angle=%.1f, confidence=%.3f, image(%d,%d)",
+                    label, rect.x, rect.y, rect.width, rect.height, targetBottomCenter.x,
+                    targetBottomCenter.y, angle, confidence, imageWidth, imageHeight);
         }
     }   //class TargetInfo
 
