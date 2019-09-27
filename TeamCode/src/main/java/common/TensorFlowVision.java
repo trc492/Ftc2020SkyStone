@@ -53,12 +53,10 @@ public class TensorFlowVision
         double confidence;
         int imageWidth;
         int imageHeight;
-        Point targetCenter; // CodeReview: what exactly is worldCoordinates??? Target is a rect and we are reducing
-                            // it to a point??? Hmm, I was expecting homography to give me more info than this.
-                            // I may be mistaken of how homography works.
+        Point targetBottomCenter;
 
         TargetInfo(String label, Rect rect, double angle, double confidence, int imageWidth, int imageHeight,
-                   Point targetCenter)
+                   Point targetBottomCenter)
         {
             this.label = label;
             this.rect = rect;
@@ -66,7 +64,7 @@ public class TensorFlowVision
             this.confidence = confidence;
             this.imageWidth = imageWidth;
             this.imageHeight = imageHeight;
-            this.targetCenter = targetCenter;
+            this.targetBottomCenter = targetBottomCenter;
         }   //TargetInfo
 
         TargetInfo(String label, Rect rect, double angle, double confidence, int imageWidth, int imageHeight)
@@ -77,7 +75,7 @@ public class TensorFlowVision
         @Override
         public String toString()
         {
-            if (targetCenter == null)
+            if (targetBottomCenter == null)
             {
                 return String.format(Locale.US,
                         "%s: Rectangle[%d,%d,%d,%d] angle=%.1f, confidence=%.3f, image(%d,%d)",
@@ -86,9 +84,9 @@ public class TensorFlowVision
             else
             {
                 return String.format(Locale.US,
-                        "%s: Rectangle[%d,%d,%d,%d] centerPos[%.2f,%.2f] angle=%.1f, confidence=%.3f, image(%d,%d)",
-                        label, rect.x, rect.y, rect.width, rect.height, targetCenter.x,
-                        targetCenter.y, angle, confidence, imageWidth, imageHeight);
+                        "%s: Rectangle[%d,%d,%d,%d] targetPos[%.2f,%.2f] angle=%.1f, confidence=%.3f, image(%d,%d)",
+                        label, rect.x, rect.y, rect.width, rect.height, targetBottomCenter.x,
+                        targetBottomCenter.y, angle, confidence, imageWidth, imageHeight);
             }
         }
     }   //class TargetInfo
@@ -212,11 +210,11 @@ public class TensorFlowVision
         Rect targetRect = new Rect(
                 (int)target.getTop(), (int)(target.getImageWidth() - target.getRight()),
                 (int)target.getHeight(), (int)target.getWidth());
-        Point targetCenter = homographyMapper.mapPoint(
-                new Point((targetRect.x + targetRect.width)/2, (targetRect.y + targetRect.height)/2));
+        Point targetBottomCenter = homographyMapper.mapPoint(
+                new Point(targetRect.x + targetRect.width/2, targetRect.y + targetRect.height));
         TargetInfo targetInfo = new TargetInfo(
                 target.getLabel(), targetRect, target.estimateAngleToObject(AngleUnit.DEGREES),
-                target.getConfidence(), target.getImageHeight(), target.getImageWidth(), targetCenter);
+                target.getConfidence(), target.getImageHeight(), target.getImageWidth(), targetBottomCenter);
 
         if (tracer != null)
         {
