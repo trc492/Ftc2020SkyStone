@@ -193,6 +193,14 @@ public class TensorFlowVision
     public TargetInfo getTargetInfo(Recognition target)
     {
         final String funcName = "getTargetInfo";
+        //
+        // The phone is set to portrait mode but mounted in counter-clockwise landscape orientation. This means the
+        // camera top in portrait mode is actually left in the actual phone orientation.
+        //  phone orientation x = camera top
+        //  pbone orientation y = camera imageWidth - camera right
+        //  phone orientation width = camera height
+        //  phone orientation height = camera width
+        //
         Rect targetRect = new Rect(
                 (int)target.getTop(), (int)(target.getImageWidth() - target.getRight()),
                 (int)target.getHeight(), (int)target.getWidth());
