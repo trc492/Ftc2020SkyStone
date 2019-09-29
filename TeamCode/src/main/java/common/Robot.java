@@ -173,7 +173,7 @@ public class Robot
         //
         // Vision generally will impact performance, so we only enable it if it's needed such as in autonomous.
         //
-        if (vuforiaVision != null && runMode == TrcRobot.RunMode.AUTO_MODE)
+        if (vuforiaVision != null && (runMode == TrcRobot.RunMode.AUTO_MODE || runMode == TrcRobot.RunMode.TEST_MODE))
         {
             globalTracer.traceInfo(funcName, "Enabling Vuforia.");
             vuforiaVision.setEnabled(true);
