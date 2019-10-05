@@ -27,6 +27,8 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import common.CommonTest;
 import ftclib.FtcGamepad;
 import trclib.TrcGameController;
+import trclib.TrcPose2D;
+import trclib.TrcRobot;
 
 @TeleOp(name="FtcTest3543", group="FtcTest")
 public class FtcTest3543 extends FtcTeleOp3543
@@ -54,6 +56,24 @@ public class FtcTest3543 extends FtcTeleOp3543
     //
     // Overrides TrcRobot.RobotMode methods.
     //
+
+    @Override
+    public void startMode(TrcRobot.RunMode prevMode, TrcRobot.RunMode nextMode)
+    {
+        super.startMode(prevMode, nextMode);
+        commonTest.start(new TrcPose2D[] {
+                new TrcPose2D(0,0),
+                new TrcPose2D(0, 24, 0, 0, 50, 0),
+                new TrcPose2D(0, 96, 180, 0, 50, 0),
+                new TrcPose2D(0, 120, 180)});
+    }   //startMode
+
+    @Override
+    public void stopMode(TrcRobot.RunMode prevMode, TrcRobot.RunMode nextMode)
+    {
+        commonTest.stop();
+        super.stopMode(prevMode, nextMode);
+    }   //stopMode
 
     @Override
     public void runPeriodic(double elapsedTime)

@@ -31,6 +31,8 @@ import ftclib.FtcMenu;
 import ftclib.FtcValueMenu;
 import trclib.TrcEvent;
 import trclib.TrcLoopPerformanceMonitor;
+import trclib.TrcPidController;
+import trclib.TrcPose2D;
 import trclib.TrcStateMachine;
 import trclib.TrcTimer;
 import trclib.TrcUtil;
@@ -48,7 +50,8 @@ public class CommonTest
         GYRO_TURN,
         TUNE_X_PID,
         TUNE_Y_PID,
-        TUNE_TURN_PID
+        TUNE_TURN_PID,
+        PURE_PURSUIT_DRIVE
     }   //enum Test
 
     private enum State
@@ -86,6 +89,7 @@ public class CommonTest
 
     private CmdTimedDrive timedDriveCommand = null;
     private CmdPidDrive pidDriveCommand = null;
+    private CmdPurePursuitDrive purePursuitDriveCommand = null;
 
     private int motorIndex = 0;
 
@@ -183,6 +187,17 @@ public class CommonTest
                             drivePower, true);
                 }
                 break;
+
+            case PURE_PURSUIT_DRIVE:
+                if (robot.hasRobot)
+                {
+                    purePursuitDriveCommand = new CmdPurePursuitDrive(
+                            robot.driveBase,
+                            new TrcPidController.PidCoefficients(0.011, 0, 0.001),
+                            new TrcPidController.PidCoefficients(0.025),
+                            new TrcPidController.PidCoefficients(0, 0, 0, 1.0 / 223));
+                }
+                break;
         }
         //
         // Only SENSORS_TEST needs TensorFlow, shut it down for all other tests.
@@ -196,6 +211,22 @@ public class CommonTest
 
         sm.start(State.START);
     }   //init
+
+    public void start(TrcPose2D... poses)
+    {
+        if (test == Test.PURE_PURSUIT_DRIVE)
+        {
+            purePursuitDriveCommand.start(poses);
+        }
+    }   //start
+
+    public void stop()
+    {
+        if (test == Test.PURE_PURSUIT_DRIVE)
+        {
+            purePursuitDriveCommand.cancel();
+        }
+    }   //stop
 
     public boolean shouldRunTeleOpPeriodic()
     {
@@ -221,6 +252,13 @@ public class CommonTest
                 if (robot.hasRobot)
                 {
                     doMotorsTest();
+                }
+                break;
+
+            case PURE_PURSUIT_DRIVE:
+                if (robot.hasRobot)
+                {
+                    purePursuitDriveCommand.cmdPeriodic(elapsedTime);
                 }
                 break;
         }
@@ -345,6 +383,7 @@ public class CommonTest
         testMenu.addChoice("Tune X PID", Test.TUNE_X_PID, false, tuneKpMenu);
         testMenu.addChoice("Tune Y PID", Test.TUNE_Y_PID, false, tuneKpMenu);
         testMenu.addChoice("Tune Turn PID", Test.TUNE_TURN_PID, false, tuneKpMenu);
+        testMenu.addChoice("Pure Pursuit Drive", Test.PURE_PURSUIT_DRIVE, false);
 
         driveTimeMenu.setChildMenu(drivePowerMenu);
         driveDistanceMenu.setChildMenu(drivePowerMenu);
