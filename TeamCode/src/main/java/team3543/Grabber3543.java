@@ -22,6 +22,24 @@
 
 package team3543;
 
+import ftclib.FtcDcMotor;
+import ftclib.FtcServo;
+
 public class Grabber3543
 {
+    private static final double CLOSEPOS = 0;
+    private static final double OPENPOS = 1;
+
+    FtcDcMotor rotationMotor = new FtcDcMotor("yawMotor");
+    FtcServo pinchServo = new FtcServo("pinchServo");
+
+    public void grabberPinch() {
+        pinchServo.setPosition(CLOSEPOS);
+        pinchServo.setPosition(OPENPOS);
+    }
+
+    public void grabberYaw(double Power) {
+        rotationMotor.setMotorPower(Power);
+    }
+
 }   //class Grabber3543
