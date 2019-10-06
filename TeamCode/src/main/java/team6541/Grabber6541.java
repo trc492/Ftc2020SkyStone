@@ -22,6 +22,49 @@
 
 package team6541;
 
+import ftclib.FtcDcMotor;
+import ftclib.FtcDigitalInput;
+import trclib.TrcDigitalTrigger;
+
+//class Grabber6541
+//the grabber has a motor wheel that sucks up the yellow block, holds it, and then releases by turning the motor the other way.
+
 public class Grabber6541
 {
-}   //class Grabber6541
+    //these are fields:
+    private FtcDcMotor motor = new FtcDcMotor("grabMotor");
+    private FtcDigitalInput touch = new FtcDigitalInput("touchSensor");
+    private TrcDigitalTrigger trigger = new TrcDigitalTrigger(
+            "touchSensorTrigger", touch, this::onHasBrickStatusChanged);
+
+
+    public void grab()
+    {
+        //sets power to grab
+        motor.setMotorPower(0.5);
+    }
+
+    public void release()
+    {
+        //sets power to release
+        motor.setMotorPower(-0.5);
+    }
+
+    //event
+    private void onHasBrickStatusChanged(boolean hasBrick)
+    {
+        if(hasBrick)
+        {
+            //just grabbed a brick
+            //set the power to keep going, but is a little bit to not burn the robot.
+            motor.setMotorPower(0.1);
+        }
+        else
+        {
+            //lost the brick.
+            //not have brick, stop motor.
+            motor.setMotorPower(0);
+        }
+    }
+
+}
