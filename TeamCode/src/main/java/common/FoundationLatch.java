@@ -30,10 +30,11 @@ public class FoundationLatch
     public FoundationLatch()
     {
         servo = new FtcServo("FoundationLatch");
-    }
+    }   //FoundationLatch
+
     public void setPosition(double position)
     {
         servo.setPosition(position);
-    }
+    }   //setPosition
 
 }   //class FoundationLatch

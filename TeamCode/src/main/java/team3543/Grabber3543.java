@@ -33,13 +33,15 @@ public class Grabber3543
     FtcDcMotor rotationMotor = new FtcDcMotor("yawMotor");
     FtcServo pinchServo = new FtcServo("pinchServo");
 
-    public void grabberPinch() {
+    public void grabberPinch()
+    {
         pinchServo.setPosition(CLOSEPOS);
         pinchServo.setPosition(OPENPOS);
-    }
+    }   //grabberPinch
 
-    public void grabberYaw(double Power) {
+    public void grabberYaw(double Power)
+    {
         rotationMotor.setMotorPower(Power);
-    }
+    }   //grabberYaw
 
 }   //class Grabber3543

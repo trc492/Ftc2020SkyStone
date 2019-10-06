@@ -24,7 +24,6 @@ package common;
 
 import ftclib.FtcDcMotor;
 import ftclib.FtcDigitalInput;
-//import team3543.RobotInfo3543;
 import trclib.TrcEvent;
 import trclib.TrcPidActuator;
 import trclib.TrcPidController;
@@ -37,7 +36,9 @@ public class Elevator
     private TrcPidController pidController;
     private TrcPidActuator pidElevator;
 
-    public Elevator(TrcPidController.PidCoefficients pidCoeff, double calPower, double minHeight, double maxHeight, double scale, double offset, double tolerance)
+    public Elevator(
+            TrcPidController.PidCoefficients pidCoeff, double calPower, double minHeight, double maxHeight,
+            double scale, double offset, double tolerance)
     {
         upperLimitSwitch = new FtcDigitalInput("elevatorUpperLimit");
         lowerLimitSwitch = new FtcDigitalInput("elevatorLowerLimit");
@@ -48,55 +49,52 @@ public class Elevator
         elevatorMotor.setBrakeModeEnabled(true);
         elevatorMotor.setOdometryEnabled(true);
 
-        // The robot info is specific to one team at the moment, make it a parameter later to pass in
-
-        pidController = new TrcPidController("elevatorPidController", pidCoeff,
-                //new TrcPidController.PidCoefficients(
-                  //      RobotInfo3543.ELEVATOR_KP, RobotInfo3543.ELEVATOR_KI, RobotInfo3543.ELEVATOR_KD),
-                tolerance, this::getPosition);
-        pidElevator = new TrcPidActuator("pidElevator", elevatorMotor, lowerLimitSwitch, pidController,
-                calPower, minHeight, maxHeight);
+        pidController = new TrcPidController(
+                "elevatorPidController", pidCoeff, tolerance, this::getPosition);
+        pidElevator = new TrcPidActuator(
+                "pidElevator", elevatorMotor, lowerLimitSwitch, pidController, calPower,
+                minHeight, maxHeight);
         pidElevator.setPositionScale(scale, offset);
-    }
+    }   //Elevator
 
     public void zeroCalibrate()
     {
         pidElevator.zeroCalibrate();
-    }
+    }   //zeroCalibrate
 
     public void setManualOverride(boolean enabled)
     {
         pidElevator.setManualOverride(enabled);
-    }
+    }   //setManualOverride
 
     public void setPower(double power)
     {
         pidElevator.setPower(power);
-    }
+    }   //setPower
 
     public void setPosition(double target, TrcEvent event, double timeout)
     {
         pidElevator.setTarget(target, event, timeout);
-    }
+    }   //setPosition
 
     public void setPosition(double target)
     {
         pidElevator.setTarget(target, null, 0.0);
-    }
+    }   //setPosition
 
     public double getPosition()
     {
         return pidElevator.getPosition();
-    }
+    }   //getPosition
 
     public boolean isUpperLimitSwitchActive()
     {
         return upperLimitSwitch.isActive();
-    }
+    }   //isUpperLimitSwitchActive
 
     public boolean isLowerLimitSwitchActive()
     {
         return lowerLimitSwitch.isActive();
-    }
+    }   //isLowerLimitSwitchActive
 
 }   //class Elevator
