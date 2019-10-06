@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 Titan Robotics Club (http://www.titanrobotics.com)
+ * Copyright (c) 2019 Titan Robotics Club (http://www.titanrobotics.com)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -20,20 +20,8 @@
  * SOFTWARE.
  */
 
-package common;
+package team6541;
 
-import ftclib.FtcServo;
-
-public class FoundationLatch
+public class Grabber6541
 {
-    private FtcServo servo;
-    public FoundationLatch()
-    {
-        servo = new FtcServo("FoundationLatch");
-    }
-    public void setPosition(double position)
-    {
-        servo.setPosition(position);
-    }
-
-}   //class FoundationLatch
+}   //class Grabber6541

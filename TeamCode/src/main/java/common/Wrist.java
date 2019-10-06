@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 Titan Robotics Club (http://www.titanrobotics.com)
+ * Copyright (c) 2019 Titan Robotics Club (http://www.titanrobotics.com)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,18 +22,6 @@
 
 package common;
 
-import ftclib.FtcServo;
-
-public class FoundationLatch
+public class Wrist
 {
-    private FtcServo servo;
-    public FoundationLatch()
-    {
-        servo = new FtcServo("FoundationLatch");
-    }
-    public void setPosition(double position)
-    {
-        servo.setPosition(position);
-    }
-
-}   //class FoundationLatch
+}   //class Wrist
