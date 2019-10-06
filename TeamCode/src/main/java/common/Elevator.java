@@ -47,6 +47,7 @@ public class Elevator
         elevatorMotor.setBrakeModeEnabled(true);
         elevatorMotor.setOdometryEnabled(true);
 
+        /*
         pidController = new TrcPidController("elevatorPidController",
                 new TrcPidController.PidCoefficients(
                         RobotInfo3543.ELEVATOR_KP, RobotInfo3543.ELEVATOR_KI, RobotInfo3543.ELEVATOR_KD),
@@ -54,6 +55,7 @@ public class Elevator
         pidElevator = new TrcPidActuator("pidElevator", elevatorMotor, lowerLimitSwitch, pidController,
                 RobotInfo3543.ELEVATOR_CAL_POWER, RobotInfo3543.ELEVATOR_MIN_HEIGHT, RobotInfo3543.ELEVATOR_MAX_HEIGHT);
         pidElevator.setPositionScale(RobotInfo3543.ELEVATOR_INCHES_PER_COUNT, RobotInfo3543.ELEVATOR_ZERO_OFFSET);
+         */
     }
 
     public void zeroCalibrate()

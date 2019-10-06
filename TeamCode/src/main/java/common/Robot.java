@@ -335,4 +335,19 @@ public class Robot
         globalTracer.traceInfo(moduleName, "Enabling TensorFlow.");
     }   //initTensorFlow
 
+    protected void initTensorFlow(
+            boolean showTensorFlowView, TrcHomographyMapper.Rectangle cameraRect,
+            TrcHomographyMapper.Rectangle worldRect)
+    {
+        System.loadLibrary(OPENCV_NATIVE_LIBRARY_NAME);//CodeReview: Is this the right place to load OpenCV?!
+
+        int tfodMonitorViewId = !showTensorFlowView ? -1 :
+                opMode.hardwareMap.appContext.getResources().getIdentifier(
+                        "tfodMonitorViewId", "id", opMode.hardwareMap.appContext.getPackageName());
+        tensorFlowVision = new TensorFlowVision(
+                vuforia, tfodMonitorViewId, cameraRect, worldRect, globalTracer);
+        tensorFlowVision.setEnabled(true);
+        globalTracer.traceInfo(moduleName, "Enabling TensorFlow.");
+    } //initTensorFlow
+
 }   //class Robot
