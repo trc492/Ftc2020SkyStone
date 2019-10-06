@@ -24,7 +24,7 @@ package common;
 
 import ftclib.FtcDcMotor;
 import ftclib.FtcDigitalInput;
-import team3543.RobotInfo3543;
+//import team3543.RobotInfo3543;
 import trclib.TrcEvent;
 import trclib.TrcPidActuator;
 import trclib.TrcPidController;
@@ -37,7 +37,7 @@ public class Elevator
     private TrcPidController pidController;
     private TrcPidActuator pidElevator;
 
-    public Elevator(TrcPidController.PidCoefficients pidCoeff, double calPower, double minHeight, double maxHeight, double scale, double offset)
+    public Elevator(TrcPidController.PidCoefficients pidCoeff, double calPower, double minHeight, double maxHeight, double scale, double offset, double tolerance)
     {
         upperLimitSwitch = new FtcDigitalInput("elevatorUpperLimit");
         lowerLimitSwitch = new FtcDigitalInput("elevatorLowerLimit");
@@ -53,7 +53,7 @@ public class Elevator
         pidController = new TrcPidController("elevatorPidController", pidCoeff,
                 //new TrcPidController.PidCoefficients(
                   //      RobotInfo3543.ELEVATOR_KP, RobotInfo3543.ELEVATOR_KI, RobotInfo3543.ELEVATOR_KD),
-                RobotInfo3543.ELEVATOR_TOLERANCE, this::getPosition);
+                tolerance, this::getPosition);
         pidElevator = new TrcPidActuator("pidElevator", elevatorMotor, lowerLimitSwitch, pidController,
                 calPower, minHeight, maxHeight);
         pidElevator.setPositionScale(scale, offset);
