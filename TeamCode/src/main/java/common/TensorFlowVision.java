@@ -103,9 +103,34 @@ public class TensorFlowVision
         }
 
         // Camera coordinates: top left, top right, bottom left and bottom right
+
         TrcHomographyMapper.Rectangle cameraRect = new TrcHomographyMapper.Rectangle(
                 new Point(0.0, 0.0), new Point(cameraWidth, 0.0),
                 new Point(0.0, cameraHeight), new Point(cameraWidth, cameraHeight));
+
+        homographyMapper = new TrcHomographyMapper(cameraRect, worldRect);
+    }   //TensorFlowVision
+
+    public TensorFlowVision(
+            FtcVuforia vuforia, int tfodMonitorViewId, TrcHomographyMapper.Rectangle cameraRect,
+            TrcHomographyMapper.Rectangle worldRect, TrcDbgTrace tracer)
+    {
+        this.vuforia = vuforia;
+        this.tracer = tracer;
+        if (ClassFactory.getInstance().canCreateTFObjectDetector())
+        {
+            TFObjectDetector.Parameters tfodParameters =
+                    tfodMonitorViewId == -1?
+                            new TFObjectDetector.Parameters() : new TFObjectDetector.Parameters(tfodMonitorViewId);
+            tfodParameters.minimumConfidence = TFOD_MIN_CONFIDENCE;
+            tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia.getLocalizer());
+            tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABEL_STONE, LABEL_SKYSTONE);
+        }
+        else
+        {
+            throw new UnsupportedOperationException("This device is not compatible with TensorFlow Object Detection.");
+        }
+
         homographyMapper = new TrcHomographyMapper(cameraRect, worldRect);
     }   //TensorFlowVision
 

@@ -77,8 +77,19 @@ class RobotInfo3543
     static final double PURE_PURSUIT_VEL_KD             = 0.9;
     static final double PURE_PURSUIT_VEL_KF             = 1.0/223;
 
+    /*
     static final double CAMERA_HEIGHT                   = 720.0;    // in pixels.
     static final double CAMERA_WIDTH                    = 1280.0;   // in pixels.
+     */
+
+    static final double HOMOGRAPHY_CAMERA_TOPLEFT_X = 0.0;
+    static final double HOMOGRAPHY_CAMERA_TOPLEFT_Y = 360.0;
+    static final double HOMOGRAPHY_CAMERA_TOPRIGHT_X = 1280.0;
+    static final double HOMOGRAPHY_CAMERA_TOPRIGHT_Y = 360.0;
+    static final double HOMOGRAPHY_CAMERA_BOTTOMLEFT_X = 0.0;
+    static final double HOMOGRAPHY_CAMERA_BOTTOMLEFT_Y = 720.0;
+    static final double HOMOGRAPHY_CAMERA_BOTTOMRIGHT_X = 1280.0;
+    static final double HOMOGRAPHY_CAMERA_BOTTOMRIGHT_Y = 720.0;
 
     // These should be in real-world robot coordinates. Needs calibration after camera is actually mounted in position.
     // Measurement unit: inches
