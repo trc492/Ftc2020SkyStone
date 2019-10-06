@@ -67,19 +67,29 @@ class RobotInfo6541
 
     static final double PIDDRIVE_STALL_TIMEOUT                  = 0.5;      //in seconds.
 
-    public static final double CAMERA_HEIGHT        = 720.0; // in pixels.
-    public static final double CAMERA_WIDTH         = 1280.0; // in pixels.
+    // TODO: need to tune all PID coefficients
+    static final double PURE_PURSUIT_POS_KP                     = 0.011;
+    static final double PURE_PURSUIT_POS_KI                     = 0.0;
+    static final double PURE_PURSUIT_POS_KD                     = 0.001;
+    static final double PURE_PURSUIT_TURN_KP                    = 0.025;
+    static final double PURE_PURSUIT_VEL_KP                     = 0.0;
+    static final double PURE_PURSUIT_VEL_KI                     = 0.0;
+    static final double PURE_PURSUIT_VEL_KD                     = 0.9;
+    static final double PURE_PURSUIT_VEL_KF                     = 1.0/223;
+
+    public static final double CAMERA_HEIGHT                    = 720.0;    // in pixels.
+    public static final double CAMERA_WIDTH                     = 1280.0;   // in pixels.
 
     // These should be in real-world robot coordinates. Needs calibration after camera is actually mounted in position.
     // Measurement unit: inches
     // TODO: Tune all of this
-    public static final double HOMOGRAPHY_WORLD_TOPLEFT_X          = -61.0;
-    public static final double HOMOGRAPHY_WORLD_TOPLEFT_Y          = 83.0;
-    public static final double HOMOGRAPHY_WORLD_TOPRIGHT_X         = 33.0;
-    public static final double HOMOGRAPHY_WORLD_TOPRIGHT_Y         = 83.0;
-    public static final double HOMOGRAPHY_WORLD_BOTTOMLEFT_X       = -39.5;
-    public static final double HOMOGRAPHY_WORLD_BOTTOMLEFT_Y       = 19.0;
-    public static final double HOMOGRAPHY_WORLD_BOTTOMRIGHT_X      = 12.0;
-    public static final double HOMOGRAPHY_WORLD_BOTTOMRIGHT_Y      = 19.0;
+    public static final double HOMOGRAPHY_WORLD_TOPLEFT_X       = -61.0;
+    public static final double HOMOGRAPHY_WORLD_TOPLEFT_Y       = 83.0;
+    public static final double HOMOGRAPHY_WORLD_TOPRIGHT_X      = 33.0;
+    public static final double HOMOGRAPHY_WORLD_TOPRIGHT_Y      = 83.0;
+    public static final double HOMOGRAPHY_WORLD_BOTTOMLEFT_X    = -39.5;
+    public static final double HOMOGRAPHY_WORLD_BOTTOMLEFT_Y    = 19.0;
+    public static final double HOMOGRAPHY_WORLD_BOTTOMRIGHT_X   = 12.0;
+    public static final double HOMOGRAPHY_WORLD_BOTTOMRIGHT_Y   = 19.0;
 
 }   //class RobotInfo6541

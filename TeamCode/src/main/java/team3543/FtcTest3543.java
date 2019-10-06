@@ -27,7 +27,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import common.CommonTest;
 import ftclib.FtcGamepad;
 import trclib.TrcGameController;
-import trclib.TrcPose2D;
+import trclib.TrcPidController;
 import trclib.TrcRobot;
 
 @TeleOp(name="FtcTest3543", group="FtcTest")
@@ -50,7 +50,14 @@ public class FtcTest3543 extends FtcTeleOp3543
         super.initRobot();
 
         moduleName = MODULE_NAME;
-        commonTest.init(MODULE_NAME, robot, MONITOR_LOOP_TIME);
+        commonTest.init(MODULE_NAME, robot, MONITOR_LOOP_TIME,
+                new TrcPidController.PidCoefficients(
+                        RobotInfo3543.PURE_PURSUIT_POS_KP, RobotInfo3543.PURE_PURSUIT_POS_KI,
+                        RobotInfo3543.PURE_PURSUIT_POS_KD),
+                new TrcPidController.PidCoefficients(RobotInfo3543.PURE_PURSUIT_TURN_KP),
+                new TrcPidController.PidCoefficients(
+                        RobotInfo3543.PURE_PURSUIT_VEL_KP, RobotInfo3543.PURE_PURSUIT_VEL_KI,
+                        RobotInfo3543.PURE_PURSUIT_VEL_KD, RobotInfo3543.PURE_PURSUIT_VEL_KF));
     }   //initRobot
 
     //
@@ -61,11 +68,7 @@ public class FtcTest3543 extends FtcTeleOp3543
     public void startMode(TrcRobot.RunMode prevMode, TrcRobot.RunMode nextMode)
     {
         super.startMode(prevMode, nextMode);
-        commonTest.start(new TrcPose2D[] {
-                new TrcPose2D(0,0),
-                new TrcPose2D(0, 24, 0, 0, 50, 0),
-                new TrcPose2D(0, 96, 180, 0, 50, 0),
-                new TrcPose2D(0, 120, 180)});
+        commonTest.start();
     }   //startMode
 
     @Override

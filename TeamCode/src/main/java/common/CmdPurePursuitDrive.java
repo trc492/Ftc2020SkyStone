@@ -24,7 +24,7 @@ package common;
 
 import trclib.TrcDriveBase;
 import trclib.TrcEvent;
-import trclib.TrcHolonomicPurePursuitController;
+import trclib.TrcHolonomicPurePursuitDrive;
 import trclib.TrcPath;
 import trclib.TrcPidController;
 import trclib.TrcPose2D;
@@ -35,16 +35,16 @@ public class CmdPurePursuitDrive implements TrcRobot.RobotCommand
 {
     private static final String instanceName = "CmdPurePursuitDrive";
 
-    private TrcHolonomicPurePursuitController purePursuitDrive;
+    private TrcHolonomicPurePursuitDrive purePursuitDrive;
     private TrcEvent event;
 
     public CmdPurePursuitDrive(
-            TrcDriveBase driveBase, TrcPidController.PidCoefficients distPid, TrcPidController.PidCoefficients turnPid,
+            TrcDriveBase driveBase, TrcPidController.PidCoefficients posPid, TrcPidController.PidCoefficients turnPid,
             TrcPidController.PidCoefficients velPid)
     {
-        purePursuitDrive = new TrcHolonomicPurePursuitController(
+        purePursuitDrive = new TrcHolonomicPurePursuitDrive(
                 "PurePursuitDrive", driveBase, 10, 3.0, 2,
-                distPid, turnPid, velPid);
+                posPid, turnPid, velPid);
         event = new TrcEvent("event");
     }   //CmdPurePursuitDrive
 

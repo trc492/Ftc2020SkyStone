@@ -27,6 +27,8 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import common.CommonTest;
 import ftclib.FtcGamepad;
 import trclib.TrcGameController;
+import trclib.TrcPidController;
+import trclib.TrcRobot;
 
 @TeleOp(name="FtcTest6541", group="FtcTest")
 public class FtcTest6541 extends FtcTeleOp6541
@@ -48,12 +50,33 @@ public class FtcTest6541 extends FtcTeleOp6541
         super.initRobot();
 
         moduleName = MODULE_NAME;
-        commonTest.init(MODULE_NAME, robot, MONITOR_LOOP_TIME);
+        commonTest.init(MODULE_NAME, robot, MONITOR_LOOP_TIME,
+                new TrcPidController.PidCoefficients(
+                        RobotInfo6541.PURE_PURSUIT_POS_KP, RobotInfo6541.PURE_PURSUIT_POS_KI,
+                        RobotInfo6541.PURE_PURSUIT_POS_KD),
+                new TrcPidController.PidCoefficients(RobotInfo6541.PURE_PURSUIT_TURN_KP),
+                new TrcPidController.PidCoefficients(
+                        RobotInfo6541.PURE_PURSUIT_VEL_KP, RobotInfo6541.PURE_PURSUIT_VEL_KI,
+                        RobotInfo6541.PURE_PURSUIT_VEL_KD, RobotInfo6541.PURE_PURSUIT_VEL_KF));
     }   //initRobot
 
     //
     // Overrides TrcRobot.RobotMode methods.
     //
+
+    @Override
+    public void startMode(TrcRobot.RunMode prevMode, TrcRobot.RunMode nextMode)
+    {
+        super.startMode(prevMode, nextMode);
+        commonTest.start();
+    }   //startMode
+
+    @Override
+    public void stopMode(TrcRobot.RunMode prevMode, TrcRobot.RunMode nextMode)
+    {
+        commonTest.stop();
+        super.stopMode(prevMode, nextMode);
+    }   //stopMode
 
     @Override
     public void runPeriodic(double elapsedTime)

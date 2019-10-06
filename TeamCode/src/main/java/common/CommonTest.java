@@ -97,7 +97,9 @@ public class CommonTest
     // Implements FtcOpMode interface.
     //
 
-    public void init(String moduleName, Robot robot, boolean monitorLoopTime)
+    public void init(
+            String moduleName, Robot robot, boolean monitorLoopTime, TrcPidController.PidCoefficients posPidCoeff,
+            TrcPidController.PidCoefficients turnPidCoeff, TrcPidController.PidCoefficients velPidCoeff)
     {
         this.moduleName = moduleName;
         this.robot = robot;
@@ -192,10 +194,7 @@ public class CommonTest
                 if (robot.hasRobot)
                 {
                     purePursuitDriveCommand = new CmdPurePursuitDrive(
-                            robot.driveBase,
-                            new TrcPidController.PidCoefficients(0.011, 0, 0.001),
-                            new TrcPidController.PidCoefficients(0.025),
-                            new TrcPidController.PidCoefficients(0, 0, 0, 1.0 / 223));
+                            robot.driveBase, posPidCoeff, turnPidCoeff, velPidCoeff);
                 }
                 break;
         }
@@ -212,11 +211,16 @@ public class CommonTest
         sm.start(State.START);
     }   //init
 
-    public void start(TrcPose2D... poses)
+    public void start()
     {
         if (test == Test.PURE_PURSUIT_DRIVE)
         {
-            purePursuitDriveCommand.start(poses);
+            purePursuitDriveCommand.start(
+                    new TrcPose2D[] {
+                            new TrcPose2D(0,0),
+                            new TrcPose2D(0, 24, 0, 0, 50, 0),
+                            new TrcPose2D(0, 96, 180, 0, 50, 0),
+                            new TrcPose2D(0, 120, 180)});
         }
     }   //start
 
