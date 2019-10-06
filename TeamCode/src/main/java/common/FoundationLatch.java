@@ -22,6 +22,18 @@
 
 package common;
 
+import ftclib.FtcServo;
+
 public class FoundationLatch
 {
+    private FtcServo servo;
+    public FoundationLatch()
+    {
+        servo = new FtcServo("FoundationLatch");
+    }
+    public void setPosition(double position)
+    {
+        servo.setPosition(position);
+    }
+
 }   //class FoundationLatch
