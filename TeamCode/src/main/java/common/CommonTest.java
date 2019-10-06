@@ -31,6 +31,8 @@ import ftclib.FtcMenu;
 import ftclib.FtcValueMenu;
 import trclib.TrcEvent;
 import trclib.TrcLoopPerformanceMonitor;
+import trclib.TrcPidController;
+import trclib.TrcPose2D;
 import trclib.TrcStateMachine;
 import trclib.TrcTimer;
 import trclib.TrcUtil;
@@ -48,7 +50,8 @@ public class CommonTest
         GYRO_TURN,
         TUNE_X_PID,
         TUNE_Y_PID,
-        TUNE_TURN_PID
+        TUNE_TURN_PID,
+        PURE_PURSUIT_DRIVE
     }   //enum Test
 
     private enum State
@@ -86,6 +89,7 @@ public class CommonTest
 
     private CmdTimedDrive timedDriveCommand = null;
     private CmdPidDrive pidDriveCommand = null;
+    private CmdPurePursuitDrive purePursuitDriveCommand = null;
 
     private int motorIndex = 0;
 
@@ -93,7 +97,9 @@ public class CommonTest
     // Implements FtcOpMode interface.
     //
 
-    public void init(String moduleName, Robot robot, boolean monitorLoopTime)
+    public void init(
+            String moduleName, Robot robot, boolean monitorLoopTime, TrcPidController.PidCoefficients posPidCoeff,
+            TrcPidController.PidCoefficients turnPidCoeff, TrcPidController.PidCoefficients velPidCoeff)
     {
         this.moduleName = moduleName;
         this.robot = robot;
@@ -183,6 +189,14 @@ public class CommonTest
                             drivePower, true);
                 }
                 break;
+
+            case PURE_PURSUIT_DRIVE:
+                if (robot.hasRobot)
+                {
+                    purePursuitDriveCommand = new CmdPurePursuitDrive(
+                            robot.driveBase, posPidCoeff, turnPidCoeff, velPidCoeff);
+                }
+                break;
         }
         //
         // Only SENSORS_TEST needs TensorFlow, shut it down for all other tests.
@@ -196,6 +210,27 @@ public class CommonTest
 
         sm.start(State.START);
     }   //init
+
+    public void start()
+    {
+        if (test == Test.PURE_PURSUIT_DRIVE)
+        {
+            purePursuitDriveCommand.start(
+                    new TrcPose2D[] {
+                            new TrcPose2D(0,0),
+                            new TrcPose2D(0, 24, 0, 0, 50, 0),
+                            new TrcPose2D(0, 96, 180, 0, 50, 0),
+                            new TrcPose2D(0, 120, 180)});
+        }
+    }   //start
+
+    public void stop()
+    {
+        if (test == Test.PURE_PURSUIT_DRIVE)
+        {
+            purePursuitDriveCommand.cancel();
+        }
+    }   //stop
 
     public boolean shouldRunTeleOpPeriodic()
     {
@@ -221,6 +256,13 @@ public class CommonTest
                 if (robot.hasRobot)
                 {
                     doMotorsTest();
+                }
+                break;
+
+            case PURE_PURSUIT_DRIVE:
+                if (robot.hasRobot)
+                {
+                    purePursuitDriveCommand.cmdPeriodic(elapsedTime);
                 }
                 break;
         }
@@ -345,6 +387,7 @@ public class CommonTest
         testMenu.addChoice("Tune X PID", Test.TUNE_X_PID, false, tuneKpMenu);
         testMenu.addChoice("Tune Y PID", Test.TUNE_Y_PID, false, tuneKpMenu);
         testMenu.addChoice("Tune Turn PID", Test.TUNE_TURN_PID, false, tuneKpMenu);
+        testMenu.addChoice("Pure Pursuit Drive", Test.PURE_PURSUIT_DRIVE, false);
 
         driveTimeMenu.setChildMenu(drivePowerMenu);
         driveDistanceMenu.setChildMenu(drivePowerMenu);
