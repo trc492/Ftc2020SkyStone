@@ -22,6 +22,21 @@
 
 package common;
 
+import ftclib.FtcServo;
+import trclib.TrcEnhancedServo;
+
 public class ArmExtender
 {
+    //Defining the extender
+    FtcServo extender = new FtcServo("armExtender");
+    TrcEnhancedServo enhancedExtender = new TrcEnhancedServo("enhancedArmExtender", extender);
+    public ArmExtender() {
+        enhancedExtender.setStepMode(0.1,0,1);
+    }
+    public void move(double power) {
+        enhancedExtender.setPower(power);
+    }
+    public void setPos(double target) {
+        enhancedExtender.setPosition(target);
+    }
 }   //class ArmExtender
