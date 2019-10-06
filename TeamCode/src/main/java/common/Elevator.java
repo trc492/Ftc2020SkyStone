@@ -13,7 +13,7 @@
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT. IN NO EVENT SHALL THE
  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
@@ -24,6 +24,7 @@ package common;
 
 import ftclib.FtcDcMotor;
 import ftclib.FtcDigitalInput;
+import team3543.RobotInfo3543;
 import trclib.TrcEvent;
 import trclib.TrcPidActuator;
 import trclib.TrcPidController;
@@ -36,7 +37,7 @@ public class Elevator
     private TrcPidController pidController;
     private TrcPidActuator pidElevator;
 
-    public Elevator()
+    public Elevator(TrcPidController.PidCoefficients pidCoeff, double calPower, double minHeight, double maxHeight, double scale, double offset)
     {
         upperLimitSwitch = new FtcDigitalInput("elevatorUpperLimit");
         lowerLimitSwitch = new FtcDigitalInput("elevatorLowerLimit");
@@ -47,13 +48,15 @@ public class Elevator
         elevatorMotor.setBrakeModeEnabled(true);
         elevatorMotor.setOdometryEnabled(true);
 
-        pidController = new TrcPidController("elevatorPidController",
-                new TrcPidController.PidCoefficients(
-                        RobotInfo3543.ELEVATOR_KP, RobotInfo3543.ELEVATOR_KI, RobotInfo3543.ELEVATOR_KD),
+        // The robot info is specific to one team at the moment, make it a parameter later to pass in
+
+        pidController = new TrcPidController("elevatorPidController", pidCoeff,
+                //new TrcPidController.PidCoefficients(
+                  //      RobotInfo3543.ELEVATOR_KP, RobotInfo3543.ELEVATOR_KI, RobotInfo3543.ELEVATOR_KD),
                 RobotInfo3543.ELEVATOR_TOLERANCE, this::getPosition);
         pidElevator = new TrcPidActuator("pidElevator", elevatorMotor, lowerLimitSwitch, pidController,
-                RobotInfo3543.ELEVATOR_CAL_POWER, RobotInfo3543.ELEVATOR_MIN_HEIGHT, RobotInfo3543.ELEVATOR_MAX_HEIGHT);
-        pidElevator.setPositionScale(RobotInfo3543.ELEVATOR_INCHES_PER_COUNT, RobotInfo3543.ELEVATOR_ZERO_OFFSET);
+                calPower, minHeight, maxHeight);
+        pidElevator.setPositionScale(scale, offset);
     }
 
     public void zeroCalibrate()
