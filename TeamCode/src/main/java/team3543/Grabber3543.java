@@ -21,8 +21,6 @@
  */
 
 package team3543;
-
-import ftclib.FtcDcMotor;
 import ftclib.FtcServo;
 
 public class Grabber3543
