@@ -33,7 +33,7 @@ import ftclib.FtcValueMenu;
 import trclib.TrcRobot;
 
 @Autonomous(name="FtcAuto3543", group="FtcAuto")
-public class FtcAuto3543 extends CommonAuto
+public class FtcAuto3543 extends CommonAuto<Robot3543>
 {
     public enum Strategy
     {

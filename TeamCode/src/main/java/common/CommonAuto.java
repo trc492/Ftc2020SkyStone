@@ -32,7 +32,14 @@ import ftclib.FtcValueMenu;
 import trclib.TrcRobot;
 import trclib.TrcUtil;
 
-public abstract class CommonAuto extends FtcOpMode
+/**
+ * @param <TeamSpecificRobotType> The specific subclass of {@link Robot} to use for the
+ *                                {@link #robot} field. This allows team-specific code extending
+ *                                this class to use the {@link #robot} field to access team-specific
+ *                                subsystems without needing to cast it (to {@link team3543.Robot3543}
+ *                                or {@link team6541.Robot6541} accordingly).
+ */
+public abstract class CommonAuto<TeamSpecificRobotType extends Robot> extends FtcOpMode
 {
     public enum MatchType
     {
@@ -51,7 +58,7 @@ public abstract class CommonAuto extends FtcOpMode
     protected static final boolean USE_TRACELOG = true;
 
     protected String moduleName = null;
-    protected Robot robot = null;
+    protected TeamSpecificRobotType robot = null;
     protected MatchType matchType = MatchType.PRACTICE;
     protected int matchNumber = 0;
     protected Alliance alliance = Alliance.RED_ALLIANCE;

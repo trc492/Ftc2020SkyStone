@@ -30,7 +30,7 @@ import trclib.TrcGameController;
 import trclib.TrcRobot;
 
 @TeleOp(name="FtcTeleOp6541", group="FtcTeleOp")
-public class FtcTeleOp6541 extends CommonTeleOp
+public class FtcTeleOp6541 extends CommonTeleOp<Robot6541>
 {
     private static final String MODULE_NAME = "FtcTeleOp6541";
 

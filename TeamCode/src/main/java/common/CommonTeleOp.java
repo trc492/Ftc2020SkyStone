@@ -28,7 +28,16 @@ import hallib.HalDashboard;
 import trclib.TrcGameController;
 import trclib.TrcRobot;
 
-public abstract class CommonTeleOp extends FtcOpMode implements TrcGameController.ButtonHandler
+/**
+ * @param <TeamSpecificRobotType> The specific subclass of {@link Robot} to use for the
+ *                                {@link #robot} field. This allows team-specific code extending
+ *                                this class to use the {@link #robot} field to access team-specific
+ *                                subsystems without needing to cast it (to {@link team3543.Robot3543}
+ *                                or {@link team6541.Robot6541} accordingly).
+ */
+public abstract class CommonTeleOp<TeamSpecificRobotType extends Robot>
+        extends FtcOpMode
+        implements TrcGameController.ButtonHandler
 {
     protected enum DriveMode
     {
@@ -37,7 +46,7 @@ public abstract class CommonTeleOp extends FtcOpMode implements TrcGameControlle
     }   //enum DriveMode
 
     protected String moduleName = null;
-    protected Robot robot = null;
+    protected TeamSpecificRobotType robot = null;
 
     protected HalDashboard dashboard;
 
