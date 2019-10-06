@@ -22,6 +22,20 @@
 
 package common;
 
+import ftclib.FtcServo;
+import trclib.TrcEnhancedServo;
+
 public class Wrist
 {
+    FtcServo yawServo = new FtcServo("grabberYaw");
+    TrcEnhancedServo enhancedYawServo = new TrcEnhancedServo("enhancedYawServo", yawServo);
+
+    public Wrist() {
+        enhancedYawServo.setStepMode(0.1, 0.25, 0.75);
+    }
+
+    public void controlledYawServo(double yawPower) {
+        enhancedYawServo.setPower(yawPower);
+    }
+
 }   //class Wrist
