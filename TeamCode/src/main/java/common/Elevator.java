@@ -36,7 +36,9 @@ public class Elevator
     private TrcPidController pidController;
     private TrcPidActuator pidElevator;
 
-    public Elevator()
+    public Elevator(
+            TrcPidController.PidCoefficients pidCoeff, double calPower, double minHeight, double maxHeight,
+            double scale, double offset, double tolerance)
     {
         upperLimitSwitch = new FtcDigitalInput("elevatorUpperLimit");
         lowerLimitSwitch = new FtcDigitalInput("elevatorLowerLimit");
@@ -47,55 +49,52 @@ public class Elevator
         elevatorMotor.setBrakeModeEnabled(true);
         elevatorMotor.setOdometryEnabled(true);
 
-        /*
-        pidController = new TrcPidController("elevatorPidController",
-                new TrcPidController.PidCoefficients(
-                        RobotInfo3543.ELEVATOR_KP, RobotInfo3543.ELEVATOR_KI, RobotInfo3543.ELEVATOR_KD),
-                RobotInfo3543.ELEVATOR_TOLERANCE, this::getPosition);
-        pidElevator = new TrcPidActuator("pidElevator", elevatorMotor, lowerLimitSwitch, pidController,
-                RobotInfo3543.ELEVATOR_CAL_POWER, RobotInfo3543.ELEVATOR_MIN_HEIGHT, RobotInfo3543.ELEVATOR_MAX_HEIGHT);
-        pidElevator.setPositionScale(RobotInfo3543.ELEVATOR_INCHES_PER_COUNT, RobotInfo3543.ELEVATOR_ZERO_OFFSET);
-         */
-    }
+        pidController = new TrcPidController(
+                "elevatorPidController", pidCoeff, tolerance, this::getPosition);
+        pidElevator = new TrcPidActuator(
+                "pidElevator", elevatorMotor, lowerLimitSwitch, pidController, calPower,
+                minHeight, maxHeight);
+        pidElevator.setPositionScale(scale, offset);
+    }   //Elevator
 
     public void zeroCalibrate()
     {
         pidElevator.zeroCalibrate();
-    }
+    }   //zeroCalibrate
 
     public void setManualOverride(boolean enabled)
     {
         pidElevator.setManualOverride(enabled);
-    }
+    }   //setManualOverride
 
     public void setPower(double power)
     {
         pidElevator.setPower(power);
-    }
+    }   //setPower
 
     public void setPosition(double target, TrcEvent event, double timeout)
     {
         pidElevator.setTarget(target, event, timeout);
-    }
+    }   //setPosition
 
     public void setPosition(double target)
     {
         pidElevator.setTarget(target, null, 0.0);
-    }
+    }   //setPosition
 
     public double getPosition()
     {
         return pidElevator.getPosition();
-    }
+    }   //getPosition
 
     public boolean isUpperLimitSwitchActive()
     {
         return upperLimitSwitch.isActive();
-    }
+    }   //isUpperLimitSwitchActive
 
     public boolean isLowerLimitSwitchActive()
     {
         return lowerLimitSwitch.isActive();
-    }
+    }   //isLowerLimitSwitchActive
 
 }   //class Elevator
