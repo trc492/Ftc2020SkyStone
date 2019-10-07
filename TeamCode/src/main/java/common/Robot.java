@@ -319,22 +319,6 @@ public class Robot
         vuforiaVision = new VuforiaVision(this, vuforia, robotFromCamera);
     }   //initVuforia
 
-    // TODO: Take in teamNum from team-specific Robot class.
-    protected void initTensorFlow(
-            boolean showTensorFlowView, double cameraWidth, double cameraHeight,
-            TrcHomographyMapper.Rectangle worldRect)
-    {
-        System.loadLibrary(OPENCV_NATIVE_LIBRARY_NAME);//CodeReview: Is this the right place to load OpenCV?!
-
-        int tfodMonitorViewId = !showTensorFlowView ? -1 :
-                opMode.hardwareMap.appContext.getResources().getIdentifier(
-                        "tfodMonitorViewId", "id", opMode.hardwareMap.appContext.getPackageName());
-        tensorFlowVision = new TensorFlowVision(
-                vuforia, tfodMonitorViewId, cameraWidth, cameraHeight, worldRect, globalTracer);
-        tensorFlowVision.setEnabled(true);
-        globalTracer.traceInfo(moduleName, "Enabling TensorFlow.");
-    }   //initTensorFlow
-
     protected void initTensorFlow(
             boolean showTensorFlowView, TrcHomographyMapper.Rectangle cameraRect,
             TrcHomographyMapper.Rectangle worldRect)

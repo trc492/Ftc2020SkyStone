@@ -23,7 +23,6 @@
 package team3543;
 
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
-import org.opencv.core.Point;
 
 import common.Robot;
 import ftclib.FtcDcMotor;
@@ -84,34 +83,30 @@ public class Robot3543 extends Robot
             (runMode == TrcRobot.RunMode.AUTO_MODE || runMode == TrcRobot.RunMode.TEST_MODE))
         {
             TrcHomographyMapper.Rectangle cameraRect = new TrcHomographyMapper.Rectangle(
-                    new Point(RobotInfo3543.HOMOGRAPHY_CAMERA_TOPLEFT_X, RobotInfo3543.HOMOGRAPHY_CAMERA_TOPLEFT_Y),
-                    new Point(RobotInfo3543.HOMOGRAPHY_CAMERA_TOPRIGHT_X, RobotInfo3543.HOMOGRAPHY_CAMERA_TOPRIGHT_Y),
-                    new Point(RobotInfo3543.HOMOGRAPHY_CAMERA_BOTTOMLEFT_X, RobotInfo3543.HOMOGRAPHY_CAMERA_BOTTOMLEFT_Y),
-                    new Point(RobotInfo3543.HOMOGRAPHY_CAMERA_BOTTOMRIGHT_X, RobotInfo3543.HOMOGRAPHY_CAMERA_BOTTOMRIGHT_Y));
+                    RobotInfo3543.HOMOGRAPHY_CAMERA_TOPLEFT_X, RobotInfo3543.HOMOGRAPHY_CAMERA_TOPLEFT_Y,
+                    RobotInfo3543.HOMOGRAPHY_CAMERA_TOPRIGHT_X, RobotInfo3543.HOMOGRAPHY_CAMERA_TOPRIGHT_Y,
+                    RobotInfo3543.HOMOGRAPHY_CAMERA_BOTTOMLEFT_X, RobotInfo3543.HOMOGRAPHY_CAMERA_BOTTOMLEFT_Y,
+                    RobotInfo3543.HOMOGRAPHY_CAMERA_BOTTOMRIGHT_X, RobotInfo3543.HOMOGRAPHY_CAMERA_BOTTOMRIGHT_Y);
 
             TrcHomographyMapper.Rectangle worldRect = new TrcHomographyMapper.Rectangle(
-                    RobotInfo3543.HOMOGRAPHY_WORLD_TOPLEFT_X,
-                    RobotInfo3543.HOMOGRAPHY_WORLD_TOPLEFT_Y,
-                    RobotInfo3543.HOMOGRAPHY_WORLD_TOPRIGHT_X,
-                    RobotInfo3543.HOMOGRAPHY_WORLD_TOPRIGHT_Y,
-                    RobotInfo3543.HOMOGRAPHY_WORLD_BOTTOMLEFT_X,
-                    RobotInfo3543.HOMOGRAPHY_WORLD_BOTTOMLEFT_Y,
-                    RobotInfo3543.HOMOGRAPHY_WORLD_BOTTOMRIGHT_X,
-                    RobotInfo3543.HOMOGRAPHY_WORLD_BOTTOMRIGHT_Y);
+                    RobotInfo3543.HOMOGRAPHY_WORLD_TOPLEFT_X, RobotInfo3543.HOMOGRAPHY_WORLD_TOPLEFT_Y,
+                    RobotInfo3543.HOMOGRAPHY_WORLD_TOPRIGHT_X, RobotInfo3543.HOMOGRAPHY_WORLD_TOPRIGHT_Y,
+                    RobotInfo3543.HOMOGRAPHY_WORLD_BOTTOMLEFT_X, RobotInfo3543.HOMOGRAPHY_WORLD_BOTTOMLEFT_Y,
+                    RobotInfo3543.HOMOGRAPHY_WORLD_BOTTOMRIGHT_X, RobotInfo3543.HOMOGRAPHY_WORLD_BOTTOMRIGHT_Y);
 
             initTensorFlow(SHOW_TENSORFLOW_VIEW, cameraRect, worldRect);
         }
-        //
-        // Initialize DriveBase.
-        //
+
         if (HAS_ROBOT)
         {
+            //
+            // Initialize DriveBase.
+            //
             initDriveBase();
+            //
+            // Initialize other subsystems.
+            //
         }
-        //
-        // Initialize other subsystems.
-        //
-
         //
         // Tell the driver initialization is complete.
         //

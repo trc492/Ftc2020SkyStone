@@ -82,27 +82,31 @@ public class Robot6541 extends Robot
         if (USE_TENSORFLOW && vuforia != null &&
             (runMode == TrcRobot.RunMode.AUTO_MODE || runMode == TrcRobot.RunMode.TEST_MODE))
         {
-            initTensorFlow(SHOW_TENSORFLOW_VIEW, RobotInfo6541.CAMERA_WIDTH, RobotInfo6541.CAMERA_HEIGHT,
-                    new TrcHomographyMapper.Rectangle(RobotInfo6541.HOMOGRAPHY_WORLD_TOPLEFT_X,
-                                                      RobotInfo6541.HOMOGRAPHY_WORLD_TOPLEFT_Y,
-                                                      RobotInfo6541.HOMOGRAPHY_WORLD_TOPRIGHT_X,
-                                                      RobotInfo6541.HOMOGRAPHY_WORLD_TOPRIGHT_Y,
-                                                      RobotInfo6541.HOMOGRAPHY_WORLD_BOTTOMLEFT_X,
-                                                      RobotInfo6541.HOMOGRAPHY_WORLD_BOTTOMLEFT_Y,
-                                                      RobotInfo6541.HOMOGRAPHY_WORLD_BOTTOMRIGHT_X,
-                                                      RobotInfo6541.HOMOGRAPHY_WORLD_BOTTOMRIGHT_Y));
+            TrcHomographyMapper.Rectangle cameraRect = new TrcHomographyMapper.Rectangle(
+                    RobotInfo6541.HOMOGRAPHY_CAMERA_TOPLEFT_X, RobotInfo6541.HOMOGRAPHY_CAMERA_TOPLEFT_Y,
+                    RobotInfo6541.HOMOGRAPHY_CAMERA_TOPRIGHT_X, RobotInfo6541.HOMOGRAPHY_CAMERA_TOPRIGHT_Y,
+                    RobotInfo6541.HOMOGRAPHY_CAMERA_BOTTOMLEFT_X, RobotInfo6541.HOMOGRAPHY_CAMERA_BOTTOMLEFT_Y,
+                    RobotInfo6541.HOMOGRAPHY_CAMERA_BOTTOMRIGHT_X, RobotInfo6541.HOMOGRAPHY_CAMERA_BOTTOMRIGHT_Y);
+
+            TrcHomographyMapper.Rectangle worldRect = new TrcHomographyMapper.Rectangle(
+                    RobotInfo6541.HOMOGRAPHY_WORLD_TOPLEFT_X, RobotInfo6541.HOMOGRAPHY_WORLD_TOPLEFT_Y,
+                    RobotInfo6541.HOMOGRAPHY_WORLD_TOPRIGHT_X, RobotInfo6541.HOMOGRAPHY_WORLD_TOPRIGHT_Y,
+                    RobotInfo6541.HOMOGRAPHY_WORLD_BOTTOMLEFT_X, RobotInfo6541.HOMOGRAPHY_WORLD_BOTTOMLEFT_Y,
+                    RobotInfo6541.HOMOGRAPHY_WORLD_BOTTOMRIGHT_X, RobotInfo6541.HOMOGRAPHY_WORLD_BOTTOMRIGHT_Y);
+
+            initTensorFlow(SHOW_TENSORFLOW_VIEW, cameraRect, worldRect);
         }
-        //
-        // Initialize DriveBase.
-        //
+
         if (HAS_ROBOT)
         {
+            //
+            // Initialize DriveBase.
+            //
             initDriveBase();
+            //
+            // Initialize other subsystems.
+            //
         }
-        //
-        // Initialize other subsystems.
-        //
-
         //
         // Tell the driver initialization is complete.
         //
