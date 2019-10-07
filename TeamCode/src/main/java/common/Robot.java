@@ -59,6 +59,12 @@ public class Robot
         HOLONOMIC_MODE,
     }   //enum DriveMode
 
+    public interface Grabber
+    {
+        void grab();
+        void release();
+    }   //interface Grabber
+
     private static final String OPENCV_NATIVE_LIBRARY_NAME = "opencv_java3";
     //
     // Global objects.
@@ -107,6 +113,11 @@ public class Robot
     //
     // Other common subsystems.
     //
+    public Elevator elevator = null;
+    public ArmExtender armExtender = null;
+    public Wrist wrist = null;
+    public FoundationLatch foundationLatch = null;
+    public Grabber grabber = null;
 
     public Robot(
             TrcRobot.RunMode runMode, String robotName, VuforiaLocalizer.CameraDirection cameraDir,
@@ -156,6 +167,12 @@ public class Robot
         {
             imu = new FtcBNO055Imu("imu");
             gyro = imu.gyro;
+            // TODO:
+            // Create Elevator.
+            // Create ArmExtender.
+            // Create Wrist
+            // Create FoundationLatch
+            // Create Grabber
         }
     }   //Robot
 

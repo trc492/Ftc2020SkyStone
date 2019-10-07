@@ -59,9 +59,6 @@ public class Robot6541 extends Robot
     // Global objects.
     //
     public static final String robotName = "Robot6541";
-    //
-    // Other subsystems.
-    //
 
     public Robot6541(TrcRobot.RunMode runMode)
     {
@@ -103,9 +100,6 @@ public class Robot6541 extends Robot
             // Initialize DriveBase.
             //
             initDriveBase();
-            //
-            // Initialize other subsystems.
-            //
         }
         //
         // Tell the driver initialization is complete.

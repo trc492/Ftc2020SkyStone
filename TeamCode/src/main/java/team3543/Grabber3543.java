@@ -21,20 +21,27 @@
  */
 
 package team3543;
+import common.Robot;
 import ftclib.FtcServo;
 
-public class Grabber3543
+public class Grabber3543 implements Robot.Grabber
 {
     private FtcServo grabber = new FtcServo("grabber");
 
-    public void close()
+    //
+    // Implements Robot.Grabber interface
+    //
+
+    @Override
+    public void grab()
     {
         grabber.setPosition(RobotInfo3543.GRABBER_CLOSE_POS);
-    }   //close
+    }   //grab
 
-    public void open()
+    @Override
+    public void release()
     {
         grabber.setPosition(RobotInfo3543.GRABBER_OPEN_POS);
-    }   //open
+    }   //release
 
 }   //class Grabber3543

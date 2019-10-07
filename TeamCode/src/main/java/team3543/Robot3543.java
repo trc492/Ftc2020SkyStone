@@ -59,9 +59,6 @@ public class Robot3543 extends Robot
     // Global objects.
     //
     public static final String robotName = "Robot3543";
-    //
-    // Other subsystems.
-    //
 
     public Robot3543(TrcRobot.RunMode runMode)
     {
@@ -103,9 +100,6 @@ public class Robot3543 extends Robot
             // Initialize DriveBase.
             //
             initDriveBase();
-            //
-            // Initialize other subsystems.
-            //
         }
         //
         // Tell the driver initialization is complete.
