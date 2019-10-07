@@ -100,6 +100,9 @@ public class Robot6541 extends Robot
             // Initialize DriveBase.
             //
             initDriveBase();
+            //
+            // Initialize other subsystems.
+            //
         }
         //
         // Tell the driver initialization is complete.

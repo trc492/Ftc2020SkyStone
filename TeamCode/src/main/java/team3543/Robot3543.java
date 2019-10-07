@@ -100,6 +100,9 @@ public class Robot3543 extends Robot
             // Initialize DriveBase.
             //
             initDriveBase();
+            //
+            // Initialize other subsystems.
+            //
         }
         //
         // Tell the driver initialization is complete.
