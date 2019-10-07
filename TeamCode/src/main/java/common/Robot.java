@@ -116,8 +116,8 @@ public class Robot
     public Elevator elevator = null;
     public ArmExtender armExtender = null;
     public Wrist wrist = null;
-    public FoundationLatch foundationLatch = null;
     public Grabber grabber = null;
+    public FoundationLatch foundationLatch = null;
 
     public Robot(
             TrcRobot.RunMode runMode, String robotName, VuforiaLocalizer.CameraDirection cameraDir,
@@ -171,8 +171,8 @@ public class Robot
             // Create Elevator.
             // Create ArmExtender.
             // Create Wrist
-            // Create FoundationLatch
             // Create Grabber
+            // Create FoundationLatch
         }
     }   //Robot
 
