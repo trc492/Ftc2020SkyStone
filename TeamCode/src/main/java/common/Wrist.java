@@ -27,15 +27,17 @@ import trclib.TrcEnhancedServo;
 
 public class Wrist
 {
-    FtcServo yawServo = new FtcServo("grabberYaw");
-    TrcEnhancedServo enhancedYawServo = new TrcEnhancedServo("enhancedYawServo", yawServo);
+    FtcServo wrist = new FtcServo("wrist");
+    TrcEnhancedServo enhancedWrist = new TrcEnhancedServo("enhancedYawServo", wrist);
 
-    public Wrist() {
-        enhancedYawServo.setStepMode(0.1, 0.25, 0.75);
-    }
+    public Wrist(double maxStepRate, double minPos, double maxPos)
+    {
+        enhancedWrist.setStepMode(maxStepRate, minPos, maxPos);
+    }   //Wrist
 
-    public void controlledYawServo(double yawPower) {
-        enhancedYawServo.setPower(yawPower);
-    }
+    public void setPower(double power)
+    {
+        enhancedWrist.setPower(power);
+    }   //setPower
 
 }   //class Wrist

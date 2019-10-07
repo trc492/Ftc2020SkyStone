@@ -92,4 +92,8 @@ class RobotInfo6541
     static final double HOMOGRAPHY_WORLD_BOTTOMRIGHT_X  = 12.0;
     static final double HOMOGRAPHY_WORLD_BOTTOMRIGHT_Y  = 19.0;
 
+    // Grabber subsystem.
+    static final double GRABBER_GRAB_POWER              = 0.5;
+    static final double GRABBER_HOLD_POWER              = 0.1;
+
 }   //class RobotInfo6541

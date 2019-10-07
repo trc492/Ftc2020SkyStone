@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 Titan Robotics Club (http://www.titanrobotics.com)
+ * Copyright (c) 2019 Titan Robotics Club (http://www.titanrobotics.com)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,18 +25,16 @@ import ftclib.FtcServo;
 
 public class Grabber3543
 {
-    private static final double CLOSEPOS = 0;
-    private static final double OPENPOS = 1;
+    private FtcServo grabber = new FtcServo("grabber");
 
-    FtcServo pinchServo = new FtcServo("pinchServo");
-
-    public void closeGrabber()
+    public void close()
     {
-        pinchServo.setPosition(CLOSEPOS);
-    }   //grabberPinch
+        grabber.setPosition(RobotInfo3543.GRABBER_CLOSE_POS);
+    }   //close
 
-    public void openGrabber()
+    public void open()
     {
-        pinchServo.setPosition(OPENPOS);
-    }
+        grabber.setPosition(RobotInfo3543.GRABBER_OPEN_POS);
+    }   //open
+
 }   //class Grabber3543

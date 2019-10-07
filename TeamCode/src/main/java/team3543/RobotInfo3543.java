@@ -103,4 +103,8 @@ class RobotInfo3543
     static final double HOMOGRAPHY_WORLD_BOTTOMRIGHT_X  = 12.0;
     static final double HOMOGRAPHY_WORLD_BOTTOMRIGHT_Y  = 19.0;
 
+    // Grabber subsystem.
+    static final double GRABBER_OPEN_POS                = 1.0;
+    static final double GRABBER_CLOSE_POS               = 0.0;
+
 }   //class RobotInfo3543

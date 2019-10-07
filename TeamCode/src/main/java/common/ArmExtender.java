@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 Titan Robotics Club (http://www.titanrobotics.com)
+ * Copyright (c) 2019 Titan Robotics Club (http://www.titanrobotics.com)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,16 +27,22 @@ import trclib.TrcEnhancedServo;
 
 public class ArmExtender
 {
-    //Defining the extender
-    FtcServo extender = new FtcServo("armExtender");
-    TrcEnhancedServo enhancedExtender = new TrcEnhancedServo("enhancedArmExtender", extender);
-    public ArmExtender() {
-        enhancedExtender.setStepMode(0.1,0,1);
-    }
-    public void move(double power) {
+    private FtcServo extender = new FtcServo("armExtender");
+    private TrcEnhancedServo enhancedExtender = new TrcEnhancedServo("enhancedArmExtender", extender);
+
+    public ArmExtender(double maxStepRate, double minPos, double maxPos)
+    {
+        enhancedExtender.setStepMode(maxStepRate,minPos,maxPos);
+    }   //ArmExtender
+
+    public void setPower(double power)
+    {
         enhancedExtender.setPower(power);
-    }
-    public void setPos(double target) {
-        enhancedExtender.setPosition(target);
-    }
+    }   //setPower
+
+    public void setPosition(double position)
+    {
+        enhancedExtender.setPosition(position);
+    }   //setPosition
+
 }   //class ArmExtender
