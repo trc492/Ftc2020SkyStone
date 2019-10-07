@@ -74,7 +74,7 @@ public class Robot3543 extends Robot
                     PHONE_HEIGHT_OFFSET);
         }
         //
-        // TensorFlow slows down our threads really badly, so don't enable it if we don't need it.
+        // TensorFlow may have performance impact, so don't enable it if we don't need it.
         //
         if (USE_TENSORFLOW && vuforia != null &&
             (runMode == TrcRobot.RunMode.AUTO_MODE || runMode == TrcRobot.RunMode.TEST_MODE))
