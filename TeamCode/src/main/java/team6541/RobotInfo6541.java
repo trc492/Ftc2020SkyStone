@@ -24,8 +24,13 @@ package team6541;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
+
+import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection.BACK;
+
 class RobotInfo6541
 {
+    static final String ROBOT_NAME                      = "Robot6541";
     //
     // DriveBase subsystem.
     //
@@ -76,6 +81,17 @@ class RobotInfo6541
     static final double PURE_PURSUIT_VEL_KI             = 0.0;
     static final double PURE_PURSUIT_VEL_KD             = 0.9;
     static final double PURE_PURSUIT_VEL_KF             = 1.0/223;
+
+    //
+    // Vision subsystem.
+    //
+    static final VuforiaLocalizer.CameraDirection CAMERA_DIR = BACK;
+    static final boolean PHONE_IS_PORTRAIT              = false;
+    static final double ROBOT_LENGTH                    = 17.5; //Robot length in inches
+    static final double ROBOT_WIDTH                     = 17.5; //Robot width in inches
+    static final double PHONE_FRONT_OFFSET              = 0.75; //Phone offset from front of robot in inches
+    static final double PHONE_HEIGHT_OFFSET             = 6.25; //Phone offset from the floor in inches
+    static final double PHONE_LEFT_OFFSET               = 8.75; //Phone offset from the left side of the robot in inches
 
     static final double HOMOGRAPHY_CAMERA_TOPLEFT_X     = 0.0;
     static final double HOMOGRAPHY_CAMERA_TOPLEFT_Y     = 360.0;

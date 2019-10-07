@@ -65,7 +65,7 @@ public class FtcAuto6541 extends CommonAuto<Robot6541>
         // Choice menus.
         //
         doMatchMenus();
-        if (USE_TRACELOG)
+        if (robot.preferences.useTraceLog)
         {
             createTraceLog();
         }
@@ -77,7 +77,7 @@ public class FtcAuto6541 extends CommonAuto<Robot6541>
         switch (strategy)
         {
             case DISTANCE_DRIVE:
-                if (robot.hasRobot)
+                if (robot.preferences.hasRobot)
                 {
                     autoCommand = new CmdPidDrive(
                             robot, robot.pidDrive, delay, 0.0, driveDistance * 12.0, 0.0);
@@ -85,7 +85,7 @@ public class FtcAuto6541 extends CommonAuto<Robot6541>
                 break;
 
             case TIMED_DRIVE:
-                if (robot.hasRobot)
+                if (robot.preferences.hasRobot)
                 {
                     autoCommand = new CmdTimedDrive(robot, delay, driveTime, 0.0, drivePower, 0.0);
                 }

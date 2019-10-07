@@ -121,7 +121,7 @@ public class CommonTest
         switch (test)
         {
             case X_TIMED_DRIVE:
-                if (robot.hasRobot)
+                if (robot.preferences.hasRobot)
                 {
                     timedDriveCommand = new CmdTimedDrive(
                             robot, 0.0, driveTime, drivePower, 0.0, 0.0);
@@ -129,7 +129,7 @@ public class CommonTest
                 break;
 
             case Y_TIMED_DRIVE:
-                if (robot.hasRobot)
+                if (robot.preferences.hasRobot)
                 {
                     timedDriveCommand = new CmdTimedDrive(
                             robot, 0.0, driveTime, 0.0, drivePower, 0.0);
@@ -137,7 +137,7 @@ public class CommonTest
                 break;
 
             case X_DISTANCE_DRIVE:
-                if (robot.hasRobot)
+                if (robot.preferences.hasRobot)
                 {
                     pidDriveCommand = new CmdPidDrive(
                             robot, robot.pidDrive, 0.0, driveDistance * 12.0, 0.0, 0.0,
@@ -146,7 +146,7 @@ public class CommonTest
                 break;
 
             case Y_DISTANCE_DRIVE:
-                if (robot.hasRobot)
+                if (robot.preferences.hasRobot)
                 {
                     pidDriveCommand = new CmdPidDrive(
                             robot, robot.pidDrive, 0.0, 0.0, driveDistance * 12.0, 0.0,
@@ -155,7 +155,7 @@ public class CommonTest
                 break;
 
             case GYRO_TURN:
-                if (robot.hasRobot)
+                if (robot.preferences.hasRobot)
                 {
                     pidDriveCommand = new CmdPidDrive(
                             robot, robot.pidDrive, 0.0, 0.0, 0.0, turnDegrees,
@@ -164,7 +164,7 @@ public class CommonTest
                 break;
 
             case TUNE_X_PID:
-                if (robot.hasRobot)
+                if (robot.preferences.hasRobot)
                 {
                     pidDriveCommand = new CmdPidDrive(
                             robot, robot.pidDrive, 0.0, driveDistance * 12.0, 0.0, 0.0,
@@ -173,7 +173,7 @@ public class CommonTest
                 break;
 
             case TUNE_Y_PID:
-                if (robot.hasRobot)
+                if (robot.preferences.hasRobot)
                 {
                     pidDriveCommand = new CmdPidDrive(
                             robot, robot.pidDrive, 0.0, 0.0, driveDistance * 12.0, 0.0,
@@ -182,7 +182,7 @@ public class CommonTest
                 break;
 
             case TUNE_TURN_PID:
-                if (robot.hasRobot)
+                if (robot.preferences.hasRobot)
                 {
                     pidDriveCommand = new CmdPidDrive(
                             robot, robot.pidDrive, 0.0, 0.0, 0.0, turnDegrees,
@@ -191,7 +191,7 @@ public class CommonTest
                 break;
 
             case PURE_PURSUIT_DRIVE:
-                if (robot.hasRobot)
+                if (robot.preferences.hasRobot)
                 {
                     purePursuitDriveCommand = new CmdPurePursuitDrive(
                             robot.driveBase, posPidCoeff, turnPidCoeff, velPidCoeff);
@@ -234,7 +234,7 @@ public class CommonTest
 
     public boolean shouldRunTeleOpPeriodic()
     {
-        return robot.hasRobot && test == Test.SENSORS_TEST;
+        return robot.preferences.hasRobot && test == Test.SENSORS_TEST;
     }   //shouldRunTeleOpPeriodic
 
     public void runPeriodic(double elapsedTime)
@@ -253,14 +253,14 @@ public class CommonTest
                 break;
 
             case MOTORS_TEST:
-                if (robot.hasRobot)
+                if (robot.preferences.hasRobot)
                 {
                     doMotorsTest();
                 }
                 break;
 
             case PURE_PURSUIT_DRIVE:
-                if (robot.hasRobot)
+                if (robot.preferences.hasRobot)
                 {
                     purePursuitDriveCommand.cmdPeriodic(elapsedTime);
                 }
@@ -278,7 +278,7 @@ public class CommonTest
         {
             case X_TIMED_DRIVE:
             case Y_TIMED_DRIVE:
-                if (robot.hasRobot)
+                if (robot.preferences.hasRobot)
                 {
                     double lfEnc = robot.leftFrontWheel.getPosition();
                     double rfEnc = robot.rightFrontWheel.getPosition();
@@ -300,7 +300,7 @@ public class CommonTest
             case TUNE_X_PID:
             case TUNE_Y_PID:
             case TUNE_TURN_PID:
-                if (robot.hasRobot)
+                if (robot.preferences.hasRobot)
                 {
                     robot.dashboard.displayPrintf(9, "xPos=%.1f,yPos=%.1f,heading=%.1f",
                             robot.driveBase.getXPosition(), robot.driveBase.getYPosition(), robot.driveBase.getHeading());
@@ -426,7 +426,7 @@ public class CommonTest
         // Read all sensors and display on the dashboard.
         // Drive the robot around to sample different locations of the field.
         //
-        if (robot.hasRobot)
+        if (robot.preferences.hasRobot)
         {
             robot.dashboard.displayPrintf(
                     9, LABEL_WIDTH, "Enc: ", "lf=%.0f,rf=%.0f,lr=%.0f,rr=%.0f",

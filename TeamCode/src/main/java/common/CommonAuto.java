@@ -55,8 +55,6 @@ public abstract class CommonAuto<TeamSpecificRobotType extends Robot> extends Ft
         BLUE_ALLIANCE
     }   //enum Alliance
 
-    protected static final boolean USE_TRACELOG = true;
-
     protected String moduleName = null;
     protected TeamSpecificRobotType robot = null;
     protected MatchType matchType = MatchType.PRACTICE;
@@ -113,7 +111,7 @@ public abstract class CommonAuto<TeamSpecificRobotType extends Robot> extends Ft
     @Override
     public void startMode(TrcRobot.RunMode prevMode, TrcRobot.RunMode nextMode)
     {
-        if (USE_TRACELOG)
+        if (robot.preferences.useTraceLog)
         {
             robot.globalTracer.setTraceLogEnabled(true);
         }

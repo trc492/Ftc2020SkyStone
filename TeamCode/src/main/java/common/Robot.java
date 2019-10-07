@@ -69,14 +69,14 @@ public class Robot
     //
     // Global objects.
     //
-    public String moduleName;
+    public Preferences preferences;
+    public String robotName;
     public FtcOpMode opMode;
     public HalDashboard dashboard;
     public TrcDbgTrace globalTracer;
     public FtcAndroidTone androidTone;
     public TextToSpeech textToSpeech = null;
     public FtcRobotBattery battery = null;
-    public boolean hasRobot;
     //
     // Sensors.
     //
@@ -120,13 +120,14 @@ public class Robot
     public FoundationLatch foundationLatch = null;
 
     public Robot(
-            TrcRobot.RunMode runMode, String robotName, VuforiaLocalizer.CameraDirection cameraDir,
-            boolean showVuforiaView, boolean useVision, boolean useSpeech, boolean useBatteryMonitor, boolean hasRobot)
+            TrcRobot.RunMode runMode, Preferences preferences, String robotName,
+            VuforiaLocalizer.CameraDirection cameraDir)
     {
         //
         // Initialize global objects.
         //
-        moduleName = robotName;
+        this.preferences = preferences;
+        this.robotName = robotName;
         opMode = FtcOpMode.getInstance();
         opMode.hardwareMap.logDevices();
         dashboard = HalDashboard.getInstance();
@@ -134,9 +135,8 @@ public class Robot
         dashboard.setTextView(
                 ((FtcRobotControllerActivity)opMode.hardwareMap.appContext).findViewById(R.id.textOpMode));
         androidTone = new FtcAndroidTone("AndroidTone");
-        this.hasRobot = hasRobot;
 
-        if (useVision)
+        if (preferences.useVuforia || preferences.useTensorFlow)
         {
             final String VUFORIA_LICENSE_KEY =
                     "ATu19Kj/////AAAAGcw4SDCVwEBSiKcUtdmQd2aOugrxo/OgeBJUt7XwMSi3e0KSZaylbsTnWp8EBxyA5o/00JFJVDY1OxJ" +
@@ -144,35 +144,29 @@ public class Robot
                     "XS4ZtEWLNeiSEMTCdO9bdeaxnSb2RfErcmjadAThDWf6PC9HrMRHLmgfcFaZlj5JN+figOjgKhyQZeYYrcDEm0lICN5kAr2" +
                     "pdfNKNOii3A80eXyTVDfPGfzTwVa4eNBY/SgmoIdBbMPb3hfZBOz7GVoVHHQWbCNbzm31p1OY+zqPPWMfzzpyiJ4mA9bLTQ";
 
-            int cameraViewId = !showVuforiaView ? -1 :
+            int cameraViewId = !preferences.showVuforiaView ? -1 :
                     opMode.hardwareMap.appContext.getResources().getIdentifier(
                             "cameraMonitorViewId", "id", opMode.hardwareMap.appContext.getPackageName());
             vuforia = new FtcVuforia(VUFORIA_LICENSE_KEY, cameraViewId, cameraDir);
         }
 
-        if (useSpeech)
+        if (preferences.useSpeech)
         {
             textToSpeech = FtcOpMode.getInstance().getTextToSpeech();
             speak("Init starting");
         }
 
-        if (hasRobot && useBatteryMonitor)
+        if (preferences.hasRobot && preferences.useBatteryMonitor)
         {
             battery = new FtcRobotBattery();
         }
         //
         // Initialize sensors.
         //
-        if (hasRobot)
+        if (preferences.hasRobot)
         {
             imu = new FtcBNO055Imu("imu");
             gyro = imu.gyro;
-            // TODO:
-            // Create Elevator.
-            // Create ArmExtender.
-            // Create Wrist
-            // Create Grabber
-            // Create FoundationLatch
         }
     }   //Robot
 
@@ -245,7 +239,7 @@ public class Robot
             if (battery != null)
             {
                 globalTracer.traceInfo(
-                        moduleName,
+                        robotName,
                         "[%5.3f] >>>>> %s: xPos=%6.2f/%6.2f,yPos=%6.2f/%6.2f,heading=%6.1f/%6.1f,volt=%5.2fV(%5.2fV)",
                         elapsedTime, stateName,
                         driveBase.getXPosition(), xDistance, driveBase.getYPosition(), yDistance, driveBase.getHeading(),
@@ -254,7 +248,7 @@ public class Robot
             else
             {
                 globalTracer.traceInfo(
-                        moduleName,
+                        robotName,
                         "[%5.3f] >>>>> %s: xPos=%6.2f/%6.2f,yPos=%6.2f/%6.2f,heading=%6.1f/%6.1f",
                         elapsedTime, stateName,
                         driveBase.getXPosition(), xDistance, driveBase.getYPosition(), yDistance, driveBase.getHeading(),
@@ -348,7 +342,7 @@ public class Robot
         tensorFlowVision = new TensorFlowVision(
                 vuforia, tfodMonitorViewId, cameraRect, worldRect, globalTracer);
         tensorFlowVision.setEnabled(true);
-        globalTracer.traceInfo(moduleName, "Enabling TensorFlow.");
+        globalTracer.traceInfo(robotName, "Enabling TensorFlow.");
     } //initTensorFlow
 
 }   //class Robot

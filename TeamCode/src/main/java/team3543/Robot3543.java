@@ -22,8 +22,7 @@
 
 package team3543;
 
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
-
+import common.Preferences;
 import common.Robot;
 import ftclib.FtcDcMotor;
 import trclib.TrcHomographyMapper;
@@ -32,51 +31,36 @@ import trclib.TrcPidController;
 import trclib.TrcPidDrive;
 import trclib.TrcRobot;
 
-import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection.BACK;
-
 public class Robot3543 extends Robot
 {
-    //
-    // Feature switches.
-    //
-    private static final boolean USE_SPEECH = true;
-    private static final boolean USE_BATTERY_MONITOR = false;
-    private static final boolean USE_VUFORIA = false;
-    private static final boolean USE_TENSORFLOW = true;
-    private static final boolean SHOW_VUFORIA_VIEW = false;
-    private static final boolean SHOW_TENSORFLOW_VIEW = true;
-    private static final boolean USE_VELOCITY_CONTROL = false;
-    private static final boolean HAS_ROBOT = false;
-
-    private static final VuforiaLocalizer.CameraDirection CAMERA_DIR = BACK;
-    private static final boolean PHONE_IS_PORTRAIT = false;
-    private static final double ROBOT_LENGTH = 17.5;        //Robot length in inches
-    private static final double ROBOT_WIDTH = 17.5;         //Robot width in inches
-    private static final double PHONE_FRONT_OFFSET = 0.75;  //Phone offset from front of robot in inches
-    private static final double PHONE_HEIGHT_OFFSET = 6.25; //Phone offset from the floor in inches
-    private static final double PHONE_LEFT_OFFSET = 8.75;   //Phone offset from the left side of the robot in inches
-    //
-    // Global objects.
-    //
-    public static final String robotName = "Robot3543";
+    private static Preferences preferences3543 = new Preferences(
+            /* hasRobot */ false,
+            /* useTraceLog */ true,
+            /* useSpeech */ true,
+            /* useBatteryMonitor */ false,
+            /* useVelocityControl */ false,
+            /* useVuforia */ false,
+            /* useTensorFlow */ true,
+            /* showVuforiaView */ false,
+            /* showTensorFlowView */ true
+    );
 
     public Robot3543(TrcRobot.RunMode runMode)
     {
-        super(runMode, robotName, CAMERA_DIR,
-              SHOW_VUFORIA_VIEW, USE_VUFORIA || USE_TENSORFLOW, USE_SPEECH, USE_BATTERY_MONITOR, HAS_ROBOT);
+        super(runMode, preferences3543, RobotInfo3543.ROBOT_NAME, RobotInfo3543.CAMERA_DIR);
         //
         // Initialize vision subsystems.
         //
-        if (USE_VUFORIA && vuforia != null)
+        if (preferences.useVuforia && vuforia != null &&
+            (runMode == TrcRobot.RunMode.AUTO_MODE || runMode == TrcRobot.RunMode.TEST_MODE))
         {
             initVuforia(
-                    CAMERA_DIR, PHONE_IS_PORTRAIT, ROBOT_LENGTH, ROBOT_WIDTH, PHONE_FRONT_OFFSET, PHONE_LEFT_OFFSET,
-                    PHONE_HEIGHT_OFFSET);
+                    RobotInfo3543.CAMERA_DIR, RobotInfo3543.PHONE_IS_PORTRAIT, RobotInfo3543.ROBOT_LENGTH,
+                    RobotInfo3543.ROBOT_WIDTH, RobotInfo3543.PHONE_FRONT_OFFSET, RobotInfo3543.PHONE_LEFT_OFFSET,
+                    RobotInfo3543.PHONE_HEIGHT_OFFSET);
         }
-        //
-        // TensorFlow may have performance impact, so don't enable it if we don't need it.
-        //
-        if (USE_TENSORFLOW && vuforia != null &&
+
+        if (preferences.useTensorFlow && vuforia != null &&
             (runMode == TrcRobot.RunMode.AUTO_MODE || runMode == TrcRobot.RunMode.TEST_MODE))
         {
             TrcHomographyMapper.Rectangle cameraRect = new TrcHomographyMapper.Rectangle(
@@ -91,10 +75,10 @@ public class Robot3543 extends Robot
                     RobotInfo3543.HOMOGRAPHY_WORLD_BOTTOMLEFT_X, RobotInfo3543.HOMOGRAPHY_WORLD_BOTTOMLEFT_Y,
                     RobotInfo3543.HOMOGRAPHY_WORLD_BOTTOMRIGHT_X, RobotInfo3543.HOMOGRAPHY_WORLD_BOTTOMRIGHT_Y);
 
-            initTensorFlow(SHOW_TENSORFLOW_VIEW, cameraRect, worldRect);
+            initTensorFlow(preferences.showTensorFlowView, cameraRect, worldRect);
         }
 
-        if (HAS_ROBOT)
+        if (preferences.hasRobot)
         {
             //
             // Initialize DriveBase.
@@ -103,6 +87,12 @@ public class Robot3543 extends Robot
             //
             // Initialize other subsystems.
             //
+            // TODO:
+            // Create Elevator.
+            // Create ArmExtender.
+            // Create Wrist
+            // Create Grabber
+            // Create FoundationLatch
         }
         //
         // Tell the driver initialization is complete.
@@ -127,7 +117,7 @@ public class Robot3543 extends Robot
         leftRearWheel.setOdometryEnabled(true);
         rightRearWheel.setOdometryEnabled(true);
 
-        if (USE_VELOCITY_CONTROL)
+        if (preferences.useVelocityControl)
         {
             TrcPidController.PidCoefficients motorPidCoef = new TrcPidController.PidCoefficients(
                     RobotInfo3543.MOTOR_KP, RobotInfo3543.MOTOR_KI, RobotInfo3543.MOTOR_KD);
