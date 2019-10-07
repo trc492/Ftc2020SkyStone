@@ -156,7 +156,7 @@ public class Robot
             speak("Init starting");
         }
 
-        if (useBatteryMonitor)
+        if (hasRobot && useBatteryMonitor)
         {
             battery = new FtcRobotBattery();
         }
