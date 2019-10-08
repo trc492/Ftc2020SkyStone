@@ -22,7 +22,7 @@
 
 package team6541;
 
-import common.Robot;
+import common.Grabber;
 import ftclib.FtcDcMotor;
 import ftclib.FtcDigitalInput;
 import trclib.TrcDigitalTrigger;
@@ -32,7 +32,7 @@ import trclib.TrcDigitalTrigger;
  * and then releases by turning the motor the other way.
  */
 
-public class Grabber6541 implements Robot.Grabber
+public class Grabber6541 implements Grabber
 {
     private FtcDcMotor motor = new FtcDcMotor("grabberMotor");
     private FtcDigitalInput touch = new FtcDigitalInput("touchSensor");
@@ -40,7 +40,7 @@ public class Grabber6541 implements Robot.Grabber
             "touchSensorTrigger", touch, this::onHasBrickStatusChanged);
 
     //
-    // Implements Robot.Grabber interface
+    // Implements Grabber interface
     //
 
     @Override

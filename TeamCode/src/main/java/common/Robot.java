@@ -59,12 +59,6 @@ public class Robot
         HOLONOMIC_MODE,
     }   //enum DriveMode
 
-    public interface Grabber
-    {
-        void grab();
-        void release();
-    }   //interface Grabber
-
     private static final String OPENCV_NATIVE_LIBRARY_NAME = "opencv_java3";
     //
     // Global objects.

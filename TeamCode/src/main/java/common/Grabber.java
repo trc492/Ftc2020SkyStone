@@ -20,29 +20,10 @@
  * SOFTWARE.
  */
 
-package team3543;
+package common;
 
-import common.Grabber;
-import ftclib.FtcServo;
-
-public class Grabber3543 implements Grabber
+public interface Grabber
 {
-    private FtcServo grabber = new FtcServo("grabber");
-
-    //
-    // Implements Grabber interface
-    //
-
-    @Override
-    public void grab()
-    {
-        grabber.setPosition(RobotInfo3543.GRABBER_CLOSE_POS);
-    }   //grab
-
-    @Override
-    public void release()
-    {
-        grabber.setPosition(RobotInfo3543.GRABBER_OPEN_POS);
-    }   //release
-
-}   //class Grabber3543
+    void grab();
+    void release();
+}   //interface Grabber
