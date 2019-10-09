@@ -30,7 +30,7 @@ import trclib.TrcGameController;
 import trclib.TrcRobot;
 
 @TeleOp(name="FtcTeleOp6541", group="FtcTeleOp")
-public class FtcTeleOp6541 extends CommonTeleOp<Robot6541>
+public class FtcTeleOp6541 extends CommonTeleOp
 {
     private static final String MODULE_NAME = "FtcTeleOp6541";
 
@@ -69,8 +69,11 @@ public class FtcTeleOp6541 extends CommonTeleOp<Robot6541>
     @Override
     public void buttonEvent(TrcGameController gamepad, int button, boolean pressed)
     {
+        boolean processed = false;
+
         dashboard.displayPrintf(
                 7, "%s: %04x->%s", gamepad.toString(), button, pressed? "Pressed": "Released");
+
         if (gamepad == driverGamepad)
         {
             switch (button)
@@ -88,11 +91,9 @@ public class FtcTeleOp6541 extends CommonTeleOp<Robot6541>
                     break;
 
                 case FtcGamepad.GAMEPAD_LBUMPER:
-                    drivePowerScale = pressed? 0.5: 1.0;
                     break;
 
                 case FtcGamepad.GAMEPAD_RBUMPER:
-                    invertedDrive = pressed;
                     break;
             }
         }
@@ -134,8 +135,13 @@ public class FtcTeleOp6541 extends CommonTeleOp<Robot6541>
                     break;
 
                 case FtcGamepad.GAMEPAD_START:
-                   break;
+                    break;
             }
+        }
+
+        if (!processed)
+        {
+            super.buttonEvent(gamepad, button, pressed);
         }
     }   //buttonEvent
 

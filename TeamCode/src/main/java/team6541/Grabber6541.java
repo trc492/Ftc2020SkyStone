@@ -60,7 +60,7 @@ public class Grabber6541 implements Grabber
     //event
     private void onHasBrickStatusChanged(boolean hasBrick)
     {
-        if(hasBrick)
+        if (hasBrick)
         {
             //just grabbed a brick
             //set the power to keep going, but is a little bit to not burn the robot.

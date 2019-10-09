@@ -28,16 +28,7 @@ import hallib.HalDashboard;
 import trclib.TrcGameController;
 import trclib.TrcRobot;
 
-/**
- * @param <TeamSpecificRobotType> The specific subclass of {@link Robot} to use for the
- *                                {@link #robot} field. This allows team-specific code extending
- *                                this class to use the {@link #robot} field to access team-specific
- *                                subsystems without needing to cast it (to {@link team3543.Robot3543}
- *                                or {@link team6541.Robot6541} accordingly).
- */
-public abstract class CommonTeleOp<TeamSpecificRobotType extends Robot>
-        extends FtcOpMode
-        implements TrcGameController.ButtonHandler
+public abstract class CommonTeleOp extends FtcOpMode
 {
     protected enum DriveMode
     {
@@ -46,7 +37,7 @@ public abstract class CommonTeleOp<TeamSpecificRobotType extends Robot>
     }   //enum DriveMode
 
     protected String moduleName = null;
-    protected TeamSpecificRobotType robot = null;
+    protected Robot robot = null;
 
     protected HalDashboard dashboard;
 
@@ -71,8 +62,8 @@ public abstract class CommonTeleOp<TeamSpecificRobotType extends Robot>
         //
         // Initializing Gamepads.
         //
-        driverGamepad = new FtcGamepad("DriverGamepad", gamepad1, this);
-        operatorGamepad = new FtcGamepad("OperatorGamepad", gamepad2, this);
+        driverGamepad = new FtcGamepad("DriverGamepad", gamepad1, this::buttonEvent);
+        operatorGamepad = new FtcGamepad("OperatorGamepad", gamepad2, this::buttonEvent);
         driverGamepad.setYInverted(true);
         operatorGamepad.setYInverted(true);
     }   //initRobot
@@ -137,7 +128,95 @@ public abstract class CommonTeleOp<TeamSpecificRobotType extends Robot>
                     robot.driveBase.getXPosition(),
                     robot.driveBase.getYPosition(),
                     robot.driveBase.getHeading());
+            dashboard.displayPrintf(3, "ElevatorPower=%.1f, ArmExtenderPower=%.1f, WristPower=%.1f",
+                    elevatorPower, armExtenderPower, wristPower);
         }
     }   //runPeriodic
+
+    public void buttonEvent(TrcGameController gamepad, int button, boolean pressed)
+    {
+        if (gamepad == driverGamepad)
+        {
+            switch (button)
+            {
+                case FtcGamepad.GAMEPAD_A:
+                    break;
+
+                case FtcGamepad.GAMEPAD_B:
+                    break;
+
+                case FtcGamepad.GAMEPAD_X:
+                    break;
+
+                case FtcGamepad.GAMEPAD_Y:
+                    break;
+
+                case FtcGamepad.GAMEPAD_LBUMPER:
+                    drivePowerScale = pressed? 0.5: 1.0;
+                    break;
+
+                case FtcGamepad.GAMEPAD_RBUMPER:
+                    invertedDrive = pressed;
+                    break;
+            }
+        }
+        else if (gamepad == operatorGamepad)
+        {
+            switch (button)
+            {
+                case FtcGamepad.GAMEPAD_A:
+                    if (pressed)
+                    {
+                        robot.grabber.grab();
+                    }
+                    break;
+
+                case FtcGamepad.GAMEPAD_B:
+                    if (pressed)
+                    {
+                        robot.grabber.release();
+                    }
+                    break;
+
+                case FtcGamepad.GAMEPAD_X:
+                    if (pressed)
+                    {
+                        robot.foundationLatch.grab();
+                    }
+                    break;
+
+                case FtcGamepad.GAMEPAD_Y:
+                    if (pressed)
+                    {
+                        robot.foundationLatch.release();
+                    }
+                    break;
+
+                case FtcGamepad.GAMEPAD_LBUMPER:
+                    break;
+
+                case FtcGamepad.GAMEPAD_RBUMPER:
+                    break;
+
+                case FtcGamepad.GAMEPAD_DPAD_UP:
+                    break;
+
+                case FtcGamepad.GAMEPAD_DPAD_DOWN:
+                    break;
+
+                case FtcGamepad.GAMEPAD_DPAD_LEFT:
+                    break;
+
+                case FtcGamepad.GAMEPAD_DPAD_RIGHT:
+                    break;
+
+                case FtcGamepad.GAMEPAD_BACK:
+                    break;
+
+                case FtcGamepad.GAMEPAD_START:
+                    break;
+            }
+        }
+    }   //buttonEvent
 
 }   //class CommonTeleOp

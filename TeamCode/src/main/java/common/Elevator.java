@@ -30,20 +30,20 @@ import trclib.TrcPidController;
 
 public class Elevator
 {
-    private FtcDigitalInput upperLimitSwitch;
     private FtcDigitalInput lowerLimitSwitch;
+    private FtcDigitalInput upperLimitSwitch;
     private FtcDcMotor elevatorMotor;
     private TrcPidController pidController;
     private TrcPidActuator pidElevator;
 
     public Elevator(
-            TrcPidController.PidCoefficients pidCoeff, double calPower, double minHeight, double maxHeight,
-            double scale, double offset, double tolerance)
+            double minHeight, double maxHeight, double scale, double offset, TrcPidController.PidCoefficients pidCoeff,
+            double tolerance, double calPower)
     {
-        upperLimitSwitch = new FtcDigitalInput("elevatorUpperLimit");
         lowerLimitSwitch = new FtcDigitalInput("elevatorLowerLimit");
-        upperLimitSwitch.setInverted(true);
+        upperLimitSwitch = new FtcDigitalInput("elevatorUpperLimit");
         lowerLimitSwitch.setInverted(true);
+        upperLimitSwitch.setInverted(true);
 
         elevatorMotor = new FtcDcMotor("elevatorMotor", lowerLimitSwitch, upperLimitSwitch);
         elevatorMotor.setBrakeModeEnabled(true);
@@ -51,6 +51,7 @@ public class Elevator
 
         pidController = new TrcPidController(
                 "elevatorPidController", pidCoeff, tolerance, this::getPosition);
+
         pidElevator = new TrcPidActuator(
                 "pidElevator", elevatorMotor, lowerLimitSwitch, pidController, calPower,
                 minHeight, maxHeight);
@@ -87,14 +88,14 @@ public class Elevator
         return pidElevator.getPosition();
     }   //getPosition
 
-    public boolean isUpperLimitSwitchActive()
-    {
-        return upperLimitSwitch.isActive();
-    }   //isUpperLimitSwitchActive
-
     public boolean isLowerLimitSwitchActive()
     {
         return lowerLimitSwitch.isActive();
     }   //isLowerLimitSwitchActive
+
+    public boolean isUpperLimitSwitchActive()
+    {
+        return upperLimitSwitch.isActive();
+    }   //isUpperLimitSwitchActive
 
 }   //class Elevator

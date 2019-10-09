@@ -30,7 +30,7 @@ import trclib.TrcGameController;
 import trclib.TrcRobot;
 
 @TeleOp(name="FtcTeleOp3543", group="FtcTeleOp")
-public class FtcTeleOp3543 extends CommonTeleOp<Robot3543>
+public class FtcTeleOp3543 extends CommonTeleOp
 {
     private static final String MODULE_NAME = "FtcTeleOp3543";
 
@@ -69,8 +69,11 @@ public class FtcTeleOp3543 extends CommonTeleOp<Robot3543>
     @Override
     public void buttonEvent(TrcGameController gamepad, int button, boolean pressed)
     {
+        boolean processed = false;
+
         dashboard.displayPrintf(
                 7, "%s: %04x->%s", gamepad.toString(), button, pressed? "Pressed": "Released");
+
         if (gamepad == driverGamepad)
         {
             switch (button)
@@ -88,11 +91,9 @@ public class FtcTeleOp3543 extends CommonTeleOp<Robot3543>
                     break;
 
                 case FtcGamepad.GAMEPAD_LBUMPER:
-                    drivePowerScale = pressed? 0.5: 1.0;
                     break;
 
                 case FtcGamepad.GAMEPAD_RBUMPER:
-                    invertedDrive = pressed;
                     break;
             }
         }
@@ -101,29 +102,15 @@ public class FtcTeleOp3543 extends CommonTeleOp<Robot3543>
             switch (button)
             {
                 case FtcGamepad.GAMEPAD_A:
-                    if (pressed){
-                        robot.grabber.grab();
-                    }
                     break;
 
                 case FtcGamepad.GAMEPAD_B:
-                    if(pressed){
-                        robot.grabber.release();
-                    }
                     break;
 
                 case FtcGamepad.GAMEPAD_X:
-                    if(pressed)
-                    {
-                        robot.foundationLatch.grab();
-                    }
                     break;
 
                 case FtcGamepad.GAMEPAD_Y:
-                    if(pressed)
-                    {
-                        robot.foundationLatch.release();
-                    }
                     break;
 
                 case FtcGamepad.GAMEPAD_LBUMPER:
@@ -148,8 +135,13 @@ public class FtcTeleOp3543 extends CommonTeleOp<Robot3543>
                     break;
 
                 case FtcGamepad.GAMEPAD_START:
-                   break;
+                    break;
             }
+        }
+
+        if (!processed)
+        {
+            super.buttonEvent(gamepad, button, pressed);
         }
     }   //buttonEvent
 

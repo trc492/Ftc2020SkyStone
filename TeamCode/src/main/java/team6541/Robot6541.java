@@ -29,7 +29,6 @@ import common.Preferences;
 import common.Robot;
 import common.Wrist;
 import ftclib.FtcDcMotor;
-import team3543.Grabber3543;
 import trclib.TrcHomographyMapper;
 import trclib.TrcMecanumDriveBase;
 import trclib.TrcPidController;
@@ -64,9 +63,7 @@ public class Robot6541 extends Robot
                     RobotInfo6541.ROBOT_WIDTH, RobotInfo6541.PHONE_FRONT_OFFSET, RobotInfo6541.PHONE_LEFT_OFFSET,
                     RobotInfo6541.PHONE_HEIGHT_OFFSET);
         }
-        //
-        // TensorFlow may have performance impact, so don't enable it if we don't need it.
-        //
+
         if (preferences.useTensorFlow && vuforia != null &&
             (runMode == TrcRobot.RunMode.AUTO_MODE || runMode == TrcRobot.RunMode.TEST_MODE))
         {
@@ -94,25 +91,20 @@ public class Robot6541 extends Robot
             //
             // Initialize other subsystems.
             //
-            // TODO:
-            // Create Elevator.
-            elevator = new Elevator(new TrcPidController.PidCoefficients(RobotInfo6541.ELEVATOR_KP,
-                    RobotInfo6541.ELEVATOR_KI,RobotInfo6541.ELEVATOR_KD),RobotInfo6541.ELEVATOR_CAL_POWER,
-                    RobotInfo6541.ELEVATOR_MIN_HEIGHT,RobotInfo6541.ELEVATOR_MAX_HEIGHT,RobotInfo6541.ELEVATOR_SCALE,
-                    RobotInfo6541.ELEVATOR_OFFSET,RobotInfo6541.ELEVATOR_TOLERANCE);
-            // Create ArmExtender.
+            elevator = new Elevator(
+                    RobotInfo6541.ELEVATOR_MIN_HEIGHT, RobotInfo6541.ELEVATOR_MAX_HEIGHT,
+                    RobotInfo6541.ELEVATOR_SCALE, RobotInfo6541.ELEVATOR_OFFSET,
+                    new TrcPidController.PidCoefficients(RobotInfo6541.ELEVATOR_KP, RobotInfo6541.ELEVATOR_KI,
+                            RobotInfo6541.ELEVATOR_KD),
+                    RobotInfo6541.ELEVATOR_TOLERANCE, RobotInfo6541.ELEVATOR_CAL_POWER);
             armExtender = new ArmExtender(RobotInfo6541.ARM_EXTENDER_MAX_STEPRATE,
                     RobotInfo6541.ARM_EXTENDER_MIN_POS,
                     RobotInfo6541.ARM_EXTENDER_MAX_POS);
-            // Create Wrist
             wrist = new Wrist(RobotInfo6541.WRIST_MAX_STEPRATE, RobotInfo6541.WRIST_MIN_POS,
                     RobotInfo6541.WRIST_MAX_POS);
-            // Create Grabber
             grabber = new Grabber6541();
-            // Create FoundationLatch
             foundationLatch = new FoundationLatch(
-                    RobotInfo6541.FOUNDATION_LATCH_OPEN_POS,
-                    RobotInfo6541.FOUNDATION_LATCH_CLOSE_POS);
+                    RobotInfo6541.FOUNDATION_LATCH_OPEN_POS, RobotInfo6541.FOUNDATION_LATCH_CLOSE_POS);
         }
         //
         // Tell the driver initialization is complete.
