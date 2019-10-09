@@ -24,6 +24,8 @@ package common;
 
 import android.speech.tts.TextToSpeech;
 
+import com.qualcomm.ftcrobotcontroller.R;
+
 import org.firstinspires.ftc.robotcontroller.internal.FtcRobotControllerActivity;
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
@@ -36,7 +38,6 @@ import ftclib.FtcOpMode;
 import ftclib.FtcRobotBattery;
 import ftclib.FtcVuforia;
 import hallib.HalDashboard;
-import team3543.R;
 import trclib.TrcDbgTrace;
 import trclib.TrcDriveBase;
 import trclib.TrcGyro;

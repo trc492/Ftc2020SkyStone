@@ -22,9 +22,14 @@
 
 package team6541;
 
+import common.ArmExtender;
+import common.Elevator;
+import common.FoundationLatch;
 import common.Preferences;
 import common.Robot;
+import common.Wrist;
 import ftclib.FtcDcMotor;
+import team3543.Grabber3543;
 import trclib.TrcHomographyMapper;
 import trclib.TrcMecanumDriveBase;
 import trclib.TrcPidController;
@@ -91,10 +96,23 @@ public class Robot6541 extends Robot
             //
             // TODO:
             // Create Elevator.
+            elevator = new Elevator(new TrcPidController.PidCoefficients(RobotInfo6541.ELEVATOR_KP,
+                    RobotInfo6541.ELEVATOR_KI,RobotInfo6541.ELEVATOR_KD),RobotInfo6541.ELEVATOR_CAL_POWER,
+                    RobotInfo6541.ELEVATOR_MIN_HEIGHT,RobotInfo6541.ELEVATOR_MAX_HEIGHT,RobotInfo6541.ELEVATOR_SCALE,
+                    RobotInfo6541.ELEVATOR_OFFSET,RobotInfo6541.ELEVATOR_TOLERANCE);
             // Create ArmExtender.
+            armExtender = new ArmExtender(RobotInfo6541.ARM_EXTENDER_MAX_STEPRATE,
+                    RobotInfo6541.ARM_EXTENDER_MIN_POS,
+                    RobotInfo6541.ARM_EXTENDER_MAX_POS);
             // Create Wrist
+            wrist = new Wrist(RobotInfo6541.WRIST_MAX_STEPRATE, RobotInfo6541.WRIST_MIN_POS,
+                    RobotInfo6541.WRIST_MAX_POS);
             // Create Grabber
+            grabber = new Grabber6541();
             // Create FoundationLatch
+            foundationLatch = new FoundationLatch(
+                    RobotInfo6541.FOUNDATION_LATCH_OPEN_POS,
+                    RobotInfo6541.FOUNDATION_LATCH_CLOSE_POS);
         }
         //
         // Tell the driver initialization is complete.

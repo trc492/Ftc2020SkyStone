@@ -101,15 +101,29 @@ public class FtcTeleOp3543 extends CommonTeleOp<Robot3543>
             switch (button)
             {
                 case FtcGamepad.GAMEPAD_A:
+                    if (pressed){
+                        robot.grabber.grab();
+                    }
                     break;
 
                 case FtcGamepad.GAMEPAD_B:
+                    if(pressed){
+                        robot.grabber.release();
+                    }
                     break;
 
                 case FtcGamepad.GAMEPAD_X:
+                    if(pressed)
+                    {
+                        robot.foundationLatch.grab();
+                    }
                     break;
 
                 case FtcGamepad.GAMEPAD_Y:
+                    if(pressed)
+                    {
+                        robot.foundationLatch.release();
+                    }
                     break;
 
                 case FtcGamepad.GAMEPAD_LBUMPER:

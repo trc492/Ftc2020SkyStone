@@ -22,8 +22,12 @@
 
 package team3543;
 
+import common.ArmExtender;
+import common.Elevator;
+import common.FoundationLatch;
 import common.Preferences;
 import common.Robot;
+import common.Wrist;
 import ftclib.FtcDcMotor;
 import trclib.TrcHomographyMapper;
 import trclib.TrcMecanumDriveBase;
@@ -89,10 +93,23 @@ public class Robot3543 extends Robot
             //
             // TODO:
             // Create Elevator.
+            elevator = new Elevator(new TrcPidController.PidCoefficients(RobotInfo3543.ELEVATOR_KP,
+                    RobotInfo3543.ELEVATOR_KI,RobotInfo3543.ELEVATOR_KD),RobotInfo3543.ELEVATOR_CAL_POWER,
+                    RobotInfo3543.ELEVATOR_MIN_HEIGHT,RobotInfo3543.ELEVATOR_MAX_HEIGHT,RobotInfo3543.ELEVATOR_SCALE,
+                    RobotInfo3543.ELEVATOR_OFFSET,RobotInfo3543.ELEVATOR_TOLERANCE);
             // Create ArmExtender.
+            armExtender = new ArmExtender(RobotInfo3543.ARM_EXTENDER_MAX_STEPRATE,
+                    RobotInfo3543.ARM_EXTENDER_MIN_POS,
+                    RobotInfo3543.ARM_EXTENDER_MAX_POS);
             // Create Wrist
+            wrist = new Wrist(RobotInfo3543.WRIST_MAX_STEPRATE, RobotInfo3543.WRIST_MIN_POS,
+                    RobotInfo3543.WRIST_MAX_POS);
             // Create Grabber
+            grabber = new Grabber3543();
             // Create FoundationLatch
+            foundationLatch = new FoundationLatch(
+                    RobotInfo3543.FOUNDATION_LATCH_OPEN_POS,
+                    RobotInfo3543.FOUNDATION_LATCH_CLOSE_POS);
         }
         //
         // Tell the driver initialization is complete.

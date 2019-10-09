@@ -32,7 +32,7 @@ public class ArmExtender
 
     public ArmExtender(double maxStepRate, double minPos, double maxPos)
     {
-        enhancedExtender.setStepMode(maxStepRate,minPos,maxPos);
+        enhancedExtender.setStepMode(maxStepRate, minPos, maxPos);
     }   //ArmExtender
 
     public void setPower(double power)

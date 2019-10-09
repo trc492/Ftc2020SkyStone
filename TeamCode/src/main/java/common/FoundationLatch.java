@@ -26,16 +26,25 @@ import ftclib.FtcServo;
 
 public class FoundationLatch
 {
+    private double openPos;
+    private double closePos;
     private FtcServo servo;
 
-    public FoundationLatch()
+    public FoundationLatch(double openPos, double closePos)
     {
+        this.openPos = openPos;
+        this.closePos = closePos;
         servo = new FtcServo("FoundationLatch");
     }   //FoundationLatch
 
-    public void setPosition(double position)
+    public void grab()
     {
-        servo.setPosition(position);
-    }   //setPosition
+        servo.setPosition(closePos);
+    }   //grab
+
+    public void release()
+    {
+        servo.setPosition(openPos);
+    }   //release
 
 }   //class FoundationLatch

@@ -124,6 +124,15 @@ public abstract class CommonTeleOp<TeamSpecificRobotType extends Robot>
                     break;
             }
 
+            double elevatorPower = operatorGamepad.getRightStickY(true);
+            robot.elevator.setPower(elevatorPower);
+
+            double armExtenderPower = operatorGamepad.getLeftStickY(true);
+            robot.armExtender.setPower(armExtenderPower);
+
+            double wristPower = operatorGamepad.getLeftStickX(true);
+            robot.wrist.setPower(wristPower);
+
             dashboard.displayPrintf(2, "DriveBase: x=%.2f,y=%.2f,heading=%.2f",
                     robot.driveBase.getXPosition(),
                     robot.driveBase.getYPosition(),
