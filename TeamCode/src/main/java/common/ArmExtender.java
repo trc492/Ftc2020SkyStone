@@ -27,7 +27,7 @@ import trclib.TrcEnhancedServo;
 
 public class ArmExtender
 {
-    private FtcServo extender = new FtcServo("armExtender");
+    private FtcServo extender = new FtcServo("armExtenderServo");
     private TrcEnhancedServo enhancedExtender = new TrcEnhancedServo("enhancedArmExtender", extender);
 
     public ArmExtender(double maxStepRate, double minPos, double maxPos)

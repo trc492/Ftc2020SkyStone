@@ -27,7 +27,7 @@ import ftclib.FtcServo;
 
 public class Grabber3543 implements Grabber
 {
-    private FtcServo grabber = new FtcServo("grabber");
+    private FtcServo grabber = new FtcServo("grabberServo");
 
     //
     // Implements Grabber interface

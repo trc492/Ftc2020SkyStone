@@ -35,7 +35,7 @@ import trclib.TrcDigitalTrigger;
 public class Grabber6541 implements Grabber
 {
     private FtcDcMotor motor = new FtcDcMotor("grabberMotor");
-    private FtcDigitalInput touch = new FtcDigitalInput("touchSensor");
+    private FtcDigitalInput touch = new FtcDigitalInput("grabberTouchSensor");
     private TrcDigitalTrigger trigger = new TrcDigitalTrigger(
             "touchSensorTrigger", touch, this::onHasBrickStatusChanged);
 

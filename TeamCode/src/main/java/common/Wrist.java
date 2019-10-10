@@ -27,7 +27,7 @@ import trclib.TrcEnhancedServo;
 
 public class Wrist
 {
-    FtcServo wrist = new FtcServo("wrist");
+    FtcServo wrist = new FtcServo("wristServo");
     TrcEnhancedServo enhancedWrist = new TrcEnhancedServo("enhancedWristServo", wrist);
 
     public Wrist(double maxStepRate, double minPos, double maxPos)

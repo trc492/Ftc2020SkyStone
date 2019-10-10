@@ -34,7 +34,7 @@ public class FoundationLatch
     {
         this.openPos = openPos;
         this.closePos = closePos;
-        servo = new FtcServo("FoundationLatch");
+        servo = new FtcServo("foundationLatchServo");
     }   //FoundationLatch
 
     public void grab()

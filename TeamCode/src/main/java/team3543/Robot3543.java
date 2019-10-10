@@ -38,12 +38,12 @@ import trclib.TrcRobot;
 public class Robot3543 extends Robot
 {
     private static Preferences preferences3543 = new Preferences(
-            /* hasRobot */ false,
+            /* hasRobot */ true,
             /* useTraceLog */ true,
             /* useSpeech */ true,
             /* useBatteryMonitor */ false,
             /* useVelocityControl */ false,
-            /* useVuforia */ false,
+            /* useVuforia */ true,
             /* useTensorFlow */ true,
             /* showVuforiaView */ false,
             /* showTensorFlowView */ true
