@@ -47,7 +47,7 @@ public class Robot6541 extends Robot
             /* useTensorFlow */ true,
             /* showVuforiaView */ false,
             /* showTensorFlowView */ true,
-            /* hasElevator */ false
+            /* hasElevator */ true
     );
 
     public Robot6541(TrcRobot.RunMode runMode)
