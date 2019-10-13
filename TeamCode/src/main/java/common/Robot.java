@@ -165,6 +165,11 @@ public class Robot
         }
     }   //Robot
 
+    public String toString()
+    {
+        return robotName;
+    }   //toString
+
     public void startMode(TrcRobot.RunMode runMode)
     {
         final String funcName = "startMode";
