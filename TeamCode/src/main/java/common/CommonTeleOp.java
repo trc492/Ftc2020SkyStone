@@ -115,8 +115,13 @@ public abstract class CommonTeleOp extends FtcOpMode
                     break;
             }
 
-            double elevatorPower = operatorGamepad.getRightStickY(true);
-            robot.elevator.setPower(elevatorPower);
+            double elevatorPower = 0.0;
+            if (robot.preferences.hasElevator)
+            {
+                elevatorPower = operatorGamepad.getRightStickY(true);
+                robot.elevator.setPower(elevatorPower);
+            }
+
 
             double armExtenderPower = operatorGamepad.getLeftStickY(true);
             robot.armExtender.setPower(armExtenderPower);
@@ -128,8 +133,13 @@ public abstract class CommonTeleOp extends FtcOpMode
                     robot.driveBase.getXPosition(),
                     robot.driveBase.getYPosition(),
                     robot.driveBase.getHeading());
-            dashboard.displayPrintf(3, "ElevatorPower=%.1f, ArmExtenderPower=%.1f, WristPower=%.1f",
-                    elevatorPower, armExtenderPower, wristPower);
+
+            if (robot.preferences.hasElevator)
+            {
+                dashboard.displayPrintf(3, "ElevatorPower=%.1f, ArmExtenderPower=%.1f, WristPower=%.1f",
+                        elevatorPower, armExtenderPower, wristPower);
+            }
+
         }
     }   //runPeriodic
 

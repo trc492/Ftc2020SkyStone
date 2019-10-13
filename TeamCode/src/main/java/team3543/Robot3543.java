@@ -46,7 +46,8 @@ public class Robot3543 extends Robot
             /* useVuforia */ true,
             /* useTensorFlow */ true,
             /* showVuforiaView */ false,
-            /* showTensorFlowView */ true
+            /* showTensorFlowView */ true,
+            /* hasElevator */ false
     );
 
     public Robot3543(TrcRobot.RunMode runMode)
@@ -91,12 +92,16 @@ public class Robot3543 extends Robot
             //
             // Initialize other subsystems.
             //
-            elevator = new Elevator(
-                    RobotInfo3543.ELEVATOR_MIN_HEIGHT, RobotInfo3543.ELEVATOR_MAX_HEIGHT,
-                    RobotInfo3543.ELEVATOR_SCALE, RobotInfo3543.ELEVATOR_OFFSET,
-                    new TrcPidController.PidCoefficients(RobotInfo3543.ELEVATOR_KP, RobotInfo3543.ELEVATOR_KI,
-                            RobotInfo3543.ELEVATOR_KD),
-                    RobotInfo3543.ELEVATOR_TOLERANCE, RobotInfo3543.ELEVATOR_CAL_POWER);
+            if (preferences.hasElevator)
+            {
+                elevator = new Elevator(
+                        RobotInfo3543.ELEVATOR_MIN_HEIGHT, RobotInfo3543.ELEVATOR_MAX_HEIGHT,
+                        RobotInfo3543.ELEVATOR_SCALE, RobotInfo3543.ELEVATOR_OFFSET,
+                        new TrcPidController.PidCoefficients(RobotInfo3543.ELEVATOR_KP, RobotInfo3543.ELEVATOR_KI,
+                                RobotInfo3543.ELEVATOR_KD),
+                        RobotInfo3543.ELEVATOR_TOLERANCE, RobotInfo3543.ELEVATOR_CAL_POWER);
+            }
+
             armExtender = new ArmExtender(RobotInfo3543.ARM_EXTENDER_MAX_STEPRATE,
                     RobotInfo3543.ARM_EXTENDER_MIN_POS,
                     RobotInfo3543.ARM_EXTENDER_MAX_POS);

@@ -36,11 +36,12 @@ public class Preferences
     public final boolean useTensorFlow;
     public final boolean showVuforiaView;
     public final boolean showTensorFlowView;
+    public final boolean hasElevator;
 
     public Preferences(
             boolean hasRobot, boolean useTraceLog, boolean useSpeech, boolean useBatteryMonitor,
             boolean useVelocityControl, boolean useVuforia, boolean useTensorFlow, boolean showVuforiaView,
-            boolean showTensorFlowView)
+            boolean showTensorFlowView, boolean hasElevator)
     {
         this.hasRobot = hasRobot;
         this.useTraceLog = useTraceLog;
@@ -51,6 +52,7 @@ public class Preferences
         this.useTensorFlow = useTensorFlow;
         this.showVuforiaView = showVuforiaView;
         this.showTensorFlowView = showTensorFlowView;
+        this.hasElevator = hasElevator;
     }   //Preferences
 
 }   //class Preferences
