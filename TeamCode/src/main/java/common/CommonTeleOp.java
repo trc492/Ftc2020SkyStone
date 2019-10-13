@@ -134,11 +134,8 @@ public abstract class CommonTeleOp extends FtcOpMode
                     robot.driveBase.getYPosition(),
                     robot.driveBase.getHeading());
 
-            if (robot.preferences.hasElevator)
-            {
-                dashboard.displayPrintf(3, "ElevatorPower=%.1f, ArmExtenderPower=%.1f, WristPower=%.1f",
-                        elevatorPower, armExtenderPower, wristPower);
-            }
+            dashboard.displayPrintf(3, "ElevatorPower=%.1f, ArmExtenderPower=%.1f, WristPower=%.1f",
+                    elevatorPower, armExtenderPower, wristPower);
 
         }
     }   //runPeriodic
