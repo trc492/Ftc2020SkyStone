@@ -39,6 +39,7 @@ public class Robot6541 extends Robot
 {
     private static Preferences preferences6541 = new Preferences(
             /* hasRobot */ false,
+            /* hasElevator */ true,
             /* useTraceLog */ true,
             /* useSpeech */ true,
             /* useBatteryMonitor */ false,
@@ -46,8 +47,7 @@ public class Robot6541 extends Robot
             /* useVuforia */ false,
             /* useTensorFlow */ true,
             /* showVuforiaView */ false,
-            /* showTensorFlowView */ true,
-            /* hasElevator */ true
+            /* showTensorFlowView */ true
     );
 
     public Robot6541(TrcRobot.RunMode runMode)

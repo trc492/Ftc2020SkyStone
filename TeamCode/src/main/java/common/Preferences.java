@@ -22,12 +22,15 @@
 
 package common;
 
+import java.util.Locale;
+
 /**
  * This class contains variables specifying all the preferences. It is initialized by the corresponding robot.
  */
 public class Preferences
 {
     public final boolean hasRobot;
+    public final boolean hasElevator;
     public final boolean useTraceLog;
     public final boolean useSpeech;
     public final boolean useBatteryMonitor;
@@ -36,14 +39,14 @@ public class Preferences
     public final boolean useTensorFlow;
     public final boolean showVuforiaView;
     public final boolean showTensorFlowView;
-    public final boolean hasElevator;
 
     public Preferences(
-            boolean hasRobot, boolean useTraceLog, boolean useSpeech, boolean useBatteryMonitor,
+            boolean hasRobot, boolean hasElevator, boolean useTraceLog, boolean useSpeech, boolean useBatteryMonitor,
             boolean useVelocityControl, boolean useVuforia, boolean useTensorFlow, boolean showVuforiaView,
-            boolean showTensorFlowView, boolean hasElevator)
+            boolean showTensorFlowView)
     {
         this.hasRobot = hasRobot;
+        this.hasElevator = hasElevator;
         this.useTraceLog = useTraceLog;
         this.useSpeech = useSpeech;
         this.useBatteryMonitor = useBatteryMonitor;
@@ -52,7 +55,15 @@ public class Preferences
         this.useTensorFlow = useTensorFlow;
         this.showVuforiaView = showVuforiaView;
         this.showTensorFlowView = showTensorFlowView;
-        this.hasElevator = hasElevator;
     }   //Preferences
+
+    public String toString()
+    {
+        return String.format(Locale.US,
+                "hasRobot=%s,hasElevator=%s,useTraceLog=%s,useSpeech=%s,useBatteryMonitor=%s,useVelControl=%s," +
+                "useVuforia=%s,useTensorFlow=%s,showVuforiaView=%s,showTensorFlowView=%s,hasElevator=%s",
+                hasRobot, hasElevator, useTraceLog, useSpeech, useBatteryMonitor, useVelocityControl, useVuforia,
+                useTensorFlow, showVuforiaView, showTensorFlowView);
+    }   //toString
 
 }   //class Preferences

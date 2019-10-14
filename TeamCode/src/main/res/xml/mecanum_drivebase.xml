@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='UTF-8' standalone='yes' ?>
 <!--
-Copyright (c) 2018 Titan Robotics Club (http://www.titanrobotics.com)
+Copyright (c) 2019 Titan Robotics Club (http://www.titanrobotics.com)
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -21,7 +21,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 -->
 
-<Robot type="FirstInspires-FTC" name="RobotMechanumGenericUwU">
+<Robot type="FirstInspires-FTC" name="MecanumDriveBase">
 <LynxUsbDevice name="Expansion Hub Portal 1" serialNumber="DQ2F1A8T" parentModuleAddress="1">
     <LynxModule name="Expansion Hub 2" port="2">
         <RevRobotics40HDHexMotor name="rrWheel" port="0" />
@@ -39,4 +39,3 @@ SOFTWARE.
     </LynxModule>
 </LynxUsbDevice>
 </Robot>
-
