@@ -97,8 +97,10 @@ public class CmdAutoBuildingZone implements TrcRobot.RobotCommand
         }
         else
         {
-            robot.dashboard.displayPrintf(1, "State: %s", state);
+            double xTarget = 0.0;
+            double yTarget = 0.0;
 
+            robot.dashboard.displayPrintf(1, "State: %s", state);
             switch (state)
             {
                 case DO_DELAY:
@@ -118,42 +120,48 @@ public class CmdAutoBuildingZone implements TrcRobot.RobotCommand
                         sm.waitForSingleEvent(event, State.MOVE_UP);
                         break;
                     }
+
                 case MOVE_UP:
-                    if (!autoChoices.moveFoundation) {
+                    if (!autoChoices.moveFoundation)
+                    {
                         sm.setState(State.DONE);
-                    } else {
-                        robot.pidDrive.setTarget(autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE?-12:12,
-                                0,robot.targetHeading,false,event);
+                    }
+                    else
+                    {
+                        xTarget = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE ? -12.0 : 12.0;
+                        robot.pidDrive.setTarget(xTarget, yTarget, robot.targetHeading, false, event);
                         sm.waitForSingleEvent(event, State.MOVE_TO_FOUNDATION);
                     }
                     break;
 
                 case MOVE_TO_FOUNDATION:
-                    robot.pidDrive.setTarget(-38.25,robot.targetHeading,false,event);
+                    yTarget = -38.25;
+                    robot.pidDrive.setTarget(xTarget, yTarget, robot.targetHeading, false, event);
                     sm.waitForSingleEvent(event, State.HOOK_FOUNDATION);
                     break;
 
                 case HOOK_FOUNDATION:
                     robot.foundationLatch.grab();
-                    timer.set(0.5,event);
+                    timer.set(0.5, event);
                     sm.waitForSingleEvent(event, State.MOVE_FOUNDATION_DOWN);
                     break;
 
                 case MOVE_FOUNDATION_DOWN:
-                    robot.pidDrive.setTarget(autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE?12:-12,
-                            0,robot.targetHeading,false,event);
+                    xTarget = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE ? 12.0 : -12.0;
+                    robot.pidDrive.setTarget(xTarget, yTarget, robot.targetHeading, false, event);
                     sm.waitForSingleEvent(event, State.TURN_FOUNDATION);
                     break;
 
                 case TURN_FOUNDATION:
-                    robot.targetHeading += autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE?90:-90;
-                    robot.pidDrive.setTarget(0,robot.targetHeading,false,event);
+                    robot.targetHeading += autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE ? 90.0 : -90.0;
+                    robot.pidDrive.setTarget(xTarget, yTarget, robot.targetHeading, false, event);
                     sm.waitForSingleEvent(event, State.MOVE_FOUNDATION_IN);
                     break;
 
                 case MOVE_FOUNDATION_IN:
-                    robot.pidDrive.setTarget(autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE?-12:12,
-                            -47.25,robot.targetHeading,false,event);
+                    xTarget = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE ? -12.0 : 12.0;
+                    yTarget = -47.25;
+                    robot.pidDrive.setTarget(xTarget, yTarget, robot.targetHeading, false, event);
                     sm.waitForSingleEvent(event, State.DONE);
                     break;
 
@@ -166,6 +174,8 @@ public class CmdAutoBuildingZone implements TrcRobot.RobotCommand
                     sm.stop();
                     break;
             }
+
+            robot.traceStateInfo(elapsedTime, state.toString(), xTarget, yTarget, robot.targetHeading);
         }
 
         return !sm.isEnabled();
