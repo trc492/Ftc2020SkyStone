@@ -41,7 +41,7 @@ import trclib.TrcHomographyMapper;
 public class TensorFlowVision
 {
     private static final String TFOD_MODEL_ASSET = "Skystone.tflite";
-    private static final double TFOD_MIN_CONFIDENCE = 0.8;
+    private static final double TFOD_MIN_CONFIDENCE = 0.5;
     public static final String LABEL_STONE = "Stone";
     public static final String LABEL_SKYSTONE = "Skystone";
 
@@ -71,7 +71,7 @@ public class TensorFlowVision
         public String toString()
         {
             return String.format(Locale.US,
-                    "%s: Rectangle[%d,%d,%d,%d] targetPos[%.2f,%.2f] angle=%.1f, confidence=%.3f, image(%d,%d)",
+                    "%s: Rect[%d,%d,%d,%d] targetPos[%.1f,%.1f] angle=%.1f, confidence=%.1f, image(%d,%d)",
                     label, rect.x, rect.y, rect.width, rect.height, targetBottomCenter.x,
                     targetBottomCenter.y, angle, confidence, imageWidth, imageHeight);
         }
@@ -128,15 +128,29 @@ public class TensorFlowVision
         vuforia.setFlashlightEnabled(enabled);
     }   //setLightEnabled
 
-    private int compareTargetY(Recognition a, Recognition b)
-    {
-        return (int)(a.getRight() - b.getRight());
-    }   //compareTargetY
-
+    /**
+     * This method is called to sort the targets in ascending X order.
+     *
+     * @param a specifies first target.
+     * @param b specifes the second target.
+     * @return negative value if first target is on the left of the second target, positive if on the right.
+     */
     private int compareTargetX(Recognition a, Recognition b)
     {
         return (int)(a.getTop() - b.getTop());
     }   //compareTargetX
+
+    /**
+     * This method is called to sort the targets in descending Y order.
+     *
+     * @param a specifies the first target.
+     * @param b specifies the second target
+     * @return negative if first target below the second target, positive if above.
+     */
+    private int compareTargetY(Recognition a, Recognition b)
+    {
+        return (int)(a.getRight() - b.getRight());
+    }   //compareTargetY
 
     private ArrayList<Recognition> getDetectedTargets(String label)
     {

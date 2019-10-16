@@ -36,8 +36,8 @@ import static org.firstinspires.ftc.robotcore.external.navigation.AxesReference.
 
 public class VuforiaVision
 {
-    private static final int IMAGE_WIDTH = 640;     //in pixels
-    private static final int IMAGE_HEIGHT = 480;    //in pixels
+    private static final int IMAGE_WIDTH = 1280;     //in pixels
+    private static final int IMAGE_HEIGHT = 720;    //in pixels
     private static final int FRAME_QUEUE_CAPACITY = 2;
     //
     // Since ImageTarget trackables use mm to specify their dimensions, we must use mm for all the physical dimension.
