@@ -53,6 +53,8 @@ public class CmdAutoBuildingZone implements TrcRobot.RobotCommand
         MOVE_FOUNDATION_DOWN,
         TURN_FOUNDATION,
         MOVE_FOUNDATION_IN,
+        UNHOOK_FOUNDATION,
+        MOVE_TO_LINE,
         DONE
     }   //enum State
 
@@ -63,6 +65,7 @@ public class CmdAutoBuildingZone implements TrcRobot.RobotCommand
     private final TrcEvent event;
     private final TrcTimer timer;
     private final TrcStateMachine<State> sm;
+    private final SimpleRobotMovements<State> simpleMovements;
 
     public CmdAutoBuildingZone(Robot robot, CommonAuto.AutoChoices autoChoices)
     {
@@ -72,6 +75,7 @@ public class CmdAutoBuildingZone implements TrcRobot.RobotCommand
         timer = new TrcTimer(moduleName);
         sm = new TrcStateMachine<>(moduleName);
         sm.start(State.DO_DELAY);
+        simpleMovements = new SimpleRobotMovements<>(robot, sm, event);
     }   //CmdAutoBuildingZone
 
     @Override
@@ -93,7 +97,7 @@ public class CmdAutoBuildingZone implements TrcRobot.RobotCommand
 
         if (state == null)
         {
-            robot.dashboard.displayPrintf(1, "State: Disabled");
+            robot.dashboard.displayPrintf(1, "State: State Machine Waiting");
         }
         else
         {
@@ -122,6 +126,7 @@ public class CmdAutoBuildingZone implements TrcRobot.RobotCommand
                     }
 
                 case MOVE_UP:
+                    // Robot will move sideways toward the foundation
                     if (!autoChoices.moveFoundation)
                     {
                         sm.setState(State.DONE);
@@ -129,43 +134,54 @@ public class CmdAutoBuildingZone implements TrcRobot.RobotCommand
                     else
                     {
                         xTarget = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE ? -12.0 : 12.0;
-                        robot.pidDrive.setTarget(xTarget, yTarget, robot.targetHeading, false, event);
-                        sm.waitForSingleEvent(event, State.MOVE_TO_FOUNDATION);
+                        simpleMovements.driveSidewaysUntilDone(xTarget, State.MOVE_TO_FOUNDATION);
                     }
                     break;
 
                 case MOVE_TO_FOUNDATION:
-                    yTarget = -38.25;
-                    robot.pidDrive.setTarget(xTarget, yTarget, robot.targetHeading, false, event);
-                    sm.waitForSingleEvent(event, State.HOOK_FOUNDATION);
+                    // Robot will move backwards so that the hook is facing the foundation
+                    yTarget = -32.5;
+                    simpleMovements.driveStraightUntilDone(yTarget, State.HOOK_FOUNDATION);
                     break;
 
                 case HOOK_FOUNDATION:
+                    // The hook latches onto the foundation
                     robot.foundationLatch.grab();
                     timer.set(0.5, event);
                     sm.waitForSingleEvent(event, State.MOVE_FOUNDATION_DOWN);
                     break;
 
                 case MOVE_FOUNDATION_DOWN:
+                    // It moves the foundation down, with the robot moving sideways
                     xTarget = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE ? 12.0 : -12.0;
-                    robot.pidDrive.setTarget(xTarget, yTarget, robot.targetHeading, false, event);
-                    sm.waitForSingleEvent(event, State.TURN_FOUNDATION);
+                    simpleMovements.driveSidewaysUntilDone(xTarget, State.TURN_FOUNDATION);
                     break;
 
                 case TURN_FOUNDATION:
-                    robot.targetHeading += autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE ? 90.0 : -90.0;
-                    robot.pidDrive.setTarget(xTarget, yTarget, robot.targetHeading, false, event);
-                    sm.waitForSingleEvent(event, State.MOVE_FOUNDATION_IN);
+                    // The robot turns the foundation sideways
+                    double deltaHeading = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE ? 90.0 : -90.0;
+                    simpleMovements.turnInPlaceUntilDone(deltaHeading, State.MOVE_FOUNDATION_IN);
                     break;
 
                 case MOVE_FOUNDATION_IN:
+                    // The robot pushes the foundation into the corner
                     xTarget = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE ? -12.0 : 12.0;
                     yTarget = -47.25;
-                    robot.pidDrive.setTarget(xTarget, yTarget, robot.targetHeading, false, event);
-                    sm.waitForSingleEvent(event, State.DONE);
+                    simpleMovements.driveDiagonallyUntilDone(xTarget, yTarget, State.UNHOOK_FOUNDATION);
                     break;
 
-                //Move under the bridge
+                case UNHOOK_FOUNDATION:
+                    // The hook releases the foundation
+                    robot.foundationLatch.release();
+                    timer.set(0.5, event);
+                    sm.waitForSingleEvent(event, State.MOVE_TO_LINE);
+                    break;
+
+                case MOVE_TO_LINE:
+                    // The robot drives forward into the line
+                    yTarget = 50;
+                    simpleMovements.driveStraightUntilDone(yTarget, State.DONE);
+                    break;
 
                 case DONE:
                 default:
