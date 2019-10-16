@@ -32,6 +32,25 @@ public class CmdAutoLoadingZone implements TrcRobot.RobotCommand
     private enum State
     {
         DO_DELAY,
+
+        LOOKING_FOR_SKYSTONES,
+        FIRST_SKYSTONE_ALIGN_GRABBER_TO_SKYSTONE,
+        // drive to skystone and pick it up
+        FIRST_SKYSTONE_OPEN_GRABBER_AND_EXTEND_ARM,
+        FIRST_SKYSTONE_DRIVE_FORWARD,
+        FIRST_SKYSTONE_ARM_GOES_DOWN_ON_SKYSTONE,
+        FIRST_SKYSTONE_GRAB_SKYSTONE,
+        FIRST_SKYSTONE_EXTEND_ARM_WITH_SKYSTONE,
+        // move skystone to foundation
+        FIRST_SKYSTONE_BACK_UP,
+        FIRST_SKYSTONE_TURN_TOWARDS_BUILDING_SIDE,
+        FIRST_SKYSTONE_GO_FORWARDS,
+        FIRST_SKYSTONE_TURN_TOWARD_MIDDLE,
+        FIRST_SKYSTONE_MOVE_TOWARD_MIDDLE,
+        FIRST_SKYSTONE_TURN_TO_FOUNDATION,
+        FIRST_SKYSTONE_MOVE_TO_FOUNDATION,
+        FIRST_SKYSTONE_RELEASE_SKYSTONE,
+
         DONE
     }   //enum State
 
@@ -42,6 +61,7 @@ public class CmdAutoLoadingZone implements TrcRobot.RobotCommand
     private final TrcEvent event;
     private final TrcTimer timer;
     private final TrcStateMachine<State> sm;
+    private final SimpleRobotMovements<State> simpleMovements;
 
     public CmdAutoLoadingZone(Robot robot, CommonAuto.AutoChoices autoChoices)
     {
@@ -51,6 +71,7 @@ public class CmdAutoLoadingZone implements TrcRobot.RobotCommand
         timer = new TrcTimer(moduleName);
         sm = new TrcStateMachine<>(moduleName);
         sm.start(State.DO_DELAY);
+        simpleMovements = new SimpleRobotMovements<>(robot, sm, event);
     }   //CmdAutoLoadingZone
 
     @Override

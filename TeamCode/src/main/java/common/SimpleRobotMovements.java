@@ -37,6 +37,32 @@ public class SimpleRobotMovements<StateType> {
     } // driveStraightUntilDone
 
     /**
+     * Drives the robot sideways, perpendicular to the current {@link Robot#targetHeading}.
+     *
+     * @param distance The distance to drive. Positive values make the robot go right, negative
+     *                 make the robot go in left.
+     * @param nextState The next state to advance the state machine to when this action is complete.
+     */
+    public void driveSidewaysUntilDone(double distance, StateType nextState) {
+        robot.pidDrive.setTarget(distance, 0.0, robot.targetHeading, false, event);
+        stateMachine.waitForSingleEvent(event, nextState);
+    } // driveSidewaysUntilDone
+
+    /**
+     * Drives the robot diagonally, preserving current {@link Robot#targetHeading}.
+     *
+     * @param xDistance The distance to drive along the robot's X axis. Positive values make the
+     *                  robot go right, negative make the robot go in left.
+     * @param yDistance It is the amount of distance to travel forward or backward. If positive
+     *                  then forward, and if negative, it is backwards.
+     * @param nextState The next state to advance the state machine to when this action is complete.
+     */
+    public void driveDiagonallyUntilDone(double xDistance, double yDistance, StateType nextState) {
+        robot.pidDrive.setTarget(xDistance, yDistance, robot.targetHeading, false, event);
+        stateMachine.waitForSingleEvent(event, nextState);
+    } // driveDiagonallyUntilDone
+
+    /**
      * Turns the robot in-place. Updates the current {@link Robot#targetHeading}.
      *
      * @param deltaHeading The number of degrees to turn. Positive values turn the robot clockwise;

@@ -215,12 +215,20 @@ public class CommonTest
     {
         if (test == Test.PURE_PURSUIT_DRIVE)
         {
+            /*
             purePursuitDriveCommand.start(
                     new TrcPose2D[] {
                             new TrcPose2D(0,0),
                             new TrcPose2D(0, 24, 0, 0, 50, 0),
                             new TrcPose2D(0, 96, 180, 0, 50, 0),
                             new TrcPose2D(0, 120, 180)});
+
+             */
+
+            purePursuitDriveCommand.start(
+                    new TrcPose2D[] {
+                            new TrcPose2D(0,0),
+                            new TrcPose2D(0, 12, 0, 0, 0, 0)});
         }
     }   //start
 
@@ -314,6 +322,18 @@ public class CommonTest
                     pidDriveCommand.cmdPeriodic(elapsedTime);
                 }
                 break;
+            case PURE_PURSUIT_DRIVE:
+                double lfEnc = robot.leftFrontWheel.getPosition();
+                double rfEnc = robot.rightFrontWheel.getPosition();
+                double lrEnc = robot.leftRearWheel.getPosition();
+                double rrEnc = robot.rightRearWheel.getPosition();
+                robot.dashboard.displayPrintf(9, "Timed Drive: %.0f sec", driveTime);
+                robot.dashboard.displayPrintf(10, "Enc:lf=%.0f,rf=%.0f", lfEnc, rfEnc);
+                robot.dashboard.displayPrintf(11, "Enc:lr=%.0f,rr=%.0f", lrEnc, rrEnc);
+                robot.dashboard.displayPrintf(12, "average=%f", (lfEnc + rfEnc + lrEnc + rrEnc)/4.0);
+                robot.dashboard.displayPrintf(13, "xPos=%.1f,yPos=%.1f,heading=%.1f",
+                        robot.driveBase.getXPosition(), robot.driveBase.getYPosition(), robot.driveBase.getHeading());
+                purePursuitDriveCommand.cmdPeriodic(elapsedTime);
         }
 
         if (loopPerformanceMonitor != null)
