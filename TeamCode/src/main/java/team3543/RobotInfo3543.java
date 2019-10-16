@@ -73,14 +73,14 @@ class RobotInfo3543
     static final double PIDDRIVE_STALL_TIMEOUT          = 0.5;      //in seconds.
 
     // TODO: need to tune all PID coefficients
-    static final double PURE_PURSUIT_POS_KP             = 0.011;
+    static final double PURE_PURSUIT_POS_KP             = (.1 + .05) / 2.0;
     static final double PURE_PURSUIT_POS_KI             = 0.0;
-    static final double PURE_PURSUIT_POS_KD             = 0.001;
+    static final double PURE_PURSUIT_POS_KD             = 0.0;
     static final double PURE_PURSUIT_TURN_KP            = 0.025;
     static final double PURE_PURSUIT_VEL_KP             = 0.0;
     static final double PURE_PURSUIT_VEL_KI             = 0.0;
     static final double PURE_PURSUIT_VEL_KD             = 0.9;
-    static final double PURE_PURSUIT_VEL_KF             = 1.0/223;
+    static final double PURE_PURSUIT_VEL_KF             = 1.0 / 120.0; // reciprocal of tangential velocity of wheel, in/sec 1.0/223;
 
     //
     // Vision subsystem.

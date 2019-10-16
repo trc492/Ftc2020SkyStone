@@ -43,7 +43,7 @@ public class CmdPurePursuitDrive implements TrcRobot.RobotCommand
             TrcPidController.PidCoefficients velPid)
     {
         purePursuitDrive = new TrcHolonomicPurePursuitDrive(
-                "PurePursuitDrive", driveBase, 10, 3.0, 2,
+                "PurePursuitDrive", driveBase, 6, 3.0, 2,
                 posPid, turnPid, velPid);
         event = new TrcEvent("event");
     }   //CmdPurePursuitDrive
