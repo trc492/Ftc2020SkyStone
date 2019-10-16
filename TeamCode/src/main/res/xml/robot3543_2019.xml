@@ -38,10 +38,6 @@ SOFTWARE.
         <LynxModule name="Expansion Hub 3" port="3">
             <RevRobotics40HDHexMotor name="elevatorMotor" port="0" />
             <Motor name="pixyRingLight" port="1" />
-            <Servo name="armExtenderServo" port="0" />
-            <Servo name="wristServo" port="1" />
-            <Servo name="grabberServo" port="2" />
-            <Servo name="foundationLatchServo" port="3" />
             <LynxEmbeddedIMU name="imu 1" port="0" bus="0" />
         </LynxModule>
     </LynxUsbDevice>

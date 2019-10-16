@@ -32,7 +32,8 @@ public class CmdAutoLoadingZone implements TrcRobot.RobotCommand
     private enum State
     {
         DO_DELAY,
-
+        // CodeReview: you may want to go forward 12 to 15 inches before looking because I found the starting distance
+        // is a little too far for reliable object recognition.
         LOOKING_FOR_SKYSTONES,
         FIRST_SKYSTONE_ALIGN_GRABBER_TO_SKYSTONE,
         // drive to skystone and pick it up
@@ -93,7 +94,7 @@ public class CmdAutoLoadingZone implements TrcRobot.RobotCommand
 
         if (state == null)
         {
-            robot.dashboard.displayPrintf(1, "State: Disabled");
+            robot.dashboard.displayPrintf(1, "State: disabled or waiting...");
         }
         else
         {

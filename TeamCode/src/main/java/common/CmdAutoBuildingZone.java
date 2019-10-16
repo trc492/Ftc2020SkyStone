@@ -97,7 +97,7 @@ public class CmdAutoBuildingZone implements TrcRobot.RobotCommand
 
         if (state == null)
         {
-            robot.dashboard.displayPrintf(1, "State: State Machine Waiting");
+            robot.dashboard.displayPrintf(1, "State: disabled or waiting...");
         }
         else
         {
