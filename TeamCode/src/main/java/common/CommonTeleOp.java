@@ -97,47 +97,53 @@ public abstract class CommonTeleOp extends FtcOpMode
             switch (driveMode)
             {
                 case TANK_MODE:
-                    double leftPower = driverGamepad.getLeftStickY(true)*drivePowerScale;
-                    double rightPower = driverGamepad.getRightStickY(true)*drivePowerScale;
+                    double leftPower = driverGamepad.getLeftStickY(true) * drivePowerScale;
+                    double rightPower = driverGamepad.getRightStickY(true) * drivePowerScale;
                     robot.driveBase.tankDrive(leftPower, rightPower, invertedDrive);
                     dashboard.displayPrintf(1, "Tank:left=%.1f,right=%.1f,inv=%s",
                             leftPower, rightPower, Boolean.toString(invertedDrive));
                     break;
 
                 case HOLONOMIC_MODE:
-                    double x = driverGamepad.getLeftStickX(true)*drivePowerScale;
-                    double y = driverGamepad.getRightStickY(true)*drivePowerScale;
+                    double x = driverGamepad.getLeftStickX(true) * drivePowerScale;
+                    double y = driverGamepad.getRightStickY(true) * drivePowerScale;
                     double rot = (driverGamepad.getRightTrigger(true) -
-                            driverGamepad.getLeftTrigger(true))*drivePowerScale;
+                            driverGamepad.getLeftTrigger(true)) * drivePowerScale;
                     robot.driveBase.holonomicDrive(x, y, rot, invertedDrive);
                     dashboard.displayPrintf(1, "Mecan:x=%.1f,y=%.1f,rot=%.1f,inv=%s",
                             x, y, rot, Boolean.toString(invertedDrive));
                     break;
             }
 
-            double elevatorPower = 0.0;
-            if (robot.preferences.hasElevator)
-            {
-                elevatorPower = operatorGamepad.getRightStickY(true);
-                robot.elevator.setPower(elevatorPower);
-            }
-
-
-            double armExtenderPower = operatorGamepad.getLeftStickY(true);
-            robot.armExtender.setPower(armExtenderPower);
-
-            double wristPower = operatorGamepad.getLeftStickX(true);
-            robot.wrist.setPower(wristPower);
-
             dashboard.displayPrintf(2, "DriveBase: x=%.2f,y=%.2f,heading=%.2f",
                     robot.driveBase.getXPosition(),
                     robot.driveBase.getYPosition(),
                     robot.driveBase.getHeading());
 
-            dashboard.displayPrintf(3, "ElevatorPower=%.1f, ArmExtenderPower=%.1f, WristPower=%.1f",
-                    elevatorPower, armExtenderPower, wristPower);
-
         }
+        //
+        // Other subsystems.
+        //
+        double elevatorPower = operatorGamepad.getRightStickY(true);
+        if (robot.elevator != null)
+        {
+            robot.elevator.setPower(elevatorPower);
+        }
+
+        double armExtenderPower = operatorGamepad.getLeftStickY(true);
+        if (robot.armExtender != null)
+        {
+            robot.armExtender.setPower(armExtenderPower);
+        }
+
+        double wristPower = operatorGamepad.getLeftStickX(true);
+        if (robot.wrist != null)
+        {
+            robot.wrist.setPower(wristPower);
+        }
+
+        dashboard.displayPrintf(3, "ElevatorPower=%.1f, ArmExtenderPower=%.1f, WristPower=%.1f",
+                elevatorPower, armExtenderPower, wristPower);
     }   //runPeriodic
 
     public void buttonEvent(TrcGameController gamepad, int button, boolean pressed)
@@ -172,28 +178,28 @@ public abstract class CommonTeleOp extends FtcOpMode
             switch (button)
             {
                 case FtcGamepad.GAMEPAD_A:
-                    if (pressed)
+                    if (robot.grabber != null && pressed)
                     {
                         robot.grabber.grab();
                     }
                     break;
 
                 case FtcGamepad.GAMEPAD_B:
-                    if (pressed)
+                    if (robot.grabber != null && pressed)
                     {
                         robot.grabber.release();
                     }
                     break;
 
                 case FtcGamepad.GAMEPAD_X:
-                    if (pressed)
+                    if (robot.foundationLatch != null && pressed)
                     {
                         robot.foundationLatch.grab();
                     }
                     break;
 
                 case FtcGamepad.GAMEPAD_Y:
-                    if (pressed)
+                    if (robot.foundationLatch != null && pressed)
                     {
                         robot.foundationLatch.release();
                     }

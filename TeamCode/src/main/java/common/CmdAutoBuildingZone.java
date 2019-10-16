@@ -31,7 +31,28 @@ public class CmdAutoBuildingZone implements TrcRobot.RobotCommand
 {
     private enum State
     {
+        /**
+         * Delay if necessary
+         * Determine whether we are moving the foundation or not
+         * If yes,
+         * Move to the foundation
+         * Align ourselves
+         * Grab onto the foundation
+         * Move towards the building site
+         * Unlatch
+         * Move backwards
+         * Stop when you go over the middle line
+         * If no,
+         * Wait, and then move
+         * Stop when you go over the middle line
+         */
         DO_DELAY,
+        MOVE_UP,
+        MOVE_TO_FOUNDATION,
+        HOOK_FOUNDATION,
+        MOVE_FOUNDATION_DOWN,
+        TURN_FOUNDATION,
+        MOVE_FOUNDATION_IN,
         DONE
     }   //enum State
 
@@ -76,8 +97,10 @@ public class CmdAutoBuildingZone implements TrcRobot.RobotCommand
         }
         else
         {
-            robot.dashboard.displayPrintf(1, "State: %s", state);
+            double xTarget = 0.0;
+            double yTarget = 0.0;
 
+            robot.dashboard.displayPrintf(1, "State: %s", state);
             switch (state)
             {
                 case DO_DELAY:
@@ -86,7 +109,7 @@ public class CmdAutoBuildingZone implements TrcRobot.RobotCommand
                     //
                     if (autoChoices.delay == 0.0)
                     {
-                        sm.setState(State.DONE);
+                        sm.setState(State.MOVE_UP);
                         //
                         // Intentionally falling through to the next state.
                         //
@@ -94,18 +117,65 @@ public class CmdAutoBuildingZone implements TrcRobot.RobotCommand
                     else
                     {
                         timer.set(autoChoices.delay, event);
-                        sm.waitForSingleEvent(event, State.DONE);
+                        sm.waitForSingleEvent(event, State.MOVE_UP);
                         break;
                     }
 
+                case MOVE_UP:
+                    if (!autoChoices.moveFoundation)
+                    {
+                        sm.setState(State.DONE);
+                    }
+                    else
+                    {
+                        xTarget = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE ? -12.0 : 12.0;
+                        robot.pidDrive.setTarget(xTarget, yTarget, robot.targetHeading, false, event);
+                        sm.waitForSingleEvent(event, State.MOVE_TO_FOUNDATION);
+                    }
+                    break;
+
+                case MOVE_TO_FOUNDATION:
+                    yTarget = -38.25;
+                    robot.pidDrive.setTarget(xTarget, yTarget, robot.targetHeading, false, event);
+                    sm.waitForSingleEvent(event, State.HOOK_FOUNDATION);
+                    break;
+
+                case HOOK_FOUNDATION:
+                    robot.foundationLatch.grab();
+                    timer.set(0.5, event);
+                    sm.waitForSingleEvent(event, State.MOVE_FOUNDATION_DOWN);
+                    break;
+
+                case MOVE_FOUNDATION_DOWN:
+                    xTarget = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE ? 12.0 : -12.0;
+                    robot.pidDrive.setTarget(xTarget, yTarget, robot.targetHeading, false, event);
+                    sm.waitForSingleEvent(event, State.TURN_FOUNDATION);
+                    break;
+
+                case TURN_FOUNDATION:
+                    robot.targetHeading += autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE ? 90.0 : -90.0;
+                    robot.pidDrive.setTarget(xTarget, yTarget, robot.targetHeading, false, event);
+                    sm.waitForSingleEvent(event, State.MOVE_FOUNDATION_IN);
+                    break;
+
+                case MOVE_FOUNDATION_IN:
+                    xTarget = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE ? -12.0 : 12.0;
+                    yTarget = -47.25;
+                    robot.pidDrive.setTarget(xTarget, yTarget, robot.targetHeading, false, event);
+                    sm.waitForSingleEvent(event, State.DONE);
+                    break;
+
+                //Move under the bridge
+
                 case DONE:
                 default:
-                    //
                     // We are done.
                     //
                     sm.stop();
                     break;
             }
+
+            robot.traceStateInfo(elapsedTime, state.toString(), xTarget, yTarget, robot.targetHeading);
         }
 
         return !sm.isEnabled();
