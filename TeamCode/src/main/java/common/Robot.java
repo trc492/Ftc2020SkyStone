@@ -28,6 +28,7 @@ import com.qualcomm.ftcrobotcontroller.R;
 
 import org.firstinspires.ftc.robotcontroller.internal.FtcRobotControllerActivity;
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
+import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 
@@ -44,6 +45,7 @@ import trclib.TrcGyro;
 import trclib.TrcHomographyMapper;
 import trclib.TrcPidController;
 import trclib.TrcPidDrive;
+import trclib.TrcPose2D;
 import trclib.TrcRobot;
 import trclib.TrcUtil;
 
@@ -89,6 +91,7 @@ public class Robot
     public long detectionIntervalStartTime = 0;
     public int detectionSuccessCount = 0;
     public int detectionFailedCount = 0;
+    public String targetFinder = null;
     //
     // DriveBase subsystem.
     //
@@ -116,7 +119,8 @@ public class Robot
 
     public Robot(
             TrcRobot.RunMode runMode, Preferences preferences, String robotName,
-            VuforiaLocalizer.CameraDirection cameraDir)
+            VuforiaLocalizer.CameraDirection cameraDir,
+            VuforiaLocalizer.Parameters.CameraMonitorFeedback cameraMonitorFeedback)
     {
         //
         // Initialize global objects.
@@ -142,7 +146,7 @@ public class Robot
             int cameraViewId = !preferences.showVuforiaView ? -1 :
                     opMode.hardwareMap.appContext.getResources().getIdentifier(
                             "cameraMonitorViewId", "id", opMode.hardwareMap.appContext.getPackageName());
-            vuforia = new FtcVuforia(VUFORIA_LICENSE_KEY, cameraViewId, cameraDir);
+            vuforia = new FtcVuforia(VUFORIA_LICENSE_KEY, cameraViewId, cameraDir, cameraMonitorFeedback);
         }
 
         if (preferences.useSpeech)
@@ -187,7 +191,7 @@ public class Robot
         if (vuforiaVision != null && (runMode == TrcRobot.RunMode.AUTO_MODE || runMode == TrcRobot.RunMode.TEST_MODE))
         {
             globalTracer.traceInfo(funcName, "Enabling Vuforia.");
-            vuforiaVision.setEnabled(true);
+            vuforiaVision.setEnabled(true, preferences.useFlashLight);
         }
         //
         // Enable odometry only for autonomous or test modes.
@@ -216,7 +220,7 @@ public class Robot
 
         if (vuforiaVision != null)
         {
-            vuforiaVision.setEnabled(false);
+            vuforiaVision.setEnabled(false, preferences.useFlashLight);
         }
 
         if (tensorFlowVision != null)
@@ -341,8 +345,54 @@ public class Robot
                         "tfodMonitorViewId", "id", opMode.hardwareMap.appContext.getPackageName());
         tensorFlowVision = new TensorFlowVision(
                 vuforia, tfodMonitorViewId, cameraRect, worldRect, globalTracer);
-        tensorFlowVision.setEnabled(true);
+        tensorFlowVision.setEnabled(true, preferences.useFlashLight);
         globalTracer.traceInfo(robotName, "Enabling TensorFlow.");
     } //initTensorFlow
+
+    public TrcPose2D getSkyStonePose()
+    {
+        final String funcName = "getSkyStonePose";
+        TrcPose2D pose = null;
+        targetFinder = null;
+
+        if (vuforiaVision != null)
+        {
+            OpenGLMatrix robotLocation = vuforiaVision.getRobotLocation();
+            if (robotLocation != null)
+            {
+                VectorF translation = vuforiaVision.getLocationTranslation(robotLocation);
+                Orientation orientation = vuforiaVision.getLocationOrientation(robotLocation);
+                pose = new TrcPose2D(
+                        translation.get(0)/TrcUtil.MM_PER_INCH, translation.get(1)/TrcUtil.MM_PER_INCH,
+                        orientation.thirdAngle);
+                targetFinder = "Vuforia";
+            }
+        }
+
+        if (pose == null && tensorFlowVision != null)
+        {
+            TensorFlowVision.TargetInfo[] targetsInfo;
+
+            targetsInfo = tensorFlowVision.getDetectedTargetsInfo(TensorFlowVision.LABEL_SKYSTONE);
+            if (targetsInfo != null && targetsInfo.length > 0)
+            {
+                pose = new TrcPose2D(
+                        targetsInfo[0].targetBottomCenter.x, targetsInfo[0].targetBottomCenter.y, targetsInfo[0].angle);
+                targetFinder = "TensorFlow";
+            }
+        }
+
+        if (pose == null)
+        {
+            globalTracer.traceInfo(funcName, "Skystone not found!");
+        }
+        else
+        {
+            globalTracer.traceInfo(funcName, "%s: x=%.1f, y=%.1f, angle=%.1f",
+                    targetFinder, pose.x, pose.y, pose.heading);
+        }
+
+        return pose;
+    }   //getSkyStonePose
 
 }   //class Robot

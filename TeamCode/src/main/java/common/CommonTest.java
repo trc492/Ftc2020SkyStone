@@ -451,19 +451,29 @@ public class CommonTest
 
     private void doVisionTest()
     {
+        TrcPose2D skystonePose = robot.getSkyStonePose();
+
+        if (skystonePose != null)
+        {
+            robot.dashboard.displayPrintf(12, "%s: x=%.1f, y=%.1f, angle=%.1f",
+                    robot.targetFinder, skystonePose.x, skystonePose.y, skystonePose.heading);
+        }
+        else
+        {
+            robot.dashboard.displayPrintf(12, "SkyStone not found!");
+        }
+
         if (robot.vuforiaVision != null)
         {
             OpenGLMatrix robotLocation = robot.vuforiaVision.getRobotLocation();
+
             if (robotLocation != null)
             {
                 VectorF translation = robot.vuforiaVision.getLocationTranslation(robotLocation);
                 Orientation orientation = robot.vuforiaVision.getLocationOrientation(robotLocation);
-                robot.dashboard.displayPrintf(12, "Translation: x=%.1f,y=%.1f,z=%.1f",
-                        translation.get(0)/ TrcUtil.MM_PER_INCH,
-                        translation.get(1)/TrcUtil.MM_PER_INCH,
-                        translation.get(2)/TrcUtil.MM_PER_INCH);
-                robot.dashboard.displayPrintf(13, "Orientation: roll=%.1f,pitch=%.1f,heading=%.1f",
-                        orientation.firstAngle, orientation.secondAngle, orientation.thirdAngle);
+                robot.dashboard.displayPrintf(13, "RobotLocation: x=%.1f, y=%.1f, z=%.1f, heading=%.1f",
+                        translation.get(0)/ TrcUtil.MM_PER_INCH, translation.get(1)/TrcUtil.MM_PER_INCH,
+                        translation.get(2)/TrcUtil.MM_PER_INCH, orientation.thirdAngle);
             }
         }
 

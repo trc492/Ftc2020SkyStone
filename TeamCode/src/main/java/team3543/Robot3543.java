@@ -46,13 +46,15 @@ public class Robot3543 extends Robot
             /* useVelocityControl */ false,
             /* useVuforia */ true,
             /* useTensorFlow */ true,
-            /* showVuforiaView */ false,
-            /* showTensorFlowView */ true
+            /* useFlashLight */ false,
+            /* showVuforiaView */ true,
+            /* showTensorFlowView */ false
     );
 
     public Robot3543(TrcRobot.RunMode runMode)
     {
-        super(runMode, preferences3543, RobotInfo3543.ROBOT_NAME, RobotInfo3543.CAMERA_DIR);
+        super(runMode, preferences3543, RobotInfo3543.ROBOT_NAME, RobotInfo3543.CAMERA_DIR,
+                RobotInfo3543.CAMERA_MONITOR_FEEDBACK);
         //
         // Initialize vision subsystems.
         //

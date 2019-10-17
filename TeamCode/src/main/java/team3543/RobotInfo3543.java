@@ -88,6 +88,8 @@ class RobotInfo3543
     // Vision subsystem.
     //
     static final VuforiaLocalizer.CameraDirection CAMERA_DIR = BACK;
+    static final VuforiaLocalizer.Parameters.CameraMonitorFeedback CAMERA_MONITOR_FEEDBACK =
+            VuforiaLocalizer.Parameters.CameraMonitorFeedback.AXES;
     static final boolean PHONE_IS_PORTRAIT              = false;
     static final double ROBOT_LENGTH                    = 17.5; //Robot length in inches
     static final double ROBOT_WIDTH                     = 17.5; //Robot width in inches

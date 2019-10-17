@@ -46,13 +46,15 @@ public class Robot6541 extends Robot
             /* useVelocityControl */ false,
             /* useVuforia */ false,
             /* useTensorFlow */ true,
+            /* useFlashLight */ false,
             /* showVuforiaView */ false,
             /* showTensorFlowView */ true
     );
 
     public Robot6541(TrcRobot.RunMode runMode)
     {
-        super(runMode, preferences6541, RobotInfo6541.ROBOT_NAME, RobotInfo6541.CAMERA_DIR);
+        super(runMode, preferences6541, RobotInfo6541.ROBOT_NAME, RobotInfo6541.CAMERA_DIR,
+                RobotInfo6541.CAMERA_MONITOR_FEEDBACK);
         //
         // Initialize vision subsystems.
         //

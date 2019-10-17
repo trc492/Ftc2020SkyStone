@@ -37,13 +37,14 @@ public class Preferences
     public final boolean useVelocityControl;
     public final boolean useVuforia;
     public final boolean useTensorFlow;
+    public final boolean useFlashLight;
     public final boolean showVuforiaView;
     public final boolean showTensorFlowView;
 
     public Preferences(
             boolean hasRobot, boolean hasElevator, boolean useTraceLog, boolean useSpeech, boolean useBatteryMonitor,
-            boolean useVelocityControl, boolean useVuforia, boolean useTensorFlow, boolean showVuforiaView,
-            boolean showTensorFlowView)
+            boolean useVelocityControl, boolean useVuforia, boolean useTensorFlow,
+            boolean useFlashLight, boolean showVuforiaView, boolean showTensorFlowView)
     {
         this.hasRobot = hasRobot;
         this.hasElevator = hasElevator;
@@ -53,6 +54,7 @@ public class Preferences
         this.useVelocityControl = useVelocityControl;
         this.useVuforia = useVuforia;
         this.useTensorFlow = useTensorFlow;
+        this.useFlashLight = useFlashLight;
         this.showVuforiaView = showVuforiaView;
         this.showTensorFlowView = showTensorFlowView;
     }   //Preferences
@@ -61,9 +63,9 @@ public class Preferences
     {
         return String.format(Locale.US,
                 "hasRobot=%s,hasElevator=%s,useTraceLog=%s,useSpeech=%s,useBatteryMonitor=%s,useVelControl=%s," +
-                "useVuforia=%s,useTensorFlow=%s,showVuforiaView=%s,showTensorFlowView=%s,hasElevator=%s",
+                "useVuforia=%s,useTensorFlow=%s,useFlashLight=%s,showVuforiaView=%s,showTensorFlowView=%s",
                 hasRobot, hasElevator, useTraceLog, useSpeech, useBatteryMonitor, useVelocityControl, useVuforia,
-                useTensorFlow, showVuforiaView, showTensorFlowView);
+                useTensorFlow, useFlashLight, showVuforiaView, showTensorFlowView);
     }   //toString
 
 }   //class Preferences

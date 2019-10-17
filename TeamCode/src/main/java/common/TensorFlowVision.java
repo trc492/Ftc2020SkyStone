@@ -81,6 +81,7 @@ public class TensorFlowVision
     private TrcDbgTrace tracer;
     private TFObjectDetector tfod;
     private TrcHomographyMapper homographyMapper;
+    private boolean useFlashLight = false;
 
     public TensorFlowVision(
             FtcVuforia vuforia, int tfodMonitorViewId, TrcHomographyMapper.Rectangle cameraRect,
@@ -105,8 +106,14 @@ public class TensorFlowVision
         homographyMapper = new TrcHomographyMapper(cameraRect, worldRect);
     }   //TensorFlowVision
 
-    public void setEnabled(boolean enabled)
+    public void setEnabled(boolean enabled, boolean useFlashLight)
     {
+        this.useFlashLight = useFlashLight;
+        if (useFlashLight)
+        {
+            vuforia.setFlashlightEnabled(enabled);
+        }
+
         if (enabled)
         {
             tfod.activate();
@@ -119,7 +126,7 @@ public class TensorFlowVision
 
     public void shutdown()
     {
-        setEnabled(false);
+        setEnabled(false, useFlashLight);
         tfod.shutdown();
     }   //shutdown
 
