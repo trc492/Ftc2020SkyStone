@@ -78,8 +78,8 @@ class RobotInfo3543
     static final double PURE_PURSUIT_POS_KD             = 0.0;
     static final double PURE_PURSUIT_TURN_KP            = 0.025;
     static final double PURE_PURSUIT_VEL_KP             = 0.0; // TODO: tune this, purepursuit is jerky and accelerates suddenly
-    static final double PURE_PURSUIT_VEL_KI             = 0.0;  // TODO: tune this, purepursuit is jerky and accelerates suddenly
-    static final double PURE_PURSUIT_VEL_KD             = 0.9;   // TODO: tune this. was placeholder FRC value. with this, purepursuit is jerky and accelerates suddenly
+    static final double PURE_PURSUIT_VEL_KI             = 0.0; // TODO: tune this, purepursuit is jerky and accelerates suddenly
+    static final double PURE_PURSUIT_VEL_KD             = 0.9; // TODO: tune this. was placeholder FRC value. with this, purepursuit is jerky and accelerates suddenly
 
     // Neverest 40 motor, max shaft speed = 160 RPM
     // motor-to-wheel tooth ratio = 24:16 = 3:2
