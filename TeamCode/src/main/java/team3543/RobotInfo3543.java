@@ -73,16 +73,22 @@ class RobotInfo3543
     static final double PIDDRIVE_STALL_TIMEOUT          = 0.5;      //in seconds.
 
     // TODO: need to tune all PID coefficients
-    static final double PURE_PURSUIT_POS_KP             = (.1 + .05) / 2.0; //CodeReview: what is this formula???
+    static final double PURE_PURSUIT_POS_KP             = (.1 + .05) / 2.0; // average of encoder KP for x and y PID drive, as suggested by Abhay.
     static final double PURE_PURSUIT_POS_KI             = 0.0;
     static final double PURE_PURSUIT_POS_KD             = 0.0;
     static final double PURE_PURSUIT_TURN_KP            = 0.025;
-    static final double PURE_PURSUIT_VEL_KP             = 0.0;
-    static final double PURE_PURSUIT_VEL_KI             = 0.0;
-    static final double PURE_PURSUIT_VEL_KD             = 0.9;  //Codeview: this is awefully big, how do you
-    // determine this?
-    static final double PURE_PURSUIT_VEL_KF             = 1.0 / 120.0; // reciprocal of tangential velocity of wheel, in/sec 1.0/223;
-    //CodeReview: what is 120? I thought the max robot velocity is 50 inches/sec???
+    static final double PURE_PURSUIT_VEL_KP             = 0.0; // TODO: tune this, purepursuit is jerky and accelerates suddenly
+    static final double PURE_PURSUIT_VEL_KI             = 0.0;  // TODO: tune this, purepursuit is jerky and accelerates suddenly
+    static final double PURE_PURSUIT_VEL_KD             = 0.9;   // TODO: tune this. was placeholder FRC value. with this, purepursuit is jerky and accelerates suddenly
+
+    // Neverest 40 motor, max shaft speed = 160 RPM
+    // motor-to-wheel tooth ratio = 24:16 = 3:2
+    // wheel max angular speed = (2 / 3) * 160 RPM
+    // max tangential speed of wheel (in/s) = wheel max angular speed * 2 * pi * radius / 60.0
+    // = (3 / 2) * (160 RPM) * 2 * 3.1415926 * (2 in.) / 60.0
+    // = 50.2654816 in./sec.
+    // KF should be set to the reciprocal of max tangential velocity (time to travel unit distance), units: sec./in.
+    static final double PURE_PURSUIT_VEL_KF             = 1.0 / 50.2654816;
 
     //
     // Vision subsystem.

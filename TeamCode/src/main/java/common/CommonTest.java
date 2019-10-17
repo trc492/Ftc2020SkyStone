@@ -292,7 +292,7 @@ public class CommonTest
                     double rfEnc = robot.rightFrontWheel.getPosition();
                     double lrEnc = robot.leftRearWheel.getPosition();
                     double rrEnc = robot.rightRearWheel.getPosition();
-                    robot.dashboard.displayPrintf(9, "Timed Drive: %.0f sec", driveTime);
+                    robot.dashboard.displayPrintf(9, "Pure Pursuit Drive: %.0f sec", driveTime);
                     robot.dashboard.displayPrintf(10, "Enc:lf=%.0f,rf=%.0f", lfEnc, rfEnc);
                     robot.dashboard.displayPrintf(11, "Enc:lr=%.0f,rr=%.0f", lrEnc, rrEnc);
                     robot.dashboard.displayPrintf(12, "average=%f", (lfEnc + rfEnc + lrEnc + rrEnc)/4.0);
