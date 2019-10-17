@@ -83,7 +83,7 @@ class RobotInfo3543
 
     // Neverest 40 motor, max shaft speed = 160 RPM
     // motor-to-wheel tooth ratio = 24:16 = 3:2
-    // wheel max angular speed = (2 / 3) * 160 RPM
+    // wheel max angular speed = (3 / 2) * 160 RPM
     // max tangential speed of wheel (in/s) = wheel max angular speed * 2 * pi * radius / 60.0
     // = (3 / 2) * (160 RPM) * 2 * 3.1415926 * (2 in.) / 60.0
     // = 50.2654816 in./sec.
