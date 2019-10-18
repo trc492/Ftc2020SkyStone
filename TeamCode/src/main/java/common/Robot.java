@@ -363,7 +363,7 @@ public class Robot
                 VectorF translation = vuforiaVision.getLocationTranslation(robotLocation);
                 Orientation orientation = vuforiaVision.getLocationOrientation(robotLocation);
                 pose = new TrcPose2D(
-                        translation.get(0)/TrcUtil.MM_PER_INCH, translation.get(1)/TrcUtil.MM_PER_INCH,
+                        translation.get(1)/TrcUtil.MM_PER_INCH, -translation.get(0)/TrcUtil.MM_PER_INCH,
                         orientation.thirdAngle);
                 targetFinder = "Vuforia";
             }

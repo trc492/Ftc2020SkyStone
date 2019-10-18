@@ -51,7 +51,8 @@ public class CommonTest
         TUNE_X_PID,
         TUNE_Y_PID,
         TUNE_TURN_PID,
-        PURE_PURSUIT_DRIVE
+        PURE_PURSUIT_DRIVE,
+        VISION_DRIVE
     }   //enum Test
 
     private enum State
@@ -90,6 +91,7 @@ public class CommonTest
     private CmdTimedDrive timedDriveCommand = null;
     private CmdPidDrive pidDriveCommand = null;
     private CmdPurePursuitDrive purePursuitDriveCommand = null;
+    private CmdVisionDrive visionDriveCommand = null;
 
     private int motorIndex = 0;
 
@@ -195,6 +197,13 @@ public class CommonTest
                 {
                     purePursuitDriveCommand = new CmdPurePursuitDrive(
                             robot.driveBase, posPidCoeff, turnPidCoeff, velPidCoeff);
+                }
+                break;
+
+            case VISION_DRIVE:
+                if (robot.preferences.hasRobot)
+                {
+                    visionDriveCommand = new CmdVisionDrive(robot);
                 }
                 break;
         }
@@ -322,6 +331,22 @@ public class CommonTest
                     pidDriveCommand.cmdPeriodic(elapsedTime);
                 }
                 break;
+
+            case VISION_DRIVE:
+                if (robot.preferences.hasRobot)
+                {
+                    robot.dashboard.displayPrintf(9, "xPos=%.1f,yPos=%.1f,heading=%.1f",
+                            robot.driveBase.getXPosition(), robot.driveBase.getYPosition(), robot.driveBase.getHeading());
+                    if (robot.encoderXPidCtrl != null)
+                    {
+                        robot.encoderXPidCtrl.displayPidInfo(10);
+                    }
+                    robot.encoderYPidCtrl.displayPidInfo(12);
+                    robot.gyroPidCtrl.displayPidInfo(14);
+
+                    visionDriveCommand.cmdPeriodic(elapsedTime);
+                }
+                break;
         }
 
         if (loopPerformanceMonitor != null)
@@ -396,6 +421,7 @@ public class CommonTest
         testMenu.addChoice("Tune Y PID", Test.TUNE_Y_PID, false, tuneKpMenu);
         testMenu.addChoice("Tune Turn PID", Test.TUNE_TURN_PID, false, tuneKpMenu);
         testMenu.addChoice("Pure Pursuit Drive", Test.PURE_PURSUIT_DRIVE, false);
+        testMenu.addChoice("Vision Drive", Test.VISION_DRIVE, false);
 
         driveTimeMenu.setChildMenu(drivePowerMenu);
         driveDistanceMenu.setChildMenu(drivePowerMenu);
