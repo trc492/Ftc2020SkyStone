@@ -26,6 +26,7 @@ import common.Grabber;
 import ftclib.FtcDcMotor;
 import ftclib.FtcDigitalInput;
 import trclib.TrcDigitalTrigger;
+import trclib.TrcEvent;
 
 /**
  * This class implements the grabber for team 6541. It has a motor wheel that sucks up the yellow block, holds it,
@@ -51,11 +52,21 @@ public class Grabber6541 implements Grabber
     }   //grab
 
     @Override
+    public void grab(TrcEvent event) {
+        throw new RuntimeException("Not implemented yet");
+    }
+
+    @Override
     public void release()
     {
         //sets power to release
         motor.setMotorPower(-RobotInfo6541.GRABBER_GRAB_POWER);
     }   //release
+
+    @Override
+    public void release(TrcEvent event) {
+        throw new RuntimeException("Not implemented yet");
+    }
 
     //event
     private void onHasBrickStatusChanged(boolean hasBrick)

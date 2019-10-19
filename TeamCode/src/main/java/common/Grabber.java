@@ -22,8 +22,14 @@
 
 package common;
 
+import trclib.TrcEvent;
+
 public interface Grabber
 {
-    void grab();
     void release();
+    void release(TrcEvent event);
+    void grab();
+    void grab(TrcEvent event);
+
+
 }   //interface Grabber

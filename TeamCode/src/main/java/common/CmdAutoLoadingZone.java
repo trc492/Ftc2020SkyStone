@@ -70,6 +70,8 @@ public class CmdAutoLoadingZone implements TrcRobot.RobotCommand
     private final TrcStateMachine<State> sm; //HEY LOOK ITS THE FUNNY NUMBER
     private final SimpleRobotMovements<State> simpleMovements;
 
+    private double xSkyStoneOffSetPosition;
+
     public CmdAutoLoadingZone(Robot robot, CommonAuto.AutoChoices autoChoices)
     {
         this.robot = robot;
@@ -116,7 +118,7 @@ public class CmdAutoLoadingZone implements TrcRobot.RobotCommand
                     //
                     if (autoChoices.delay == 0.0)
                     {
-                        sm.setState(State.DONE);
+                        sm.setState(State.LOOKING_FOR_SKYSTONES);
                         //
                         // Intentionally falling through to the next state.
                         //
@@ -124,11 +126,101 @@ public class CmdAutoLoadingZone implements TrcRobot.RobotCommand
                     else
                     {
                         timer.set(autoChoices.delay, event);
-                        sm.waitForSingleEvent(event, State.DONE);
+                        sm.waitForSingleEvent(event, State.LOOKING_FOR_SKYSTONES);
                         break;
                     }
+                case LOOKING_FOR_SKYSTONES:
+                    //TODO: look for the skystones
+                    break;
 
-                case DONE:
+                case FIRST_SKYSTONE_ALIGN_GRABBER_TO_SKYSTONE:
+                    simpleMovements.driveSidewaysUntilDone(xSkyStoneOffSetPosition, State.FIRST_SKYSTONE_OPEN_GRABBER_AND_EXTEND_ARM);
+                    break;
+
+                case FIRST_SKYSTONE_OPEN_GRABBER_AND_EXTEND_ARM:
+                    robot.armExtender.extend();
+                    robot.grabber.release();
+                    timer.set(1.5, event);
+                    sm.waitForSingleEvent(event, State.FIRST_SKYSTONE_DRIVE_FORWARD);
+                    break;
+
+                case FIRST_SKYSTONE_DRIVE_FORWARD:
+                    simpleMovements.driveStraightUntilDone(8, State.FIRST_SKYSTONE_ARM_GOES_DOWN_ON_SKYSTONE);
+                    break;
+
+                case FIRST_SKYSTONE_ARM_GOES_DOWN_ON_SKYSTONE:
+                    robot.armExtender.goDown(event);
+                    sm.waitForSingleEvent(event, State.FIRST_SKYSTONE_GRAB_SKYSTONE);
+                    break;
+
+                case FIRST_SKYSTONE_GRAB_SKYSTONE:
+                    robot.grabber.grab(event);
+                    sm.waitForSingleEvent(event, State.FIRST_SKYSTONE_EXTEND_ARM_WITH_SKYSTONE);
+                    break;
+
+                case FIRST_SKYSTONE_EXTEND_ARM_WITH_SKYSTONE:
+                    robot.armExtender.extend(event);
+                    sm.waitForSingleEvent(event, State.FIRST_SKYSTONE_BACK_UP);
+                    break;
+
+                case FIRST_SKYSTONE_BACK_UP:
+                    simpleMovements.driveStraightUntilDone(-3, State.FIRST_SKYSTONE_TURN_TOWARDS_BUILDING_SIDE);
+                    break;
+
+                case FIRST_SKYSTONE_TURN_TOWARDS_BUILDING_SIDE:
+                    int turnDegrees = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE?90:-90;
+                    simpleMovements.turnInPlaceUntilDone(turnDegrees, State.FIRST_SKYSTONE_GO_FORWARDS);
+                    break;
+
+                case FIRST_SKYSTONE_GO_FORWARDS:
+                    simpleMovements.driveStraightUntilDone(30, State.FIRST_SKYSTONE_TURN_TOWARD_MIDDLE);
+                    break;
+
+                case FIRST_SKYSTONE_TURN_TOWARD_MIDDLE:
+                    turnDegrees = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE?-90:90;
+                    simpleMovements.turnInPlaceUntilDone(turnDegrees, State.FIRST_SKYSTONE_MOVE_TOWARD_MIDDLE);
+                    break;
+
+                case FIRST_SKYSTONE_MOVE_TOWARD_MIDDLE:
+                    simpleMovements.driveStraightUntilDone(10, State.FIRST_SKYSTONE_TURN_TO_FOUNDATION);
+                    break;
+
+                case FIRST_SKYSTONE_TURN_TO_FOUNDATION:
+                    turnDegrees = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE?90:-90;
+                    simpleMovements.turnInPlaceUntilDone(turnDegrees, State.FIRST_SKYSTONE_MOVE_TO_FOUNDATION);
+                    break;
+
+                case FIRST_SKYSTONE_MOVE_TO_FOUNDATION:
+                    simpleMovements.driveStraightUntilDone(12,State.FIRST_SKYSTONE_RELEASE_SKYSTONE);
+                    break;
+
+                case FIRST_SKYSTONE_RELEASE_SKYSTONE:
+                    robot.grabber.release(event);
+                    sm.waitForSingleEvent(event, State.FIRST_SKYSTONE_REVERSE);
+                    break;
+
+                case FIRST_SKYSTONE_REVERSE:
+                    simpleMovements.driveStraightUntilDone(-12, State.FIRST_SKYSTONE_TURN_TOWARDS_WALL);
+                    break;
+
+                case FIRST_SKYSTONE_TURN_TOWARDS_WALL:
+                    turnDegrees = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE?90:-90;
+                    simpleMovements.turnInPlaceUntilDone(turnDegrees, State.FIRST_SKYSTONE_MOVE_TOWARDS_WALL);
+                    break;
+
+                case FIRST_SKYSTONE_MOVE_TOWARDS_WALL:
+                    simpleMovements.driveStraightUntilDone(10, State.FIRST_SKYSTONE_TURN_TOWARDS_LOADINGZONE);
+                    break;
+
+                case FIRST_SKYSTONE_TURN_TOWARDS_LOADINGZONE:
+                    turnDegrees = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE?90:-90;
+                    simpleMovements.turnInPlaceUntilDone(turnDegrees, State.FIRST_SKYSTONE_MOVE_TOWARDS_LOADINGZONE);
+                    break;
+
+                case FIRST_SKYSTONE_MOVE_TOWARDS_LOADINGZONE:
+                    simpleMovements.driveStraightUntilDone(30, State.DONE);
+                    break;
+
                 default:
                     //
                     // We are done.

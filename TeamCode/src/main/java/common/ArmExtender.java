@@ -24,6 +24,7 @@ package common;
 
 import ftclib.FtcServo;
 import trclib.TrcEnhancedServo;
+import trclib.TrcEvent;
 
 public class ArmExtender
 {
@@ -45,4 +46,15 @@ public class ArmExtender
         enhancedExtender.setPosition(position);
     }   //setPosition
 
+    public void extend() {
+        throw new RuntimeException("Not implemented yet");
+    }
+
+    public void extend(TrcEvent event) {
+        throw new RuntimeException("Not implemented yet");
+    }
+
+    public void goDown(TrcEvent event) {
+        throw new RuntimeException("Not implemented yet");
+    }
 }   //class ArmExtender

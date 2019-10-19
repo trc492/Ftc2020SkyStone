@@ -24,6 +24,7 @@ package team3543;
 
 import common.Grabber;
 import ftclib.FtcServo;
+import trclib.TrcEvent;
 
 public class Grabber3543 implements Grabber
 {
@@ -40,9 +41,19 @@ public class Grabber3543 implements Grabber
     }   //grab
 
     @Override
+    public void grab(TrcEvent event) {
+        throw new RuntimeException("Not implemented yet");
+    }
+
+    @Override
     public void release()
     {
         grabber.setPosition(RobotInfo3543.GRABBER_OPEN_POS);
     }   //release
+
+    @Override
+    public void release(TrcEvent event) {
+        throw new RuntimeException("Not implemented yet");
+    }
 
 }   //class Grabber3543
