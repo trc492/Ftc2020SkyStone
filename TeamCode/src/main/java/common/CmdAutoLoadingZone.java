@@ -51,6 +51,12 @@ public class CmdAutoLoadingZone implements TrcRobot.RobotCommand
         FIRST_SKYSTONE_TURN_TO_FOUNDATION,
         FIRST_SKYSTONE_MOVE_TO_FOUNDATION,
         FIRST_SKYSTONE_RELEASE_SKYSTONE,
+        // go back to loadingzone
+        FIRST_SKYSTONE_REVERSE,
+        FIRST_SKYSTONE_TURN_TOWARDS_WALL,
+        FIRST_SKYSTONE_MOVE_TOWARDS_WALL,
+        FIRST_SKYSTONE_TURN_TOWARDS_LOADINGZONE,
+        FIRST_SKYSTONE_MOVE_TOWARDS_LOADINGZONE,
 
         DONE
     }   //enum State
@@ -61,7 +67,7 @@ public class CmdAutoLoadingZone implements TrcRobot.RobotCommand
     private final CommonAuto.AutoChoices autoChoices;
     private final TrcEvent event;
     private final TrcTimer timer;
-    private final TrcStateMachine<State> sm;
+    private final TrcStateMachine<State> sm; //HEY LOOK ITS THE FUNNY NUMBER
     private final SimpleRobotMovements<State> simpleMovements;
 
     public CmdAutoLoadingZone(Robot robot, CommonAuto.AutoChoices autoChoices)
@@ -102,6 +108,8 @@ public class CmdAutoLoadingZone implements TrcRobot.RobotCommand
 
             switch (state)
             {
+
+                
                 case DO_DELAY:
                     //
                     // Do delay if any.
