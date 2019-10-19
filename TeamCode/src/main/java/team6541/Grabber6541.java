@@ -53,6 +53,7 @@ public class Grabber6541 implements Grabber
 
     @Override
     public void grab(TrcEvent event) {
+        // TODO: Start grabbing, then signal the event when we have the brick
         throw new RuntimeException("Not implemented yet");
     }
 
@@ -65,6 +66,7 @@ public class Grabber6541 implements Grabber
 
     @Override
     public void release(TrcEvent event) {
+        // TODO: Start releasing, then signal the event when we no longer have the brick
         throw new RuntimeException("Not implemented yet");
     }
 
