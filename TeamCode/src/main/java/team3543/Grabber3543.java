@@ -25,10 +25,15 @@ package team3543;
 import common.Grabber;
 import ftclib.FtcServo;
 import trclib.TrcEvent;
+import trclib.TrcTimer;
 
 public class Grabber3543 implements Grabber
 {
+    public static final int GRAB_TIME = 1;
+    public static final int RELEASE_TIME = 1;
+
     private FtcServo grabber = new FtcServo("grabberServo");
+    private final TrcTimer grabTimer = new TrcTimer("grabberTimer");
 
     //
     // Implements Grabber interface
@@ -42,7 +47,8 @@ public class Grabber3543 implements Grabber
 
     @Override
     public void grab(TrcEvent event) {
-        throw new RuntimeException("Not implemented yet");
+        grab();
+        grabTimer.set(GRAB_TIME, event);
     }
 
     @Override
@@ -53,7 +59,8 @@ public class Grabber3543 implements Grabber
 
     @Override
     public void release(TrcEvent event) {
-        throw new RuntimeException("Not implemented yet");
+        release();
+        grabTimer.set(RELEASE_TIME, event);
     }
 
 }   //class Grabber3543
