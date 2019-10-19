@@ -76,7 +76,10 @@ class RobotInfo3543
     static final double PURE_PURSUIT_POS_KP             = (.1 + .05) / 2.0; // average of encoder KP for x and y PID drive, as suggested by Abhay.
     static final double PURE_PURSUIT_POS_KI             = 0.0;
     static final double PURE_PURSUIT_POS_KD             = 0.0;
-    static final double PURE_PURSUIT_TURN_KP            = 0.025;
+    static final double PURE_PURSUIT_TURN_KP            = 0.025; // TODO: tune this, purepursuit has oscillation during turns
+    static final double PURE_PURSUIT_TURN_KI            = 0.0; // TODO: tune this, purepursuit has oscillation during turns
+    static final double PURE_PURSUIT_TURN_KD            = 0.6; //0.0025; // TODO: tune this, purepursuit has oscillation during turns
+    static final double PURE_PURSUIT_TURN_TOLERANCE     = 0.0;
     static final double PURE_PURSUIT_VEL_KP             = 0.0; // TODO: tune this, purepursuit is jerky and accelerates suddenly
     static final double PURE_PURSUIT_VEL_KI             = 0.0; // TODO: tune this, purepursuit is jerky and accelerates suddenly
     static final double PURE_PURSUIT_VEL_KD             = 0.9; // TODO: tune this. was placeholder FRC value. with this, purepursuit is jerky and accelerates suddenly
