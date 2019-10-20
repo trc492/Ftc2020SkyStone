@@ -108,9 +108,10 @@ public class CmdAutoLoadingZone implements TrcRobot.RobotCommand
         {
             robot.dashboard.displayPrintf(1, "State: %s", state);
 
+            State nextState = null;
+
             switch (state)
             {
-
                 
                 case DO_DELAY:
                     //
@@ -138,8 +139,15 @@ public class CmdAutoLoadingZone implements TrcRobot.RobotCommand
                     break;
 
                 case FIRST_SKYSTONE_OPEN_GRABBER_AND_EXTEND_ARM:
-                    robot.armExtender.extend();
-                    robot.grabber.release();
+                    if(robot.armExtender!= null)
+                    {
+                        robot.armExtender.extend();
+                    }
+
+                    if(robot.grabber != null) {
+                        robot.grabber.release();
+                    }
+
                     timer.set(1.5, event);
                     sm.waitForSingleEvent(event, State.FIRST_SKYSTONE_DRIVE_FORWARD);
                     break;
@@ -149,13 +157,28 @@ public class CmdAutoLoadingZone implements TrcRobot.RobotCommand
                     break;
 
                 case FIRST_SKYSTONE_ARM_GOES_DOWN_ON_SKYSTONE:
-                    robot.armExtender.retract(event);
-                    sm.waitForSingleEvent(event, State.FIRST_SKYSTONE_GRAB_SKYSTONE);
+                    nextState = State.FIRST_SKYSTONE_GRAB_SKYSTONE;
+
+                    if(robot.armExtender != null)
+                    {
+                        robot.armExtender.retract(event);
+                        sm.waitForSingleEvent(event, nextState);
+                    } else {
+                        sm.setState(nextState);
+                    }
+
                     break;
 
                 case FIRST_SKYSTONE_GRAB_SKYSTONE:
-                    robot.grabber.grab(event);
-                    sm.waitForSingleEvent(event, State.FIRST_SKYSTONE_EXTEND_ARM_WITH_SKYSTONE);
+                    nextState = State.FIRST_SKYSTONE_EXTEND_ARM_WITH_SKYSTONE;
+
+                    if(robot.grabber != null) {
+                        robot.grabber.grab(event);
+                        sm.waitForSingleEvent(event, nextState);
+                    } else {
+                        sm.setState(nextState);
+                    }
+
                     break;
 
                 case FIRST_SKYSTONE_EXTEND_ARM_WITH_SKYSTONE:
