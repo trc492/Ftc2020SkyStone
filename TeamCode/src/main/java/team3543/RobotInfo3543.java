@@ -78,7 +78,7 @@ class RobotInfo3543
     static final double PURE_PURSUIT_POS_KD             = 0.0;
     static final double PURE_PURSUIT_TURN_KP            = 0.0125; // last tuned on 3543 RoverRuckus base, PDT 10-20-2019 1423 hrs
     static final double PURE_PURSUIT_TURN_KI            = 0.0;
-    static final double PURE_PURSUIT_TURN_KD            = 0.0;
+    static final double PURE_PURSUIT_TURN_KD            = 0.00125; // last tuned on 3543 RoverRuckus base, PDT 10-20-2019 1429 hrs
     static final double PURE_PURSUIT_TURN_TOLERANCE     = 0.0;
     static final double PURE_PURSUIT_VEL_KP             = 0.0; // TODO: tune this, purepursuit is jerky and accelerates suddenly
     static final double PURE_PURSUIT_VEL_KI             = 0.0; // TODO: tune this, purepursuit is jerky and accelerates suddenly
