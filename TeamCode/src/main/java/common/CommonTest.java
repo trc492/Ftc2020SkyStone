@@ -233,12 +233,22 @@ public class CommonTest
                             new TrcPose2D(0, 120, 180)});
 
              */
+
+            /*
             purePursuitDriveCommand.start(
                     new TrcPose2D[] {
                             new TrcPose2D(0,0),
                             new TrcPose2D(0, 6, 90),
                             new TrcPose2D(0, 12, 180),
                             new TrcPose2D(0, 18, 270)});
+
+             */
+            purePursuitDriveCommand.start(
+                    new TrcPose2D[] {
+                            new TrcPose2D(0,0),
+                            new TrcPose2D(0, 0, 90),
+                            new TrcPose2D(0, 0, 180),
+                            new TrcPose2D(0, 0, 270)});
         }
     }   //start
 
