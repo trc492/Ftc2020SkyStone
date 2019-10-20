@@ -46,9 +46,9 @@ public class Grabber3543 implements Grabber
     }   //grab
 
     @Override
-    public void grab(TrcEvent event) {
+    public void grab(TrcEvent whenFinishedEvent) {
         grab();
-        grabTimer.set(GRAB_TIME, event);
+        grabTimer.set(GRAB_TIME, whenFinishedEvent);
     }
 
     @Override
@@ -58,9 +58,9 @@ public class Grabber3543 implements Grabber
     }   //release
 
     @Override
-    public void release(TrcEvent event) {
+    public void release(TrcEvent whenFinishedEvent) {
         release();
-        grabTimer.set(RELEASE_TIME, event);
+        grabTimer.set(RELEASE_TIME, whenFinishedEvent);
     }
 
 }   //class Grabber3543
