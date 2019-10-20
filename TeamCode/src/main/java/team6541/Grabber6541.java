@@ -36,9 +36,19 @@ import trclib.TrcEvent;
 public class Grabber6541 implements Grabber
 {
     private FtcDcMotor motor = new FtcDcMotor("grabberMotor");
-    private FtcDigitalInput touch = new FtcDigitalInput("grabberTouchSensor");
+    private FtcDigitalInput hasBrickSensor = new FtcDigitalInput("grabberTouchSensor");
     private TrcDigitalTrigger trigger = new TrcDigitalTrigger(
-            "touchSensorTrigger", touch, this::onHasBrickStatusChanged);
+            "touchSensorTrigger", hasBrickSensor, this::onHasBrickStatusChanged);
+
+    /**
+     * When not null, we signal this event when we grabbed a brick
+     */
+    private TrcEvent whenGrabFinishedEvent = null;
+
+    /**
+     * When not null, we signal this even when we released a brick
+     */
+    private TrcEvent whenReleaseFinishedEvent = null;
 
     //
     // Implements Grabber interface
@@ -48,26 +58,36 @@ public class Grabber6541 implements Grabber
     public void grab()
     {
         //sets power to grab
-        motor.setMotorPower(RobotInfo6541.GRABBER_GRAB_POWER);
+        if (hasBrickSensor.isActive()) {
+            motor.setMotorPower(RobotInfo6541.GRABBER_HOLD_POWER);
+            signalGrabFinishedEvent();
+        } else {
+            motor.setMotorPower(RobotInfo6541.GRABBER_GRAB_POWER);
+        }
     }   //grab
 
     @Override
-    public void grab(TrcEvent event) {
-        // TODO: Start grabbing, then signal the event when we have the brick
-        throw new RuntimeException("Not implemented yet");
+    public void grab(TrcEvent whenFinishedEvent) {
+        whenGrabFinishedEvent = whenFinishedEvent;
+        grab();
     }
 
     @Override
     public void release()
     {
         //sets power to release
-        motor.setMotorPower(-RobotInfo6541.GRABBER_GRAB_POWER);
+        if (hasBrickSensor.isActive()) {
+            motor.setMotorPower(-RobotInfo6541.GRABBER_GRAB_POWER);
+        } else {
+            motor.setMotorPower(0);
+            signalReleaseFinishedEvent();
+        }
     }   //release
 
     @Override
-    public void release(TrcEvent event) {
-        // TODO: Start releasing, then signal the event when we no longer have the brick
-        throw new RuntimeException("Not implemented yet");
+    public void release(TrcEvent whenFinishedEvent) {
+        whenReleaseFinishedEvent = whenFinishedEvent;
+        grab();
     }
 
     //event
@@ -78,13 +98,31 @@ public class Grabber6541 implements Grabber
             //just grabbed a brick
             //set the power to keep going, but is a little bit to not burn the robot.
             motor.setMotorPower(RobotInfo6541.GRABBER_HOLD_POWER);
+
+            signalGrabFinishedEvent();
         }
         else
         {
             //lost the brick.
             //not have brick, stop motor.
             motor.setMotorPower(0.0);
+
+            signalReleaseFinishedEvent();
         }
     }   //onHasBrickStatusChanged
+
+    private void signalGrabFinishedEvent() {
+        if (whenGrabFinishedEvent != null){
+            whenGrabFinishedEvent.set(true);
+            whenGrabFinishedEvent = null;
+        }
+    }
+
+    private void signalReleaseFinishedEvent() {
+        if (whenReleaseFinishedEvent != null) {
+            whenReleaseFinishedEvent.set(true);
+            whenReleaseFinishedEvent = null;
+        }
+    }
 
 }   //class Grabber6541

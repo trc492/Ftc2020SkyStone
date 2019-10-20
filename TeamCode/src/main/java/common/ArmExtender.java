@@ -25,11 +25,13 @@ package common;
 import ftclib.FtcServo;
 import trclib.TrcEnhancedServo;
 import trclib.TrcEvent;
+import trclib.TrcTimer;
 
 public class ArmExtender
 {
-    private FtcServo extender = new FtcServo("armExtenderServo");
-    private TrcEnhancedServo enhancedExtender = new TrcEnhancedServo("enhancedArmExtender", extender);
+    private final FtcServo extender = new FtcServo("armExtenderServo");
+    private final TrcEnhancedServo enhancedExtender = new TrcEnhancedServo("enhancedArmExtender", extender);
+    private final TrcTimer moveTime = new TrcTimer("armExtenderMoveTimer");
 
     public ArmExtender(double maxStepRate, double minPos, double maxPos)
     {
@@ -47,14 +49,20 @@ public class ArmExtender
     }   //setPosition
 
     public void extend() {
-        throw new RuntimeException("Not implemented yet");
+        extender.setPosition(RobotInfoCommon.ARM_EXTENDER_EXTENDED_POS);
+    }
+
+    public void retract() {
+        extender.setPosition(RobotInfoCommon.ARM_EXTENDER_RETRACTED_POS);
     }
 
     public void extend(TrcEvent event) {
-        throw new RuntimeException("Not implemented yet");
+        extend();
+        moveTime.set(RobotInfoCommon.ARM_EXTENDER_MOVE_TIME, event);
     }
 
-    public void goDown(TrcEvent event) {
-        throw new RuntimeException("Not implemented yet");
+    public void retract(TrcEvent event) {
+        retract();
+        moveTime.set(RobotInfoCommon.ARM_EXTENDER_MOVE_TIME, event);
     }
 }   //class ArmExtender

@@ -149,7 +149,7 @@ public class CmdAutoLoadingZone implements TrcRobot.RobotCommand
                     break;
 
                 case FIRST_SKYSTONE_ARM_GOES_DOWN_ON_SKYSTONE:
-                    robot.armExtender.goDown(event);
+                    robot.armExtender.retract(event);
                     sm.waitForSingleEvent(event, State.FIRST_SKYSTONE_GRAB_SKYSTONE);
                     break;
 
