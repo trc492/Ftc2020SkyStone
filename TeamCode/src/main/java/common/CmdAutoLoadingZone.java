@@ -67,7 +67,7 @@ public class CmdAutoLoadingZone implements TrcRobot.RobotCommand
     private final CommonAuto.AutoChoices autoChoices;
     private final TrcEvent event;
     private final TrcTimer timer;
-    private final TrcStateMachine<State> sm; //HEY LOOK ITS THE FUNNY NUMBER
+    private final TrcStateMachine<State> sm;
     private final SimpleRobotMovements<State> simpleMovements;
 
     private double xSkyStoneOffSetPosition;
