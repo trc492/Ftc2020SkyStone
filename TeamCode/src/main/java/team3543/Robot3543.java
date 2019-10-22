@@ -46,7 +46,7 @@ public class Robot3543 extends Robot
             /* useVelocityControl */ false,
             /* useVuforia */ true,
             /* useTensorFlow */ true,
-            /* useFlashLight */ false,
+            /* useFlashLight */ true,
             /* showVuforiaView */ true,
             /* showTensorFlowView */ false
     );

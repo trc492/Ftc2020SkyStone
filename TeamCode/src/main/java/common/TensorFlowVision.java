@@ -42,6 +42,7 @@ public class TensorFlowVision
 {
     private static final String TFOD_MODEL_ASSET = "Skystone.tflite";
     private static final double TFOD_MIN_CONFIDENCE = 0.5;
+    private static final double ASPECT_RATIO_TOLERANCE = 2.5;
     public static final String LABEL_STONE = "Stone";
     public static final String LABEL_SKYSTONE = "Skystone";
 
@@ -175,17 +176,27 @@ public class TensorFlowVision
             {
                 Recognition object = updatedRecognitions.get(i);
                 boolean foundIt = label == null || label.equals(object.getLabel());
-
-                if (tracer != null)
-                {
-                    tracer.traceInfo(funcName, "[%d] %s: x=%.0f, y=%.0f, w=%.0f, h=%.0f, foundIt=%s",
-                            i, object.getLabel(), object.getTop(), object.getImageWidth() - object.getRight(),
-                            object.getHeight(), object.getWidth(), foundIt);
-                }
+                double aspectRatio = object.getHeight()/object.getWidth();
+                boolean rejected = false;
 
                 if (foundIt)
                 {
-                    targets.add(object);
+                    if (aspectRatio <= ASPECT_RATIO_TOLERANCE)
+                    {
+                        targets.add(object);
+                    }
+                    else
+                    {
+                        rejected = true;
+                    }
+                }
+
+                if (tracer != null)
+                {
+                    tracer.traceInfo(funcName, "[%d] %s: x=%.0f, y=%.0f, w=%.0f, h=%.0f, aspectRatio=%.1f, " +
+                            "foundIt=%s, rejected=%s",
+                            i, object.getLabel(), object.getTop(), object.getImageWidth() - object.getRight(),
+                            object.getHeight(), object.getWidth(), aspectRatio, foundIt, rejected);
                 }
             }
             //
