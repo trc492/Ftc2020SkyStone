@@ -138,6 +138,7 @@ public class TensorFlowVision
 
     /**
      * This method is called to sort the targets in ascending X order.
+     * Note: Phone is in landscape mode, so top is really left.
      *
      * @param a specifies first target.
      * @param b specifes the second target.
@@ -150,6 +151,7 @@ public class TensorFlowVision
 
     /**
      * This method is called to sort the targets in descending Y order.
+     * Note: Phone is in landscape mode, so right is really top.
      *
      * @param a specifies the first target.
      * @param b specifies the second target
