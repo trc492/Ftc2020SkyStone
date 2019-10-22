@@ -42,6 +42,7 @@ import hallib.HalDashboard;
 import trclib.TrcDbgTrace;
 import trclib.TrcDriveBase;
 import trclib.TrcGyro;
+import trclib.TrcHashMap;
 import trclib.TrcHomographyMapper;
 import trclib.TrcPidController;
 import trclib.TrcPidDrive;
@@ -66,7 +67,7 @@ public class Robot
     //
     // Global objects.
     //
-    public Preferences preferences;
+    public TrcHashMap<String, Boolean> preferences;
     public String robotName;
     public FtcOpMode opMode;
     public HalDashboard dashboard;
@@ -118,7 +119,7 @@ public class Robot
     public FoundationLatch foundationLatch = null;
 
     public Robot(
-            TrcRobot.RunMode runMode, Preferences preferences, String robotName,
+            TrcRobot.RunMode runMode, TrcHashMap<String, Boolean> preferences, String robotName,
             VuforiaLocalizer.CameraDirection cameraDir,
             VuforiaLocalizer.Parameters.CameraMonitorFeedback cameraMonitorFeedback)
     {
@@ -135,7 +136,7 @@ public class Robot
                 ((FtcRobotControllerActivity)opMode.hardwareMap.appContext).findViewById(R.id.textOpMode));
         androidTone = new FtcAndroidTone("AndroidTone");
 
-        if (preferences.useVuforia || preferences.useTensorFlow)
+        if (preferences.get("useVuforia") || preferences.get("useTensorFlow"))
         {
             final String VUFORIA_LICENSE_KEY =
                     "ATu19Kj/////AAAAGcw4SDCVwEBSiKcUtdmQd2aOugrxo/OgeBJUt7XwMSi3e0KSZaylbsTnWp8EBxyA5o/00JFJVDY1OxJ" +
@@ -143,27 +144,27 @@ public class Robot
                     "XS4ZtEWLNeiSEMTCdO9bdeaxnSb2RfErcmjadAThDWf6PC9HrMRHLmgfcFaZlj5JN+figOjgKhyQZeYYrcDEm0lICN5kAr2" +
                     "pdfNKNOii3A80eXyTVDfPGfzTwVa4eNBY/SgmoIdBbMPb3hfZBOz7GVoVHHQWbCNbzm31p1OY+zqPPWMfzzpyiJ4mA9bLTQ";
 
-            int cameraViewId = !preferences.showVuforiaView ? -1 :
+            int cameraViewId = !preferences.get("showVuforiaView") ? -1 :
                     opMode.hardwareMap.appContext.getResources().getIdentifier(
                             "cameraMonitorViewId", "id", opMode.hardwareMap.appContext.getPackageName());
             vuforia = new FtcVuforia(VUFORIA_LICENSE_KEY, cameraViewId, cameraDir, cameraMonitorFeedback);
         }
 
-        if (preferences.useSpeech)
+        if (preferences.get("useSpeech"))
         {
             textToSpeech = FtcOpMode.getInstance().getTextToSpeech();
             speak("Init starting");
         }
 
-        if (preferences.hasRobot && preferences.useBatteryMonitor)
+        if (preferences.get("hasRobot"))
         {
-            battery = new FtcRobotBattery();
-        }
-        //
-        // Initialize sensors.
-        //
-        if (preferences.hasRobot)
-        {
+            if (preferences.get("useBatteryMonitor"))
+            {
+                battery = new FtcRobotBattery();
+            }
+            //
+            // Initialize sensors.
+            //
             imu = new FtcBNO055Imu("imu");
             gyro = imu.gyro;
         }
@@ -191,7 +192,7 @@ public class Robot
         if (vuforiaVision != null && (runMode == TrcRobot.RunMode.AUTO_MODE || runMode == TrcRobot.RunMode.TEST_MODE))
         {
             globalTracer.traceInfo(funcName, "Enabling Vuforia.");
-            vuforiaVision.setEnabled(true, preferences.useFlashLight);
+            vuforiaVision.setEnabled(true, preferences.get("useFlashLight"));
         }
         //
         // Enable odometry only for autonomous or test modes.
@@ -220,7 +221,7 @@ public class Robot
 
         if (vuforiaVision != null)
         {
-            vuforiaVision.setEnabled(false, preferences.useFlashLight);
+            vuforiaVision.setEnabled(false, preferences.get("useFlashLight"));
         }
 
         if (tensorFlowVision != null)
@@ -345,7 +346,7 @@ public class Robot
                         "tfodMonitorViewId", "id", opMode.hardwareMap.appContext.getPackageName());
         tensorFlowVision = new TensorFlowVision(
                 vuforia, tfodMonitorViewId, cameraRect, worldRect, globalTracer);
-        tensorFlowVision.setEnabled(true, preferences.useFlashLight);
+        tensorFlowVision.setEnabled(true, preferences.get("useFlashLight"));
         globalTracer.traceInfo(robotName, "Enabling TensorFlow.");
     } //initTensorFlow
 

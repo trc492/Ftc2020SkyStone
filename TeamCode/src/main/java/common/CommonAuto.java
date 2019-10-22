@@ -109,7 +109,7 @@ public abstract class CommonAuto extends FtcOpMode
         // Choice menus.
         //
         doMatchInfoMenus();
-        if (robot.preferences.useTraceLog)
+        if (robot.preferences.get("useTraceLog"))
         {
             createTraceLog();
         }
@@ -118,24 +118,26 @@ public abstract class CommonAuto extends FtcOpMode
         //
         // Strategies.
         //
+        boolean hasRobot = robot.preferences.get("hasRobot");
+
         switch (autoChoices.strategy)
         {
             case START_AT_LOADING_ZONE:
-                if (robot.preferences.hasRobot)
+                if (hasRobot)
                 {
                     autoCommand = new CmdAutoLoadingZone(robot, autoChoices);
                 }
                 break;
 
             case START_AT_BUILDING_ZONE:
-                if (robot.preferences.hasRobot)
+                if (hasRobot)
                 {
                     autoCommand = new CmdAutoBuildingZone(robot, autoChoices);
                 }
                 break;
 
             case PURE_PURSUIT_DRIVE:
-                if (robot.preferences.hasRobot)
+                if (hasRobot)
                 {
 //                    autoCommand = new CmdPurePursuitDrive(
 //                            robot.driveBase, posPidCoeff, turnPidCoeff, velPidCoeff);
@@ -143,7 +145,7 @@ public abstract class CommonAuto extends FtcOpMode
                 break;
 
             case DISTANCE_DRIVE:
-                if (robot.preferences.hasRobot)
+                if (hasRobot)
                 {
                     autoCommand = new CmdPidDrive(
                             robot, robot.pidDrive, autoChoices.delay,
@@ -152,7 +154,7 @@ public abstract class CommonAuto extends FtcOpMode
                 break;
 
             case TIMED_DRIVE:
-                if (robot.preferences.hasRobot)
+                if (hasRobot)
                 {
                     autoCommand = new CmdTimedDrive(
                             robot, autoChoices.delay, autoChoices.driveTime,
@@ -211,7 +213,7 @@ public abstract class CommonAuto extends FtcOpMode
     @Override
     public void startMode(TrcRobot.RunMode prevMode, TrcRobot.RunMode nextMode)
     {
-        if (robot.preferences.useTraceLog)
+        if (robot.preferences.get("useTraceLog"))
         {
             robot.globalTracer.setTraceLogEnabled(true);
         }
