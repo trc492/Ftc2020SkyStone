@@ -365,7 +365,7 @@ public class Robot
                 pose = new TrcPose2D(
                         translation.get(1)/TrcUtil.MM_PER_INCH, -translation.get(0)/TrcUtil.MM_PER_INCH,
                         orientation.thirdAngle);
-                targetFinder = "Vuforia";
+                targetFinder = "Vuforia:" + vuforiaVision.getLastSeenImageName();
             }
         }
 
@@ -384,11 +384,11 @@ public class Robot
 
         if (pose == null)
         {
-            globalTracer.traceInfo(funcName, "Skystone not found!");
+            globalTracer.traceInfo(funcName, "***** Skystone not found!");
         }
         else
         {
-            globalTracer.traceInfo(funcName, "%s: x=%.1f, y=%.1f, angle=%.1f",
+            globalTracer.traceInfo(funcName, "***** %s: x=%.1f, y=%.1f, angle=%.1f",
                     targetFinder, pose.x, pose.y, pose.heading);
         }
 

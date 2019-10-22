@@ -65,6 +65,7 @@ public class VuforiaVision
     private FtcVuforia vuforia;
     private VuforiaTrackable[] imageTargets;
     private OpenGLMatrix lastRobotLocation = null;
+    private String lastImageName = null;
 
     public VuforiaVision(Robot robot, FtcVuforia vuforia, OpenGLMatrix phoneLocation)
     {
@@ -199,6 +200,7 @@ public class VuforiaVision
                 if (location != null)
                 {
                     lastRobotLocation = location;
+                    lastImageName = target.getName();
                 }
                 break;
             }
@@ -211,6 +213,11 @@ public class VuforiaVision
 
         return robotLocation;
     }   //getRobotLocation
+
+    public String getLastSeenImageName()
+    {
+        return lastImageName;
+    }   //getLastSeenImageName
 
     public VectorF getLocationTranslation(OpenGLMatrix location)
     {
