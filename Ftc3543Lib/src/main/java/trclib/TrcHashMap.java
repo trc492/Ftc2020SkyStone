@@ -51,6 +51,7 @@ public class TrcHashMap<K, V> extends HashMap<K, V>
      *
      * @param key specifies the key of the mapping to look for.
      * @return the value of the mapping found.
+     * @throws IllegalArgumentException if key not in hashmap.
      */
     @Override
     public V get(Object key)
