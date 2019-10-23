@@ -25,7 +25,7 @@ package team6541;
 import common.Grabber;
 import ftclib.FtcDcMotor;
 import ftclib.FtcDigitalInput;
-import trclib.TrcDigitalTrigger;
+import trclib.TrcDigitalInputTrigger;
 import trclib.TrcEvent;
 
 /**
@@ -37,7 +37,7 @@ public class Grabber6541 implements Grabber
 {
     private FtcDcMotor motor = new FtcDcMotor("grabberMotor");
     private FtcDigitalInput hasBrickSensor = new FtcDigitalInput("grabberTouchSensor");
-    private TrcDigitalTrigger trigger = new TrcDigitalTrigger(
+    private TrcDigitalInputTrigger trigger = new TrcDigitalInputTrigger(
             "touchSensorTrigger", hasBrickSensor, this::onHasBrickStatusChanged);
 
     /**
