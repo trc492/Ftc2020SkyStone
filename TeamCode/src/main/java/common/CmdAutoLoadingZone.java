@@ -112,7 +112,7 @@ public class CmdAutoLoadingZone implements TrcRobot.RobotCommand
 
             switch (state)
             {
-                
+
                 case DO_DELAY:
                     //
                     // Do delay if any.
@@ -182,8 +182,13 @@ public class CmdAutoLoadingZone implements TrcRobot.RobotCommand
                     break;
 
                 case FIRST_SKYSTONE_EXTEND_ARM_WITH_SKYSTONE:
-                    robot.armExtender.extend(event);
-                    sm.waitForSingleEvent(event, State.FIRST_SKYSTONE_BACK_UP);
+                    nextState = State.FIRST_SKYSTONE_BACK_UP;
+                    if (robot.armExtender != null) {
+                        robot.armExtender.extend(event);
+                        sm.waitForSingleEvent(event, nextState);
+                    } else {
+                        sm.setState(nextState);
+                    }
                     break;
 
                 case FIRST_SKYSTONE_BACK_UP:
@@ -218,8 +223,13 @@ public class CmdAutoLoadingZone implements TrcRobot.RobotCommand
                     break;
 
                 case FIRST_SKYSTONE_RELEASE_SKYSTONE:
-                    robot.grabber.release(event);
-                    sm.waitForSingleEvent(event, State.FIRST_SKYSTONE_REVERSE);
+                    nextState = State.FIRST_SKYSTONE_REVERSE;
+                    if (robot.grabber != null) {
+                        robot.grabber.release(event);
+                        sm.waitForSingleEvent(event, nextState);
+                    } else {
+                        sm.setState(nextState);
+                    }
                     break;
 
                 case FIRST_SKYSTONE_REVERSE:
