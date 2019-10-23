@@ -28,6 +28,7 @@ import trclib.TrcEvent;
 import trclib.TrcPose2D;
 import trclib.TrcRobot;
 import trclib.TrcStateMachine;
+import trclib.TrcTrigger;
 
 public class CmdVisionDrive implements TrcRobot.RobotCommand
 {
@@ -46,8 +47,10 @@ public class CmdVisionDrive implements TrcRobot.RobotCommand
     private static final String moduleName = "CmdVisionDrive";
 
     private final Robot robot;
+    private final TrcTrigger visionTrigger;
     private final TrcEvent event;
     private final TrcStateMachine<State> sm;
+    private TrcPose2D skystonePose = null;
 
     /**
      * Constructor: Create an instance of the object.
@@ -59,6 +62,7 @@ public class CmdVisionDrive implements TrcRobot.RobotCommand
         robot.globalTracer.traceInfo(moduleName, "robot=%s", robot);
 
         this.robot = robot;
+        visionTrigger = new TrcTrigger("VisionTrigger", this::isTriggered, this::targetDetected);
         event = new TrcEvent(moduleName);
         sm = new TrcStateMachine<>(moduleName);
         sm.start(State.MOVE_FORWARD);
@@ -88,6 +92,7 @@ public class CmdVisionDrive implements TrcRobot.RobotCommand
         {
             robot.pidDrive.cancel();
         }
+        visionTrigger.setEnabled(false);
         sm.stop();
     }   //cancel
 
@@ -117,6 +122,10 @@ public class CmdVisionDrive implements TrcRobot.RobotCommand
             switch (state)
             {
                 case MOVE_FORWARD:
+                    //
+                    // Move forward slowly for a distance or until vision sees the skystone whichever comes first.
+                    //
+                    visionTrigger.setEnabled(true);
                     robot.pidDrive.getYPidCtrl().setOutputLimit(0.5);
                     yTarget = 22.0;
                     robot.pidDrive.setTarget(xTarget, yTarget, robot.targetHeading, false, event);
@@ -124,7 +133,15 @@ public class CmdVisionDrive implements TrcRobot.RobotCommand
                     break;
 
                 case DO_VISION_DRIVE:
-                    TrcPose2D skystonePose = robot.getSkyStonePose();
+                    visionTrigger.setEnabled(false);
+
+                    TrcPose2D pose = robot.getSkyStonePose();
+                    // If pose is null, it could be because we call too quickly and vision doesn't have a new image.
+                    // In that case, we will use the pose detected in the previous state if there is one.
+                    if (pose != null)
+                    {
+                        skystonePose = pose;
+                    }
 
                     if (skystonePose != null)
                     {
@@ -136,7 +153,7 @@ public class CmdVisionDrive implements TrcRobot.RobotCommand
                     break;
 
                 case GOTO_SKYSTONE:
-                    yTarget = 6.0;
+                    yTarget = 36.0 - robot.driveBase.getYPosition();
                     robot.pidDrive.setTarget(xTarget, yTarget, robot.targetHeading, false, event);
                     sm.waitForSingleEvent(event, State.DONE);
                     break;
@@ -179,5 +196,25 @@ public class CmdVisionDrive implements TrcRobot.RobotCommand
 
         return !sm.isEnabled();
     }   //cmdPeriodic
+
+    private boolean isTriggered()
+    {
+        TrcPose2D pose = robot.getSkyStonePose();
+
+        if (pose != null)
+        {
+            skystonePose = pose;
+        }
+
+        return pose != null;
+    }   //isTriggered
+
+    private void targetDetected()
+    {
+        if (robot.pidDrive.isActive())
+        {
+            robot.pidDrive.cancel();
+        }
+    }   //targetDetected
 
 }   //class CmdVisionDrive
