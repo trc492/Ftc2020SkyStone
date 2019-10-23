@@ -48,7 +48,8 @@ public class Robot3543 extends Robot
             .add("useTensorFlow", true)
             .add("useFlashLight", true)
             .add("showVuforiaView", true)
-            .add("showTensorFlowView", false);
+            .add("showTensorFlowView", false)
+            .add("initSubsystems", false); // TODO: Set to true when subsystems are available
 
     public Robot3543(TrcRobot.RunMode runMode)
     {
@@ -93,24 +94,25 @@ public class Robot3543 extends Robot
             //
             // Initialize other subsystems.
             //
-            if (preferences.get("hasElevator"))
-            {
-                elevator = new Elevator(
-                        RobotInfo3543.ELEVATOR_MIN_HEIGHT, RobotInfo3543.ELEVATOR_MAX_HEIGHT,
-                        RobotInfo3543.ELEVATOR_SCALE, RobotInfo3543.ELEVATOR_OFFSET,
-                        new TrcPidController.PidCoefficients(RobotInfo3543.ELEVATOR_KP, RobotInfo3543.ELEVATOR_KI,
-                                RobotInfo3543.ELEVATOR_KD),
-                        RobotInfo3543.ELEVATOR_TOLERANCE, RobotInfo3543.ELEVATOR_CAL_POWER);
-            }
+            if (preferences.get("initSubsystems")) {
+                if (preferences.get("hasElevator")) {
+                    elevator = new Elevator(
+                            RobotInfo3543.ELEVATOR_MIN_HEIGHT, RobotInfo3543.ELEVATOR_MAX_HEIGHT,
+                            RobotInfo3543.ELEVATOR_SCALE, RobotInfo3543.ELEVATOR_OFFSET,
+                            new TrcPidController.PidCoefficients(RobotInfo3543.ELEVATOR_KP, RobotInfo3543.ELEVATOR_KI,
+                                    RobotInfo3543.ELEVATOR_KD),
+                            RobotInfo3543.ELEVATOR_TOLERANCE, RobotInfo3543.ELEVATOR_CAL_POWER);
+                }
 
-            armExtender = new ArmExtender(RobotInfo3543.ARM_EXTENDER_MAX_STEPRATE,
-                    RobotInfo3543.ARM_EXTENDER_MIN_POS,
-                    RobotInfo3543.ARM_EXTENDER_MAX_POS);
-            wrist = new Wrist(RobotInfo3543.WRIST_MAX_STEPRATE, RobotInfo3543.WRIST_MIN_POS,
-                    RobotInfo3543.WRIST_MAX_POS);
-            grabber = new Grabber3543();
-            foundationLatch = new FoundationLatch(
-                    RobotInfo3543.FOUNDATION_LATCH_OPEN_POS, RobotInfo3543.FOUNDATION_LATCH_CLOSE_POS);
+                armExtender = new ArmExtender(RobotInfo3543.ARM_EXTENDER_MAX_STEPRATE,
+                        RobotInfo3543.ARM_EXTENDER_MIN_POS,
+                        RobotInfo3543.ARM_EXTENDER_MAX_POS);
+                wrist = new Wrist(RobotInfo3543.WRIST_MAX_STEPRATE, RobotInfo3543.WRIST_MIN_POS,
+                        RobotInfo3543.WRIST_MAX_POS);
+                grabber = new Grabber3543();
+                foundationLatch = new FoundationLatch(
+                        RobotInfo3543.FOUNDATION_LATCH_OPEN_POS, RobotInfo3543.FOUNDATION_LATCH_CLOSE_POS);
+            }
         }
         //
         // Tell the driver initialization is complete.
