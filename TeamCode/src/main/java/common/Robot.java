@@ -32,6 +32,8 @@ import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 
+import javax.annotation.Nullable;
+
 import ftclib.FtcAndroidTone;
 import ftclib.FtcBNO055Imu;
 import ftclib.FtcDcMotor;
@@ -110,13 +112,13 @@ public class Robot
 
     public TrcPidController.PidCoefficients tunePidCoeff = new TrcPidController.PidCoefficients();
     //
-    // Other common subsystems.
+    // Other common subsystems. May be null during testing (while mechanisms do not exist on robot)
     //
-    public Elevator elevator = null;
-    public ArmExtender armExtender = null;
-    public Wrist wrist = null;
-    public Grabber grabber = null;
-    public FoundationLatch foundationLatch = null;
+    @Nullable public Elevator elevator = null;
+    @Nullable public ArmExtender armExtender = null;
+    @Nullable public Wrist wrist = null;
+    @Nullable public Grabber grabber = null;
+    @Nullable public FoundationLatch foundationLatch = null;
 
     public Robot(
             TrcRobot.RunMode runMode, TrcHashMap<String, Boolean> preferences, String robotName,
