@@ -104,6 +104,8 @@ public class CmdAutoBuildingZone implements TrcRobot.RobotCommand
             double xTarget = 0.0;
             double yTarget = 0.0;
 
+            State nextState = null;
+
             robot.dashboard.displayPrintf(1, "State: %s", state);
             switch (state)
             {
@@ -146,9 +148,16 @@ public class CmdAutoBuildingZone implements TrcRobot.RobotCommand
 
                 case HOOK_FOUNDATION:
                     // The hook latches onto the foundation
-                    robot.foundationLatch.grab();
-                    timer.set(0.5, event);
-                    sm.waitForSingleEvent(event, State.MOVE_FOUNDATION_DOWN);
+
+                    nextState = State.MOVE_FOUNDATION_DOWN;
+
+                    if(robot.foundationLatch != null) {
+                        robot.foundationLatch.grab();
+                        timer.set(0.5, event);
+                        sm.waitForSingleEvent(event, nextState);
+                    } else {
+                        sm.setState(nextState);
+                    }
                     break;
 
                 case MOVE_FOUNDATION_DOWN:
@@ -172,9 +181,15 @@ public class CmdAutoBuildingZone implements TrcRobot.RobotCommand
 
                 case UNHOOK_FOUNDATION:
                     // The hook releases the foundation
-                    robot.foundationLatch.release();
-                    timer.set(0.5, event);
-                    sm.waitForSingleEvent(event, State.MOVE_TO_LINE);
+                    nextState = State.MOVE_TO_LINE;
+
+                    if(robot.foundationLatch != null) {
+                        robot.foundationLatch.release();
+                        timer.set(0.5, event);
+                        sm.waitForSingleEvent(event, nextState);
+                    } else {
+                        sm.setState(nextState);
+                    }
                     break;
 
                 case MOVE_TO_LINE:
