@@ -94,9 +94,10 @@ public class Robot6541 extends Robot
             //
             // Initialize other subsystems.
             //
-
-            if (preferences.get("initSubsystems")) {
-                if (preferences.get("hasElevator")) {
+            if (preferences.get("initSubsystems"))
+            {
+                if (preferences.get("hasElevator"))
+                {
                     elevator = new Elevator(
                             RobotInfo6541.ELEVATOR_MIN_HEIGHT, RobotInfo6541.ELEVATOR_MAX_HEIGHT,
                             RobotInfo6541.ELEVATOR_SCALE, RobotInfo6541.ELEVATOR_OFFSET,

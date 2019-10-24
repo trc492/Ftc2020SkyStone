@@ -94,8 +94,10 @@ public class Robot3543 extends Robot
             //
             // Initialize other subsystems.
             //
-            if (preferences.get("initSubsystems")) {
-                if (preferences.get("hasElevator")) {
+            if (preferences.get("initSubsystems"))
+            {
+                if (preferences.get("hasElevator"))
+                {
                     elevator = new Elevator(
                             RobotInfo3543.ELEVATOR_MIN_HEIGHT, RobotInfo3543.ELEVATOR_MAX_HEIGHT,
                             RobotInfo3543.ELEVATOR_SCALE, RobotInfo3543.ELEVATOR_OFFSET,

@@ -29,17 +29,20 @@ import trclib.TrcPose2D;
 import trclib.TrcRobot;
 import trclib.TrcStateMachine;
 import trclib.TrcTrigger;
+import trclib.TrcUtil;
 
 public class CmdVisionDrive implements TrcRobot.RobotCommand
 {
     private static final boolean debugXPid = true;
     private static final boolean debugYPid = true;
     private static final boolean debugTurnPid = true;
+    private static final double VISION_TIMEOUT = 1.0;
 
     private enum State
     {
         MOVE_FORWARD,
-        DO_VISION_DRIVE,
+        END_FORWARD_MOVE,
+        GET_TARGET_POSE,
         GOTO_SKYSTONE,
         DONE
     }   //enum State
@@ -51,6 +54,7 @@ public class CmdVisionDrive implements TrcRobot.RobotCommand
     private final TrcEvent event;
     private final TrcStateMachine<State> sm;
     private TrcPose2D skystonePose = null;
+    private double timeout = 0.0;
 
     /**
      * Constructor: Create an instance of the object.
@@ -126,18 +130,28 @@ public class CmdVisionDrive implements TrcRobot.RobotCommand
                     // Move forward slowly for a distance or until vision sees the skystone whichever comes first.
                     //
                     visionTrigger.setEnabled(true);
-                    robot.pidDrive.getYPidCtrl().setOutputLimit(0.5);
+                    robot.pidDrive.getYPidCtrl().saveAndSetOutputLimit(0.5);
                     yTarget = 22.0;
                     robot.pidDrive.setTarget(xTarget, yTarget, robot.targetHeading, false, event);
-                    sm.waitForSingleEvent(event, State.DO_VISION_DRIVE);
+                    sm.waitForSingleEvent(event, State.END_FORWARD_MOVE);
                     break;
 
-                case DO_VISION_DRIVE:
+                case END_FORWARD_MOVE:
+                    robot.pidDrive.getYPidCtrl().restoreOutputLimit();
                     visionTrigger.setEnabled(false);
+                    timeout = TrcUtil.getCurrentTime() + VISION_TIMEOUT;
+                    sm.setState(State.GET_TARGET_POSE);
+                    break;
 
+                case GET_TARGET_POSE:
+                    //
+                    // Get the detected skystone pose. If pose is null, it could be because we call too quickly and
+                    // vision doesn't have a new image. In that case, we will use the pose detected in the previous
+                    // state if there is one. If for some reason we don't detect one, keep repeating this state until
+                    // we find it or we pass vision timeout.
+                    //
                     TrcPose2D pose = robot.getSkyStonePose();
-                    // If pose is null, it could be because we call too quickly and vision doesn't have a new image.
-                    // In that case, we will use the pose detected in the previous state if there is one.
+                    //
                     if (pose != null)
                     {
                         skystonePose = pose;
@@ -145,10 +159,21 @@ public class CmdVisionDrive implements TrcRobot.RobotCommand
 
                     if (skystonePose != null)
                     {
+                        //
+                        // Align to the skystone.
+                        //
                         xTarget = skystonePose.x;
                         robot.speak(String.format(Locale.US, "Skystone is found at %.1f", xTarget));
                         robot.pidDrive.setTarget(xTarget, yTarget, robot.targetHeading, false, event);
                         sm.waitForSingleEvent(event, State.GOTO_SKYSTONE);
+                    }
+                    else if (TrcUtil.getCurrentTime() > timeout)
+                    {
+                        //
+                        // We failed to detect skystone, just pretend the one in front is the skystone.
+                        // We will get some points even if it's not a skystone.
+                        //
+                        sm.setState(State.GOTO_SKYSTONE);
                     }
                     break;
 
@@ -161,7 +186,7 @@ public class CmdVisionDrive implements TrcRobot.RobotCommand
                 case DONE:
                 default:
                     //
-                    // We are done, restore everything.
+                    // We are done.
                     //
                     sm.stop();
                     break;
