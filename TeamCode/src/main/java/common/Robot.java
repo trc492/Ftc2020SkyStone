@@ -38,6 +38,7 @@ import ftclib.FtcAndroidTone;
 import ftclib.FtcBNO055Imu;
 import ftclib.FtcDcMotor;
 import ftclib.FtcOpMode;
+import ftclib.FtcRevBlinkin;
 import ftclib.FtcRobotBattery;
 import ftclib.FtcVuforia;
 import hallib.HalDashboard;
@@ -77,6 +78,7 @@ public class Robot
     public FtcAndroidTone androidTone;
     public TextToSpeech textToSpeech = null;
     public FtcRobotBattery battery = null;
+    public FtcRevBlinkin blinkin = null;
     //
     // Sensors.
     //
@@ -164,6 +166,12 @@ public class Robot
             {
                 battery = new FtcRobotBattery();
             }
+
+            if (preferences.get("useBlinkin"))
+            {
+                blinkin = new FtcRevBlinkin("blinkin");
+            }
+
             //
             // Initialize sensors.
             //

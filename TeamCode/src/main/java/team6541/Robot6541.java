@@ -43,6 +43,7 @@ public class Robot6541 extends Robot
             .add("useTraceLog", true)
             .add("useSpeech", true)
             .add("useBatteryMonitor", false)
+            .add("useBlinkin", true)
             .add("useVelocityControl", false)
             .add("useVuforia", true)
             .add("useTensorFlow", true)
