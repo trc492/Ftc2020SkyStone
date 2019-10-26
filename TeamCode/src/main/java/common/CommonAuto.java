@@ -235,9 +235,12 @@ public abstract class CommonAuto extends FtcOpMode
             {
                 msg = "Sky Stone not found";
             }
+
+            double avgDetectionTime = robot.detectionSuccessCount > 0 ?
+                    robot.detectionIntervalTotalTime / robot.detectionSuccessCount / 1000000000.0 : 0;
+
             robot.globalTracer.traceInfo(moduleName, "%s: DetectionAvgTime=%.3f, SuccessCount=%d, FailedCount=%d",
-                    msg, robot.detectionIntervalTotalTime/robot.detectionSuccessCount/1000000000.0,
-                    robot.detectionSuccessCount, robot.detectionFailedCount);
+                    msg, avgDetectionTime, robot.detectionSuccessCount, robot.detectionFailedCount);
 //            robot.globalTracer.traceInfo(moduleName, "Shutting down TensorFlow.");
 //            robot.tensorFlowVision.shutdown();
 //            robot.tensorFlowVision = null;
