@@ -342,7 +342,7 @@ public abstract class CommonAuto extends FtcOpMode
         //
         // Traverse menus.
         //
-        FtcMenu.walkMenuTree(strategyMenu);
+        FtcMenu.walkMenuTree(allianceMenu);
         //
         // Fetch choices.
         //
