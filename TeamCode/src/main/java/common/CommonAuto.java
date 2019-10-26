@@ -324,9 +324,15 @@ public abstract class CommonAuto extends FtcOpMode
         FtcValueMenu drivePowerMenu = new FtcValueMenu(
                 "Drive power:", strategyMenu, -1.0, 1.0, 0.1, 0.5,
                 " %.1f");
+        FtcValueMenu foundationXMenu = new FtcValueMenu("Foundation X:", strategyMenu, 0.0, 24.0, 0.1, 0.0, "%.1f");
+        FtcValueMenu foundationYMenu = new FtcValueMenu("Foundation Y:", foundationXMenu, 0.0, 24.0, 0.1, 0.0, "%.1f");
+        FtcChoiceMenu<Boolean> moveFoundationMenu = new FtcChoiceMenu<>("Move foundation:", foundationYMenu);
+        FtcChoiceMenu<Boolean> parkMenu = new FtcChoiceMenu<>("Park under bridge:", moveFoundationMenu);
 
         delayMenu.setChildMenu(strategyMenu);
         driveTimeMenu.setChildMenu(drivePowerMenu);
+        foundationXMenu.setChildMenu(foundationYMenu);
+        foundationYMenu.setChildMenu(moveFoundationMenu);
         //
         // Populate choice menus.
         //
@@ -334,14 +340,20 @@ public abstract class CommonAuto extends FtcOpMode
         allianceMenu.addChoice("Blue", Alliance.BLUE_ALLIANCE, false, delayMenu);
 
         strategyMenu.addChoice(
-                "Start at Loading Zone", AutoStrategy.START_AT_LOADING_ZONE, true);
+                "Start at Loading Zone", AutoStrategy.START_AT_LOADING_ZONE, true, foundationXMenu);
         strategyMenu.addChoice(
-                "Start at Building Zone", AutoStrategy.START_AT_BUILDING_ZONE, false);
+                "Start at Building Zone", AutoStrategy.START_AT_BUILDING_ZONE, false, moveFoundationMenu);
         strategyMenu.addChoice("Pure Pursuit Drive", AutoStrategy.PURE_PURSUIT_DRIVE, false);
         strategyMenu.addChoice(
                 "Distance Drive", AutoStrategy.DISTANCE_DRIVE, false, driveDistanceMenu);
         strategyMenu.addChoice("Timed Drive", AutoStrategy.TIMED_DRIVE, false, driveTimeMenu);
         strategyMenu.addChoice("Do nothing", AutoStrategy.DO_NOTHING, false);
+
+        moveFoundationMenu.addChoice("Yes", true, true, parkMenu);
+        moveFoundationMenu.addChoice("No", false, false, parkMenu);
+
+        parkMenu.addChoice("Yes", true, true);
+        parkMenu.addChoice("No", false, false);
         //
         // Traverse menus.
         //
@@ -355,6 +367,11 @@ public abstract class CommonAuto extends FtcOpMode
         autoChoices.driveDistance = driveDistanceMenu.getCurrentValue();
         autoChoices.driveTime = driveTimeMenu.getCurrentValue();
         autoChoices.drivePower = drivePowerMenu.getCurrentValue();
+        autoChoices.foundationXPos = foundationXMenu.getCurrentValue();
+        autoChoices.foundationYPos = foundationYMenu.getCurrentValue();
+        autoChoices.moveFoundation = moveFoundationMenu.getCurrentChoiceObject();
+        autoChoices.parkUnderBridge = parkMenu.getCurrentChoiceObject();
+
         //
         // Show choices.
         //
