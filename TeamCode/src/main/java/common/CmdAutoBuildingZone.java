@@ -47,7 +47,7 @@ public class CmdAutoBuildingZone implements TrcRobot.RobotCommand
          * Stop when you go over the middle line
          */
         DO_DELAY,
-        MOVE_UP,
+        //MOVE_UP,
         MOVE_TO_FOUNDATION,
         HOOK_FOUNDATION,
         MOVE_FOUNDATION_DOWN,
@@ -115,7 +115,7 @@ public class CmdAutoBuildingZone implements TrcRobot.RobotCommand
                     //
                     if (autoChoices.delay == 0.0)
                     {
-                        sm.setState(State.MOVE_UP);
+                        sm.setState(State.MOVE_TO_FOUNDATION);
                         //
                         // Intentionally falling through to the next state.
                         //
@@ -123,26 +123,26 @@ public class CmdAutoBuildingZone implements TrcRobot.RobotCommand
                     else
                     {
                         timer.set(autoChoices.delay, event);
-                        sm.waitForSingleEvent(event, State.MOVE_UP);
+                        sm.waitForSingleEvent(event, State.MOVE_TO_FOUNDATION);
                         break;
                     }
 
-                case MOVE_UP:
-                    // Robot will move sideways toward the foundation
-                    if (!autoChoices.moveFoundation)
-                    {
-                        sm.setState(State.DONE);
-                    }
-                    else
-                    {
-                        xTarget = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE ? -12.0 : 12.0;
-                        simpleMovements.driveSidewaysUntilDone(xTarget, State.MOVE_TO_FOUNDATION);
-                    }
-                    break;
+//                case MOVE_UP:
+//                    // Robot will move sideways toward the foundation
+//                    if (!autoChoices.moveFoundation)
+//                    {
+//                        sm.setState(State.DONE);
+//                    }
+//                    else
+//                    {
+//                        xTarget = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE ? -12.0 : 12.0;
+//                        simpleMovements.driveSidewaysUntilDone(xTarget, State.MOVE_TO_FOUNDATION);
+//                    }
+//                    break;
 
                 case MOVE_TO_FOUNDATION:
                     // Robot will move backwards so that the hook is facing the foundation
-                    yTarget = -32.5;
+                    yTarget = -30;
                     simpleMovements.driveStraightUntilDone(yTarget, State.HOOK_FOUNDATION);
                     break;
 
@@ -162,7 +162,7 @@ public class CmdAutoBuildingZone implements TrcRobot.RobotCommand
 
                 case MOVE_FOUNDATION_DOWN:
                     // It moves the foundation down, with the robot moving sideways
-                    xTarget = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE ? 12.0 : -12.0;
+                    xTarget = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE ? 8.0 : -8.0;
                     simpleMovements.driveSidewaysUntilDone(xTarget, State.TURN_FOUNDATION);
                     break;
 
@@ -174,8 +174,8 @@ public class CmdAutoBuildingZone implements TrcRobot.RobotCommand
 
                 case MOVE_FOUNDATION_IN:
                     // The robot pushes the foundation into the corner
-                    xTarget = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE ? -12.0 : 12.0;
-                    yTarget = -47.25;
+                    xTarget = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE ? -19.0 : 19.0;
+                    yTarget = -3.0;
                     simpleMovements.driveDiagonallyUntilDone(xTarget, yTarget, State.UNHOOK_FOUNDATION);
                     break;
 
@@ -194,7 +194,7 @@ public class CmdAutoBuildingZone implements TrcRobot.RobotCommand
 
                 case MOVE_TO_LINE:
                     // The robot drives forward into the line
-                    yTarget = 50;
+                    yTarget = 44;
                     simpleMovements.driveStraightUntilDone(yTarget, State.DONE);
                     break;
 
