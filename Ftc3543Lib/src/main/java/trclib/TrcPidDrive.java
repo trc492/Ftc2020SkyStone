@@ -404,7 +404,14 @@ public class TrcPidDrive
             this.owner = owner;
             double xError = 0.0, yError = 0.0, turnError = 0.0;
 
-            if (xPidCtrl != null && xPidCtrl.hasAbsoluteSetPoint() || yPidCtrl != null && yPidCtrl.hasAbsoluteSetPoint())
+            if (xPidCtrl != null && yPidCtrl != null &&
+                xPidCtrl.hasAbsoluteSetPoint() != yPidCtrl.hasAbsoluteSetPoint())
+            {
+                throw new IllegalStateException("X and Y PID controller must have the same absolute setpoint state.");
+            }
+
+            if (xPidCtrl != null && xPidCtrl.hasAbsoluteSetPoint() ||
+                yPidCtrl != null && yPidCtrl.hasAbsoluteSetPoint())
             {
                 driveBase.pushReferencePose();
                 savedReferencePose = true;
