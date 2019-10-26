@@ -170,12 +170,12 @@ public class Robot3543 extends Robot
                 "encoderXPidCtrl",
                 new TrcPidController.PidCoefficients(
                         RobotInfo3543.ENCODER_X_KP, RobotInfo3543.ENCODER_X_KI, RobotInfo3543.ENCODER_X_KD),
-                RobotInfo3543.ENCODER_X_TOLERANCE, () -> driveBase.getAbsolutePose().x);
+                RobotInfo3543.ENCODER_X_TOLERANCE, driveBase::getXPosition);
         encoderYPidCtrl = new TrcPidController(
                 "encoderYPidCtrl",
                 new TrcPidController.PidCoefficients(
                         RobotInfo3543.ENCODER_Y_KP, RobotInfo3543.ENCODER_Y_KI, RobotInfo3543.ENCODER_Y_KD),
-                RobotInfo3543.ENCODER_Y_TOLERANCE, () -> driveBase.getAbsolutePose().y);
+                RobotInfo3543.ENCODER_Y_TOLERANCE, driveBase::getYPosition);
         gyroPidCtrl = new TrcPidController(
                 "gyroPidCtrl",
                 new TrcPidController.PidCoefficients(
