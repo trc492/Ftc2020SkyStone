@@ -25,6 +25,7 @@ package team6541;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import common.CommonTeleOp;
+import common.RobotInfoCommon;
 import ftclib.FtcGamepad;
 import trclib.TrcGameController;
 import trclib.TrcRobot;
@@ -102,15 +103,31 @@ public class FtcTeleOp6541 extends CommonTeleOp
             switch (button)
             {
                 case FtcGamepad.GAMEPAD_A:
+                    if (robot.grabber != null && pressed)
+                    {
+                        robot.grabber.grab();
+                    }
                     break;
 
                 case FtcGamepad.GAMEPAD_B:
+                    if (robot.grabber != null && pressed)
+                    {
+                        robot.grabber.release();
+                    }
                     break;
 
                 case FtcGamepad.GAMEPAD_X:
+                    if (robot.foundationLatch != null && pressed)
+                    {
+                        robot.foundationLatch.grab();
+                    }
                     break;
 
                 case FtcGamepad.GAMEPAD_Y:
+                    if (robot.foundationLatch != null && pressed)
+                    {
+                        robot.foundationLatch.release();
+                    }
                     break;
 
                 case FtcGamepad.GAMEPAD_LBUMPER:
@@ -126,9 +143,17 @@ public class FtcTeleOp6541 extends CommonTeleOp
                     break;
 
                 case FtcGamepad.GAMEPAD_DPAD_LEFT:
+                    if (robot.wrist != null && pressed)
+                    {
+                        robot.wrist.setPosition(0.0);
+                    }
                     break;
 
                 case FtcGamepad.GAMEPAD_DPAD_RIGHT:
+                    if (robot.wrist != null && pressed)
+                    {
+                        robot.wrist.setPosition(1.0);
+                    }
                     break;
 
                 case FtcGamepad.GAMEPAD_BACK:
