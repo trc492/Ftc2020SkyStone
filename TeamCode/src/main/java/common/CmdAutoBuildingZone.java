@@ -31,21 +31,6 @@ public class CmdAutoBuildingZone implements TrcRobot.RobotCommand
 {
     private enum State
     {
-        /**
-         * Delay if necessary
-         * Determine whether we are moving the foundation or not
-         * If yes,
-         * Move to the foundation
-         * Align ourselves
-         * Grab onto the foundation
-         * Move towards the building site
-         * Unlatch
-         * Move backwards
-         * Stop when you go over the middle line
-         * If no,
-         * Wait, and then move
-         * Stop when you go over the middle line
-         */
         DO_DELAY,
         //MOVE_UP,
         MOVE_TO_FOUNDATION,
@@ -55,6 +40,8 @@ public class CmdAutoBuildingZone implements TrcRobot.RobotCommand
         MOVE_FOUNDATION_IN,
         UNHOOK_FOUNDATION,
         MOVE_TO_LINE,
+        NOT_FOUNDATION_TURN,
+        NOT_FOUNDATION_MOVE,
         DONE
     }   //enum State
 
@@ -148,7 +135,6 @@ public class CmdAutoBuildingZone implements TrcRobot.RobotCommand
 
                 case HOOK_FOUNDATION:
                     // The hook latches onto the foundation
-
                     nextState = State.MOVE_FOUNDATION_DOWN;
 
                     if(robot.foundationLatch != null) {
@@ -198,6 +184,15 @@ public class CmdAutoBuildingZone implements TrcRobot.RobotCommand
                     simpleMovements.driveStraightUntilDone(yTarget, State.DONE);
                     break;
 
+                case NOT_FOUNDATION_TURN:
+                    deltaHeading = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE ? 90.0 : -90.0;
+                    simpleMovements.turnInPlaceUntilDone(deltaHeading, State.NOT_FOUNDATION_MOVE);
+                    break;
+
+                case NOT_FOUNDATION_MOVE:
+                    yTarget = 5;
+                    simpleMovements.driveStraightUntilDone(yTarget, state.DONE);
+                    break;
                 case DONE:
                 default:
                     // We are done.

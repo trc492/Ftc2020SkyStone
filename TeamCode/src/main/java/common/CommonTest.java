@@ -26,6 +26,8 @@ import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
 import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
+import java.util.Locale;
+
 import ftclib.FtcChoiceMenu;
 import ftclib.FtcMenu;
 import ftclib.FtcValueMenu;
@@ -33,6 +35,7 @@ import trclib.TrcEvent;
 import trclib.TrcLoopPerformanceMonitor;
 import trclib.TrcPidController;
 import trclib.TrcPose2D;
+import trclib.TrcRobot;
 import trclib.TrcStateMachine;
 import trclib.TrcTimer;
 import trclib.TrcUtil;
@@ -64,7 +67,7 @@ public class CommonTest
 
     protected String moduleName = null;
     protected Robot robot = null;
-    protected TrcLoopPerformanceMonitor loopPerformanceMonitor = null;
+    private TrcLoopPerformanceMonitor loopPerformanceMonitor = null;
     //
     // Made the following menus static so their values will persist across different runs of PID tuning.
     //
@@ -88,11 +91,7 @@ public class CommonTest
     private double driveDistance = 0.0;
     private double turnDegrees = 0.0;
 
-    private CmdTimedDrive timedDriveCommand = null;
-    private CmdPidDrive pidDriveCommand = null;
-    private CmdPurePursuitDrive purePursuitDriveCommand = null;
-    private CmdVisionDrive visionDriveCommand = null;
-
+    private TrcRobot.RobotCommand testCommand = null;
     private int motorIndex = 0;
 
     //
@@ -127,7 +126,7 @@ public class CommonTest
             case X_TIMED_DRIVE:
                 if (hasRobot)
                 {
-                    timedDriveCommand = new CmdTimedDrive(
+                    testCommand = new CmdTimedDrive(
                             robot, 0.0, driveTime, drivePower, 0.0, 0.0);
                 }
                 break;
@@ -135,7 +134,7 @@ public class CommonTest
             case Y_TIMED_DRIVE:
                 if (hasRobot)
                 {
-                    timedDriveCommand = new CmdTimedDrive(
+                    testCommand = new CmdTimedDrive(
                             robot, 0.0, driveTime, 0.0, drivePower, 0.0);
                 }
                 break;
@@ -143,7 +142,7 @@ public class CommonTest
             case X_DISTANCE_DRIVE:
                 if (hasRobot)
                 {
-                    pidDriveCommand = new CmdPidDrive(
+                    testCommand = new CmdPidDrive(
                             robot, robot.pidDrive, 0.0, driveDistance * 12.0, 0.0, 0.0,
                             drivePower, false);
                 }
@@ -152,7 +151,7 @@ public class CommonTest
             case Y_DISTANCE_DRIVE:
                 if (hasRobot)
                 {
-                    pidDriveCommand = new CmdPidDrive(
+                    testCommand = new CmdPidDrive(
                             robot, robot.pidDrive, 0.0, 0.0, driveDistance * 12.0, 0.0,
                             drivePower, false);
                 }
@@ -161,7 +160,7 @@ public class CommonTest
             case GYRO_TURN:
                 if (hasRobot)
                 {
-                    pidDriveCommand = new CmdPidDrive(
+                    testCommand = new CmdPidDrive(
                             robot, robot.pidDrive, 0.0, 0.0, 0.0, turnDegrees,
                             drivePower, false);
                 }
@@ -170,7 +169,7 @@ public class CommonTest
             case TUNE_X_PID:
                 if (hasRobot)
                 {
-                    pidDriveCommand = new CmdPidDrive(
+                    testCommand = new CmdPidDrive(
                             robot, robot.pidDrive, 0.0, driveDistance * 12.0, 0.0, 0.0,
                             drivePower, true);
                 }
@@ -179,7 +178,7 @@ public class CommonTest
             case TUNE_Y_PID:
                 if (hasRobot)
                 {
-                    pidDriveCommand = new CmdPidDrive(
+                    testCommand = new CmdPidDrive(
                             robot, robot.pidDrive, 0.0, 0.0, driveDistance * 12.0, 0.0,
                             drivePower, true);
                 }
@@ -188,7 +187,7 @@ public class CommonTest
             case TUNE_TURN_PID:
                 if (hasRobot)
                 {
-                    pidDriveCommand = new CmdPidDrive(
+                    testCommand = new CmdPidDrive(
                             robot, robot.pidDrive, 0.0, 0.0, 0.0, turnDegrees,
                             drivePower, true);
                 }
@@ -197,7 +196,7 @@ public class CommonTest
             case PURE_PURSUIT_DRIVE:
                 if (hasRobot)
                 {
-                    purePursuitDriveCommand = new CmdPurePursuitDrive(
+                    testCommand = new CmdPurePursuitDrive(
                             robot.driveBase, posPidCoeff, turnPidCoeff, velPidCoeff);
                 }
                 break;
@@ -205,14 +204,14 @@ public class CommonTest
             case VISION_DRIVE:
                 if (hasRobot)
                 {
-                    visionDriveCommand = new CmdVisionDrive(robot);
+                    testCommand = new CmdVisionDrive(robot);
                 }
                 break;
         }
         //
         // Only SENSORS_TEST needs TensorFlow, shut it down for all other tests.
         //
-        if (test != Test.SENSORS_TEST && robot.tensorFlowVision != null)
+        if (robot.tensorFlowVision != null && test != Test.SENSORS_TEST && test != Test.VISION_DRIVE)
         {
             robot.globalTracer.traceInfo("TestInit", "Shutting down TensorFlow.");
             robot.tensorFlowVision.shutdown();
@@ -245,12 +244,11 @@ public class CommonTest
                             new TrcPose2D(0, 18, 270)});
 
              */
-            purePursuitDriveCommand.start(
-                    new TrcPose2D[] {
-                            new TrcPose2D(0,0),
-                            new TrcPose2D(0, 0, 90),
-                            new TrcPose2D(0, 0, 180),
-                            new TrcPose2D(0, 0, 270)});
+            ((CmdPurePursuitDrive)testCommand).start(
+                    new TrcPose2D(0,0),
+                    new TrcPose2D(0, 0, 90),
+                    new TrcPose2D(0, 0, 180),
+                    new TrcPose2D(0, 0, 270));
         }
     }   //start
 
@@ -258,7 +256,7 @@ public class CommonTest
     {
         if (test == Test.PURE_PURSUIT_DRIVE)
         {
-            purePursuitDriveCommand.cancel();
+            testCommand.cancel();
         }
     }   //stop
 
@@ -289,15 +287,6 @@ public class CommonTest
                     doMotorsTest();
                 }
                 break;
-
-                /*
-            case PURE_PURSUIT_DRIVE:
-                if (hasRobot)
-                {
-                    purePursuitDriveCommand.cmdPeriodic(elapsedTime);
-                }
-                break;
-                 */
         }
     }   //runPeriodic
 
@@ -309,17 +298,20 @@ public class CommonTest
 
         boolean hasRobot = robot.preferences.get("hasRobot");
 
+        if (testCommand != null)
+        {
+            testCommand.cmdPeriodic(elapsedTime);
+        }
+
         switch (test)
         {
             case X_TIMED_DRIVE:
             case Y_TIMED_DRIVE:
-            case PURE_PURSUIT_DRIVE:    //CodeReview: why? what are you trying to look at for pure pursuit???
                 if (hasRobot)
                 {
-                    robot.dashboard.displayPrintf(9, "Pure Pursuit Drive: %.0f sec", driveTime);
+                    robot.dashboard.displayPrintf(9, "Timed Drive: %.0f sec", driveTime);
                     robot.dashboard.displayPrintf(10, "xPos=%.1f,yPos=%.1f,heading=%.1f",
                             robot.driveBase.getXPosition(), robot.driveBase.getYPosition(), robot.driveBase.getHeading());
-                    purePursuitDriveCommand.cmdPeriodic(elapsedTime);
                 }
                 break;
 
@@ -329,21 +321,6 @@ public class CommonTest
             case TUNE_X_PID:
             case TUNE_Y_PID:
             case TUNE_TURN_PID:
-                if (hasRobot)
-                {
-                    robot.dashboard.displayPrintf(9, "xPos=%.1f,yPos=%.1f,heading=%.1f",
-                            robot.driveBase.getXPosition(), robot.driveBase.getYPosition(), robot.driveBase.getHeading());
-                    if (robot.encoderXPidCtrl != null)
-                    {
-                        robot.encoderXPidCtrl.displayPidInfo(10);
-                    }
-                    robot.encoderYPidCtrl.displayPidInfo(12);
-                    robot.gyroPidCtrl.displayPidInfo(14);
-
-                    pidDriveCommand.cmdPeriodic(elapsedTime);
-                }
-                break;
-
             case VISION_DRIVE:
                 if (hasRobot)
                 {
@@ -355,8 +332,15 @@ public class CommonTest
                     }
                     robot.encoderYPidCtrl.displayPidInfo(12);
                     robot.gyroPidCtrl.displayPidInfo(14);
+                }
+                break;
 
-                    visionDriveCommand.cmdPeriodic(elapsedTime);
+            case PURE_PURSUIT_DRIVE:
+                if (hasRobot)
+                {
+                    robot.dashboard.displayPrintf(9, "Pure Pursuit Drive: %.0f sec", driveTime);
+                    robot.dashboard.displayPrintf(10, "xPos=%.1f,yPos=%.1f,heading=%.1f",
+                            robot.driveBase.getXPosition(), robot.driveBase.getYPosition(), robot.driveBase.getHeading());
                 }
                 break;
         }
@@ -522,23 +506,23 @@ public class CommonTest
             targetsInfo = robot.tensorFlowVision.getDetectedTargetsInfo(null);
             if (targetsInfo != null)
             {
-                String skystoneLine = "";
-                String stoneLine = "";
+                StringBuilder skystoneLine = new StringBuilder();
+                StringBuilder stoneLine = new StringBuilder();
 
                 for (int i = 0; i < targetsInfo.length; i++)
                 {
                     if (targetsInfo[i].label.equals(TensorFlowVision.LABEL_SKYSTONE))
                     {
-                        skystoneLine += String.format(" %d: %s", i, targetsInfo[i]);
+                        skystoneLine.append(String.format(Locale.US, " %d: %s", i, targetsInfo[i]));
                     }
                     else if (targetsInfo[i].label.equals(TensorFlowVision.LABEL_STONE))
                     {
-                        stoneLine += String.format(" %d: %s", i, targetsInfo[i]);
+                        stoneLine.append(String.format(Locale.US, " %d: %s", i, targetsInfo[i]));
                     }
                 }
 
-                robot.dashboard.displayPrintf(14, skystoneLine);
-                robot.dashboard.displayPrintf(15, stoneLine);
+                robot.dashboard.displayPrintf(14, skystoneLine.toString());
+                robot.dashboard.displayPrintf(15, stoneLine.toString());
             }
         }
     }   //doVisionTest
