@@ -92,7 +92,7 @@ public class Elevator
 
     public void setPosition(double target)
     {
-        pidElevator.setTarget(target, null, 0.0);
+        pidElevator.setTarget(target, true);
     }   //setPosition
 
     public double getPosition()
