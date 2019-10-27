@@ -34,7 +34,7 @@ SOFTWARE.
             <RevRobotics40HDHexMotor name="elevatorMotor" port="0" />
             <RevRobotics40HDHexMotor name="grabberMotor" port="1" />
             <DigitalDevice name="elevatorLowerLimit" port="0" />
-            <DigitalDevice name="elevatorUpperLimit" port="2" />
+            <DigitalDevice name="elevatorUpperLimit" port="1" />
             <DigitalDevice name="grabberTouchSensor" port="4" />
             <Servo name="wristServo" port="0" />
             <Servo name="foundationLatchServo" port="1" />

@@ -128,14 +128,14 @@ class RobotInfo6541
     static final double HOMOGRAPHY_WORLD_BOTTOMRIGHT_Y  = 19.0;
 
     // Elevator subsystem.
-    static final double ELEVATOR_KP                     = 1.0;
+    static final double ELEVATOR_KP                     = 0.5;
     static final double ELEVATOR_KI                     = 0.0;
-    static final double ELEVATOR_KD                     = 1.0;
+    static final double ELEVATOR_KD                     = 0.0;
     static final double ELEVATOR_TOLERANCE              = 2.0;
     static final double ELEVATOR_CAL_POWER              = 0.3;
     static final double ELEVATOR_MIN_HEIGHT             = 0.0;
     static final double ELEVATOR_MAX_HEIGHT             = 18.0;
-    static final double ELEVATOR_SCALE                  = 1.0;
+    static final double ELEVATOR_SCALE                  = 0.0078226858;
     static final double ELEVATOR_OFFSET                 = 0.0;
 
     // Wrist subsystem.
