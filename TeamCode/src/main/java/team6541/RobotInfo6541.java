@@ -49,9 +49,9 @@ class RobotInfo6541
     // 31 inches
     static final double ENCODER_X_KP                    = 0.1;
     static final double ENCODER_X_KI                    = 0.0;
-    static final double ENCODER_X_KD                    = 0.0;
+    static final double ENCODER_X_KD                    = 0.01;
     static final double ENCODER_X_TOLERANCE             = 2.0;
-    static final double ENCODER_X_INCHES_PER_COUNT      = 1.0;
+    static final double ENCODER_X_INCHES_PER_COUNT      = 0.0165770049;
     //
     // 2018-10-27: Kp=0.035, Ki=0.0, Kd=0.0025, Scale=0.0172934
     // 2018-11-29: Kp=0.05, Ki=0.0, Kd=0.0, Scale=0.0158423538151923
@@ -60,7 +60,7 @@ class RobotInfo6541
     static final double ENCODER_Y_KI                    = 0.0;
     static final double ENCODER_Y_KD                    = 0.0;
     static final double ENCODER_Y_TOLERANCE             = 1.0;
-    static final double ENCODER_Y_INCHES_PER_COUNT      = 73.5 / 4360.3;
+    static final double ENCODER_Y_INCHES_PER_COUNT      = 0.0173063935;
     //
     // 2018-10-27: Kp=0.025, Ki=0.0, Kd=0.0
     // 2018-11-29: Kp=0.025, Ki=0.0, Kd=0.0025
@@ -73,14 +73,25 @@ class RobotInfo6541
     static final double PIDDRIVE_STALL_TIMEOUT          = 0.5;      //in seconds.
 
     // TODO: need to tune all PID coefficients
-    static final double PURE_PURSUIT_POS_KP             = 0.011;
+    static final double PURE_PURSUIT_POS_KP             = (.1 + .05) / 2.0; // average of encoder KP for x and y PID drive, as suggested by Abhay.
     static final double PURE_PURSUIT_POS_KI             = 0.0;
-    static final double PURE_PURSUIT_POS_KD             = 0.001;
-    static final double PURE_PURSUIT_TURN_KP            = 0.025;
-    static final double PURE_PURSUIT_VEL_KP             = 0.0;
-    static final double PURE_PURSUIT_VEL_KI             = 0.0;
-    static final double PURE_PURSUIT_VEL_KD             = 0.9;
-    static final double PURE_PURSUIT_VEL_KF             = 1.0/223;
+    static final double PURE_PURSUIT_POS_KD             = 0.0;
+    static final double PURE_PURSUIT_TURN_KP            = 0.0125; // last tuned on 3543 RoverRuckus base, PDT 10-20-2019 1423 hrs
+    static final double PURE_PURSUIT_TURN_KI            = 0.0;
+    static final double PURE_PURSUIT_TURN_KD            = 0.00125; // last tuned on 3543 RoverRuckus base, PDT 10-20-2019 1429 hrs
+    static final double PURE_PURSUIT_TURN_TOLERANCE     = 0.0;
+    static final double PURE_PURSUIT_VEL_KP             = 0.0; // TODO: tune this, purepursuit is jerky and accelerates suddenly
+    static final double PURE_PURSUIT_VEL_KI             = 0.0; // TODO: tune this, purepursuit is jerky and accelerates suddenly
+    static final double PURE_PURSUIT_VEL_KD             = 0.9; // TODO: tune this. was placeholder FRC value. with this, purepursuit is jerky and accelerates suddenly
+
+    // Neverest 40 motor, max shaft speed = 160 RPM
+    // motor-to-wheel tooth ratio = 24:16 = 3:2
+    // wheel max angular speed = (3 / 2) * 160 RPM
+    // max tangential speed of wheel (in/s) = wheel max angular speed * 2 * pi * radius / 60.0
+    // = (3 / 2) * (160 RPM) * 2 * 3.1415926 * (2 in.) / 60.0
+    // = 50.2654816 in./sec.
+    // KF should be set to the reciprocal of max tangential velocity (time to travel unit distance), units: sec./in.
+    static final double PURE_PURSUIT_VEL_KF             = 1.0 / 50.2654816;
 
     //
     // Vision subsystem.
@@ -126,11 +137,6 @@ class RobotInfo6541
     static final double ELEVATOR_MAX_HEIGHT             = 18.0;
     static final double ELEVATOR_SCALE                  = 1.0;
     static final double ELEVATOR_OFFSET                 = 0.0;
-
-    // Armextender subsystem.
-    static final double ARM_EXTENDER_MAX_STEPRATE       = 1.0;
-    static final double ARM_EXTENDER_MIN_POS            = 0.0;
-    static final double ARM_EXTENDER_MAX_POS            = 1.0;
 
     // Wrist subsystem.
     static final double WRIST_MAX_STEPRATE              = 1.0;
