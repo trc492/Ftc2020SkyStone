@@ -43,14 +43,14 @@ public class Robot3543 extends Robot
             .add("useTraceLog", true)
             .add("useSpeech", true)
             .add("useBatteryMonitor", false)
-            .add("useBlinkin", false)
+            .add("useBlinkin", true)
             .add("useVelocityControl", false)
             .add("useVuforia", true)
             .add("useTensorFlow", true)
             .add("useFlashLight", true)
             .add("showVuforiaView", true)
             .add("showTensorFlowView", false)
-            .add("initSubsystems", false); // TODO: Set to true when subsystems are available
+            .add("initSubsystems", true); // TODO: Set to true when subsystems are available
 
     public Robot3543(TrcRobot.RunMode runMode)
     {

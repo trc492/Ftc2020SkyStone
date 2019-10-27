@@ -371,7 +371,6 @@ public abstract class CommonAuto extends FtcOpMode
         autoChoices.foundationYPos = foundationYMenu.getCurrentValue();
         autoChoices.moveFoundation = moveFoundationMenu.getCurrentChoiceObject();
         autoChoices.parkUnderBridge = parkMenu.getCurrentChoiceObject();
-
         //
         // Show choices.
         //
