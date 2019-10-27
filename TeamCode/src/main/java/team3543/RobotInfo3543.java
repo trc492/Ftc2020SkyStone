@@ -51,7 +51,7 @@ class RobotInfo3543
     static final double ENCODER_X_KI                    = 0.0;
     static final double ENCODER_X_KD                    = 0.0;
     static final double ENCODER_X_TOLERANCE             = 2.0;
-    static final double ENCODER_X_INCHES_PER_COUNT      = 0.0177558441951763 * (26.5 / 36.8) * (24.25 / 25.1) * (37.0 / 36.2);  // (16.0 / 1352.5) * (26.0 / 24.6) * (37.4 / 40.0) * (37.1 / 42.0); //0.0177558441951763; // 1352.5
+    static final double ENCODER_X_INCHES_PER_COUNT      = (43.5 / 2523.0) * (42.2 / 42.4);
     //
     // 2018-10-27: Kp=0.035, Ki=0.0, Kd=0.0025, Scale=0.0172934
     // 2018-11-29: Kp=0.05, Ki=0.0, Kd=0.0, Scale=0.0158423538151923
@@ -60,7 +60,7 @@ class RobotInfo3543
     static final double ENCODER_Y_KI                    = 0.0;
     static final double ENCODER_Y_KD                    = 0.0;
     static final double ENCODER_Y_TOLERANCE             = 1.0;
-    static final double ENCODER_Y_INCHES_PER_COUNT      = 0.0158423538151923;
+    static final double ENCODER_Y_INCHES_PER_COUNT      = (58.5 / 3303.0) * (57.1 / 57.5);
     //
     // 2018-10-27: Kp=0.025, Ki=0.0, Kd=0.0
     // 2018-11-29: Kp=0.025, Ki=0.0, Kd=0.0025
@@ -130,12 +130,12 @@ class RobotInfo3543
     // Elevator subsystem.
     static final double ELEVATOR_KP                     = 1.0;
     static final double ELEVATOR_KI                     = 0.0;
-    static final double ELEVATOR_KD                     = 1.0;
+    static final double ELEVATOR_KD                     = 0.0;
     static final double ELEVATOR_TOLERANCE              = 2.0;
     static final double ELEVATOR_CAL_POWER              = 0.3;
     static final double ELEVATOR_MIN_HEIGHT             = 0.0;
     static final double ELEVATOR_MAX_HEIGHT             = 18.0;
-    static final double ELEVATOR_SCALE                  = 1.0;
+    static final double ELEVATOR_SCALE                  = (18.25 / 17011.0);
     static final double ELEVATOR_OFFSET                 = 0.0;
 
     // Armextender subsystem.

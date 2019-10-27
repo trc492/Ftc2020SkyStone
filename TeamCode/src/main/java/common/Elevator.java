@@ -25,6 +25,7 @@ package common;
 import ftclib.FtcDcMotor;
 import ftclib.FtcDigitalInput;
 import trclib.TrcEvent;
+import trclib.TrcHashMap;
 import trclib.TrcPidActuator;
 import trclib.TrcPidController;
 
@@ -35,19 +36,25 @@ public class Elevator
     private FtcDcMotor elevatorMotor;
     private TrcPidController pidController;
     private TrcPidActuator pidElevator;
+    private boolean usingUpperLimit;
 
     public Elevator(
             double minHeight, double maxHeight, double scale, double offset, TrcPidController.PidCoefficients pidCoeff,
-            double tolerance, double calPower)
+            double tolerance, double calPower, TrcHashMap<String, Boolean> preferences)
     {
         lowerLimitSwitch = new FtcDigitalInput("elevatorLowerLimit");
-        upperLimitSwitch = new FtcDigitalInput("elevatorUpperLimit");
-        lowerLimitSwitch.setInverted(true);
-        upperLimitSwitch.setInverted(true);
+        if (!preferences.get("team3543"))
+            upperLimitSwitch = new FtcDigitalInput("elevatorUpperLimit");
+
+        lowerLimitSwitch.setInverted(false);
+        if (upperLimitSwitch != null)
+            upperLimitSwitch.setInverted(false);
 
         elevatorMotor = new FtcDcMotor("elevatorMotor", lowerLimitSwitch, upperLimitSwitch);
         elevatorMotor.setBrakeModeEnabled(true);
         elevatorMotor.setOdometryEnabled(true);
+        if (preferences.get("team3543"))
+            elevatorMotor.setInverted(true);
 
         pidController = new TrcPidController(
                 "elevatorPidController", pidCoeff, tolerance, this::getPosition);
@@ -95,7 +102,10 @@ public class Elevator
 
     public boolean isUpperLimitSwitchActive()
     {
-        return upperLimitSwitch.isActive();
+        if (upperLimitSwitch != null)
+            return upperLimitSwitch.isActive();
+        else
+            return false;
     }   //isUpperLimitSwitchActive
 
 }   //class Elevator

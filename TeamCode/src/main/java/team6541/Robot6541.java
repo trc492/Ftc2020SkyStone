@@ -50,7 +50,8 @@ public class Robot6541 extends Robot
             .add("useFlashLight", true)
             .add("showVuforiaView", true)
             .add("showTensorFlowView", false)
-            .add("initSubsystems", true); // TODO: Set to true when subsystems are available
+            .add("initSubsystems", true)
+            .add("team3543", false);
 
     public Robot6541(TrcRobot.RunMode runMode)
     {
@@ -104,7 +105,7 @@ public class Robot6541 extends Robot
                             RobotInfo6541.ELEVATOR_SCALE, RobotInfo6541.ELEVATOR_OFFSET,
                             new TrcPidController.PidCoefficients(RobotInfo6541.ELEVATOR_KP, RobotInfo6541.ELEVATOR_KI,
                                     RobotInfo6541.ELEVATOR_KD),
-                            RobotInfo6541.ELEVATOR_TOLERANCE, RobotInfo6541.ELEVATOR_CAL_POWER);
+                            RobotInfo6541.ELEVATOR_TOLERANCE, RobotInfo6541.ELEVATOR_CAL_POWER, preferences6541);
                 }
 
                 /*

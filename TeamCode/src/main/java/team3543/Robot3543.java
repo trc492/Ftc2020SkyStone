@@ -47,10 +47,11 @@ public class Robot3543 extends Robot
             .add("useVelocityControl", false)
             .add("useVuforia", true)
             .add("useTensorFlow", true)
-            .add("useFlashLight", true)
+            .add("useFlashLight", false)
             .add("showVuforiaView", true)
             .add("showTensorFlowView", false)
-            .add("initSubsystems", true); // TODO: Set to true when subsystems are available
+            .add("initSubsystems", true)
+            .add("team3543", true);
 
     public Robot3543(TrcRobot.RunMode runMode)
     {
@@ -104,7 +105,7 @@ public class Robot3543 extends Robot
                             RobotInfo3543.ELEVATOR_SCALE, RobotInfo3543.ELEVATOR_OFFSET,
                             new TrcPidController.PidCoefficients(RobotInfo3543.ELEVATOR_KP, RobotInfo3543.ELEVATOR_KI,
                                     RobotInfo3543.ELEVATOR_KD),
-                            RobotInfo3543.ELEVATOR_TOLERANCE, RobotInfo3543.ELEVATOR_CAL_POWER);
+                            RobotInfo3543.ELEVATOR_TOLERANCE, RobotInfo3543.ELEVATOR_CAL_POWER, preferences3543);
                 }
 
                 armExtender = new ArmExtender(RobotInfo3543.ARM_EXTENDER_MAX_STEPRATE,
