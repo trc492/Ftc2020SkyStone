@@ -82,7 +82,7 @@ public class Elevator
 
     public void setPower(double power)
     {
-        pidElevator.setPower(power);
+        pidElevator.setPower(power, true);
     }   //setPower
 
     public void setPosition(double target, TrcEvent event, double timeout)
