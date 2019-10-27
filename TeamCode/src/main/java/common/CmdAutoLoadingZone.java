@@ -132,6 +132,7 @@ public class CmdAutoLoadingZone implements TrcRobot.RobotCommand
                     }
                 case LOOKING_FOR_SKYSTONES:
                     //TODO: look for the skystones
+                    sm.setState(State.FIRST_SKYSTONE_OPEN_GRABBER_AND_EXTEND_ARM);
                     break;
 
                 case FIRST_SKYSTONE_ALIGN_GRABBER_TO_SKYSTONE:
@@ -153,7 +154,7 @@ public class CmdAutoLoadingZone implements TrcRobot.RobotCommand
                     break;
 
                 case FIRST_SKYSTONE_DRIVE_FORWARD:
-                    simpleMovements.driveStraightUntilDone(8, State.FIRST_SKYSTONE_ARM_GOES_DOWN_ON_SKYSTONE);
+                    simpleMovements.driveStraightUntilDone(27, State.FIRST_SKYSTONE_ARM_GOES_DOWN_ON_SKYSTONE);
                     break;
 
                 case FIRST_SKYSTONE_ARM_GOES_DOWN_ON_SKYSTONE:
@@ -192,7 +193,7 @@ public class CmdAutoLoadingZone implements TrcRobot.RobotCommand
                     break;
 
                 case FIRST_SKYSTONE_BACK_UP:
-                    simpleMovements.driveStraightUntilDone(-3, State.FIRST_SKYSTONE_TURN_TOWARDS_BUILDING_SIDE);
+                    simpleMovements.driveStraightUntilDone(-7, State.FIRST_SKYSTONE_TURN_TOWARDS_BUILDING_SIDE);
                     break;
 
                 case FIRST_SKYSTONE_TURN_TOWARDS_BUILDING_SIDE:
@@ -201,7 +202,7 @@ public class CmdAutoLoadingZone implements TrcRobot.RobotCommand
                     break;
 
                 case FIRST_SKYSTONE_GO_FORWARDS:
-                    simpleMovements.driveStraightUntilDone(30, State.FIRST_SKYSTONE_TURN_TOWARD_MIDDLE);
+                    simpleMovements.driveStraightUntilDone(81, State.FIRST_SKYSTONE_TURN_TOWARD_MIDDLE);
                     break;
 
                 case FIRST_SKYSTONE_TURN_TOWARD_MIDDLE:
@@ -210,7 +211,7 @@ public class CmdAutoLoadingZone implements TrcRobot.RobotCommand
                     break;
 
                 case FIRST_SKYSTONE_MOVE_TOWARD_MIDDLE:
-                    simpleMovements.driveStraightUntilDone(10, State.FIRST_SKYSTONE_TURN_TO_FOUNDATION);
+                    simpleMovements.driveStraightUntilDone(28, State.FIRST_SKYSTONE_TURN_TO_FOUNDATION);
                     break;
 
                 case FIRST_SKYSTONE_TURN_TO_FOUNDATION:
@@ -219,7 +220,7 @@ public class CmdAutoLoadingZone implements TrcRobot.RobotCommand
                     break;
 
                 case FIRST_SKYSTONE_MOVE_TO_FOUNDATION:
-                    simpleMovements.driveStraightUntilDone(12,State.FIRST_SKYSTONE_RELEASE_SKYSTONE);
+                    simpleMovements.driveStraightUntilDone(5.5,State.FIRST_SKYSTONE_RELEASE_SKYSTONE);
                     break;
 
                 case FIRST_SKYSTONE_RELEASE_SKYSTONE:
@@ -233,7 +234,7 @@ public class CmdAutoLoadingZone implements TrcRobot.RobotCommand
                     break;
 
                 case FIRST_SKYSTONE_REVERSE:
-                    simpleMovements.driveStraightUntilDone(-12, State.FIRST_SKYSTONE_TURN_TOWARDS_WALL);
+                    simpleMovements.driveStraightUntilDone(-5.5, State.FIRST_SKYSTONE_TURN_TOWARDS_WALL);
                     break;
 
                 case FIRST_SKYSTONE_TURN_TOWARDS_WALL:
@@ -242,7 +243,7 @@ public class CmdAutoLoadingZone implements TrcRobot.RobotCommand
                     break;
 
                 case FIRST_SKYSTONE_MOVE_TOWARDS_WALL:
-                    simpleMovements.driveStraightUntilDone(10, State.FIRST_SKYSTONE_TURN_TOWARDS_LOADINGZONE);
+                    simpleMovements.driveStraightUntilDone(28, State.FIRST_SKYSTONE_TURN_TOWARDS_LOADINGZONE);
                     break;
 
                 case FIRST_SKYSTONE_TURN_TOWARDS_LOADINGZONE:
@@ -251,7 +252,8 @@ public class CmdAutoLoadingZone implements TrcRobot.RobotCommand
                     break;
 
                 case FIRST_SKYSTONE_MOVE_TOWARDS_LOADINGZONE:
-                    simpleMovements.driveStraightUntilDone(30, State.DONE);
+                    // Line up with skystones closer to center of the field
+                    simpleMovements.driveStraightUntilDone(54, State.DONE);
                     break;
 
                 default:
@@ -261,6 +263,10 @@ public class CmdAutoLoadingZone implements TrcRobot.RobotCommand
                     sm.stop();
                     break;
             }
+
+            // TODO: Declare variables for xDistance and yDistance values, set them,
+            // and pass in the values here
+            robot.traceStateInfo(elapsedTime, state.toString(), 0, 0, robot.targetHeading);
         }
 
         return !sm.isEnabled();
