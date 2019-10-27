@@ -126,10 +126,14 @@ public abstract class CommonTeleOp extends FtcOpMode
         //
         double elevatorPower = operatorGamepad.getRightStickY(true);
         double elevatorPos = 0.0;
+        boolean elevatorDownSwitch = false;
+        boolean elevatorUpSwitch = false;
         if (robot.elevator != null)
         {
             robot.elevator.setPower(elevatorPower);
             elevatorPos = robot.elevator.getPosition();
+            elevatorDownSwitch = robot.elevator.isLowerLimitSwitchActive();
+            elevatorUpSwitch = robot.elevator.isUpperLimitSwitchActive();
         }
 
         double armExtenderPower = operatorGamepad.getLeftStickY(true);
@@ -144,9 +148,8 @@ public abstract class CommonTeleOp extends FtcOpMode
             robot.wrist.setPower(wristPower);
         }
 
-        dashboard.displayPrintf(3, "ElevatorPower=%.1f, ArmExtenderPower=%.1f, WristPower=%.1f, EleLowerLimit=%s, EleUpperLimit=%s, elePos=%.1f",
-                elevatorPower, armExtenderPower, wristPower, robot.elevator.isLowerLimitSwitchActive(), robot.elevator.isUpperLimitSwitchActive(), robot.elevator.getPosition());
-
+        dashboard.displayPrintf(3, "ElevatorPower=%.1f, ElevatorPos=%.1f, ElevatorLimitSwitch=[%b, %b], ArmExtenderPower=%.1f, WristPower=%.1f",
+                elevatorPower, elevatorPos, elevatorDownSwitch, elevatorUpSwitch, armExtenderPower, wristPower);
     }   //runPeriodic
 
     public void buttonEvent(TrcGameController gamepad, int button, boolean pressed)

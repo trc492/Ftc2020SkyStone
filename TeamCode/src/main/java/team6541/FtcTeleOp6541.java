@@ -133,29 +133,26 @@ public class FtcTeleOp6541 extends CommonTeleOp
                     break;
 
                 case FtcGamepad.GAMEPAD_RBUMPER:
+                    robot.elevator.setManualOverride(pressed);
                     break;
 
                 case FtcGamepad.GAMEPAD_DPAD_UP:
+                    if (pressed)
+                        robot.elevator.setPosition(12.0);
                     break;
 
                 case FtcGamepad.GAMEPAD_DPAD_DOWN:
                     break;
 
                 case FtcGamepad.GAMEPAD_DPAD_LEFT:
-                    if (robot.wrist != null && pressed)
-                    {
-                        robot.wrist.setPosition(0.0);
-                    }
                     break;
 
                 case FtcGamepad.GAMEPAD_DPAD_RIGHT:
-                    if (robot.wrist != null && pressed)
-                    {
-                        robot.wrist.setPosition(1.0);
-                    }
                     break;
 
                 case FtcGamepad.GAMEPAD_BACK:
+                    if (pressed)
+                        robot.elevator.zeroCalibrate();
                     break;
 
                 case FtcGamepad.GAMEPAD_START:
