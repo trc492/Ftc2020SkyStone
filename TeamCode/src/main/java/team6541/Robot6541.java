@@ -22,7 +22,6 @@
 
 package team6541;
 
-import common.ArmExtender;
 import common.Elevator;
 import common.FoundationLatch;
 import common.Robot;
@@ -108,12 +107,6 @@ public class Robot6541 extends Robot
                             RobotInfo6541.ELEVATOR_TOLERANCE, RobotInfo6541.ELEVATOR_CAL_POWER, preferences6541);
                 }
 
-                /*
-                armExtender = new ArmExtender(RobotInfo6541.ARM_EXTENDER_MAX_STEPRATE,
-                        RobotInfo6541.ARM_EXTENDER_MIN_POS,
-                        RobotInfo6541.ARM_EXTENDER_MAX_POS);
-
-                 */
                 wrist = new Wrist(RobotInfo6541.WRIST_MAX_STEPRATE, RobotInfo6541.WRIST_MIN_POS,
                         RobotInfo6541.WRIST_MAX_POS);
                 grabber = new Grabber6541();

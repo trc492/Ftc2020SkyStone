@@ -20,23 +20,25 @@
  * SOFTWARE.
  */
 
-package common;
+package team3543;
 
 import ftclib.FtcServo;
 import trclib.TrcEnhancedServo;
 import trclib.TrcEvent;
 import trclib.TrcTimer;
 
-public class ArmExtender
+public class ArmExtender3543
 {
     private final FtcServo extender = new FtcServo("armExtenderServo");
     private final TrcEnhancedServo enhancedExtender = new TrcEnhancedServo("enhancedArmExtender", extender);
     private final TrcTimer moveTime = new TrcTimer("armExtenderMoveTimer");
 
-    public ArmExtender(double maxStepRate, double minPos, double maxPos)
+    public ArmExtender3543()
     {
-        enhancedExtender.setStepMode(maxStepRate, minPos, maxPos);
-    }   //ArmExtender
+        enhancedExtender.setStepMode(
+                RobotInfo3543.ARM_EXTENDER_MAX_STEPRATE, RobotInfo3543.ARM_EXTENDER_MIN_POS,
+                RobotInfo3543.ARM_EXTENDER_MAX_POS);
+    }   //ArmExtender3543
 
     public void setPower(double power)
     {
@@ -48,21 +50,26 @@ public class ArmExtender
         enhancedExtender.setPosition(position);
     }   //setPosition
 
-    public void extend() {
-        extender.setPosition(RobotInfoCommon.ARM_EXTENDER_EXTENDED_POS);
-    }
+    public void extend()
+    {
+        extender.setPosition(RobotInfo3543.ARM_EXTENDER_EXTENDED_POS);
+    }   //extend
 
-    public void retract() {
-        extender.setPosition(RobotInfoCommon.ARM_EXTENDER_RETRACTED_POS);
-    }
+    public void retract()
+    {
+        extender.setPosition(RobotInfo3543.ARM_EXTENDER_RETRACTED_POS);
+    }   //retract
 
-    public void extend(TrcEvent event) {
+    public void extend(TrcEvent event)
+    {
         extend();
-        moveTime.set(RobotInfoCommon.ARM_EXTENDER_MOVE_TIME, event);
-    }
+        moveTime.set(RobotInfo3543.ARM_EXTENDER_MOVE_TIME, event);
+    }   //extend
 
-    public void retract(TrcEvent event) {
+    public void retract(TrcEvent event)
+    {
         retract();
-        moveTime.set(RobotInfoCommon.ARM_EXTENDER_MOVE_TIME, event);
-    }
-}   //class ArmExtender
+        moveTime.set(RobotInfo3543.ARM_EXTENDER_MOVE_TIME, event);
+    }   //retract
+
+}   //class ArmExtender3543

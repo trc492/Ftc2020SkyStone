@@ -36,7 +36,6 @@ public class Elevator
     private FtcDcMotor elevatorMotor;
     private TrcPidController pidController;
     private TrcPidActuator pidElevator;
-    private boolean usingUpperLimit;
 
     public Elevator(
             double minHeight, double maxHeight, double scale, double offset, TrcPidController.PidCoefficients pidCoeff,
@@ -44,17 +43,23 @@ public class Elevator
     {
         lowerLimitSwitch = new FtcDigitalInput("elevatorLowerLimit");
         if (!preferences.get("team3543"))
+        {
             upperLimitSwitch = new FtcDigitalInput("elevatorUpperLimit");
+        }
 
         lowerLimitSwitch.setInverted(false);
         if (upperLimitSwitch != null)
+        {
             upperLimitSwitch.setInverted(false);
+        }
 
         elevatorMotor = new FtcDcMotor("elevatorMotor", lowerLimitSwitch, upperLimitSwitch);
         elevatorMotor.setBrakeModeEnabled(true);
         elevatorMotor.setOdometryEnabled(true);
         if (preferences.get("team3543"))
+        {
             elevatorMotor.setInverted(true);
+        }
 
         pidController = new TrcPidController(
                 "elevatorPidController", pidCoeff, tolerance, this::getPosition);
@@ -102,10 +107,7 @@ public class Elevator
 
     public boolean isUpperLimitSwitchActive()
     {
-        if (upperLimitSwitch != null)
-            return upperLimitSwitch.isActive();
-        else
-            return false;
+        return upperLimitSwitch != null ? upperLimitSwitch.isActive() : false;
     }   //isUpperLimitSwitchActive
 
 }   //class Elevator

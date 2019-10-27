@@ -25,7 +25,6 @@ package team6541;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import common.CommonTeleOp;
-import common.RobotInfoCommon;
 import ftclib.FtcGamepad;
 import trclib.TrcGameController;
 import trclib.TrcRobot;

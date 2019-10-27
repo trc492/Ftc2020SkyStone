@@ -42,6 +42,7 @@ import ftclib.FtcRevBlinkin;
 import ftclib.FtcRobotBattery;
 import ftclib.FtcVuforia;
 import hallib.HalDashboard;
+import team3543.ArmExtender3543;
 import trclib.TrcDbgTrace;
 import trclib.TrcDriveBase;
 import trclib.TrcGyro;
@@ -50,6 +51,7 @@ import trclib.TrcHomographyMapper;
 import trclib.TrcPidController;
 import trclib.TrcPidDrive;
 import trclib.TrcPose2D;
+import trclib.TrcRevBlinkin;
 import trclib.TrcRobot;
 import trclib.TrcUtil;
 
@@ -117,7 +119,7 @@ public class Robot
     // Other common subsystems. May be null during testing (while mechanisms do not exist on robot)
     //
     @Nullable public Elevator elevator = null;
-    @Nullable public ArmExtender armExtender = null;
+    @Nullable public ArmExtender3543 armExtender = null;
     @Nullable public Wrist wrist = null;
     @Nullable public Grabber grabber = null;
     @Nullable public FoundationLatch foundationLatch = null;
@@ -170,6 +172,7 @@ public class Robot
             if (preferences.get("useBlinkin"))
             {
                 blinkin = new FtcRevBlinkin("blinkin");
+                blinkin.setPattern(TrcRevBlinkin.LEDPattern.SolidAqua);
             }
 
             //

@@ -142,6 +142,9 @@ class RobotInfo3543
     static final double ARM_EXTENDER_MAX_STEPRATE       = 1.0;
     static final double ARM_EXTENDER_MIN_POS            = 0.0;
     static final double ARM_EXTENDER_MAX_POS            = 1.0;
+    static final double ARM_EXTENDER_EXTENDED_POS       = 1.0;
+    static final double ARM_EXTENDER_RETRACTED_POS      = 0.0;
+    static final double ARM_EXTENDER_MOVE_TIME          = 2.0;
 
     // Wrist subsystem.
     static final double WRIST_MAX_STEPRATE              = 1.0;
