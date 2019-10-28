@@ -145,7 +145,8 @@ class RobotInfo6541
 
     // Grabber subsystem.
     static final double GRABBER_GRAB_POWER              = 0.5;
-    static final double GRABBER_HOLD_POWER              = 0.1;
+    static final double GRABBER_RELEASE_POWER           = -0.5;
+    static final double GRABBER_HOLD_POWER              = 0.0;
 
     // FoundationLatch subsystem.
     static final double FOUNDATION_LATCH_OPEN_POS       = 0.0;

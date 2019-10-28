@@ -77,9 +77,9 @@ public class Grabber6541 implements Grabber
     {
         //sets power to release
         if (hasBrickSensor.isActive()) {
-            motor.setMotorPower(-RobotInfo6541.GRABBER_GRAB_POWER);
+            motor.setMotorPower(RobotInfo6541.GRABBER_RELEASE_POWER);
         } else {
-            motor.setMotorPower(0);
+            motor.setMotorPower(0.0);
             signalReleaseFinishedEvent();
         }
     }   //release
@@ -87,7 +87,7 @@ public class Grabber6541 implements Grabber
     @Override
     public void release(TrcEvent whenFinishedEvent) {
         whenReleaseFinishedEvent = whenFinishedEvent;
-        grab();
+        release();
     }
 
     //event

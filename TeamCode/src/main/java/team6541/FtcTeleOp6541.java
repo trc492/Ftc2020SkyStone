@@ -102,43 +102,24 @@ public class FtcTeleOp6541 extends CommonTeleOp
             switch (button)
             {
                 case FtcGamepad.GAMEPAD_A:
-                    if (robot.grabber != null && pressed)
-                    {
-                        robot.grabber.grab();
-                    }
                     break;
 
                 case FtcGamepad.GAMEPAD_B:
-                    if (robot.grabber != null && pressed)
-                    {
-                        robot.grabber.release();
-                    }
                     break;
 
                 case FtcGamepad.GAMEPAD_X:
-                    if (robot.foundationLatch != null && pressed)
-                    {
-                        robot.foundationLatch.grab();
-                    }
                     break;
 
                 case FtcGamepad.GAMEPAD_Y:
-                    if (robot.foundationLatch != null && pressed)
-                    {
-                        robot.foundationLatch.release();
-                    }
                     break;
 
                 case FtcGamepad.GAMEPAD_LBUMPER:
                     break;
 
                 case FtcGamepad.GAMEPAD_RBUMPER:
-                    robot.elevator.setManualOverride(pressed);
                     break;
 
                 case FtcGamepad.GAMEPAD_DPAD_UP:
-                    if (pressed)
-                        robot.elevator.setPosition(12.0);
                     break;
 
                 case FtcGamepad.GAMEPAD_DPAD_DOWN:
@@ -151,8 +132,6 @@ public class FtcTeleOp6541 extends CommonTeleOp
                     break;
 
                 case FtcGamepad.GAMEPAD_BACK:
-                    if (pressed)
-                        robot.elevator.zeroCalibrate();
                     break;
 
                 case FtcGamepad.GAMEPAD_START:

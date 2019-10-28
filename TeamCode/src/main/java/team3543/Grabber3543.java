@@ -29,16 +29,10 @@ import trclib.TrcTimer;
 
 public class Grabber3543 implements Grabber
 {
-    public static final int GRAB_TIME = 1;
-    public static final int RELEASE_TIME = 1;
-
     private FtcServo grabber = new FtcServo("grabberServo");
-    private final TrcTimer grabTimer = new TrcTimer("grabberTimer");
-
     //
     // Implements Grabber interface
     //
-
     @Override
     public void grab()
     {
@@ -46,10 +40,10 @@ public class Grabber3543 implements Grabber
     }   //grab
 
     @Override
-    public void grab(TrcEvent whenFinishedEvent) {
-        grab();
-        grabTimer.set(GRAB_TIME, whenFinishedEvent);
-    }
+    public void grab(TrcEvent whenFinishedEvent)
+    {
+        grabber.setPosition(RobotInfo3543.GRABBER_CLOSE_POS, RobotInfo3543.GRABBER_GRAB_TIME, whenFinishedEvent);
+    }   //grab
 
     @Override
     public void release()
@@ -58,9 +52,9 @@ public class Grabber3543 implements Grabber
     }   //release
 
     @Override
-    public void release(TrcEvent whenFinishedEvent) {
-        release();
-        grabTimer.set(RELEASE_TIME, whenFinishedEvent);
-    }
+    public void release(TrcEvent whenFinishedEvent)
+    {
+        grabber.setPosition(RobotInfo3543.GRABBER_OPEN_POS, RobotInfo3543.GRABBER_GRAB_TIME, whenFinishedEvent);
+    }   //release
 
 }   //class Grabber3543

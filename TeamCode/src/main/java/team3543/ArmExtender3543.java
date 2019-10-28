@@ -44,14 +44,14 @@ public class ArmExtender3543
         enhancedExtender.setPower(power);
     }   //setPower
 
-    public void setPosition(double position)
-    {
-        enhancedExtender.setPosition(position);
-    }   //setPosition
-
     public void setPosition(double position, double timeout, TrcEvent event)
     {
         enhancedExtender.setPosition(position, timeout, event);
+    }   //setPosition
+
+    public void setPosition(double position)
+    {
+        enhancedExtender.setPosition(position);
     }   //setPosition
 
     public void extend()

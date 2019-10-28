@@ -41,14 +41,14 @@ public class Wrist
         enhancedWrist.setPower(power);
     }   //setPower
 
-    public void setPosition(double position)
-    {
-        enhancedWrist.setPosition(position);
-    }   //setPosition
-
     public void setPosition(double position, double timeout, TrcEvent event)
     {
         enhancedWrist.setPosition(position, timeout, event);
+    }   //setPosition
+
+    public void setPosition(double position)
+    {
+        enhancedWrist.setPosition(position);
     }   //setPosition
 
 }   //class Wrist

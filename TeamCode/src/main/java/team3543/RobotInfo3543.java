@@ -154,6 +154,8 @@ class RobotInfo3543
     // Grabber subsystem.
     static final double GRABBER_OPEN_POS                = 1.0;
     static final double GRABBER_CLOSE_POS               = 0.0;
+    static final double GRABBER_GRAB_TIME               = 1.0;
+    static final double GRABBER_RELEASE_TIME            = 1.0;
 
     // FoundationLatch subsystem.
     static final double FOUNDATION_LATCH_OPEN_POS       = 0.0;
