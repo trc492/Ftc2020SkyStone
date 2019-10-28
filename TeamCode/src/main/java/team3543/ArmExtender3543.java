@@ -31,7 +31,6 @@ public class ArmExtender3543
 {
     private final FtcServo extender = new FtcServo("armExtenderServo");
     private final TrcEnhancedServo enhancedExtender = new TrcEnhancedServo("enhancedArmExtender", extender);
-    private final TrcTimer moveTime = new TrcTimer("armExtenderMoveTimer");
 
     public ArmExtender3543()
     {
@@ -50,26 +49,31 @@ public class ArmExtender3543
         enhancedExtender.setPosition(position);
     }   //setPosition
 
+    public void setPosition(double position, double timeout, TrcEvent event)
+    {
+        enhancedExtender.setPosition(position, timeout, event);
+    }   //setPosition
+
     public void extend()
     {
-        extender.setPosition(RobotInfo3543.ARM_EXTENDER_EXTENDED_POS);
+        enhancedExtender.setPosition(RobotInfo3543.ARM_EXTENDER_EXTENDED_POS);
     }   //extend
 
     public void retract()
     {
-        extender.setPosition(RobotInfo3543.ARM_EXTENDER_RETRACTED_POS);
+        enhancedExtender.setPosition(RobotInfo3543.ARM_EXTENDER_RETRACTED_POS);
     }   //retract
 
     public void extend(TrcEvent event)
     {
-        extend();
-        moveTime.set(RobotInfo3543.ARM_EXTENDER_MOVE_TIME, event);
+        enhancedExtender.setPosition(
+                RobotInfo3543.ARM_EXTENDER_EXTENDED_POS, RobotInfo3543.ARM_EXTENDER_MOVE_TIME, event);
     }   //extend
 
     public void retract(TrcEvent event)
     {
-        retract();
-        moveTime.set(RobotInfo3543.ARM_EXTENDER_MOVE_TIME, event);
+        enhancedExtender.setPosition(
+                RobotInfo3543.ARM_EXTENDER_RETRACTED_POS, RobotInfo3543.ARM_EXTENDER_MOVE_TIME, event);
     }   //retract
 
 }   //class ArmExtender3543

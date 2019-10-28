@@ -24,6 +24,7 @@ package common;
 
 import ftclib.FtcServo;
 import trclib.TrcEnhancedServo;
+import trclib.TrcEvent;
 
 public class Wrist
 {
@@ -43,6 +44,11 @@ public class Wrist
     public void setPosition(double position)
     {
         enhancedWrist.setPosition(position);
+    }   //setPosition
+
+    public void setPosition(double position, double timeout, TrcEvent event)
+    {
+        enhancedWrist.setPosition(position, timeout, event);
     }   //setPosition
 
 }   //class Wrist

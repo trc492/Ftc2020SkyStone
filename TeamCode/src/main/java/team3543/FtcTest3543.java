@@ -130,6 +130,11 @@ public class FtcTest3543 extends FtcTeleOp3543
             switch (button)
             {
                 case FtcGamepad.GAMEPAD_DPAD_UP:
+                    if (pressed)
+                    {
+                        robot.elevator.setPosition(12.0);
+                        processed = true;
+                    }
                     break;
 
                 case FtcGamepad.GAMEPAD_DPAD_DOWN:
