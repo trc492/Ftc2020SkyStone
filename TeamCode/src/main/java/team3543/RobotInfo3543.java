@@ -138,13 +138,13 @@ class RobotInfo3543
     static final double ELEVATOR_SCALE                  = (18.25 / 17011.0);
     static final double ELEVATOR_OFFSET                 = 0.0;
 
-    // Armextender subsystem.
-    static final double ARM_EXTENDER_MAX_STEPRATE       = 1.0;
-    static final double ARM_EXTENDER_MIN_POS            = 0.0;
-    static final double ARM_EXTENDER_MAX_POS            = 1.0;
-    static final double ARM_EXTENDER_EXTENDED_POS       = 1.0;
-    static final double ARM_EXTENDER_RETRACTED_POS      = 0.0;
-    static final double ARM_EXTENDER_MOVE_TIME          = 2.0;
+    // ExtenderArm subsystem.
+    static final double EXTENDER_ARM_MAX_STEPRATE       = 1.0;
+    static final double EXTENDER_ARM_MIN_POS            = 0.0;
+    static final double EXTENDER_ARM_MAX_POS            = 1.0;
+    static final double EXTENDER_ARM_EXTENDED_POS       = 1.0;
+    static final double EXTENDER_ARM_RETRACTED_POS      = 0.0;
+    static final double EXTENDER_ARM_MOVE_TIME          = 2.0;
 
     // Wrist subsystem.
     static final double WRIST_MAX_STEPRATE              = 1.0;

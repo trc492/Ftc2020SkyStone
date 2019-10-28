@@ -107,7 +107,7 @@ public class Robot3543 extends Robot
                             RobotInfo3543.ELEVATOR_TOLERANCE, RobotInfo3543.ELEVATOR_CAL_POWER, preferences3543);
                 }
 
-                armExtender = new ArmExtender3543();
+                extenderArm = new ExtenderArm3543();
 
                 wrist = new Wrist(RobotInfo3543.WRIST_MAX_STEPRATE, RobotInfo3543.WRIST_MIN_POS,
                         RobotInfo3543.WRIST_MAX_POS);

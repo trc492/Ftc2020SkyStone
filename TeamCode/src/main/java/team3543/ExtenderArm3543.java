@@ -25,19 +25,18 @@ package team3543;
 import ftclib.FtcServo;
 import trclib.TrcEnhancedServo;
 import trclib.TrcEvent;
-import trclib.TrcTimer;
 
-public class ArmExtender3543
+public class ExtenderArm3543
 {
-    private final FtcServo extender = new FtcServo("armExtenderServo");
-    private final TrcEnhancedServo enhancedExtender = new TrcEnhancedServo("enhancedArmExtender", extender);
+    private final FtcServo extender = new FtcServo("extenderArmServo");
+    private final TrcEnhancedServo enhancedExtender = new TrcEnhancedServo("enhancedExtenderArm", extender);
 
-    public ArmExtender3543()
+    public ExtenderArm3543()
     {
         enhancedExtender.setStepMode(
-                RobotInfo3543.ARM_EXTENDER_MAX_STEPRATE, RobotInfo3543.ARM_EXTENDER_MIN_POS,
-                RobotInfo3543.ARM_EXTENDER_MAX_POS);
-    }   //ArmExtender3543
+                RobotInfo3543.EXTENDER_ARM_MAX_STEPRATE, RobotInfo3543.EXTENDER_ARM_MIN_POS,
+                RobotInfo3543.EXTENDER_ARM_MAX_POS);
+    }   //ExtenderArm3543
 
     public void setPower(double power)
     {
@@ -56,24 +55,24 @@ public class ArmExtender3543
 
     public void extend()
     {
-        enhancedExtender.setPosition(RobotInfo3543.ARM_EXTENDER_EXTENDED_POS);
+        enhancedExtender.setPosition(RobotInfo3543.EXTENDER_ARM_EXTENDED_POS);
     }   //extend
 
     public void retract()
     {
-        enhancedExtender.setPosition(RobotInfo3543.ARM_EXTENDER_RETRACTED_POS);
+        enhancedExtender.setPosition(RobotInfo3543.EXTENDER_ARM_RETRACTED_POS);
     }   //retract
 
     public void extend(TrcEvent event)
     {
         enhancedExtender.setPosition(
-                RobotInfo3543.ARM_EXTENDER_EXTENDED_POS, RobotInfo3543.ARM_EXTENDER_MOVE_TIME, event);
+                RobotInfo3543.EXTENDER_ARM_EXTENDED_POS, RobotInfo3543.EXTENDER_ARM_MOVE_TIME, event);
     }   //extend
 
     public void retract(TrcEvent event)
     {
         enhancedExtender.setPosition(
-                RobotInfo3543.ARM_EXTENDER_RETRACTED_POS, RobotInfo3543.ARM_EXTENDER_MOVE_TIME, event);
+                RobotInfo3543.EXTENDER_ARM_RETRACTED_POS, RobotInfo3543.EXTENDER_ARM_MOVE_TIME, event);
     }   //retract
 
-}   //class ArmExtender3543
+}   //class ExtenderArm3543

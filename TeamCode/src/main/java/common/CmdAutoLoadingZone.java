@@ -140,9 +140,9 @@ public class CmdAutoLoadingZone implements TrcRobot.RobotCommand
                     break;
 
                 case FIRST_SKYSTONE_OPEN_GRABBER_AND_EXTEND_ARM:
-                    if(robot.armExtender!= null)
+                    if(robot.extenderArm != null)
                     {
-                        robot.armExtender.extend();
+                        robot.extenderArm.extend();
                     }
 
                     if(robot.grabber != null) {
@@ -160,9 +160,9 @@ public class CmdAutoLoadingZone implements TrcRobot.RobotCommand
                 case FIRST_SKYSTONE_ARM_GOES_DOWN_ON_SKYSTONE:
                     nextState = State.FIRST_SKYSTONE_GRAB_SKYSTONE;
 
-                    if(robot.armExtender != null)
+                    if(robot.extenderArm != null)
                     {
-                        robot.armExtender.retract(event);
+                        robot.extenderArm.retract(event);
                         sm.waitForSingleEvent(event, nextState);
                     } else {
                         sm.setState(nextState);
@@ -184,8 +184,8 @@ public class CmdAutoLoadingZone implements TrcRobot.RobotCommand
 
                 case FIRST_SKYSTONE_EXTEND_ARM_WITH_SKYSTONE:
                     nextState = State.FIRST_SKYSTONE_BACK_UP;
-                    if (robot.armExtender != null) {
-                        robot.armExtender.extend(event);
+                    if (robot.extenderArm != null) {
+                        robot.extenderArm.extend(event);
                         sm.waitForSingleEvent(event, nextState);
                     } else {
                         sm.setState(nextState);

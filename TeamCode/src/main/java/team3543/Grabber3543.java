@@ -25,7 +25,6 @@ package team3543;
 import common.Grabber;
 import ftclib.FtcServo;
 import trclib.TrcEvent;
-import trclib.TrcTimer;
 
 public class Grabber3543 implements Grabber
 {

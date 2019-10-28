@@ -42,7 +42,7 @@ import ftclib.FtcRevBlinkin;
 import ftclib.FtcRobotBattery;
 import ftclib.FtcVuforia;
 import hallib.HalDashboard;
-import team3543.ArmExtender3543;
+import team3543.ExtenderArm3543;
 import trclib.TrcDbgTrace;
 import trclib.TrcDriveBase;
 import trclib.TrcGyro;
@@ -119,7 +119,7 @@ public class Robot
     // Other common subsystems. May be null during testing (while mechanisms do not exist on robot)
     //
     @Nullable public Elevator elevator = null;
-    @Nullable public ArmExtender3543 armExtender = null;
+    @Nullable public ExtenderArm3543 extenderArm = null;
     @Nullable public Wrist wrist = null;
     @Nullable public Grabber grabber = null;
     @Nullable public FoundationLatch foundationLatch = null;
