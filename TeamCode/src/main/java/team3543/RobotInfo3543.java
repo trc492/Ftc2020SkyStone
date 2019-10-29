@@ -125,15 +125,18 @@ class RobotInfo3543
     static final double HOMOGRAPHY_WORLD_BOTTOMRIGHT_X  = 12.0;
     static final double HOMOGRAPHY_WORLD_BOTTOMRIGHT_Y  = 19.0;
 
+    //
     // Elevator subsystem.
+    //
+    // 2019-10-28: Elevator Scale = 18.622/17897.0 = 0.0010405095826116, Kp = 1.0, Ki = 0.0, Kd = 0.0
     static final double ELEVATOR_KP                     = 1.0;
     static final double ELEVATOR_KI                     = 0.0;
     static final double ELEVATOR_KD                     = 0.0;
     static final double ELEVATOR_TOLERANCE              = 0.5;
     static final double ELEVATOR_CAL_POWER              = 0.5;
     static final double ELEVATOR_MIN_HEIGHT             = 0.0;
-    static final double ELEVATOR_MAX_HEIGHT             = 18.0;
-    static final double ELEVATOR_SCALE                  = (18.25 / 17011.0);
+    static final double ELEVATOR_MAX_HEIGHT             = 18.5;
+    static final double ELEVATOR_SCALE                  = (18.622 / 17897.0);
     static final double ELEVATOR_OFFSET                 = 0.0;
 
     // ExtenderArm subsystem.
