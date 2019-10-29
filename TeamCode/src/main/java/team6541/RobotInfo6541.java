@@ -39,21 +39,19 @@ class RobotInfo6541
     //
     // Velocity controlled constants.
     //
-    static final double MOTOR_MAX_VELOCITY              = 3080.0;   //encoder counts per second
+    static final double MOTOR_MAX_VELOCITY              = (2240 * 2.5); //encoder counts per second for HD HEX 40
     static final double MOTOR_KP                        = 0.75;
     static final double MOTOR_KI                        = 0.0;
     static final double MOTOR_KD                        = 0.0;
     //
     // 2018-10-27: Kp=0.1, Ki=0.0, Kd=0.0, Scale=0.0177558441951763
     //
-    // 31 inches
     static final double ENCODER_X_KP                    = 0.1;
     static final double ENCODER_X_KI                    = 0.0;
     static final double ENCODER_X_KD                    = 0.01;
     static final double ENCODER_X_TOLERANCE             = 2.0;
     static final double ENCODER_X_INCHES_PER_COUNT      = 0.0165770049;
     //
-    // 2018-10-27: Kp=0.035, Ki=0.0, Kd=0.0025, Scale=0.0172934
     // 2018-11-29: Kp=0.05, Ki=0.0, Kd=0.0, Scale=0.0158423538151923
     //
     static final double ENCODER_Y_KP                    = 0.05;
@@ -62,7 +60,6 @@ class RobotInfo6541
     static final double ENCODER_Y_TOLERANCE             = 1.0;
     static final double ENCODER_Y_INCHES_PER_COUNT      = 0.0173063935;
     //
-    // 2018-10-27: Kp=0.025, Ki=0.0, Kd=0.0
     // 2018-11-29: Kp=0.025, Ki=0.0, Kd=0.0025
     //
     static final double GYRO_KP                         = 0.025;
@@ -102,9 +99,9 @@ class RobotInfo6541
     static final boolean PHONE_IS_PORTRAIT              = false;
     static final double ROBOT_LENGTH                    = 17.5; //Robot length in inches
     static final double ROBOT_WIDTH                     = 17.5; //Robot width in inches
-    static final double PHONE_FRONT_OFFSET              = 0.75; //Phone offset from front of robot in inches
-    static final double PHONE_HEIGHT_OFFSET             = 6.25; //Phone offset from the floor in inches
-    static final double PHONE_LEFT_OFFSET               = 8.75; //Phone offset from the left side of the robot in inches
+    static final double PHONE_FRONT_OFFSET              = 0.0;  //Phone offset from front of robot in inches
+    static final double PHONE_HEIGHT_OFFSET             = 4.75; //Phone offset from the floor in inches
+    static final double PHONE_LEFT_OFFSET               = 11.0; //Phone offset from the left side of the robot in inches
 
     static final double HOMOGRAPHY_CAMERA_TOPLEFT_X     = 0.0;
     static final double HOMOGRAPHY_CAMERA_TOPLEFT_Y     = 360.0;
