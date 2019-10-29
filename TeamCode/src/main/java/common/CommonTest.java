@@ -99,12 +99,12 @@ public class CommonTest
     //
 
     public void init(
-            String moduleName, Robot robot, boolean monitorLoopTime, TrcPidController.PidCoefficients posPidCoeff,
+            String moduleName, Robot robot, TrcPidController.PidCoefficients posPidCoeff,
             TrcPidController.PidCoefficients turnPidCoeff, TrcPidController.PidCoefficients velPidCoeff)
     {
         this.moduleName = moduleName;
         this.robot = robot;
-        if (monitorLoopTime)
+        if (robot.preferences.get("useLoopPerformanceMonitor"))
         {
             loopPerformanceMonitor = new TrcLoopPerformanceMonitor("TestLoopMonitor", 1.0);
         }

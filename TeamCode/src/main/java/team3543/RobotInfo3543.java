@@ -44,23 +44,23 @@ class RobotInfo3543
     static final double MOTOR_KI                        = 0.0;
     static final double MOTOR_KD                        = 0.0;
     //
-    // 2019-10-28: X Scale = (77.0/4635.5)*(74.625/75.4) = 0.0164402015697676, Kp = 0.09, Ki = 0.0, Kd = 0.003
+    // 2019-10-28: Scale=0.0164402015697676, Kp=0.09, Ki=0.0, Kd=0.003
     //
     static final double ENCODER_X_KP                    = 0.09;
     static final double ENCODER_X_KI                    = 0.0;
     static final double ENCODER_X_KD                    = 0.003;
     static final double ENCODER_X_TOLERANCE             = 2.0;
-    static final double ENCODER_X_INCHES_PER_COUNT      = (77.0 / 4635.5) * (74.625 / 75.4);
+    static final double ENCODER_X_INCHES_PER_COUNT      = 0.0164402015697676;
     //
-    // 2019-10-28: Y Scale = 111.5/6327.5 = 0.0176214934808376, Kp = 0.05, Ki = 0.0, Kd = 0.003
+    // 2019-10-28: Scale=0.0176214934808376, Kp=0.05, Ki=0.0, Kd=0.003
     //
     static final double ENCODER_Y_KP                    = 0.05;
     static final double ENCODER_Y_KI                    = 0.0;
     static final double ENCODER_Y_KD                    = 0.003;
     static final double ENCODER_Y_TOLERANCE             = 1.0;
-    static final double ENCODER_Y_INCHES_PER_COUNT      = 111.5 / 6327.5;
+    static final double ENCODER_Y_INCHES_PER_COUNT      = 0.0176214934808376;
     //
-    // 2019-10-28: Kp = 0.02, Ki = 0.0, Kd = 0.0015
+    // 2019-10-28: Kp=0.02, Ki=0.0, Kd=0.0015
     //
     static final double GYRO_KP                         = 0.02;
     static final double GYRO_KI                         = 0.0;

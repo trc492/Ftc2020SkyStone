@@ -44,27 +44,27 @@ class RobotInfo6541
     static final double MOTOR_KI                        = 0.0;
     static final double MOTOR_KD                        = 0.0;
     //
-    // 2018-10-27: Kp=0.1, Ki=0.0, Kd=0.0, Scale=0.0177558441951763
+    // 2019-10-29: Scale=0.0167169366150308, Kp=0.09, Ki=0.0, Kd=0.003
     //
-    static final double ENCODER_X_KP                    = 0.1;
+    static final double ENCODER_X_KP                    = 0.09;
     static final double ENCODER_X_KI                    = 0.0;
-    static final double ENCODER_X_KD                    = 0.01;
+    static final double ENCODER_X_KD                    = 0.003;
     static final double ENCODER_X_TOLERANCE             = 2.0;
-    static final double ENCODER_X_INCHES_PER_COUNT      = 0.0165770049;
+    static final double ENCODER_X_INCHES_PER_COUNT      = 0.0167169366150308;
     //
-    // 2018-11-29: Kp=0.05, Ki=0.0, Kd=0.0, Scale=0.0158423538151923
+    // 2019-10-29: Scale=0.0170448238583025, Kp=0.05, Ki=0.0, Kd=0.003
     //
     static final double ENCODER_Y_KP                    = 0.05;
     static final double ENCODER_Y_KI                    = 0.0;
-    static final double ENCODER_Y_KD                    = 0.0;
+    static final double ENCODER_Y_KD                    = 0.003;
     static final double ENCODER_Y_TOLERANCE             = 1.0;
-    static final double ENCODER_Y_INCHES_PER_COUNT      = 0.0173063935;
+    static final double ENCODER_Y_INCHES_PER_COUNT      = 0.0170448238583025;
     //
-    // 2018-11-29: Kp=0.025, Ki=0.0, Kd=0.0025
+    // 2019-10-29: Kp=0.02, Ki=0.0, Kd=0.0015
     //
-    static final double GYRO_KP                         = 0.025;
+    static final double GYRO_KP                         = 0.02;
     static final double GYRO_KI                         = 0.0;
-    static final double GYRO_KD                         = 0.0025;
+    static final double GYRO_KD                         = 0.0015;
     static final double GYRO_TOLERANCE                  = 2.0;
 
     static final double PIDDRIVE_STALL_TIMEOUT          = 0.5;      //in seconds.
