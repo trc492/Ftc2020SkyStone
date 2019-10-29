@@ -39,35 +39,32 @@ class RobotInfo3543
     //
     // Velocity controlled constants.
     //
-    static final double MOTOR_MAX_VELOCITY              = 3080.0;   //encoder counts per second
+    static final double MOTOR_MAX_VELOCITY              = (14 * 4 * 40.0);  //encoder counts per second for HD HEX 40
     static final double MOTOR_KP                        = 0.75;
     static final double MOTOR_KI                        = 0.0;
     static final double MOTOR_KD                        = 0.0;
     //
-    // 2018-10-27: Kp=0.1, Ki=0.0, Kd=0.0, Scale=0.0177558441951763
+    // 2019-10-28: X Scale = (77.0/4635.5)*(74.625/75.4) = 0.0164402015697676, Kp = 0.09, Ki = 0.0, Kd = 0.003
     //
-    // 31 inches
-    static final double ENCODER_X_KP                    = 0.1;
+    static final double ENCODER_X_KP                    = 0.09;
     static final double ENCODER_X_KI                    = 0.0;
-    static final double ENCODER_X_KD                    = 0.0;
+    static final double ENCODER_X_KD                    = 0.003;
     static final double ENCODER_X_TOLERANCE             = 2.0;
-    static final double ENCODER_X_INCHES_PER_COUNT      = (43.5 / 2523.0) * (42.2 / 42.4);
+    static final double ENCODER_X_INCHES_PER_COUNT      = (77.0 / 4635.5) * (74.625 / 75.4);
     //
-    // 2018-10-27: Kp=0.035, Ki=0.0, Kd=0.0025, Scale=0.0172934
-    // 2018-11-29: Kp=0.05, Ki=0.0, Kd=0.0, Scale=0.0158423538151923
+    // 2019-10-28: Y Scale = 111.5/6327.5 = 0.0176214934808376, Kp = 0.05, Ki = 0.0, Kd = 0.003
     //
     static final double ENCODER_Y_KP                    = 0.05;
     static final double ENCODER_Y_KI                    = 0.0;
-    static final double ENCODER_Y_KD                    = 0.0;
+    static final double ENCODER_Y_KD                    = 0.003;
     static final double ENCODER_Y_TOLERANCE             = 1.0;
-    static final double ENCODER_Y_INCHES_PER_COUNT      = (58.5 / 3303.0) * (57.1 / 57.5);
+    static final double ENCODER_Y_INCHES_PER_COUNT      = 111.5 / 6327.5;
     //
-    // 2018-10-27: Kp=0.025, Ki=0.0, Kd=0.0
-    // 2018-11-29: Kp=0.025, Ki=0.0, Kd=0.0025
+    // 2019-10-28: Kp = 0.02, Ki = 0.0, Kd = 0.0015
     //
-    static final double GYRO_KP                         = 0.025;
+    static final double GYRO_KP                         = 0.02;
     static final double GYRO_KI                         = 0.0;
-    static final double GYRO_KD                         = 0.0025;
+    static final double GYRO_KD                         = 0.0015;
     static final double GYRO_TOLERANCE                  = 2.0;
 
     static final double PIDDRIVE_STALL_TIMEOUT          = 0.5;      //in seconds.
