@@ -99,10 +99,11 @@ class RobotInfo3543
     static final boolean PHONE_IS_PORTRAIT              = false;
     static final double ROBOT_LENGTH                    = 17.5; //Robot length in inches
     static final double ROBOT_WIDTH                     = 17.5; //Robot width in inches
-    static final double PHONE_FRONT_OFFSET              = 0.75; //Phone offset from front of robot in inches
-    static final double PHONE_HEIGHT_OFFSET             = 6.25; //Phone offset from the floor in inches
-    static final double PHONE_LEFT_OFFSET               = 8.75; //Phone offset from the left side of the robot in inches
+    static final double PHONE_FRONT_OFFSET              = 6.0;  //Phone offset from front of robot in inches
+    static final double PHONE_HEIGHT_OFFSET             = 5.375;//Phone offset from the floor in inches
+    static final double PHONE_LEFT_OFFSET               = 11.75;//Phone offset from the left side of the robot in inches
 
+    // TODO: Need to retune.
     static final double HOMOGRAPHY_CAMERA_TOPLEFT_X     = 0.0;
     static final double HOMOGRAPHY_CAMERA_TOPLEFT_Y     = 360.0;
     static final double HOMOGRAPHY_CAMERA_TOPRIGHT_X    = 1280.0;
