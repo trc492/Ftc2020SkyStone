@@ -141,8 +141,10 @@ class RobotInfo3543
 
     // ExtenderArm subsystem.
     static final double EXTENDER_ARM_MAX_STEPRATE       = 1.0;
-    static final double EXTENDER_ARM_MIN_POS            = 0.0;
-    static final double EXTENDER_ARM_MAX_POS            = 1.0;
+    static final double EXTENDER_ARM_LOGICAL_MIN_POS    = (60.0/255.0);
+    static final double EXTENDER_ARM_LOGICAL_MAX_POS    = (200.0/255.0);
+    static final double EXTENDER_ARM_PHYSICAL_MIN_POS   = 0.0;
+    static final double EXTENDER_ARM_PHYSICAL_MAX_POS   = 1.0;
     static final double EXTENDER_ARM_EXTENDED_POS       = 1.0;
     static final double EXTENDER_ARM_RETRACTED_POS      = 0.0;
     static final double EXTENDER_ARM_MOVE_TIME          = 2.0;
@@ -159,7 +161,9 @@ class RobotInfo3543
     static final double GRABBER_RELEASE_TIME            = 1.0;
 
     // FoundationLatch subsystem.
-    static final double FOUNDATION_LATCH_OPEN_POS       = 0.0;
     static final double FOUNDATION_LATCH_CLOSE_POS      = 1.0;
+    static final double FOUNDATION_LATCH_CLOSE_TIME     = 0.5;
+    static final double FOUNDATION_LATCH_OPEN_POS       = 0.0;
+    static final double FOUNDATION_LATCH_OPEN_TIME      = 0.5;
 
 }   //class RobotInfo3543

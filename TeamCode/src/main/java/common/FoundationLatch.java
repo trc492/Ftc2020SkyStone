@@ -23,28 +23,44 @@
 package common;
 
 import ftclib.FtcServo;
+import trclib.TrcEvent;
 
-public class FoundationLatch
+public class FoundationLatch implements Grabber
 {
-    private double openPos;
-    private double closePos;
-    private FtcServo servo;
+    private final FtcServo servo = new FtcServo("foundationLatchServo");
+    private final double closePos, closeTime;
+    private final double openPos, openTime;
 
-    public FoundationLatch(double openPos, double closePos)
+    public FoundationLatch(double closePos, double closeTime, double openPos, double openTime)
     {
-        this.openPos = openPos;
         this.closePos = closePos;
-        servo = new FtcServo("foundationLatchServo");
+        this.closeTime = closeTime;
+        this.openPos = openPos;
+        this.openTime = openTime;
     }   //FoundationLatch
 
+    @Override
     public void grab()
     {
         servo.setPosition(closePos);
     }   //grab
 
+    @Override
+    public void grab(TrcEvent event)
+    {
+        servo.setPosition(closePos, closeTime, event);
+    }   //grab
+
+    @Override
     public void release()
     {
         servo.setPosition(openPos);
+    }   //release
+
+    @Override
+    public void release(TrcEvent event)
+    {
+        servo.setPosition(openPos, openTime, event);
     }   //release
 
 }   //class FoundationLatch

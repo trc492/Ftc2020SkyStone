@@ -33,9 +33,13 @@ public class ExtenderArm3543
 
     public ExtenderArm3543()
     {
+        extender.setLogicalRange(
+                RobotInfo3543.EXTENDER_ARM_LOGICAL_MIN_POS, RobotInfo3543.EXTENDER_ARM_LOGICAL_MAX_POS);
+        extender.setPhysicalRange(
+                RobotInfo3543.EXTENDER_ARM_PHYSICAL_MIN_POS, RobotInfo3543.EXTENDER_ARM_PHYSICAL_MAX_POS);
         enhancedExtender.setStepMode(
-                RobotInfo3543.EXTENDER_ARM_MAX_STEPRATE, RobotInfo3543.EXTENDER_ARM_MIN_POS,
-                RobotInfo3543.EXTENDER_ARM_MAX_POS);
+                RobotInfo3543.EXTENDER_ARM_MAX_STEPRATE, RobotInfo3543.EXTENDER_ARM_PHYSICAL_MIN_POS,
+                RobotInfo3543.EXTENDER_ARM_PHYSICAL_MAX_POS);
     }   //ExtenderArm3543
 
     public void setPower(double power)
@@ -43,30 +47,20 @@ public class ExtenderArm3543
         enhancedExtender.setPower(power);
     }   //setPower
 
-    public void setPosition(double position, double timeout, TrcEvent event)
-    {
-        enhancedExtender.setPosition(position, timeout, event);
-    }   //setPosition
-
-    public void setPosition(double position)
-    {
-        enhancedExtender.setPosition(position);
-    }   //setPosition
-
     public void extend()
     {
         enhancedExtender.setPosition(RobotInfo3543.EXTENDER_ARM_EXTENDED_POS);
     }   //extend
 
-    public void retract()
-    {
-        enhancedExtender.setPosition(RobotInfo3543.EXTENDER_ARM_RETRACTED_POS);
-    }   //retract
-
     public void extend(TrcEvent event)
     {
         enhancedExtender.setPosition(
                 RobotInfo3543.EXTENDER_ARM_EXTENDED_POS, RobotInfo3543.EXTENDER_ARM_MOVE_TIME, event);
+    }   //extend
+
+    public void retract()
+    {
+        enhancedExtender.setPosition(RobotInfo3543.EXTENDER_ARM_RETRACTED_POS);
     }   //extend
 
     public void retract(TrcEvent event)

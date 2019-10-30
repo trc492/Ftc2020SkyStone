@@ -112,7 +112,8 @@ public class Robot6541 extends Robot
                         RobotInfo6541.WRIST_MAX_POS);
                 grabber = new Grabber6541();
                 foundationLatch = new FoundationLatch(
-                        RobotInfo6541.FOUNDATION_LATCH_OPEN_POS, RobotInfo6541.FOUNDATION_LATCH_CLOSE_POS);
+                        RobotInfo6541.FOUNDATION_LATCH_CLOSE_POS, RobotInfo6541.FOUNDATION_LATCH_CLOSE_TIME,
+                        RobotInfo6541.FOUNDATION_LATCH_OPEN_POS, RobotInfo6541.FOUNDATION_LATCH_OPEN_TIME);
             }
         }
         //

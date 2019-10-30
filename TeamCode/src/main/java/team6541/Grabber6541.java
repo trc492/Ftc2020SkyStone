@@ -24,9 +24,8 @@ package team6541;
 
 import common.Grabber;
 import ftclib.FtcDcMotor;
-import ftclib.FtcDigitalInput;
-import trclib.TrcDigitalInputTrigger;
 import trclib.TrcEvent;
+import trclib.TrcTimer;
 
 /**
  * This class implements the grabber for team 6541. It has a motor wheel that sucks up the yellow block, holds it,
@@ -36,19 +35,27 @@ import trclib.TrcEvent;
 public class Grabber6541 implements Grabber
 {
     private FtcDcMotor motor = new FtcDcMotor("grabberMotor");
-    private FtcDigitalInput hasBrickSensor = new FtcDigitalInput("grabberTouchSensor");
-    private TrcDigitalInputTrigger trigger = new TrcDigitalInputTrigger(
-            "touchSensorTrigger", hasBrickSensor, this::onHasBrickStatusChanged);
+    private TrcTimer timer = new TrcTimer("grabberTimer");
+    private TrcEvent finishedEvent = null;
 
-    /**
-     * When not null, we signal this event when we grabbed a brick
-     */
-    private TrcEvent whenGrabFinishedEvent = null;
+    private void timerNotify(Object context)
+    {
+        //Stop the motor.
+        motor.set(0.0);
+        //Signal finishedEvent and consume it if any.
+        if (finishedEvent != null)
+        {
+            finishedEvent.set(true);
+            finishedEvent = null;
+        }
+    }   //timerNotify
 
-    /**
-     * When not null, we signal this even when we released a brick
-     */
-    private TrcEvent whenReleaseFinishedEvent = null;
+    private void setTimedPower(double power, double time, TrcEvent finishedEvent)
+    {
+        motor.set(power);
+        timer.set(time, this::timerNotify);
+        this.finishedEvent = finishedEvent;
+    }   //setTimedPower
 
     //
     // Implements Grabber interface
@@ -57,72 +64,25 @@ public class Grabber6541 implements Grabber
     @Override
     public void grab()
     {
-        //sets power to grab
-        if (hasBrickSensor.isActive()) {
-            motor.setMotorPower(RobotInfo6541.GRABBER_HOLD_POWER);
-            signalGrabFinishedEvent();
-        } else {
-            motor.setMotorPower(RobotInfo6541.GRABBER_GRAB_POWER);
-        }
+        setTimedPower(RobotInfo6541.GRABBER_GRAB_POWER, RobotInfo6541.GRABBER_GRAB_TIME, null);
     }   //grab
 
     @Override
-    public void grab(TrcEvent whenFinishedEvent) {
-        whenGrabFinishedEvent = whenFinishedEvent;
-        grab();
-    }
+    public void grab(TrcEvent finishedEvent)
+    {
+        setTimedPower(RobotInfo6541.GRABBER_GRAB_POWER, RobotInfo6541.GRABBER_GRAB_TIME, finishedEvent);
+    }   //grab
 
     @Override
     public void release()
     {
-        //sets power to release
-        if (hasBrickSensor.isActive()) {
-            motor.setMotorPower(RobotInfo6541.GRABBER_RELEASE_POWER);
-        } else {
-            motor.setMotorPower(0.0);
-            signalReleaseFinishedEvent();
-        }
+        setTimedPower(RobotInfo6541.GRABBER_RELEASE_POWER, RobotInfo6541.GRABBER_RELEASE_TIME, null);
     }   //release
 
     @Override
-    public void release(TrcEvent whenFinishedEvent) {
-        whenReleaseFinishedEvent = whenFinishedEvent;
-        release();
-    }
-
-    //event
-    private void onHasBrickStatusChanged(boolean hasBrick)
+    public void release(TrcEvent finsihedEvent)
     {
-        if (hasBrick)
-        {
-            //just grabbed a brick
-            //set the power to keep going, but is a little bit to not burn the robot.
-            motor.setMotorPower(RobotInfo6541.GRABBER_HOLD_POWER);
-
-            signalGrabFinishedEvent();
-        }
-        else
-        {
-            //lost the brick.
-            //not have brick, stop motor.
-            motor.setMotorPower(0.0);
-
-            signalReleaseFinishedEvent();
-        }
-    }   //onHasBrickStatusChanged
-
-    private void signalGrabFinishedEvent() {
-        if (whenGrabFinishedEvent != null){
-            whenGrabFinishedEvent.set(true);
-            whenGrabFinishedEvent = null;
-        }
-    }
-
-    private void signalReleaseFinishedEvent() {
-        if (whenReleaseFinishedEvent != null) {
-            whenReleaseFinishedEvent.set(true);
-            whenReleaseFinishedEvent = null;
-        }
-    }
+        setTimedPower(RobotInfo6541.GRABBER_RELEASE_POWER, RobotInfo6541.GRABBER_RELEASE_TIME, finishedEvent);
+    }   //release
 
 }   //class Grabber6541

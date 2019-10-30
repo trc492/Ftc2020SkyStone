@@ -29,9 +29,11 @@ import trclib.TrcEvent;
 public class Grabber3543 implements Grabber
 {
     private FtcServo grabber = new FtcServo("grabberServo");
+
     //
     // Implements Grabber interface
     //
+
     @Override
     public void grab()
     {
@@ -39,9 +41,9 @@ public class Grabber3543 implements Grabber
     }   //grab
 
     @Override
-    public void grab(TrcEvent whenFinishedEvent)
+    public void grab(TrcEvent event)
     {
-        grabber.setPosition(RobotInfo3543.GRABBER_CLOSE_POS, RobotInfo3543.GRABBER_GRAB_TIME, whenFinishedEvent);
+        grabber.setPosition(RobotInfo3543.GRABBER_CLOSE_POS, RobotInfo3543.GRABBER_GRAB_TIME, event);
     }   //grab
 
     @Override
@@ -51,9 +53,9 @@ public class Grabber3543 implements Grabber
     }   //release
 
     @Override
-    public void release(TrcEvent whenFinishedEvent)
+    public void release(TrcEvent event)
     {
-        grabber.setPosition(RobotInfo3543.GRABBER_OPEN_POS, RobotInfo3543.GRABBER_GRAB_TIME, whenFinishedEvent);
+        grabber.setPosition(RobotInfo3543.GRABBER_OPEN_POS, RobotInfo3543.GRABBER_RELEASE_TIME, event);
     }   //release
 
 }   //class Grabber3543

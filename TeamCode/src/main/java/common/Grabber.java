@@ -27,8 +27,7 @@ import trclib.TrcEvent;
 public interface Grabber
 {
     void grab();
-    void grab(TrcEvent whenFinishedEvent);
+    void grab(TrcEvent finishedEvent);
     void release();
-    void release(TrcEvent whenFinishedEvent);
-
+    void release(TrcEvent finishedEvent);
 }   //interface Grabber

@@ -90,7 +90,6 @@ public class CmdAutoBuildingZone implements TrcRobot.RobotCommand
         {
             double xTarget = 0.0;
             double yTarget = 0.0;
-
             State nextState = null;
 
             robot.dashboard.displayPrintf(1, "State: %s", state);
@@ -138,8 +137,7 @@ public class CmdAutoBuildingZone implements TrcRobot.RobotCommand
                     nextState = State.MOVE_FOUNDATION_DOWN;
 
                     if(robot.foundationLatch != null) {
-                        robot.foundationLatch.grab();
-                        timer.set(0.5, event);
+                        robot.foundationLatch.grab(event);
                         sm.waitForSingleEvent(event, nextState);
                     } else {
                         sm.setState(nextState);
@@ -170,8 +168,7 @@ public class CmdAutoBuildingZone implements TrcRobot.RobotCommand
                     nextState = State.MOVE_TO_LINE;
 
                     if(robot.foundationLatch != null) {
-                        robot.foundationLatch.release();
-                        timer.set(0.5, event);
+                        robot.foundationLatch.release(event);
                         sm.waitForSingleEvent(event, nextState);
                     } else {
                         sm.setState(nextState);
