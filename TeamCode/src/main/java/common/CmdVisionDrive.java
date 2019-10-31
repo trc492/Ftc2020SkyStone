@@ -44,6 +44,7 @@ public class CmdVisionDrive implements TrcRobot.RobotCommand
         END_FORWARD_MOVE,
         GET_TARGET_POSE,
         GOTO_SKYSTONE,
+        NEXT_SKYSTONE,
         DONE
     }   //enum State
 
@@ -55,6 +56,7 @@ public class CmdVisionDrive implements TrcRobot.RobotCommand
     private final TrcStateMachine<State> sm;
     private TrcPose2D skystonePose = null;
     private double timeout = 0.0;
+    private int scootCount = 2;
 
     /**
      * Constructor: Create an instance of the object.
@@ -129,9 +131,9 @@ public class CmdVisionDrive implements TrcRobot.RobotCommand
                     //
                     // Move forward slowly for a distance or until vision sees the skystone whichever comes first.
                     //
-                    visionTrigger.setEnabled(true);
+                    visionTrigger.setEnabled(false);
                     robot.pidDrive.getYPidCtrl().saveAndSetOutputLimit(0.5);
-                    yTarget = 22.0;
+                    yTarget = 18.0;
                     robot.pidDrive.setTarget(xTarget, yTarget, robot.targetHeading, false, event);
                     sm.waitForSingleEvent(event, State.END_FORWARD_MOVE);
                     break;
@@ -151,36 +153,61 @@ public class CmdVisionDrive implements TrcRobot.RobotCommand
                     // we find it or we pass vision timeout.
                     //
                     TrcPose2D pose = robot.getSkyStonePose();
-                    //
                     if (pose != null)
+                        robot.globalTracer.traceInfo("getTargetPose", "Skystone position: %.1f, %.1f", pose.x, pose.y);
+                    else
+                        robot.globalTracer.traceInfo("getTargetPose", "Skystone not found");
+                    //
+                    if (pose == null)
                     {
-                        skystonePose = pose;
+                        if (TrcUtil.getCurrentTime() > timeout)
+                            sm.setState(State.NEXT_SKYSTONE);
                     }
+                    else if (pose.x < 0.0)
+                        sm.setState(State.NEXT_SKYSTONE);
+                    else
+                        sm.setState(State.DONE);
 
-                    if (skystonePose != null)
-                    {
-                        //
-                        // Align to the skystone.
-                        //
-                        xTarget = skystonePose.x;
-                        robot.speak(String.format(Locale.US, "Skystone is found at %.1f", xTarget));
-                        robot.pidDrive.setTarget(xTarget, yTarget, robot.targetHeading, false, event);
-                        sm.waitForSingleEvent(event, State.GOTO_SKYSTONE);
-                    }
-                    else if (TrcUtil.getCurrentTime() > timeout)
-                    {
-                        //
-                        // We failed to detect skystone, just pretend the one in front is the skystone.
-                        // We will get some points even if it's not a skystone.
-                        //
-                        sm.setState(State.GOTO_SKYSTONE);
-                    }
                     break;
 
+//                    if (skystonePose != null)
+//                    {
+//                        //
+//                        // Align to the skystone.
+//                        //
+//                        xTarget = skystonePose.x;
+//                        robot.speak(String.format(Locale.US, "Skystone is found at %.1f", xTarget));
+//                        robot.pidDrive.setTarget(xTarget, yTarget, robot.targetHeading, false, event);
+//                        sm.waitForSingleEvent(event, State.GOTO_SKYSTONE);
+//                    }
+//                    else if (TrcUtil.getCurrentTime() > timeout)
+//                    {
+//                        //
+//                        // We failed to detect skystone, just pretend the one in front is the skystone.
+//                        // We will get some points even if it's not a skystone.
+//                        //
+//                        sm.setState(State.GOTO_SKYSTONE);
+//                    }
+//                    break;
+
                 case GOTO_SKYSTONE:
-                    yTarget = 36.0 - robot.driveBase.getYPosition();
+                    yTarget = 32.0 - robot.driveBase.getYPosition();
                     robot.pidDrive.setTarget(xTarget, yTarget, robot.targetHeading, false, event);
                     sm.waitForSingleEvent(event, State.DONE);
+                    break;
+
+                case NEXT_SKYSTONE:
+                    if (scootCount > 0)
+                    {
+                        xTarget = 8.0;
+                        robot.pidDrive.setTarget(xTarget, yTarget, robot.targetHeading, false, event);
+                        sm.waitForSingleEvent(event, State.END_FORWARD_MOVE);
+                        scootCount -= 1;
+                    }
+                    else
+                    {
+                        sm.setState(State.DONE);
+                    }
                     break;
 
                 case DONE:
