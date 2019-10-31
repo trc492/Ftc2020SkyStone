@@ -42,7 +42,8 @@ public class TensorFlowVision
 {
     private static final String TFOD_MODEL_ASSET = "Skystone.tflite";
     private static final double TFOD_MIN_CONFIDENCE = 0.5;
-    private static final double ASPECT_RATIO_TOLERANCE = 3.0;
+    private static final double ASPECT_RATIO_TOLERANCE_LOWER = 1.5;
+    private static final double ASPECT_RATIO_TOLERANCE_UPPER = 2.5;
     public static final String LABEL_STONE = "Stone";
     public static final String LABEL_SKYSTONE = "Skystone";
 
@@ -183,7 +184,7 @@ public class TensorFlowVision
 
                 if (foundIt)
                 {
-                    if (aspectRatio <= ASPECT_RATIO_TOLERANCE)
+                    if (aspectRatio >= ASPECT_RATIO_TOLERANCE_LOWER && aspectRatio <= ASPECT_RATIO_TOLERANCE_UPPER)
                     {
                         targets.add(object);
                     }
@@ -195,8 +196,8 @@ public class TensorFlowVision
 
                 if (tracer != null)
                 {
-                    tracer.traceInfo(funcName, "[%d] %s: x=%.0f, y=%.0f, w=%.0f, h=%.0f, aspectRatio=%.1f, " +
-                            "foundIt=%s, rejected=%s",
+                    tracer.traceInfo(funcName, "[%d] TensorFlow.%s: x=%.0f, y=%.0f, w=%.0f, h=%.0f, " +
+                            "aspectRatio=%.1f, foundIt=%s, rejected=%s",
                             i, object.getLabel(), object.getTop(), object.getImageWidth() - object.getRight(),
                             object.getHeight(), object.getWidth(), aspectRatio, foundIt, rejected);
                 }
@@ -231,17 +232,23 @@ public class TensorFlowVision
         //  phone orientation width = camera height
         //  phone orientation height = camera width
         //
+        double imageWidth = target.getImageWidth();
+        double imageHeight = target.getImageHeight();
         Rect targetRect = new Rect(
-                (int)target.getTop(), (int)(target.getImageWidth() - target.getRight()),
+                (int)target.getTop(), (int)(imageWidth - target.getRight()),
                 (int)target.getHeight(), (int)target.getWidth());
-        Point targetBottomCenter = homographyMapper.mapPoint(
-                new Point(targetRect.x + targetRect.width/2, targetRect.y + targetRect.height));
+//        Point targetBottomCenter = homographyMapper.mapPoint(
+//                new Point(targetRect.x + targetRect.width/2, targetRect.y + targetRect.height));
+        Point targetBottomCenter = new Point(targetRect.x + targetRect.width/2 - imageHeight/2,
+                targetRect.y + targetRect.height - imageWidth/2);
         TargetInfo targetInfo = new TargetInfo(
                 target.getLabel(), targetRect, target.estimateAngleToObject(AngleUnit.DEGREES),
                 target.getConfidence(), target.getImageHeight(), target.getImageWidth(), targetBottomCenter);
 
         if (tracer != null)
         {
+            tracer.traceInfo(funcName, "Target Point: %.0f, %.0f/%.0f, %.0f",
+                    targetBottomCenter.x, targetBottomCenter.y, imageHeight, imageWidth);
             tracer.traceInfo(funcName, "###TargetInfo###: %s", targetInfo);
         }
 

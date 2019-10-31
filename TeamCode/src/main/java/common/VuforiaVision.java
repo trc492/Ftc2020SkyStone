@@ -221,25 +221,11 @@ public class VuforiaVision
 
     public VectorF getLocationTranslation(OpenGLMatrix location)
     {
-//        final String funcName = "getLocationTranslation";
-//
-//        VectorF translation = location.getTranslation();
-//        // express position (translation) of robot in inches.
-//        robot.globalTracer.traceInfo(funcName, "Translation: x=%6.2f, y=%6.2f, z=%6.2f",
-//                translation.get(0)/TrcUtil.MM_PER_INCH,
-//                translation.get(1)/TrcUtil.MM_PER_INCH,
-//                translation.get(2)/TrcUtil.MM_PER_INCH);
         return location.getTranslation();
     }   //getLocationTranslation
 
     public Orientation getLocationOrientation(OpenGLMatrix location)
     {
-//        final String funcName = "getLocationOrientation";
-//
-//        Orientation orientation = Orientation.getOrientation(location, EXTRINSIC, XYZ, DEGREES);
-//        // express the rotation of the robot in degrees.
-//        robot.globalTracer.traceInfo(funcName, "Orientation: roll=%6.2f, pitch=%6.2f, heading=%6.2f",
-//                orientation.firstAngle, orientation.secondAngle, orientation.thirdAngle);
         return Orientation.getOrientation(location, EXTRINSIC, XYZ, DEGREES);
     }   //getLocationOrientation
 

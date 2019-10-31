@@ -55,7 +55,7 @@ public class CommonTest
         TUNE_Y_PID,
         TUNE_TURN_PID,
         PURE_PURSUIT_DRIVE,
-        VISION_DRIVE
+        SKYSTONE_DRIVE
     }   //enum Test
 
     private enum State
@@ -201,17 +201,17 @@ public class CommonTest
                 }
                 break;
 
-            case VISION_DRIVE:
+            case SKYSTONE_DRIVE:
                 if (hasRobot)
                 {
-                    testCommand = new CmdVisionDrive(robot);
+                    testCommand = new CmdSkyStoneDrive(robot);
                 }
                 break;
         }
         //
         // Only SENSORS_TEST needs TensorFlow, shut it down for all other tests.
         //
-        if (robot.tensorFlowVision != null && test != Test.SENSORS_TEST && test != Test.VISION_DRIVE)
+        if (robot.tensorFlowVision != null && test != Test.SENSORS_TEST)
         {
             robot.globalTracer.traceInfo("TestInit", "Shutting down TensorFlow.");
             robot.tensorFlowVision.shutdown();
@@ -321,7 +321,7 @@ public class CommonTest
             case TUNE_X_PID:
             case TUNE_Y_PID:
             case TUNE_TURN_PID:
-            case VISION_DRIVE:
+            case SKYSTONE_DRIVE:
                 if (hasRobot)
                 {
                     robot.dashboard.displayPrintf(9, "xPos=%.1f,yPos=%.1f,heading=%.1f",
@@ -417,7 +417,7 @@ public class CommonTest
         testMenu.addChoice("Tune Y PID", Test.TUNE_Y_PID, false, tuneKpMenu);
         testMenu.addChoice("Tune Turn PID", Test.TUNE_TURN_PID, false, tuneKpMenu);
         testMenu.addChoice("Pure Pursuit Drive", Test.PURE_PURSUIT_DRIVE, false);
-        testMenu.addChoice("Vision Drive", Test.VISION_DRIVE, false);
+        testMenu.addChoice("SkyStone Drive", Test.SKYSTONE_DRIVE, false);
 
         driveTimeMenu.setChildMenu(drivePowerMenu);
         driveDistanceMenu.setChildMenu(drivePowerMenu);
