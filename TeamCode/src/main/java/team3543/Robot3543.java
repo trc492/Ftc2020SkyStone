@@ -106,16 +106,21 @@ public class Robot3543 extends Robot
                             new TrcPidController.PidCoefficients(RobotInfo3543.ELEVATOR_KP, RobotInfo3543.ELEVATOR_KI,
                                     RobotInfo3543.ELEVATOR_KD),
                             RobotInfo3543.ELEVATOR_TOLERANCE, RobotInfo3543.ELEVATOR_CAL_POWER, preferences3543);
+                    elevator.zeroCalibrate();
                 }
 
                 extenderArm = new ExtenderArm3543();
+                extenderArm.retract();
 
                 wrist = new Wrist(RobotInfo3543.WRIST_MAX_STEPRATE, RobotInfo3543.WRIST_MIN_POS,
                         RobotInfo3543.WRIST_MAX_POS);
+                wrist.setPosition(RobotInfo3543.WRIST_MIN_POS);
                 grabber = new Grabber3543();
+                grabber.release();
                 foundationLatch = new FoundationLatch(
                         RobotInfo3543.FOUNDATION_LATCH_CLOSE_POS, RobotInfo3543.FOUNDATION_LATCH_CLOSE_TIME,
                         RobotInfo3543.FOUNDATION_LATCH_OPEN_POS, RobotInfo3543.FOUNDATION_LATCH_OPEN_TIME);
+                foundationLatch.release();
             }
         }
         //

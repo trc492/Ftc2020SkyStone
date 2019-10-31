@@ -53,7 +53,9 @@ public class FtcTest3543 extends FtcTeleOp3543
                 new TrcPidController.PidCoefficients(
                         RobotInfo3543.PURE_PURSUIT_POS_KP, RobotInfo3543.PURE_PURSUIT_POS_KI,
                         RobotInfo3543.PURE_PURSUIT_POS_KD),
-                new TrcPidController.PidCoefficients(RobotInfo3543.PURE_PURSUIT_TURN_KP, RobotInfo3543.PURE_PURSUIT_TURN_KI, RobotInfo3543.PURE_PURSUIT_TURN_KD, RobotInfo3543.PURE_PURSUIT_TURN_TOLERANCE),
+                new TrcPidController.PidCoefficients(
+                        RobotInfo3543.PURE_PURSUIT_TURN_KP, RobotInfo3543.PURE_PURSUIT_TURN_KI,
+                        RobotInfo3543.PURE_PURSUIT_TURN_KD),
                 new TrcPidController.PidCoefficients(
                         RobotInfo3543.PURE_PURSUIT_VEL_KP, RobotInfo3543.PURE_PURSUIT_VEL_KI,
                         RobotInfo3543.PURE_PURSUIT_VEL_KD, RobotInfo3543.PURE_PURSUIT_VEL_KF));

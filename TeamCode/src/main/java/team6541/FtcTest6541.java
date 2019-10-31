@@ -53,7 +53,9 @@ public class FtcTest6541 extends FtcTeleOp6541
                 new TrcPidController.PidCoefficients(
                         RobotInfo6541.PURE_PURSUIT_POS_KP, RobotInfo6541.PURE_PURSUIT_POS_KI,
                         RobotInfo6541.PURE_PURSUIT_POS_KD),
-                new TrcPidController.PidCoefficients(RobotInfo6541.PURE_PURSUIT_TURN_KP),
+                new TrcPidController.PidCoefficients(
+                        RobotInfo6541.PURE_PURSUIT_TURN_KP, RobotInfo6541.PURE_PURSUIT_TURN_KI,
+                        RobotInfo6541.PURE_PURSUIT_TURN_KD),
                 new TrcPidController.PidCoefficients(
                         RobotInfo6541.PURE_PURSUIT_VEL_KP, RobotInfo6541.PURE_PURSUIT_VEL_KI,
                         RobotInfo6541.PURE_PURSUIT_VEL_KD, RobotInfo6541.PURE_PURSUIT_VEL_KF));
