@@ -23,6 +23,7 @@
 package common;
 
 import trclib.TrcEvent;
+import trclib.TrcPidController;
 import trclib.TrcPose2D;
 import trclib.TrcRobot;
 import trclib.TrcStateMachine;
@@ -220,9 +221,10 @@ public class CmdSkyStoneDrive implements TrcRobot.RobotCommand
                         robot.battery.getVoltage(), robot.battery.getLowestVoltage());
             }
 
-            if (debugXPid && robot.encoderXPidCtrl != null)
+            TrcPidController pidCtrl = robot.pidDrive.getXPidCtrl();
+            if (debugXPid && pidCtrl != null)
             {
-                robot.pidDrive.getXPidCtrl().printPidInfo(robot.globalTracer, elapsedTime);
+                pidCtrl.printPidInfo(robot.globalTracer, elapsedTime);
             }
 
             if (debugYPid)
