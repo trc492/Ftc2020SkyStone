@@ -27,10 +27,12 @@ import trclib.TrcPidController;
 import trclib.TrcPose2D;
 import trclib.TrcRobot;
 import trclib.TrcStateMachine;
+import trclib.TrcTrigger;
 import trclib.TrcUtil;
 
 public class CmdSkyStoneDrive implements TrcRobot.RobotCommand
 {
+    private static final boolean useVisionTrigger = true;
     private static final boolean debugXPid = true;
     private static final boolean debugYPid = true;
     private static final boolean debugTurnPid = true;
@@ -41,6 +43,7 @@ public class CmdSkyStoneDrive implements TrcRobot.RobotCommand
         MOVE_CLOSER,
         SETUP_VISION,
         GET_TARGET_POSE,
+        SCAN_FOR_SKYSTONE,
         NEXT_SKYSTONE_POSITION,
         GOTO_SKYSTONE,
         DONE
@@ -51,6 +54,8 @@ public class CmdSkyStoneDrive implements TrcRobot.RobotCommand
     private final Robot robot;
     private final TrcEvent event;
     private final TrcStateMachine<State> sm;
+    private TrcTrigger visionTrigger;
+    private TrcPose2D skystonePose = null;
     private double visionTimeout = 0.0;
     private int scootCount = 2;
     private double xPos = 0.0, yPos = 0.0;
@@ -67,6 +72,10 @@ public class CmdSkyStoneDrive implements TrcRobot.RobotCommand
         this.robot = robot;
         event = new TrcEvent(moduleName);
         sm = new TrcStateMachine<>(moduleName);
+        if (useVisionTrigger)
+        {
+            visionTrigger = new TrcTrigger("VisionTrigger", this::isTriggered, this::targetDetected);
+        }
         sm.start(State.MOVE_CLOSER);
     }   //CmdSkyStoneDrive
 
@@ -94,6 +103,14 @@ public class CmdSkyStoneDrive implements TrcRobot.RobotCommand
         {
             robot.pidDrive.cancel();
         }
+
+        if (visionTrigger != null)
+        {
+            visionTrigger.setEnabled(false);
+        }
+
+        robot.pidDrive.getXPidCtrl().restoreOutputLimit();
+        robot.pidDrive.getYPidCtrl().restoreOutputLimit();
         sm.stop();
     }   //cancel
 
@@ -126,6 +143,7 @@ public class CmdSkyStoneDrive implements TrcRobot.RobotCommand
                     //
                     // Move closer slowly for a distance so Vuforia can detect the target.
                     //
+                    robot.pidDrive.getXPidCtrl().saveAndSetOutputLimit(0.5);
                     robot.pidDrive.getYPidCtrl().saveAndSetOutputLimit(0.5);
                     xPos = robot.driveBase.getXPosition();
                     yPos = robot.driveBase.getYPosition();
@@ -136,7 +154,6 @@ public class CmdSkyStoneDrive implements TrcRobot.RobotCommand
                     break;
 
                 case SETUP_VISION:
-                    robot.pidDrive.getYPidCtrl().restoreOutputLimit();
                     visionTimeout = TrcUtil.getCurrentTime() + VISION_TIMEOUT;
                     sm.setState(State.GET_TARGET_POSE);
                     break;
@@ -147,34 +164,42 @@ public class CmdSkyStoneDrive implements TrcRobot.RobotCommand
                     // processing the image. So keep repeating this state until it finds the target or we pass
                     // vision timeout.
                     //
-                    TrcPose2D pose = robot.getSkyStonePose();
+                    skystonePose = robot.getSkyStonePose();
 
-                    if (pose == null)
+                    if (skystonePose == null)
                     {
                         // Vuforia either did not detect the target or it's still busy processing the image.
                         robot.globalTracer.traceInfo("getTargetPose", "Skystone not found.");
                         if (TrcUtil.getCurrentTime() > visionTimeout)
                         {
                             // Can't find any skystone here, move on to the next position.
-                            sm.setState(State.NEXT_SKYSTONE_POSITION);
+                            sm.setState(visionTrigger != null? State.SCAN_FOR_SKYSTONE: State.NEXT_SKYSTONE_POSITION);
                         }
                     }
-                    else if (Math.abs(pose.x) > 4.0)
+                    else if (Math.abs(skystonePose.x) > 4.0)
                     {
                         // Vuforia found the skystone but it is to our right.
                         robot.globalTracer.traceInfo(
                                 "getTargetPose", "Skystone found to the right (x=%.1f, y=%.1f).",
-                                pose.x, pose.y);
-                        sm.setState(State.NEXT_SKYSTONE_POSITION);
+                                skystonePose.x, skystonePose.y);
+                        sm.setState(State.GOTO_SKYSTONE);
                     }
                     else
                     {
                         // Vuforia found the skystone right in front.
                         robot.globalTracer.traceInfo(
                                 "getTargetPose", "Skystone found in front (x=%.1f, y=%.1f).",
-                                pose.x, pose.y);
+                                skystonePose.x, skystonePose.y);
                         sm.setState(State.GOTO_SKYSTONE);
                     }
+                    break;
+
+                case SCAN_FOR_SKYSTONE:
+                    visionTrigger.setEnabled(true);
+                    yPos += 24.0;
+                    yTarget = yPos - robot.driveBase.getYPosition();
+                    robot.pidDrive.setTarget(xTarget, yTarget, robot.targetHeading, false, event);
+                    sm.waitForSingleEvent(event, State.GOTO_SKYSTONE);
                     break;
 
                 case NEXT_SKYSTONE_POSITION:
@@ -195,7 +220,24 @@ public class CmdSkyStoneDrive implements TrcRobot.RobotCommand
                     break;
 
                 case GOTO_SKYSTONE:
-                    yPos += 30.0;
+                    if (visionTrigger != null)
+                    {
+                        visionTrigger.setEnabled(false);
+                    }
+
+                    if (skystonePose != null)
+                    {
+                        // Detected the skystone, go to it.
+                        xPos += skystonePose.x;
+                        yPos += skystonePose.y;
+                    }
+                    else
+                    {
+                        // Did not detect skystone, assume it's right in front of us.
+                        yPos += 30.0;
+                    }
+
+                    xTarget = xPos - robot.driveBase.getXPosition();
                     yTarget = yPos - robot.driveBase.getYPosition();
                     robot.pidDrive.setTarget(xTarget, yTarget, robot.targetHeading, false, event);
                     sm.waitForSingleEvent(event, State.DONE);
@@ -206,6 +248,8 @@ public class CmdSkyStoneDrive implements TrcRobot.RobotCommand
                     //
                     // We are done.
                     //
+                    robot.pidDrive.getXPidCtrl().restoreOutputLimit();
+                    robot.pidDrive.getYPidCtrl().restoreOutputLimit();
                     sm.stop();
                     break;
             }
@@ -240,5 +284,25 @@ public class CmdSkyStoneDrive implements TrcRobot.RobotCommand
 
         return !sm.isEnabled();
     }   //cmdPeriodic
+
+    private boolean isTriggered()
+    {
+        TrcPose2D pose = robot.getSkyStonePose();
+
+        if (pose != null)
+        {
+            skystonePose = pose;
+        }
+
+        return pose != null;
+    }   //isTriggered
+
+    private void targetDetected()
+    {
+        if (robot.pidDrive.isActive())
+        {
+            robot.pidDrive.cancel();
+        }
+    }   //targetDetected
 
 }   //class CmdSkyStoneDrive
