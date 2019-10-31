@@ -53,7 +53,7 @@ public class Grabber6541 implements Grabber
     private void setTimedPower(double power, double time, TrcEvent finishedEvent)
     {
         motor.set(power);
-        timer.cancel();
+        // timer.cancel(); // TODO: cancel logic is problematic. making do w/o for now until fixed.
         timer.set(time, this::timerNotify);
         this.finishedEvent = finishedEvent;
     }   //setTimedPower
