@@ -136,7 +136,7 @@ class RobotInfo6541
     static final double ELEVATOR_OFFSET                 = 0.0;
 
     // Wrist subsystem.
-    static final double WRIST_MAX_STEPRATE              = 1.0;
+    static final double WRIST_MAX_STEPRATE              = 1.0 / 0.75;
     static final double WRIST_MIN_POS                   = 0.0;
     static final double WRIST_MAX_POS                   = 1.0;
 
