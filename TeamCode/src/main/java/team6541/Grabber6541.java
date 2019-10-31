@@ -53,6 +53,7 @@ public class Grabber6541 implements Grabber
     private void setTimedPower(double power, double time, TrcEvent finishedEvent)
     {
         motor.set(power);
+        timer.cancel();
         timer.set(time, this::timerNotify);
         this.finishedEvent = finishedEvent;
     }   //setTimedPower
