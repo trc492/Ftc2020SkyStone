@@ -204,7 +204,8 @@ public class CommonTest
             case SKYSTONE_DRIVE:
                 if (hasRobot)
                 {
-                    testCommand = new CmdSkyStoneDrive(robot);
+                    // Testing for blue alliance.
+                    testCommand = new CmdSkyStoneDrive(robot, false);
                 }
                 break;
         }

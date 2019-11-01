@@ -65,6 +65,7 @@ public class CmdSkyStoneDrive implements TrcRobot.RobotCommand
     private static final String moduleName = "CmdSkyStoneDrive";
 
     private final Robot robot;
+    private final boolean redAlliance;
     private final TrcEvent event;
     private final TrcStateMachine<State> sm;
     private final SimpleRobotMovements<State> simpleMovements;
@@ -79,11 +80,12 @@ public class CmdSkyStoneDrive implements TrcRobot.RobotCommand
      *
      * @param robot specifies the robot object for providing access to various global objects.
      */
-    public CmdSkyStoneDrive(Robot robot)
+    public CmdSkyStoneDrive(Robot robot, boolean redAlliance)
     {
         robot.globalTracer.traceInfo(moduleName, "robot=%s", robot);
 
         this.robot = robot;
+        this.redAlliance = redAlliance;
         event = new TrcEvent(moduleName);
         sm = new TrcStateMachine<>(moduleName);
         simpleMovements = new SimpleRobotMovements<>(robot, sm, event);
@@ -204,7 +206,7 @@ public class CmdSkyStoneDrive implements TrcRobot.RobotCommand
                 case SCAN_FOR_SKYSTONE:
                     visionTrigger.setEnabled(true);
                     scanningForSkyStone = true;
-                    xTarget = 16.0;
+                    xTarget = redAlliance? -16.0: 16.0;
                     simpleMovements.driveUntilDone(xTarget, yTarget, turnTarget, State.SETUP_VISION);
                     break;
 
@@ -212,7 +214,7 @@ public class CmdSkyStoneDrive implements TrcRobot.RobotCommand
                     if (scootCount > 0)
                     {
                         scootCount--;
-                        xTarget = 8.0;
+                        xTarget = redAlliance? -8.0: 8.0;
                         simpleMovements.driveUntilDone(xTarget, yTarget, turnTarget, State.SETUP_VISION);
                     }
                     else
@@ -257,7 +259,7 @@ public class CmdSkyStoneDrive implements TrcRobot.RobotCommand
                     robot.extenderArm.extend();
                     robot.pidDrive.getXPidCtrl().restoreOutputLimit();
                     robot.pidDrive.getYPidCtrl().restoreOutputLimit();
-                    xTarget = -72.0 - robot.driveBase.getXPosition();
+                    xTarget = (redAlliance? 72.0: -72.0) - robot.driveBase.getXPosition();
                     simpleMovements.driveUntilDone(xTarget, yTarget, turnTarget, State.APPROACH_FOUNDATION);
                     break;
 
@@ -305,7 +307,7 @@ public class CmdSkyStoneDrive implements TrcRobot.RobotCommand
                     break;
 
                 case PARK_UNDER_BRIDGE:
-                    xTarget = -48.0;
+                    xTarget = redAlliance? 48.0: -48.0;
                     simpleMovements.driveUntilDone(xTarget, yTarget, turnTarget, State.DONE);
                     break;
 
