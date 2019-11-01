@@ -87,4 +87,15 @@ public class SimpleRobotMovements<StateType> {
         stateMachine.waitForSingleEvent(event, nextState);
     } // turnInPlaceUntilDone
 
+    public void driveUntilDone(double xDistance, double yDistance, double turnDegrees, StateType nextState)
+    {
+        xPos += xDistance;
+        yPos += yDistance;
+        robot.targetHeading += turnDegrees;
+        robot.pidDrive.setTarget(
+                xPos - robot.driveBase.getXPosition(), yPos - robot.driveBase.getYPosition(),
+                robot.targetHeading, false, event);
+        stateMachine.waitForSingleEvent(event, nextState);
+    }   //driveUntilDone
+
 } // SimpleRobotMovements

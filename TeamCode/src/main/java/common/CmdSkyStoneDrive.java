@@ -67,11 +67,11 @@ public class CmdSkyStoneDrive implements TrcRobot.RobotCommand
     private final Robot robot;
     private final TrcEvent event;
     private final TrcStateMachine<State> sm;
+    private final SimpleRobotMovements<State> simpleMovements;
     private TrcTrigger visionTrigger;
     private TrcPose2D skystonePose = null;
     private double visionTimeout = 0.0;
     private int scootCount = 2;
-    private double xPos = 0.0, yPos = 0.0;
     private boolean scanningForSkyStone = false;
 
     /**
@@ -86,6 +86,7 @@ public class CmdSkyStoneDrive implements TrcRobot.RobotCommand
         this.robot = robot;
         event = new TrcEvent(moduleName);
         sm = new TrcStateMachine<>(moduleName);
+        simpleMovements = new SimpleRobotMovements<>(robot, sm, event);
         if (useVisionTrigger)
         {
             visionTrigger = new TrcTrigger("VisionTrigger", this::isTriggered, this::targetDetected);
@@ -148,6 +149,7 @@ public class CmdSkyStoneDrive implements TrcRobot.RobotCommand
         {
             double xTarget = 0.0;
             double yTarget = 0.0;
+            double turnTarget = 0.0;
 
             robot.dashboard.displayPrintf(1, "State: %s", state);
 
@@ -162,12 +164,8 @@ public class CmdSkyStoneDrive implements TrcRobot.RobotCommand
                     robot.grabber.release();
                     robot.pidDrive.getXPidCtrl().saveAndSetOutputLimit(0.5);
                     robot.pidDrive.getYPidCtrl().saveAndSetOutputLimit(0.5);
-                    xPos = robot.driveBase.getXPosition();
-                    yPos = robot.driveBase.getYPosition();
                     yTarget = 22.0;
-                    yPos += yTarget;
-                    robot.pidDrive.setTarget(xTarget, yTarget, robot.targetHeading, false, event);
-                    sm.waitForSingleEvent(event, State.SETUP_VISION);
+                    simpleMovements.driveUntilDone(xTarget, yTarget, turnTarget, State.SETUP_VISION);
                     break;
 
                 case SETUP_VISION:
@@ -182,7 +180,6 @@ public class CmdSkyStoneDrive implements TrcRobot.RobotCommand
                     // vision timeout.
                     //
                     skystonePose = robot.getSkyStonePose();
-
                     if (skystonePose == null)
                     {
                         // Vuforia either did not detect the target or it's still busy processing the image.
@@ -207,20 +204,16 @@ public class CmdSkyStoneDrive implements TrcRobot.RobotCommand
                 case SCAN_FOR_SKYSTONE:
                     visionTrigger.setEnabled(true);
                     scanningForSkyStone = true;
-                    xPos += 16.0;
-                    xTarget = xPos - robot.driveBase.getXPosition();
-                    robot.pidDrive.setTarget(xTarget, yTarget, robot.targetHeading, false, event);
-                    sm.waitForSingleEvent(event, State.SETUP_VISION);
+                    xTarget = 16.0;
+                    simpleMovements.driveUntilDone(xTarget, yTarget, turnTarget, State.SETUP_VISION);
                     break;
 
                 case NEXT_SKYSTONE_POSITION:
                     if (scootCount > 0)
                     {
                         scootCount--;
-                        xPos += 8.0;
-                        xTarget = xPos - robot.driveBase.getXPosition();
-                        robot.pidDrive.setTarget(xTarget, yTarget, robot.targetHeading, false, event);
-                        sm.waitForSingleEvent(event, State.SETUP_VISION);
+                        xTarget = 8.0;
+                        simpleMovements.driveUntilDone(xTarget, yTarget, turnTarget, State.SETUP_VISION);
                     }
                     else
                     {
@@ -235,10 +228,8 @@ public class CmdSkyStoneDrive implements TrcRobot.RobotCommand
                     {
                         visionTrigger.setEnabled(false);
                     }
-                    xPos += skystonePose.x;
-                    xTarget = xPos - robot.driveBase.getXPosition();
-                    robot.pidDrive.setTarget(xTarget, yTarget, robot.targetHeading, false, event);
-                    sm.waitForSingleEvent(event, State.GOTO_SKYSTONE);
+                    xTarget = skystonePose.x;
+                    simpleMovements.driveUntilDone(xTarget, yTarget, turnTarget, State.GOTO_SKYSTONE);
                     break;
 
                 case GOTO_SKYSTONE:
@@ -247,10 +238,8 @@ public class CmdSkyStoneDrive implements TrcRobot.RobotCommand
                         visionTrigger.setEnabled(false);
                     }
                     // If we did not detect the skystone, assume it's right in front of us.
-                    yPos += skystonePose != null? skystonePose.y: 8.0;
-                    yTarget = yPos - robot.driveBase.getYPosition();
-                    robot.pidDrive.setTarget(xTarget, yTarget, robot.targetHeading, false, event);
-                    sm.waitForSingleEvent(event, State.GRAB_SKYSTONE);
+                    yTarget = skystonePose != null? skystonePose.y: 8.0;
+                    simpleMovements.driveUntilDone(xTarget, yTarget, turnTarget, State.GRAB_SKYSTONE);
                     break;
 
                 case GRAB_SKYSTONE:
@@ -260,29 +249,23 @@ public class CmdSkyStoneDrive implements TrcRobot.RobotCommand
 
                 case PULL_SKYSTONE:
                     robot.grabber.grab();
-                    yPos -= 12.0;
-                    yTarget = yPos - robot.driveBase.getYPosition();
-                    robot.pidDrive.setTarget(xTarget, yTarget, robot.targetHeading, false, event);
-                    sm.waitForSingleEvent(event, State.GOTO_FOUNDATION);
+                    yTarget = -12.0;
+                    simpleMovements.driveUntilDone(xTarget, yTarget, turnTarget, State.GOTO_FOUNDATION);
                     break;
 
                 case GOTO_FOUNDATION:
                     robot.extenderArm.extend();
                     robot.pidDrive.getXPidCtrl().restoreOutputLimit();
                     robot.pidDrive.getYPidCtrl().restoreOutputLimit();
-                    xPos = -72.0;
-                    xTarget = xPos - robot.driveBase.getXPosition();
-                    robot.pidDrive.setTarget(xTarget, yTarget, robot.targetHeading, false, event);
-                    sm.waitForSingleEvent(event, State.APPROACH_FOUNDATION);
+                    xTarget = -72.0 - robot.driveBase.getXPosition();
+                    simpleMovements.driveUntilDone(xTarget, yTarget, turnTarget, State.APPROACH_FOUNDATION);
                     break;
 
                 case APPROACH_FOUNDATION:
                     robot.pidDrive.getXPidCtrl().saveAndSetOutputLimit(0.5);
                     robot.pidDrive.getYPidCtrl().saveAndSetOutputLimit(0.5);
-                    yPos += 12.0;
-                    yTarget = yPos - robot.driveBase.getYPosition();
-                    robot.pidDrive.setTarget(xTarget, yTarget, robot.targetHeading, false, event);
-                    sm.waitForSingleEvent(event, State.DROP_SKYSTONE);
+                    yTarget = 12.0;
+                    simpleMovements.driveUntilDone(xTarget, yTarget, turnTarget, State.DROP_SKYSTONE);
                     break;
 
                 case DROP_SKYSTONE:
@@ -292,23 +275,18 @@ public class CmdSkyStoneDrive implements TrcRobot.RobotCommand
 
                 case BACK_OFF_FOUNDATION:
                     robot.extenderArm.retract();
-                    yPos -= 6.0;
-                    yTarget = yPos - robot.driveBase.getYPosition();
-                    robot.pidDrive.setTarget(xTarget, yTarget, robot.targetHeading, false, event);
-                    sm.waitForSingleEvent(event, State.TURN_AROUND);
+                    yTarget = -6.0;
+                    simpleMovements.driveUntilDone(xTarget, yTarget, turnTarget, State.TURN_AROUND);
                     break;
 
                 case TURN_AROUND:
-                    robot.targetHeading += 180.0;
-                    robot.pidDrive.setTarget(xTarget, yTarget, robot.targetHeading, false, event);
-                    sm.waitForSingleEvent(event, State.BACKUP_TO_FOUNDATION);
+                    turnTarget = 180.0;
+                    simpleMovements.driveUntilDone(xTarget, yTarget, turnTarget, State.BACKUP_TO_FOUNDATION);
                     break;
 
                 case BACKUP_TO_FOUNDATION:
-                    yPos -= 6.0;
-                    yTarget = yPos - robot.driveBase.getYPosition();
-                    robot.pidDrive.setTarget(xTarget, yTarget, robot.targetHeading, false, event);
-                    sm.waitForSingleEvent(event, State.HOOK_FOUNDATION);
+                    yTarget = -6.0;
+                    simpleMovements.driveUntilDone(xTarget, yTarget, turnTarget, State.HOOK_FOUNDATION);
                     break;
 
                 case HOOK_FOUNDATION:
@@ -317,10 +295,8 @@ public class CmdSkyStoneDrive implements TrcRobot.RobotCommand
                     break;
 
                 case PULL_FOUNDATION_TO_WALL:
-                    yPos += 36.0;
-                    yTarget = yPos - robot.driveBase.getYPosition();
-                    robot.pidDrive.setTarget(xTarget, yTarget, robot.targetHeading, false, event);
-                    sm.waitForSingleEvent(event, State.UNHOOK_FOUNDATION);
+                    yTarget = 36.0;
+                    simpleMovements.driveUntilDone(xTarget, yTarget, turnTarget, State.UNHOOK_FOUNDATION);
                     break;
 
                 case UNHOOK_FOUNDATION:
@@ -329,10 +305,8 @@ public class CmdSkyStoneDrive implements TrcRobot.RobotCommand
                     break;
 
                 case PARK_UNDER_BRIDGE:
-                    xPos -= 48.0;
-                    xTarget = xPos - robot.driveBase.getXPosition();
-                    robot.pidDrive.setTarget(xTarget, yTarget, robot.targetHeading, false, event);
-                    sm.waitForSingleEvent(event, State.DONE);
+                    xTarget = -48.0;
+                    simpleMovements.driveUntilDone(xTarget, yTarget, turnTarget, State.DONE);
                     break;
 
                 case DONE:
