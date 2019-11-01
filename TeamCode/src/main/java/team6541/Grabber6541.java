@@ -22,7 +22,7 @@
 
 package team6541;
 
-import common.Grabber;
+import common.GenericGrabber;
 import ftclib.FtcDcMotor;
 import trclib.TrcEvent;
 import trclib.TrcTimer;
@@ -32,7 +32,7 @@ import trclib.TrcTimer;
  * and then releases by turning the motor the other way.
  */
 
-public class Grabber6541 implements Grabber
+public class Grabber6541 implements GenericGrabber
 {
     private FtcDcMotor motor = new FtcDcMotor("grabberMotor");
     private TrcTimer timer = new TrcTimer("grabberTimer");
@@ -64,7 +64,7 @@ public class Grabber6541 implements Grabber
     }   //setTimedPower
 
     //
-    // Implements Grabber interface
+    // Implements GenericGrabber interface
     //
 
     @Override

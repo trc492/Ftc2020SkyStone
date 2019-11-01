@@ -22,16 +22,16 @@
 
 package team3543;
 
-import common.Grabber;
+import common.GenericGrabber;
 import ftclib.FtcServo;
 import trclib.TrcEvent;
 
-public class Grabber3543 implements Grabber
+public class Grabber3543 implements GenericGrabber
 {
     private FtcServo grabber = new FtcServo("grabberServo");
 
     //
-    // Implements Grabber interface
+    // Implements GenericGrabber interface
     //
 
     @Override

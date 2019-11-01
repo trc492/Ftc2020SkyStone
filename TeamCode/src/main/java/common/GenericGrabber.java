@@ -24,10 +24,10 @@ package common;
 
 import trclib.TrcEvent;
 
-public interface Grabber
+public interface GenericGrabber
 {
     void grab();
     void grab(TrcEvent finishedEvent);
     void release();
     void release(TrcEvent finishedEvent);
-}   //interface Grabber
+}   //interface GenericGrabber

@@ -121,7 +121,7 @@ public class Robot
     @Nullable public Elevator elevator = null;
     @Nullable public ExtenderArm3543 extenderArm = null;
     @Nullable public Wrist wrist = null;
-    @Nullable public Grabber grabber = null;
+    @Nullable public GenericGrabber grabber = null;
     @Nullable public FoundationLatch foundationLatch = null;
 
     public Robot(

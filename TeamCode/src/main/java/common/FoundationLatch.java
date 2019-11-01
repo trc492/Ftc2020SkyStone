@@ -25,7 +25,7 @@ package common;
 import ftclib.FtcServo;
 import trclib.TrcEvent;
 
-public class FoundationLatch implements Grabber
+public class FoundationLatch implements GenericGrabber
 {
     private final FtcServo servo = new FtcServo("foundationLatchServo");
     private final double closePos, closeTime;
