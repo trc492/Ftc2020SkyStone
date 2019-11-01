@@ -52,8 +52,9 @@ public class CmdAutoBuildingZone implements TrcRobot.RobotCommand
         STRAFE_TO_FOUNDATION_6541,
         ADVANCE_TO_FOUNDATION_6541,
         HOOK_FOUNDATION_6541,
-        CRAWL_BACK_6541,
         STRAFE_TO_WALL_6541,
+        PUSH_FOUNDATION_IN_6541,
+        RELEASE_FOUNDATION_6541,
         DRIVE_BACK_TO_LINE_6541,
         DONE
     }   //enum State
@@ -116,17 +117,11 @@ public class CmdAutoBuildingZone implements TrcRobot.RobotCommand
                     //
                     robot.pidDrive.getXPidCtrl().saveAndSetOutputLimit(0.5);
                     robot.pidDrive.getYPidCtrl().saveAndSetOutputLimit(0.5);
+                    nextState = robot.preferences.get("team3543") ?
+                            State.MOVE_TO_FOUNDATION : State.RAISE_ELEVATOR_6541;
                     if (autoChoices.delay == 0.0)
                     {
-                        if (robot.preferences.get("team3543"))
-                        {
-                            sm.setState(State.MOVE_TO_FOUNDATION);
-                        }
-                        else
-                        {
-                            sm.setState(State.RAISE_ELEVATOR_6541);
-                        }
-
+                        sm.setState(nextState);
                         //
                         // Intentionally falling through to the next state.
                         //
@@ -134,7 +129,7 @@ public class CmdAutoBuildingZone implements TrcRobot.RobotCommand
                     else
                     {
                         timer.set(autoChoices.delay, event);
-                        sm.waitForSingleEvent(event, State.MOVE_TO_FOUNDATION);
+                        sm.waitForSingleEvent(event, nextState);
                         break;
                     }
 
@@ -244,36 +239,51 @@ public class CmdAutoBuildingZone implements TrcRobot.RobotCommand
                     break;
 
                 case RAISE_ELEVATOR_6541:
-                    robot.elevator.setPosition(12.0, event, 5.0);
+                    robot.elevator.setPosition(12.0, event, 0.0);
                     sm.waitForSingleEvent(event, State.STRAFE_TO_FOUNDATION_6541);
                     break;
+
                 case STRAFE_TO_FOUNDATION_6541:
-                    xTarget = 52.0; // TODO: assuming blue
+                    xTarget = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE ? 52.0 : -52.0;
                     simpleMovements.driveSidewaysUntilDone(xTarget, State.ADVANCE_TO_FOUNDATION_6541);
                     break;
 
                 case ADVANCE_TO_FOUNDATION_6541:
-                    yTarget = -3.0;
+                    yTarget = -6.0;
                     simpleMovements.driveStraightUntilDone(yTarget, State.HOOK_FOUNDATION_6541);
                     break;
 
                 case HOOK_FOUNDATION_6541:
                     if(robot.foundationLatch != null) {
                         robot.foundationLatch.grab(event);
-                        sm.waitForSingleEvent(event, State.CRAWL_BACK_6541);
+                        sm.waitForSingleEvent(event, State.STRAFE_TO_WALL_6541);
                     } else {
-                        sm.setState(State.CRAWL_BACK_6541);
+                        sm.setState(State.STRAFE_TO_WALL_6541);
                     }
                     break;
 
-                case CRAWL_BACK_6541:
-                    yTarget = 3.0;
-                    simpleMovements.driveStraightUntilDone(yTarget, State.STRAFE_TO_WALL_6541);
+//                case CRAWL_BACK_6541:
+//                    yTarget = 3.0;
+//                    simpleMovements.driveStraightUntilDone(yTarget, State.STRAFE_TO_WALL_6541);
+//                    break;
+//
+                case STRAFE_TO_WALL_6541:
+                    xTarget = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE ? -52.0 : 52.0;
+                    simpleMovements.driveSidewaysUntilDone(xTarget, State.PUSH_FOUNDATION_IN_6541);
                     break;
 
-                case STRAFE_TO_WALL_6541:
-                    xTarget = -52.0; // TODO: assuming blue
-                    simpleMovements.driveSidewaysUntilDone(xTarget, State.DRIVE_BACK_TO_LINE_6541);
+                case PUSH_FOUNDATION_IN_6541:
+                    yTarget = -6.0;
+                    simpleMovements.driveStraightUntilDone(yTarget, State.RELEASE_FOUNDATION_6541);
+                    break;
+
+                case RELEASE_FOUNDATION_6541:
+                    if(robot.foundationLatch != null) {
+                        robot.foundationLatch.release(event);
+                        sm.waitForSingleEvent(event, State.DRIVE_BACK_TO_LINE_6541);
+                    } else {
+                        sm.setState(State.DRIVE_BACK_TO_LINE_6541);
+                    }
                     break;
 
                 case DRIVE_BACK_TO_LINE_6541:
