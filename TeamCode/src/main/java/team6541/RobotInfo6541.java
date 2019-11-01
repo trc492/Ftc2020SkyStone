@@ -148,9 +148,9 @@ class RobotInfo6541
     static final double GRABBER_RELEASE_TIME            = 1.0;
 
     // FoundationLatch subsystem.
-    static final double FOUNDATION_LATCH_CLOSE_POS      = 1.0;
+    static final double FOUNDATION_LATCH_CLOSE_POS      = 65.0 / 255.0;
     static final double FOUNDATION_LATCH_CLOSE_TIME     = 0.5;
-    static final double FOUNDATION_LATCH_OPEN_POS       = 0.0;
+    static final double FOUNDATION_LATCH_OPEN_POS       = 170.0 / 255.0;
     static final double FOUNDATION_LATCH_OPEN_TIME      = 0.5;
 
 }   //class RobotInfo6541
