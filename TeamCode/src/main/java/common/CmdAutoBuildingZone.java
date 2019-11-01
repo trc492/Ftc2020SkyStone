@@ -293,8 +293,10 @@ public class CmdAutoBuildingZone implements TrcRobot.RobotCommand
 
                 case DONE:
                 default:
+                    //
                     // We are done.
                     //
+
                     robot.pidDrive.getXPidCtrl().restoreOutputLimit();
                     robot.pidDrive.getYPidCtrl().restoreOutputLimit();
                     sm.stop();
