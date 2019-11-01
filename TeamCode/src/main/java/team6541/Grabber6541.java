@@ -37,9 +37,11 @@ public class Grabber6541 implements Grabber
     private FtcDcMotor motor = new FtcDcMotor("grabberMotor");
     private TrcTimer timer = new TrcTimer("grabberTimer");
     private TrcEvent finishedEvent = null;
+    private boolean timerActive = false;
 
     private void timerNotify(Object context)
     {
+        timerActive = false;
         //Stop the motor.
         motor.set(0.0);
         //Signal finishedEvent and consume it if any.
@@ -52,10 +54,13 @@ public class Grabber6541 implements Grabber
 
     private void setTimedPower(double power, double time, TrcEvent finishedEvent)
     {
-        motor.set(power);
-        timer.cancel();
-        timer.set(time, this::timerNotify);
-        this.finishedEvent = finishedEvent;
+        if (!timerActive)
+        {
+            motor.set(power);
+            timer.set(time, this::timerNotify);
+            timerActive = true;
+            this.finishedEvent = finishedEvent;
+        }
     }   //setTimedPower
 
     //
