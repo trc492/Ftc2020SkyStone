@@ -110,7 +110,7 @@ public class Robot6541 extends Robot
                 }
 
                 wrist = new Wrist(RobotInfo6541.WRIST_MAX_STEPRATE, RobotInfo6541.WRIST_MIN_POS,
-                        RobotInfo6541.WRIST_MAX_POS);
+                        RobotInfo6541.WRIST_MAX_POS, RobotInfo6541.WRIST_INVERTED);
                 wrist.setPosition(RobotInfo6541.WRIST_MIN_POS);
                 grabber = new Grabber6541();
                 foundationLatch = new FoundationLatch(

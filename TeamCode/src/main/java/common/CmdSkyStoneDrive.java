@@ -32,7 +32,7 @@ import trclib.TrcUtil;
 
 public class CmdSkyStoneDrive implements TrcRobot.RobotCommand
 {
-    private static final boolean useVisionTrigger = true;
+    private static final boolean useVisionTrigger = false;
     private static final boolean debugXPid = true;
     private static final boolean debugYPid = true;
     private static final boolean debugTurnPid = true;
@@ -45,7 +45,13 @@ public class CmdSkyStoneDrive implements TrcRobot.RobotCommand
         GET_TARGET_POSE,
         SCAN_FOR_SKYSTONE,
         NEXT_SKYSTONE_POSITION,
+        ALIGN_SKYSTONE,
         GOTO_SKYSTONE,
+        GRAB_SKYSTONE,
+        PULL_SKYSTONE,
+        GOTO_FOUNDATION,
+        APPROACH_FOUNDATION,
+        DROP_SKYSTONE,
         DONE
     }   //enum State
 
@@ -59,6 +65,7 @@ public class CmdSkyStoneDrive implements TrcRobot.RobotCommand
     private double visionTimeout = 0.0;
     private int scootCount = 2;
     private double xPos = 0.0, yPos = 0.0;
+    private boolean scanningForSkyStone = false;
 
     /**
      * Constructor: Create an instance of the object.
@@ -143,11 +150,14 @@ public class CmdSkyStoneDrive implements TrcRobot.RobotCommand
                     //
                     // Move closer slowly for a distance so Vuforia can detect the target.
                     //
+                    robot.extenderArm.extend();
+                    robot.wrist.setPosition(0.0);
+                    robot.grabber.release();
                     robot.pidDrive.getXPidCtrl().saveAndSetOutputLimit(0.5);
                     robot.pidDrive.getYPidCtrl().saveAndSetOutputLimit(0.5);
                     xPos = robot.driveBase.getXPosition();
                     yPos = robot.driveBase.getYPosition();
-                    yTarget = 18.0;
+                    yTarget = 22.0;
                     yPos += yTarget;
                     robot.pidDrive.setTarget(xTarget, yTarget, robot.targetHeading, false, event);
                     sm.waitForSingleEvent(event, State.SETUP_VISION);
@@ -173,33 +183,27 @@ public class CmdSkyStoneDrive implements TrcRobot.RobotCommand
                         if (TrcUtil.getCurrentTime() > visionTimeout)
                         {
                             // Can't find any skystone here, move on to the next position.
-                            sm.setState(visionTrigger != null? State.SCAN_FOR_SKYSTONE: State.NEXT_SKYSTONE_POSITION);
+                            sm.setState(visionTrigger == null? State.NEXT_SKYSTONE_POSITION:
+                                        scanningForSkyStone? State.GOTO_SKYSTONE: State.SCAN_FOR_SKYSTONE);
                         }
-                    }
-                    else if (Math.abs(skystonePose.x) > 4.0)
-                    {
-                        // Vuforia found the skystone but it is to our right.
-                        robot.globalTracer.traceInfo(
-                                "getTargetPose", "Skystone found to the right (x=%.1f, y=%.1f).",
-                                skystonePose.x, skystonePose.y);
-                        sm.setState(State.GOTO_SKYSTONE);
                     }
                     else
                     {
-                        // Vuforia found the skystone right in front.
+                        // Vuforia found the skystone.
                         robot.globalTracer.traceInfo(
-                                "getTargetPose", "Skystone found in front (x=%.1f, y=%.1f).",
+                                "getTargetPose", "Skystone found at x=%.1f, y=%.1f.",
                                 skystonePose.x, skystonePose.y);
-                        sm.setState(State.GOTO_SKYSTONE);
+                        sm.setState(State.ALIGN_SKYSTONE);
                     }
                     break;
 
                 case SCAN_FOR_SKYSTONE:
                     visionTrigger.setEnabled(true);
-                    yPos += 24.0;
-                    yTarget = yPos - robot.driveBase.getYPosition();
+                    scanningForSkyStone = true;
+                    xPos += 16.0;
+                    xTarget = xPos - robot.driveBase.getXPosition();
                     robot.pidDrive.setTarget(xTarget, yTarget, robot.targetHeading, false, event);
-                    sm.waitForSingleEvent(event, State.GOTO_SKYSTONE);
+                    sm.waitForSingleEvent(event, State.SETUP_VISION);
                     break;
 
                 case NEXT_SKYSTONE_POSITION:
@@ -215,8 +219,19 @@ public class CmdSkyStoneDrive implements TrcRobot.RobotCommand
                     {
                         // Still can't detect the target. Just assume the one in front is a skystone. We will still
                         // get some points even if we are wrong, better than nothing!
-                        sm.setState(State.GOTO_SKYSTONE);
+                        sm.setState(State.SETUP_VISION);//GOTO_SKYSTONE);
                     }
+                    break;
+
+                case ALIGN_SKYSTONE:
+                    if (visionTrigger != null)
+                    {
+                        visionTrigger.setEnabled(false);
+                    }
+                    xPos += skystonePose.x;
+                    xTarget = xPos - robot.driveBase.getXPosition();
+                    robot.pidDrive.setTarget(xTarget, yTarget, robot.targetHeading, false, event);
+                    sm.waitForSingleEvent(event, State.GOTO_SKYSTONE);
                     break;
 
                 case GOTO_SKYSTONE:
@@ -224,22 +239,47 @@ public class CmdSkyStoneDrive implements TrcRobot.RobotCommand
                     {
                         visionTrigger.setEnabled(false);
                     }
-
-                    if (skystonePose != null)
-                    {
-                        // Detected the skystone, go to it.
-                        xPos += skystonePose.x;
-                        yPos += skystonePose.y;
-                    }
-                    else
-                    {
-                        // Did not detect skystone, assume it's right in front of us.
-                        yPos += 30.0;
-                    }
-
-                    xTarget = xPos - robot.driveBase.getXPosition();
+                    // If we did not detect the skystone, assume it's right in front of us.
+                    yPos += skystonePose != null? skystonePose.y: 8.0;
                     yTarget = yPos - robot.driveBase.getYPosition();
                     robot.pidDrive.setTarget(xTarget, yTarget, robot.targetHeading, false, event);
+                    sm.waitForSingleEvent(event, State.GRAB_SKYSTONE);
+                    break;
+
+                case GRAB_SKYSTONE:
+                    robot.extenderArm.retract(event);
+                    sm.waitForSingleEvent(event, State.PULL_SKYSTONE);
+                    break;
+
+                case PULL_SKYSTONE:
+                    robot.grabber.grab();
+                    yPos -= 12.0;
+                    yTarget = yPos - robot.driveBase.getYPosition();
+                    robot.pidDrive.setTarget(xTarget, yTarget, robot.targetHeading, false, event);
+                    sm.waitForSingleEvent(event, State.GOTO_FOUNDATION);
+                    break;
+
+                case GOTO_FOUNDATION:
+                    robot.extenderArm.extend();
+                    robot.pidDrive.getXPidCtrl().restoreOutputLimit();
+                    robot.pidDrive.getYPidCtrl().restoreOutputLimit();
+                    xPos = -72.0;
+                    xTarget = xPos - robot.driveBase.getXPosition();
+                    robot.pidDrive.setTarget(xTarget, yTarget, robot.targetHeading, false, event);
+                    sm.waitForSingleEvent(event, State.APPROACH_FOUNDATION);
+                    break;
+
+                case APPROACH_FOUNDATION:
+                    robot.pidDrive.getXPidCtrl().saveAndSetOutputLimit(0.5);
+                    robot.pidDrive.getYPidCtrl().saveAndSetOutputLimit(0.5);
+                    yPos += 12.0;
+                    yTarget = yPos - robot.driveBase.getYPosition();
+                    robot.pidDrive.setTarget(xTarget, yTarget, robot.targetHeading, false, event);
+                    sm.waitForSingleEvent(event, State.DROP_SKYSTONE);
+                    break;
+
+                case DROP_SKYSTONE:
+                    robot.grabber.release(event);
                     sm.waitForSingleEvent(event, State.DONE);
                     break;
 

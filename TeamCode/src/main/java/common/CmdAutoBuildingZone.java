@@ -29,17 +29,23 @@ import trclib.TrcTimer;
 
 public class CmdAutoBuildingZone implements TrcRobot.RobotCommand
 {
+    private static final boolean useSimpleRoute = true;
+
     private enum State
     {
         DO_DELAY,
         //MOVE_UP,
         MOVE_TO_FOUNDATION,
         HOOK_FOUNDATION,
+        MOVE_FOUNDATION_BACK,
+        LET_GO_FOUNDATION,
+        SCOOT_TO_LINE,
         MOVE_FOUNDATION_DOWN,
         TURN_FOUNDATION,
         MOVE_FOUNDATION_IN,
         UNHOOK_FOUNDATION,
         MOVE_TO_LINE,
+        SCOOT_TO_SIDE,
         NOT_FOUNDATION_TURN,
         NOT_FOUNDATION_MOVE,
         DONE
@@ -74,6 +80,8 @@ public class CmdAutoBuildingZone implements TrcRobot.RobotCommand
     @Override
     public void cancel()
     {
+        robot.pidDrive.getXPidCtrl().restoreOutputLimit();
+        robot.pidDrive.getYPidCtrl().restoreOutputLimit();
         sm.stop();
     }   //cancel
 
@@ -99,6 +107,8 @@ public class CmdAutoBuildingZone implements TrcRobot.RobotCommand
                     //
                     // Do delay if any.
                     //
+                    robot.pidDrive.getXPidCtrl().saveAndSetOutputLimit(0.5);
+                    robot.pidDrive.getYPidCtrl().saveAndSetOutputLimit(0.5);
                     if (autoChoices.delay == 0.0)
                     {
                         sm.setState(State.MOVE_TO_FOUNDATION);
@@ -134,7 +144,7 @@ public class CmdAutoBuildingZone implements TrcRobot.RobotCommand
 
                 case HOOK_FOUNDATION:
                     // The hook latches onto the foundation
-                    nextState = State.MOVE_FOUNDATION_DOWN;
+                    nextState = useSimpleRoute ? State.MOVE_FOUNDATION_BACK : State.MOVE_FOUNDATION_DOWN;
 
                     if(robot.foundationLatch != null) {
                         robot.foundationLatch.grab(event);
@@ -142,6 +152,28 @@ public class CmdAutoBuildingZone implements TrcRobot.RobotCommand
                     } else {
                         sm.setState(nextState);
                     }
+                    break;
+
+                case MOVE_FOUNDATION_BACK:
+                    yTarget = 36.0;
+                    simpleMovements.driveStraightUntilDone(yTarget, State.LET_GO_FOUNDATION);
+                    break;
+
+                case LET_GO_FOUNDATION:
+                    if(robot.foundationLatch != null)
+                    {
+                        robot.foundationLatch.release(event);
+                        sm.waitForSingleEvent(event, State.SCOOT_TO_LINE);
+                    }
+                    else
+                    {
+                        sm.setState(State.SCOOT_TO_LINE);
+                    }
+                    break;
+
+                case SCOOT_TO_LINE:
+                    xTarget = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE ? 48.0 : -48.0;
+                    simpleMovements.driveSidewaysUntilDone(xTarget, State.DONE);
                     break;
 
                 case MOVE_FOUNDATION_DOWN:
@@ -159,7 +191,7 @@ public class CmdAutoBuildingZone implements TrcRobot.RobotCommand
                 case MOVE_FOUNDATION_IN:
                     // The robot pushes the foundation into the corner
                     xTarget = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE ? -19.0 : 19.0;
-                    yTarget = -3.0;
+                    yTarget = -12.0;
                     simpleMovements.driveDiagonallyUntilDone(xTarget, yTarget, State.UNHOOK_FOUNDATION);
                     break;
 
@@ -178,7 +210,12 @@ public class CmdAutoBuildingZone implements TrcRobot.RobotCommand
                 case MOVE_TO_LINE:
                     // The robot drives forward into the line
                     yTarget = 44;
-                    simpleMovements.driveStraightUntilDone(yTarget, State.DONE);
+                    simpleMovements.driveStraightUntilDone(yTarget, State.SCOOT_TO_SIDE);
+                    break;
+
+                case SCOOT_TO_SIDE:
+                    xTarget = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE ? 12.0 : -12.0;
+                    simpleMovements.driveSidewaysUntilDone(xTarget, State.DONE);
                     break;
 
                 case NOT_FOUNDATION_TURN:
@@ -190,10 +227,13 @@ public class CmdAutoBuildingZone implements TrcRobot.RobotCommand
                     yTarget = 5;
                     simpleMovements.driveStraightUntilDone(yTarget, state.DONE);
                     break;
+
                 case DONE:
                 default:
                     // We are done.
                     //
+                    robot.pidDrive.getXPidCtrl().restoreOutputLimit();
+                    robot.pidDrive.getYPidCtrl().restoreOutputLimit();
                     sm.stop();
                     break;
             }

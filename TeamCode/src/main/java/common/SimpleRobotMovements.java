@@ -12,6 +12,7 @@ public class SimpleRobotMovements<StateType> {
     private final Robot robot;
     private final TrcEvent event;
     private final TrcStateMachine<StateType> stateMachine;
+    private double xPos, yPos;
 
     /**
      * @param robot The Robot object to use.
@@ -22,6 +23,8 @@ public class SimpleRobotMovements<StateType> {
         this.robot = robot;
         this.stateMachine = sm;
         this.event = event;
+        xPos = robot.driveBase.getXPosition();
+        yPos = robot.driveBase.getYPosition();
     }
 
     /**
@@ -32,7 +35,9 @@ public class SimpleRobotMovements<StateType> {
      * @param nextState The next state to advance the state machine to when this action is complete.
      */
     public void driveStraightUntilDone(double distance, StateType nextState) {
-        robot.pidDrive.setTarget(distance, robot.targetHeading, false, event);
+        yPos += distance;
+        robot.pidDrive.setTarget(
+                yPos - robot.driveBase.getYPosition(), robot.targetHeading, false, event);
         stateMachine.waitForSingleEvent(event, nextState);
     } // driveStraightUntilDone
 
@@ -44,7 +49,9 @@ public class SimpleRobotMovements<StateType> {
      * @param nextState The next state to advance the state machine to when this action is complete.
      */
     public void driveSidewaysUntilDone(double distance, StateType nextState) {
-        robot.pidDrive.setTarget(distance, 0.0, robot.targetHeading, false, event);
+        xPos += distance;
+        robot.pidDrive.setTarget(
+                xPos - robot.driveBase.getXPosition(), 0.0, robot.targetHeading, false, event);
         stateMachine.waitForSingleEvent(event, nextState);
     } // driveSidewaysUntilDone
 
@@ -58,7 +65,11 @@ public class SimpleRobotMovements<StateType> {
      * @param nextState The next state to advance the state machine to when this action is complete.
      */
     public void driveDiagonallyUntilDone(double xDistance, double yDistance, StateType nextState) {
-        robot.pidDrive.setTarget(xDistance, yDistance, robot.targetHeading, false, event);
+        xPos += xDistance;
+        yPos += yDistance;
+        robot.pidDrive.setTarget(
+                xPos - robot.driveBase.getXPosition(), yPos - robot.driveBase.getYPosition(),
+                robot.targetHeading, false, event);
         stateMachine.waitForSingleEvent(event, nextState);
     } // driveDiagonallyUntilDone
 

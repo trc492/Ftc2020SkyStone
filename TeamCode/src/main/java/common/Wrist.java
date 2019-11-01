@@ -31,9 +31,10 @@ public class Wrist
     FtcServo wrist = new FtcServo("wristServo");
     TrcEnhancedServo enhancedWrist = new TrcEnhancedServo("enhancedWristServo", wrist);
 
-    public Wrist(double maxStepRate, double minPos, double maxPos)
+    public Wrist(double maxStepRate, double minPos, double maxPos, boolean inverted)
     {
         enhancedWrist.setStepMode(maxStepRate, minPos, maxPos);
+        wrist.setInverted(inverted);
     }   //Wrist
 
     public void setPower(double power)
