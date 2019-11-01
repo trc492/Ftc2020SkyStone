@@ -22,6 +22,7 @@
 
 package common;
 
+import trclib.TrcAbsTargetDrive;
 import trclib.TrcEvent;
 import trclib.TrcPidController;
 import trclib.TrcPose2D;
@@ -68,7 +69,7 @@ public class CmdSkyStoneDrive implements TrcRobot.RobotCommand
     private final boolean redAlliance;
     private final TrcEvent event;
     private final TrcStateMachine<State> sm;
-    private final SimpleRobotMovements<State> simpleMovements;
+    private final TrcAbsTargetDrive<State> absTargetDrive;
     private TrcTrigger visionTrigger;
     private TrcPose2D skystonePose = null;
     private double visionTimeout = 0.0;
@@ -88,7 +89,9 @@ public class CmdSkyStoneDrive implements TrcRobot.RobotCommand
         this.redAlliance = redAlliance;
         event = new TrcEvent(moduleName);
         sm = new TrcStateMachine<>(moduleName);
-        simpleMovements = new SimpleRobotMovements<>(robot, sm, event);
+        absTargetDrive = new TrcAbsTargetDrive<>(
+                "SkyStoneDrive", robot.driveBase, robot.pidDrive, event, sm,
+                false, true);
         if (useVisionTrigger)
         {
             visionTrigger = new TrcTrigger("VisionTrigger", this::isTriggered, this::targetDetected);
@@ -167,7 +170,7 @@ public class CmdSkyStoneDrive implements TrcRobot.RobotCommand
                     robot.pidDrive.getXPidCtrl().saveAndSetOutputLimit(0.5);
                     robot.pidDrive.getYPidCtrl().saveAndSetOutputLimit(0.5);
                     yTarget = 22.0;
-                    simpleMovements.driveUntilDone(xTarget, yTarget, turnTarget, State.SETUP_VISION);
+                    absTargetDrive.setYTarget(yTarget, State.SETUP_VISION);
                     break;
 
                 case SETUP_VISION:
@@ -207,7 +210,7 @@ public class CmdSkyStoneDrive implements TrcRobot.RobotCommand
                     visionTrigger.setEnabled(true);
                     scanningForSkyStone = true;
                     xTarget = redAlliance? -16.0: 16.0;
-                    simpleMovements.driveUntilDone(xTarget, yTarget, turnTarget, State.SETUP_VISION);
+                    absTargetDrive.setXTarget(xTarget, State.SETUP_VISION);
                     break;
 
                 case NEXT_SKYSTONE_POSITION:
@@ -215,7 +218,7 @@ public class CmdSkyStoneDrive implements TrcRobot.RobotCommand
                     {
                         scootCount--;
                         xTarget = redAlliance? -8.0: 8.0;
-                        simpleMovements.driveUntilDone(xTarget, yTarget, turnTarget, State.SETUP_VISION);
+                        absTargetDrive.setXTarget(xTarget, State.SETUP_VISION);
                     }
                     else
                     {
@@ -231,7 +234,7 @@ public class CmdSkyStoneDrive implements TrcRobot.RobotCommand
                         visionTrigger.setEnabled(false);
                     }
                     xTarget = skystonePose.x;
-                    simpleMovements.driveUntilDone(xTarget, yTarget, turnTarget, State.GOTO_SKYSTONE);
+                    absTargetDrive.setXTarget(xTarget, State.GOTO_SKYSTONE);
                     break;
 
                 case GOTO_SKYSTONE:
@@ -241,7 +244,7 @@ public class CmdSkyStoneDrive implements TrcRobot.RobotCommand
                     }
                     // If we did not detect the skystone, assume it's right in front of us.
                     yTarget = skystonePose != null? skystonePose.y: 8.0;
-                    simpleMovements.driveUntilDone(xTarget, yTarget, turnTarget, State.GRAB_SKYSTONE);
+                    absTargetDrive.setYTarget(yTarget, State.GRAB_SKYSTONE);
                     break;
 
                 case GRAB_SKYSTONE:
@@ -252,7 +255,7 @@ public class CmdSkyStoneDrive implements TrcRobot.RobotCommand
                 case PULL_SKYSTONE:
                     robot.grabber.grab();
                     yTarget = -12.0;
-                    simpleMovements.driveUntilDone(xTarget, yTarget, turnTarget, State.GOTO_FOUNDATION);
+                    absTargetDrive.setYTarget(yTarget, State.GOTO_FOUNDATION);
                     break;
 
                 case GOTO_FOUNDATION:
@@ -260,14 +263,14 @@ public class CmdSkyStoneDrive implements TrcRobot.RobotCommand
                     robot.pidDrive.getXPidCtrl().restoreOutputLimit();
                     robot.pidDrive.getYPidCtrl().restoreOutputLimit();
                     xTarget = (redAlliance? 72.0: -72.0) - robot.driveBase.getXPosition();
-                    simpleMovements.driveUntilDone(xTarget, yTarget, turnTarget, State.APPROACH_FOUNDATION);
+                    absTargetDrive.setXTarget(xTarget, State.APPROACH_FOUNDATION);
                     break;
 
                 case APPROACH_FOUNDATION:
                     robot.pidDrive.getXPidCtrl().saveAndSetOutputLimit(0.5);
                     robot.pidDrive.getYPidCtrl().saveAndSetOutputLimit(0.5);
                     yTarget = 12.0;
-                    simpleMovements.driveUntilDone(xTarget, yTarget, turnTarget, State.DROP_SKYSTONE);
+                    absTargetDrive.setYTarget(yTarget, State.DROP_SKYSTONE);
                     break;
 
                 case DROP_SKYSTONE:
@@ -278,17 +281,17 @@ public class CmdSkyStoneDrive implements TrcRobot.RobotCommand
                 case BACK_OFF_FOUNDATION:
                     robot.extenderArm.retract();
                     yTarget = -6.0;
-                    simpleMovements.driveUntilDone(xTarget, yTarget, turnTarget, State.TURN_AROUND);
+                    absTargetDrive.setYTarget(yTarget, State.TURN_AROUND);
                     break;
 
                 case TURN_AROUND:
                     turnTarget = 180.0;
-                    simpleMovements.driveUntilDone(xTarget, yTarget, turnTarget, State.BACKUP_TO_FOUNDATION);
+                    absTargetDrive.setTurnTarget(turnTarget, State.BACKUP_TO_FOUNDATION);
                     break;
 
                 case BACKUP_TO_FOUNDATION:
                     yTarget = -6.0;
-                    simpleMovements.driveUntilDone(xTarget, yTarget, turnTarget, State.HOOK_FOUNDATION);
+                    absTargetDrive.setYTarget(yTarget, State.HOOK_FOUNDATION);
                     break;
 
                 case HOOK_FOUNDATION:
@@ -298,7 +301,7 @@ public class CmdSkyStoneDrive implements TrcRobot.RobotCommand
 
                 case PULL_FOUNDATION_TO_WALL:
                     yTarget = 36.0;
-                    simpleMovements.driveUntilDone(xTarget, yTarget, turnTarget, State.UNHOOK_FOUNDATION);
+                    absTargetDrive.setYTarget(yTarget, State.UNHOOK_FOUNDATION);
                     break;
 
                 case UNHOOK_FOUNDATION:
@@ -308,7 +311,7 @@ public class CmdSkyStoneDrive implements TrcRobot.RobotCommand
 
                 case PARK_UNDER_BRIDGE:
                     xTarget = redAlliance? 48.0: -48.0;
-                    simpleMovements.driveUntilDone(xTarget, yTarget, turnTarget, State.DONE);
+                    absTargetDrive.setXTarget(xTarget, State.DONE);
                     break;
 
                 case DONE:

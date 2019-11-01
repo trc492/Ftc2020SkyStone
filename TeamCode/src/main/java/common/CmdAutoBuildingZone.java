@@ -22,6 +22,7 @@
 
 package common;
 
+import trclib.TrcAbsTargetDrive;
 import trclib.TrcEvent;
 import trclib.TrcRobot;
 import trclib.TrcStateMachine;
@@ -66,7 +67,7 @@ public class CmdAutoBuildingZone implements TrcRobot.RobotCommand
     private final TrcEvent event;
     private final TrcTimer timer;
     private final TrcStateMachine<State> sm;
-    private final SimpleRobotMovements<State> simpleMovements;
+    private final TrcAbsTargetDrive<State> absTargetDrive;
 
     public CmdAutoBuildingZone(Robot robot, CommonAuto.AutoChoices autoChoices)
     {
@@ -76,7 +77,9 @@ public class CmdAutoBuildingZone implements TrcRobot.RobotCommand
         timer = new TrcTimer(moduleName);
         sm = new TrcStateMachine<>(moduleName);
         sm.start(State.DO_DELAY);
-        simpleMovements = new SimpleRobotMovements<>(robot, sm, event);
+        absTargetDrive = new TrcAbsTargetDrive<>(
+                "CmdAutoBuildingZone", robot.driveBase, robot.pidDrive, event, sm,
+                false, true);
     }   //CmdAutoBuildingZone
 
     @Override
@@ -106,6 +109,7 @@ public class CmdAutoBuildingZone implements TrcRobot.RobotCommand
         {
             double xTarget = 0.0;
             double yTarget = 0.0;
+            double turnTarget = 0.0;
             State nextState = null;
 
             robot.dashboard.displayPrintf(1, "State: %s", state);
@@ -149,7 +153,7 @@ public class CmdAutoBuildingZone implements TrcRobot.RobotCommand
                 case MOVE_TO_FOUNDATION:
                     // Robot will move backwards so that the hook is facing the foundation
                     yTarget = -30;
-                    simpleMovements.driveStraightUntilDone(yTarget, State.HOOK_FOUNDATION);
+                    absTargetDrive.setYTarget(yTarget, State.HOOK_FOUNDATION);
                     break;
 
                 case HOOK_FOUNDATION:
@@ -166,7 +170,7 @@ public class CmdAutoBuildingZone implements TrcRobot.RobotCommand
 
                 case MOVE_FOUNDATION_BACK:
                     yTarget = 36.0;
-                    simpleMovements.driveStraightUntilDone(yTarget, State.LET_GO_FOUNDATION);
+                    absTargetDrive.setYTarget(yTarget, State.LET_GO_FOUNDATION);
                     break;
 
                 case LET_GO_FOUNDATION:
@@ -183,26 +187,26 @@ public class CmdAutoBuildingZone implements TrcRobot.RobotCommand
 
                 case SCOOT_TO_LINE:
                     xTarget = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE ? 48.0 : -48.0;
-                    simpleMovements.driveSidewaysUntilDone(xTarget, State.DONE);
+                    absTargetDrive.setXTarget(xTarget, State.DONE);
                     break;
 
                 case MOVE_FOUNDATION_DOWN:
                     // It moves the foundation down, with the robot moving sideways
                     xTarget = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE ? 8.0 : -8.0;
-                    simpleMovements.driveSidewaysUntilDone(xTarget, State.TURN_FOUNDATION);
+                    absTargetDrive.setXTarget(xTarget, State.TURN_FOUNDATION);
                     break;
 
                 case TURN_FOUNDATION:
                     // The robot turns the foundation sideways
-                    double deltaHeading = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE ? 90.0 : -90.0;
-                    simpleMovements.turnInPlaceUntilDone(deltaHeading, State.MOVE_FOUNDATION_IN);
+                    turnTarget = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE ? 90.0 : -90.0;
+                    absTargetDrive.setTurnTarget(turnTarget, State.MOVE_FOUNDATION_IN);
                     break;
 
                 case MOVE_FOUNDATION_IN:
                     // The robot pushes the foundation into the corner
                     xTarget = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE ? -19.0 : 19.0;
                     yTarget = -12.0;
-                    simpleMovements.driveDiagonallyUntilDone(xTarget, yTarget, State.UNHOOK_FOUNDATION);
+                    absTargetDrive.setXYTarget(xTarget, yTarget, State.UNHOOK_FOUNDATION);
                     break;
 
                 case UNHOOK_FOUNDATION:
@@ -220,22 +224,22 @@ public class CmdAutoBuildingZone implements TrcRobot.RobotCommand
                 case MOVE_TO_LINE:
                     // The robot drives forward into the line
                     yTarget = 44;
-                    simpleMovements.driveStraightUntilDone(yTarget, State.SCOOT_TO_SIDE);
+                    absTargetDrive.setYTarget(yTarget, State.SCOOT_TO_SIDE);
                     break;
 
                 case SCOOT_TO_SIDE:
                     xTarget = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE ? 12.0 : -12.0;
-                    simpleMovements.driveSidewaysUntilDone(xTarget, State.DONE);
+                    absTargetDrive.setXTarget(xTarget, State.DONE);
                     break;
 
                 case NOT_FOUNDATION_TURN:
-                    deltaHeading = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE ? 90.0 : -90.0;
-                    simpleMovements.turnInPlaceUntilDone(deltaHeading, State.NOT_FOUNDATION_MOVE);
+                    turnTarget = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE ? 90.0 : -90.0;
+                    absTargetDrive.setTurnTarget(turnTarget, State.NOT_FOUNDATION_MOVE);
                     break;
 
                 case NOT_FOUNDATION_MOVE:
                     yTarget = 5;
-                    simpleMovements.driveStraightUntilDone(yTarget, state.DONE);
+                    absTargetDrive.setYTarget(yTarget, state.DONE);
                     break;
 
                 case RAISE_ELEVATOR_6541:
@@ -245,12 +249,12 @@ public class CmdAutoBuildingZone implements TrcRobot.RobotCommand
 
                 case STRAFE_TO_FOUNDATION_6541:
                     xTarget = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE ? 52.0 : -52.0;
-                    simpleMovements.driveSidewaysUntilDone(xTarget, State.ADVANCE_TO_FOUNDATION_6541);
+                    absTargetDrive.setXTarget(xTarget, State.ADVANCE_TO_FOUNDATION_6541);
                     break;
 
                 case ADVANCE_TO_FOUNDATION_6541:
                     yTarget = -6.0;
-                    simpleMovements.driveStraightUntilDone(yTarget, State.HOOK_FOUNDATION_6541);
+                    absTargetDrive.setYTarget(yTarget, State.HOOK_FOUNDATION_6541);
                     break;
 
                 case HOOK_FOUNDATION_6541:
@@ -269,12 +273,12 @@ public class CmdAutoBuildingZone implements TrcRobot.RobotCommand
 //
                 case STRAFE_TO_WALL_6541:
                     xTarget = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE ? -52.0 : 52.0;
-                    simpleMovements.driveSidewaysUntilDone(xTarget, State.PUSH_FOUNDATION_IN_6541);
+                    absTargetDrive.setXTarget(xTarget, State.PUSH_FOUNDATION_IN_6541);
                     break;
 
                 case PUSH_FOUNDATION_IN_6541:
                     yTarget = -6.0;
-                    simpleMovements.driveStraightUntilDone(yTarget, State.RELEASE_FOUNDATION_6541);
+                    absTargetDrive.setYTarget(yTarget, State.RELEASE_FOUNDATION_6541);
                     break;
 
                 case RELEASE_FOUNDATION_6541:
@@ -288,7 +292,7 @@ public class CmdAutoBuildingZone implements TrcRobot.RobotCommand
 
                 case DRIVE_BACK_TO_LINE_6541:
                     yTarget = 24.0;
-                    simpleMovements.driveSidewaysUntilDone(yTarget, State.DONE);
+                    absTargetDrive.setYTarget(yTarget, State.DONE);
                     break;
 
                 case DONE:

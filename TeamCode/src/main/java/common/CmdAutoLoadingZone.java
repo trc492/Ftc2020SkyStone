@@ -22,6 +22,7 @@
 
 package common;
 
+import trclib.TrcAbsTargetDrive;
 import trclib.TrcEvent;
 import trclib.TrcRobot;
 import trclib.TrcStateMachine;
@@ -68,7 +69,7 @@ public class CmdAutoLoadingZone implements TrcRobot.RobotCommand
     private final TrcEvent event;
     private final TrcTimer timer;
     private final TrcStateMachine<State> sm;
-    private final SimpleRobotMovements<State> simpleMovements;
+    private final TrcAbsTargetDrive<State> absTargetDrive;
 
     private double xSkyStoneOffSetPosition;
 
@@ -80,7 +81,9 @@ public class CmdAutoLoadingZone implements TrcRobot.RobotCommand
         timer = new TrcTimer(moduleName);
         sm = new TrcStateMachine<>(moduleName);
         sm.start(State.DO_DELAY);
-        simpleMovements = new SimpleRobotMovements<>(robot, sm, event);
+        absTargetDrive = new TrcAbsTargetDrive<>(
+                "CmdAutoLoadingZone", robot.driveBase, robot.pidDrive, event, sm,
+                false, true);
     }   //CmdAutoLoadingZone
 
     @Override
@@ -136,7 +139,8 @@ public class CmdAutoLoadingZone implements TrcRobot.RobotCommand
                     break;
 
                 case FIRST_SKYSTONE_ALIGN_GRABBER_TO_SKYSTONE:
-                    simpleMovements.driveSidewaysUntilDone(xSkyStoneOffSetPosition, State.FIRST_SKYSTONE_OPEN_GRABBER_AND_EXTEND_ARM);
+                    absTargetDrive.setXTarget(
+                            xSkyStoneOffSetPosition, State.FIRST_SKYSTONE_OPEN_GRABBER_AND_EXTEND_ARM);
                     break;
 
                 case FIRST_SKYSTONE_OPEN_GRABBER_AND_EXTEND_ARM:
@@ -154,7 +158,7 @@ public class CmdAutoLoadingZone implements TrcRobot.RobotCommand
                     break;
 
                 case FIRST_SKYSTONE_DRIVE_FORWARD:
-                    simpleMovements.driveStraightUntilDone(29, State.FIRST_SKYSTONE_ARM_GOES_DOWN_ON_SKYSTONE);
+                    absTargetDrive.setYTarget(29.0, State.FIRST_SKYSTONE_ARM_GOES_DOWN_ON_SKYSTONE);
                     break;
 
                 case FIRST_SKYSTONE_ARM_GOES_DOWN_ON_SKYSTONE:
@@ -193,34 +197,36 @@ public class CmdAutoLoadingZone implements TrcRobot.RobotCommand
                     break;
 
                 case FIRST_SKYSTONE_BACK_UP:
-                    simpleMovements.driveStraightUntilDone(-9, State.FIRST_SKYSTONE_TURN_TOWARDS_BUILDING_SIDE);
+                    absTargetDrive.setYTarget(-9.0, State.FIRST_SKYSTONE_TURN_TOWARDS_BUILDING_SIDE);
                     break;
 
                 case FIRST_SKYSTONE_TURN_TOWARDS_BUILDING_SIDE:
                     int turnDegrees = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE?90:-90;
-                    simpleMovements.turnInPlaceUntilDone(turnDegrees, State.FIRST_SKYSTONE_GO_FORWARDS);
+                    absTargetDrive.setTurnTarget(turnDegrees, State.FIRST_SKYSTONE_GO_FORWARDS);
                     break;
 
                 case FIRST_SKYSTONE_GO_FORWARDS:
-                    simpleMovements.driveStraightUntilDone(85 - 34.5, State.FIRST_SKYSTONE_TURN_TOWARD_MIDDLE);
+                    absTargetDrive.setYTarget(85 - 34.5, State.FIRST_SKYSTONE_TURN_TOWARD_MIDDLE);
                     break;
 
                 case FIRST_SKYSTONE_TURN_TOWARD_MIDDLE:
                     turnDegrees = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE?-90:90;
-                    simpleMovements.turnInPlaceUntilDone(turnDegrees, State.FIRST_SKYSTONE_MOVE_TOWARD_MIDDLE);
+                    absTargetDrive.setTurnTarget(turnDegrees, State.FIRST_SKYSTONE_MOVE_TOWARD_MIDDLE);
                     break;
 
                 case FIRST_SKYSTONE_MOVE_TOWARD_MIDDLE:
-                    simpleMovements.driveStraightUntilDone(32 + autoChoices.foundationXPos, State.FIRST_SKYSTONE_TURN_TO_FOUNDATION);
+                    absTargetDrive.setYTarget(
+                            32 + autoChoices.foundationXPos, State.FIRST_SKYSTONE_TURN_TO_FOUNDATION);
                     break;
 
                 case FIRST_SKYSTONE_TURN_TO_FOUNDATION:
                     turnDegrees = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE?90:-90;
-                    simpleMovements.turnInPlaceUntilDone(turnDegrees, State.FIRST_SKYSTONE_MOVE_TO_FOUNDATION);
+                    absTargetDrive.setTurnTarget(turnDegrees, State.FIRST_SKYSTONE_MOVE_TO_FOUNDATION);
                     break;
 
                 case FIRST_SKYSTONE_MOVE_TO_FOUNDATION:
-                    simpleMovements.driveStraightUntilDone(5.5 + autoChoices.foundationYPos,State.FIRST_SKYSTONE_RELEASE_SKYSTONE);
+                    absTargetDrive.setYTarget(
+                            5.5 + autoChoices.foundationYPos,State.FIRST_SKYSTONE_RELEASE_SKYSTONE);
                     break;
 
                 case FIRST_SKYSTONE_RELEASE_SKYSTONE:
@@ -234,28 +240,31 @@ public class CmdAutoLoadingZone implements TrcRobot.RobotCommand
                     break;
 
                 case FIRST_SKYSTONE_REVERSE:
-                    simpleMovements.driveStraightUntilDone(-5.5 - autoChoices.foundationYPos, State.FIRST_SKYSTONE_TURN_TOWARDS_WALL);
+                    absTargetDrive.setYTarget(-5.5 - autoChoices.foundationYPos,
+                            State.FIRST_SKYSTONE_TURN_TOWARDS_WALL);
                     break;
 
                 case FIRST_SKYSTONE_TURN_TOWARDS_WALL:
                     turnDegrees = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE?90:-90;
-                    simpleMovements.turnInPlaceUntilDone(turnDegrees, State.FIRST_SKYSTONE_MOVE_TOWARDS_WALL);
+                    absTargetDrive.setTurnTarget(turnDegrees, State.FIRST_SKYSTONE_MOVE_TOWARDS_WALL);
                     break;
 
                 case FIRST_SKYSTONE_MOVE_TOWARDS_WALL:
-                    simpleMovements.driveStraightUntilDone(32 + autoChoices.foundationXPos, State.FIRST_SKYSTONE_TURN_TOWARDS_LOADINGZONE);
+                    absTargetDrive.setYTarget(32 + autoChoices.foundationXPos,
+                            State.FIRST_SKYSTONE_TURN_TOWARDS_LOADINGZONE);
                     break;
 
                 case FIRST_SKYSTONE_TURN_TOWARDS_LOADINGZONE:
                     turnDegrees = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE?90:-90;
-                    simpleMovements.turnInPlaceUntilDone(turnDegrees, State.FIRST_SKYSTONE_MOVE_TOWARDS_LOADINGZONE);
+                    absTargetDrive.setTurnTarget(turnDegrees, State.FIRST_SKYSTONE_MOVE_TOWARDS_LOADINGZONE);
                     break;
 
                 case FIRST_SKYSTONE_MOVE_TOWARDS_LOADINGZONE:
                     // Line up with skystones closer to center of the field
-                    simpleMovements.driveStraightUntilDone(33, State.DONE);
+                    absTargetDrive.setYTarget(33, State.DONE);
                     break;
 
+                case DONE:
                 default:
                     //
                     // We are done.
