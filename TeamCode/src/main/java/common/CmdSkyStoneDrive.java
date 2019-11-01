@@ -322,7 +322,7 @@ public class CmdSkyStoneDrive implements TrcRobot.RobotCommand
                     break;
             }
 
-            robot.traceStateInfo(elapsedTime, state.toString(), xTarget, yTarget, robot.targetHeading);
+            robot.traceStateInfo(elapsedTime, state.toString(), xTarget, yTarget, turnTarget);
         }
 
         if (robot.pidDrive.isActive() && (debugXPid || debugYPid || debugTurnPid))
