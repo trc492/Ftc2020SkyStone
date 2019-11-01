@@ -52,6 +52,13 @@ public class CmdSkyStoneDrive implements TrcRobot.RobotCommand
         GOTO_FOUNDATION,
         APPROACH_FOUNDATION,
         DROP_SKYSTONE,
+        BACK_OFF_FOUNDATION,
+        TURN_AROUND,
+        BACKUP_TO_FOUNDATION,
+        HOOK_FOUNDATION,
+        PULL_FOUNDATION_TO_WALL,
+        UNHOOK_FOUNDATION,
+        PARK_UNDER_BRIDGE,
         DONE
     }   //enum State
 
@@ -280,6 +287,51 @@ public class CmdSkyStoneDrive implements TrcRobot.RobotCommand
 
                 case DROP_SKYSTONE:
                     robot.grabber.release(event);
+                    sm.waitForSingleEvent(event, State.BACK_OFF_FOUNDATION);
+                    break;
+
+                case BACK_OFF_FOUNDATION:
+                    robot.extenderArm.retract();
+                    yPos -= 6.0;
+                    yTarget = yPos - robot.driveBase.getYPosition();
+                    robot.pidDrive.setTarget(xTarget, yTarget, robot.targetHeading, false, event);
+                    sm.waitForSingleEvent(event, State.TURN_AROUND);
+                    break;
+
+                case TURN_AROUND:
+                    robot.targetHeading += 180.0;
+                    robot.pidDrive.setTarget(xTarget, yTarget, robot.targetHeading, false, event);
+                    sm.waitForSingleEvent(event, State.BACKUP_TO_FOUNDATION);
+                    break;
+
+                case BACKUP_TO_FOUNDATION:
+                    yPos -= 6.0;
+                    yTarget = yPos - robot.driveBase.getYPosition();
+                    robot.pidDrive.setTarget(xTarget, yTarget, robot.targetHeading, false, event);
+                    sm.waitForSingleEvent(event, State.HOOK_FOUNDATION);
+                    break;
+
+                case HOOK_FOUNDATION:
+                    robot.foundationLatch.grab(event);
+                    sm.waitForSingleEvent(event, State.PULL_FOUNDATION_TO_WALL);
+                    break;
+
+                case PULL_FOUNDATION_TO_WALL:
+                    yPos += 36.0;
+                    yTarget = yPos - robot.driveBase.getYPosition();
+                    robot.pidDrive.setTarget(xTarget, yTarget, robot.targetHeading, false, event);
+                    sm.waitForSingleEvent(event, State.UNHOOK_FOUNDATION);
+                    break;
+
+                case UNHOOK_FOUNDATION:
+                    robot.foundationLatch.release(event);
+                    sm.waitForSingleEvent(event, State.PARK_UNDER_BRIDGE);
+                    break;
+
+                case PARK_UNDER_BRIDGE:
+                    xPos -= 48.0;
+                    xTarget = xPos - robot.driveBase.getXPosition();
+                    robot.pidDrive.setTarget(xTarget, yTarget, robot.targetHeading, false, event);
                     sm.waitForSingleEvent(event, State.DONE);
                     break;
 
