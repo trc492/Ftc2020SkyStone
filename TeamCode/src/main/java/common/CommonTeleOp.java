@@ -48,8 +48,6 @@ public abstract class CommonTeleOp extends FtcOpMode
     protected double drivePowerScale = 1.0;
     protected boolean invertedDrive = false;
 
-    private int elevatorLevel = 0;
-
     //
     // Implements FtcOpMode abstract method.
     //
@@ -223,29 +221,15 @@ public abstract class CommonTeleOp extends FtcOpMode
                     break;
 
                 case FtcGamepad.GAMEPAD_DPAD_UP:
-                    elevatorLevel++;
-                    if (elevatorLevel > 5)
-                    {
-                        elevatorLevel = 5;
-                    }
-                    robot.elevator.setLevel(elevatorLevel);
                     break;
 
                 case FtcGamepad.GAMEPAD_DPAD_DOWN:
-                    elevatorLevel--;
-                    if (elevatorLevel < 0)
-                    {
-                        elevatorLevel = 0;
-                    }
-                    robot.elevator.setLevel(elevatorLevel);
                     break;
 
                 case FtcGamepad.GAMEPAD_DPAD_LEFT:
-                    robot.elevator.setLevel(0); // set elevator to base level.
                     break;
 
                 case FtcGamepad.GAMEPAD_DPAD_RIGHT:
-                    robot.elevator.setLevel(1); // set elevator to first level.
                     break;
 
                 case FtcGamepad.GAMEPAD_BACK:

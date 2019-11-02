@@ -37,12 +37,12 @@ public class Elevator
     private TrcPidController pidController;
     private TrcPidActuator pidElevator;
 
-    public static final double ELEVATOR_BASE_TIER_HEIGHT = 3.0;
-    public static final double ELEVATOR_LEVEL_HEIGHT_DELTA = 4.0;
+    private double elevatorBaseTierHeight;
+    private double elevatorLevelHeightDelta;
 
     public Elevator(
             double minHeight, double maxHeight, double scale, double offset, TrcPidController.PidCoefficients pidCoeff,
-            double tolerance, double calPower, TrcHashMap<String, Boolean> preferences)
+            double tolerance, double calPower, TrcHashMap<String, Boolean> preferences, double elevatorBaseTierHeight, double elevatorLevelHeightDelta)
     {
         lowerLimitSwitch = new FtcDigitalInput("elevatorLowerLimit");
         if (!preferences.get("team3543"))
@@ -71,7 +71,16 @@ public class Elevator
                 "pidElevator", elevatorMotor, lowerLimitSwitch, pidController, calPower,
                 minHeight, maxHeight);
         pidElevator.setPositionScale(scale, offset);
+
+        this.elevatorBaseTierHeight = elevatorBaseTierHeight;
+        this.elevatorLevelHeightDelta = elevatorLevelHeightDelta;
     }   //Elevator
+
+    public Elevator(double minHeight, double maxHeight, double scale, double offset, TrcPidController.PidCoefficients pidCoeff,
+                    double tolerance, double calPower, TrcHashMap<String, Boolean> preferences)
+    {
+        this(minHeight, maxHeight, scale, offset, pidCoeff, tolerance, calPower, preferences, 0.0, 0.0);
+    }
 
     public void zeroCalibrate()
     {
@@ -103,7 +112,7 @@ public class Elevator
         double targetHeight = 0.0;
         if (level >= 0)
         {
-            targetHeight = ELEVATOR_BASE_TIER_HEIGHT + (level * ELEVATOR_LEVEL_HEIGHT_DELTA);
+            targetHeight = elevatorBaseTierHeight + (level * elevatorLevelHeightDelta);
         }
         setPosition(targetHeight);
     }
