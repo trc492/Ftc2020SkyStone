@@ -306,7 +306,7 @@ public class CmdAutoBuildingZone implements TrcRobot.RobotCommand
                     break;
             }
 
-            robot.traceStateInfo(elapsedTime, state.toString(), xTarget, yTarget, robot.targetHeading);
+            robot.traceStateInfo(elapsedTime, state.toString(), xTarget, yTarget, turnTarget);
         }
 
         return !sm.isEnabled();

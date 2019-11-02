@@ -86,7 +86,6 @@ public class Robot
     //
     public FtcBNO055Imu imu;
     public TrcGyro gyro;
-    public double targetHeading = 0.0;
     //
     // Vision subsystems.
     //
@@ -197,7 +196,6 @@ public class Robot
         if (gyro != null)
         {
             gyro.setEnabled(true);
-            targetHeading = 0.0;
         }
         //
         // Vision generally will impact performance, so we only enable it if it's needed such as in autonomous.

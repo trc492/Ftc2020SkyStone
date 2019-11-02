@@ -287,7 +287,7 @@ public class CmdAutoLoadingZone2 implements TrcRobot.RobotCommand
                     break;
 
                 case TURN_AROUND:
-                    robot.targetHeading = turnTarget = 180.0;
+                    turnTarget = 180.0;
                     absTargetDrive.setTurnTarget(turnTarget, State.BACKUP_TO_FOUNDATION);
                     break;
 

@@ -274,7 +274,7 @@ public class CmdAutoLoadingZone implements TrcRobot.RobotCommand
 
             // TODO: Declare variables for xDistance and yDistance values, set them,
             // and pass in the values here
-            robot.traceStateInfo(elapsedTime, state.toString(), 0, 0, robot.targetHeading);
+            robot.traceStateInfo(elapsedTime, state.toString(), 0, 0, 0);
         }
 
         return !sm.isEnabled();
