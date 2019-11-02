@@ -22,6 +22,8 @@
 
 package common;
 
+import android.util.Log;
+
 import trclib.TrcAbsTargetDrive;
 import trclib.TrcEvent;
 import trclib.TrcRobot;
@@ -50,13 +52,13 @@ public class CmdAutoBuildingZone implements TrcRobot.RobotCommand
         NOT_FOUNDATION_TURN,
         NOT_FOUNDATION_MOVE,
         RAISE_ELEVATOR_6541,
-        STRAFE_TO_FOUNDATION_6541,
-        ADVANCE_TO_FOUNDATION_6541,
+        DRIVE_UNTIL_GRABBER_ALIGNED_WITH_FOUNDATION,
+        CRAB_TO_ALIGN_WITH_FOUNDATION,
         HOOK_FOUNDATION_6541,
-        STRAFE_TO_WALL_6541,
-        PUSH_FOUNDATION_IN_6541,
-        RELEASE_FOUNDATION_6541,
-        DRIVE_BACK_TO_LINE_6541,
+        PUSH_FOUNDATION_TO_WALL_6541,
+        CRAB_TO_WALL_6541_WHILE_HOOKING_FOUNDATION_6541,
+        UNHOOK_FOUNDATION_6541,
+        PARK_UNDER_BRIDGE_6541,
         DONE
     }   //enum State
 
@@ -120,11 +122,14 @@ public class CmdAutoBuildingZone implements TrcRobot.RobotCommand
                     //
                     robot.pidDrive.getXPidCtrl().saveAndSetOutputLimit(0.5);
                     robot.pidDrive.getYPidCtrl().saveAndSetOutputLimit(0.5);
+
                     nextState = robot.preferences.get("team3543") ?
                             State.MOVE_TO_FOUNDATION : State.RAISE_ELEVATOR_6541;
+                    
                     if (autoChoices.delay == 0.0)
                     {
                         sm.setState(nextState);
+                        break;
                         //
                         // Intentionally falling through to the next state.
                         //
@@ -242,55 +247,54 @@ public class CmdAutoBuildingZone implements TrcRobot.RobotCommand
                     break;
 
                 case RAISE_ELEVATOR_6541:
-                    robot.elevator.setPosition(12.0, event, 0.0);
-                    sm.waitForSingleEvent(event, State.STRAFE_TO_FOUNDATION_6541);
+                    robot.elevator.setPosition(15.0, event, 0.0);
+                    sm.waitForSingleEvent(event, State.DRIVE_UNTIL_GRABBER_ALIGNED_WITH_FOUNDATION);
                     break;
 
-                case STRAFE_TO_FOUNDATION_6541:
-                    xTarget = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE ? 52.0 : -52.0;
-                    absTargetDrive.setXTarget(xTarget, State.ADVANCE_TO_FOUNDATION_6541);
+                case DRIVE_UNTIL_GRABBER_ALIGNED_WITH_FOUNDATION:
+                    yTarget = 14.0;
+                    absTargetDrive.setYTarget(yTarget, State.CRAB_TO_ALIGN_WITH_FOUNDATION);
                     break;
 
-                case ADVANCE_TO_FOUNDATION_6541:
-                    yTarget = -6.0;
-                    absTargetDrive.setYTarget(yTarget, State.HOOK_FOUNDATION_6541);
+                case CRAB_TO_ALIGN_WITH_FOUNDATION:
+                    xTarget = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE ? 48.0 : -48.0;
+                    absTargetDrive.setXTarget(xTarget, State.HOOK_FOUNDATION_6541);
                     break;
 
                 case HOOK_FOUNDATION_6541:
                     if(robot.foundationLatch != null) {
                         robot.foundationLatch.grab(event);
-                        sm.waitForSingleEvent(event, State.STRAFE_TO_WALL_6541);
+                        sm.waitForSingleEvent(event, State.PUSH_FOUNDATION_TO_WALL_6541);
+                        //sm.waitForSingleEvent(event, State.DONE);
                     } else {
-                        sm.setState(State.STRAFE_TO_WALL_6541);
+                        sm.setState(State.PUSH_FOUNDATION_TO_WALL_6541);
+                        //sm.setState(State.DONE);
                     }
                     break;
 
-//                case CRAWL_BACK_6541:
-//                    yTarget = 3.0;
-//                    simpleMovements.driveStraightUntilDone(yTarget, State.STRAFE_TO_WALL_6541);
-//                    break;
-//
-                case STRAFE_TO_WALL_6541:
-                    xTarget = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE ? -52.0 : 52.0;
-                    absTargetDrive.setXTarget(xTarget, State.PUSH_FOUNDATION_IN_6541);
+                case PUSH_FOUNDATION_TO_WALL_6541:
+                    yTarget = -4.0;
+                    absTargetDrive.setYTarget(yTarget, State.CRAB_TO_WALL_6541_WHILE_HOOKING_FOUNDATION_6541);
                     break;
 
-                case PUSH_FOUNDATION_IN_6541:
-                    yTarget = -6.0;
-                    absTargetDrive.setYTarget(yTarget, State.RELEASE_FOUNDATION_6541);
+                case CRAB_TO_WALL_6541_WHILE_HOOKING_FOUNDATION_6541:
+                    xTarget = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE ? -48.0 : 48.0;
+                    absTargetDrive.setXTarget(xTarget, State.UNHOOK_FOUNDATION_6541);
                     break;
 
-                case RELEASE_FOUNDATION_6541:
+                case UNHOOK_FOUNDATION_6541:
                     if(robot.foundationLatch != null) {
                         robot.foundationLatch.release(event);
-                        sm.waitForSingleEvent(event, State.DRIVE_BACK_TO_LINE_6541);
+                        sm.waitForSingleEvent(event, State.PARK_UNDER_BRIDGE_6541);
+                        //sm.waitForSingleEvent(event, State.DONE);
                     } else {
-                        sm.setState(State.DRIVE_BACK_TO_LINE_6541);
+                        sm.setState(State.PARK_UNDER_BRIDGE_6541);
+                        //sm.setState(State.DONE);
                     }
                     break;
 
-                case DRIVE_BACK_TO_LINE_6541:
-                    yTarget = 24.0;
+                case PARK_UNDER_BRIDGE_6541:
+                    yTarget = 36.0;
                     absTargetDrive.setYTarget(yTarget, State.DONE);
                     break;
 
