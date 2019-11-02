@@ -22,8 +22,6 @@
 
 package common;
 
-import android.util.Log;
-
 import trclib.TrcAbsTargetDrive;
 import trclib.TrcEvent;
 import trclib.TrcRobot;
@@ -52,8 +50,8 @@ public class CmdAutoBuildingZone implements TrcRobot.RobotCommand
         NOT_FOUNDATION_TURN,
         NOT_FOUNDATION_MOVE,
         RAISE_ELEVATOR_6541,
-        DRIVE_UNTIL_GRABBER_ALIGNED_WITH_FOUNDATION,
-        CRAB_TO_ALIGN_WITH_FOUNDATION,
+        DRIVE_UNTIL_GRABBER_ALIGNED_WITH_FOUNDATION_6541,
+        CRAB_TO_ALIGN_WITH_FOUNDATION_6541,
         HOOK_FOUNDATION_6541,
         PUSH_FOUNDATION_TO_WALL_6541,
         CRAB_TO_WALL_6541_WHILE_HOOKING_FOUNDATION_6541,
@@ -248,15 +246,15 @@ public class CmdAutoBuildingZone implements TrcRobot.RobotCommand
 
                 case RAISE_ELEVATOR_6541:
                     robot.elevator.setPosition(15.0, event, 0.0);
-                    sm.waitForSingleEvent(event, State.DRIVE_UNTIL_GRABBER_ALIGNED_WITH_FOUNDATION);
+                    sm.waitForSingleEvent(event, State.DRIVE_UNTIL_GRABBER_ALIGNED_WITH_FOUNDATION_6541);
                     break;
 
-                case DRIVE_UNTIL_GRABBER_ALIGNED_WITH_FOUNDATION:
+                case DRIVE_UNTIL_GRABBER_ALIGNED_WITH_FOUNDATION_6541:
                     yTarget = 14.0;
-                    absTargetDrive.setYTarget(yTarget, State.CRAB_TO_ALIGN_WITH_FOUNDATION);
+                    absTargetDrive.setYTarget(yTarget, State.CRAB_TO_ALIGN_WITH_FOUNDATION_6541);
                     break;
 
-                case CRAB_TO_ALIGN_WITH_FOUNDATION:
+                case CRAB_TO_ALIGN_WITH_FOUNDATION_6541:
                     xTarget = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE ? 48.0 : -48.0;
                     absTargetDrive.setXTarget(xTarget, State.HOOK_FOUNDATION_6541);
                     break;
