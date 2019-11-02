@@ -128,7 +128,7 @@ class RobotInfo6541
     static final double ELEVATOR_KP                     = 0.25;
     static final double ELEVATOR_KI                     = 0.0;
     static final double ELEVATOR_KD                     = 0.0;
-    static final double ELEVATOR_TOLERANCE              = 2.0;
+    static final double ELEVATOR_TOLERANCE              = 1.0;
     static final double ELEVATOR_CAL_POWER              = 0.3;
     static final double ELEVATOR_MIN_HEIGHT             = 0.0;
     static final double ELEVATOR_MAX_HEIGHT             = 18.0;

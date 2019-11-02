@@ -37,6 +37,9 @@ public class Elevator
     private TrcPidController pidController;
     private TrcPidActuator pidElevator;
 
+    public static final double ELEVATOR_BASE_TIER_HEIGHT = 3.0;
+    public static final double ELEVATOR_LEVEL_HEIGHT_DELTA = 4.0;
+
     public Elevator(
             double minHeight, double maxHeight, double scale, double offset, TrcPidController.PidCoefficients pidCoeff,
             double tolerance, double calPower, TrcHashMap<String, Boolean> preferences)
@@ -94,6 +97,16 @@ public class Elevator
     {
         pidElevator.setTarget(target, true);
     }   //setPosition
+
+    public void setLevel(int level)
+    {
+        double targetHeight = 0.0;
+        if (level >= 0)
+        {
+            targetHeight = ELEVATOR_BASE_TIER_HEIGHT + (level * ELEVATOR_LEVEL_HEIGHT_DELTA);
+        }
+        setPosition(targetHeight);
+    }
 
     public double getPosition()
     {

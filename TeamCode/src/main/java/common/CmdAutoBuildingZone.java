@@ -357,7 +357,7 @@ public class CmdAutoBuildingZone implements TrcRobot.RobotCommand
 
                 case LOWER_ELEVATOR_AFTER_BACKING_OFF_6541:
                     robot.elevator.setPosition(0.0, event, 0.0);
-                    sm.waitForSingleEvent(event, State.DONE); // TODO: uwu, crab toward wall 6541
+                    sm.waitForSingleEvent(event, State.CRAB_TOWARD_WALL_6541);
                     break;
 
                 case CRAB_TOWARD_WALL_6541:
@@ -373,7 +373,7 @@ public class CmdAutoBuildingZone implements TrcRobot.RobotCommand
                 case KISS_THE_WALL_6541:
                     double xPower = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE ? -1.0 : 1.0;
                     robot.driveBase.holonomicDrive(xPower, 0.0, 0.0);
-                    timer.set(1.0, event);
+                    timer.set(0.5, event);
                     sm.waitForSingleEvent(event, State.PARK_UNDER_BRIDGE_6541);
                     break;
 
