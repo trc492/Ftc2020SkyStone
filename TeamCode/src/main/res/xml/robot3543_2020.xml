@@ -33,7 +33,7 @@ SOFTWARE.
         <LynxModule name="Expansion Hub 3" port="3">
             <RevRobotics20HDHexMotor name="elevatorMotor" port="0" />
             <DigitalDevice name="elevatorLowerLimit" port="0" />
-            <DigitalDevice name="elevatorUpperLimit" port="2" />
+            <DigitalDevice name="elevatorUpperLimit" port="1" />
             <Servo name="foundationLatchServo" port="0" />
             <Servo name="extenderArmServo" port="1" />
             <Servo name="grabberServo" port="2" />

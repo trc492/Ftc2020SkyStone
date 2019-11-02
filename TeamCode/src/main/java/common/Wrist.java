@@ -28,12 +28,15 @@ import trclib.TrcEvent;
 
 public class Wrist
 {
-    FtcServo wrist = new FtcServo("wristServo");
-    TrcEnhancedServo enhancedWrist = new TrcEnhancedServo("enhancedWristServo", wrist);
+    private final FtcServo wrist = new FtcServo("wristServo");
+    private final TrcEnhancedServo enhancedWrist = new TrcEnhancedServo("enhancedWristServo", wrist);
+    private final double minPos, maxPos;
 
     public Wrist(double maxStepRate, double minPos, double maxPos, boolean inverted)
     {
         enhancedWrist.setStepMode(maxStepRate, minPos, maxPos);
+        this.minPos = minPos;
+        this.maxPos = maxPos;
         wrist.setInverted(inverted);
     }   //Wrist
 
@@ -51,5 +54,15 @@ public class Wrist
     {
         enhancedWrist.setPosition(position);
     }   //setPosition
+
+    public void retract()
+    {
+        setPosition(maxPos);
+    }   //retract
+
+    public void extend()
+    {
+        setPosition(minPos);
+    }   //extend
 
 }   //class Wrist

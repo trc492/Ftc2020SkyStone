@@ -145,8 +145,8 @@ class RobotInfo3543
     static final double EXTENDER_ARM_LOGICAL_MAX_POS    = (200.0/255.0);
     static final double EXTENDER_ARM_PHYSICAL_MIN_POS   = 0.0;
     static final double EXTENDER_ARM_PHYSICAL_MAX_POS   = 1.0;
-    static final double EXTENDER_ARM_EXTENDED_POS       = 1.0;
-    static final double EXTENDER_ARM_RETRACTED_POS      = 0.0;
+    static final double EXTENDER_ARM_RETRACTED_POS      = EXTENDER_ARM_LOGICAL_MIN_POS;
+    static final double EXTENDER_ARM_PLACEMENT_POS       = (150.0/255.0);
     static final double EXTENDER_ARM_MOVE_TIME          = 3.0;
 
     // Wrist subsystem.
@@ -162,9 +162,9 @@ class RobotInfo3543
     static final double GRABBER_RELEASE_TIME            = 3.0;
 
     // FoundationLatch subsystem.
-    static final double FOUNDATION_LATCH_CLOSE_POS      = 1.0;//(200.0/255.0);
+    static final double FOUNDATION_LATCH_CLOSE_POS      = (100.0/255.0);
     static final double FOUNDATION_LATCH_CLOSE_TIME     = 0.5;
-    static final double FOUNDATION_LATCH_OPEN_POS       = (60.0/255.0);
+    static final double FOUNDATION_LATCH_OPEN_POS       = 0.0;
     static final double FOUNDATION_LATCH_OPEN_TIME      = 0.5;
 
 }   //class RobotInfo3543

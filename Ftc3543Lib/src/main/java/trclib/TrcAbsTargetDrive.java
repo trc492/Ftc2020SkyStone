@@ -94,6 +94,7 @@ public class TrcAbsTargetDrive<StateType>
         TrcPose2D targetPose = currentPose.translatePose(xDelta, yDelta);
         TrcPose2D relativePose = targetPose.relativeTo(currentPose);
         targetHeading += turnDelta;
+        currentPose = targetPose;
 
         pidDrive.setTarget(
                 relativePose.x, relativePose.y,

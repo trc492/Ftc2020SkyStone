@@ -52,6 +52,12 @@ public class FoundationLatch implements GenericGrabber
     }   //grab
 
     @Override
+    public void grab(double time, TrcEvent event)
+    {
+        servo.setPosition(closePos, time, event);
+    }   //grab
+
+    @Override
     public void release()
     {
         servo.setPosition(openPos);
@@ -61,6 +67,12 @@ public class FoundationLatch implements GenericGrabber
     public void release(TrcEvent event)
     {
         servo.setPosition(openPos, openTime, event);
+    }   //release
+
+    @Override
+    public void release(double time, TrcEvent event)
+    {
+        servo.setPosition(openPos, time, event);
     }   //release
 
 }   //class FoundationLatch

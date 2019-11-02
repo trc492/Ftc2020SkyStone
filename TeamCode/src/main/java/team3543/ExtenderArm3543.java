@@ -49,13 +49,19 @@ public class ExtenderArm3543
 
     public void extend()
     {
-        enhancedExtender.setPosition(RobotInfo3543.EXTENDER_ARM_EXTENDED_POS);
+        enhancedExtender.setPosition(RobotInfo3543.EXTENDER_ARM_PLACEMENT_POS);
     }   //extend
 
     public void extend(TrcEvent event)
     {
         enhancedExtender.setPosition(
-                RobotInfo3543.EXTENDER_ARM_EXTENDED_POS, RobotInfo3543.EXTENDER_ARM_MOVE_TIME, event);
+                RobotInfo3543.EXTENDER_ARM_PLACEMENT_POS, RobotInfo3543.EXTENDER_ARM_MOVE_TIME, event);
+    }   //extend
+
+    public void extend(double time, TrcEvent event)
+    {
+        enhancedExtender.setPosition(
+                RobotInfo3543.EXTENDER_ARM_PLACEMENT_POS, time, event);
     }   //extend
 
     public void retract()
@@ -67,6 +73,12 @@ public class ExtenderArm3543
     {
         enhancedExtender.setPosition(
                 RobotInfo3543.EXTENDER_ARM_RETRACTED_POS, RobotInfo3543.EXTENDER_ARM_MOVE_TIME, event);
+    }   //retract
+
+    public void retract(double time, TrcEvent event)
+    {
+        enhancedExtender.setPosition(
+                RobotInfo3543.EXTENDER_ARM_RETRACTED_POS, time, event);
     }   //retract
 
 }   //class ExtenderArm3543

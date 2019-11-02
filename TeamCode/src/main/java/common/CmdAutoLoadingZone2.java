@@ -28,6 +28,7 @@ import trclib.TrcPidController;
 import trclib.TrcPose2D;
 import trclib.TrcRobot;
 import trclib.TrcStateMachine;
+import trclib.TrcTimer;
 import trclib.TrcTrigger;
 import trclib.TrcUtil;
 
@@ -37,10 +38,11 @@ public class CmdAutoLoadingZone2 implements TrcRobot.RobotCommand
     private static final boolean debugXPid = true;
     private static final boolean debugYPid = true;
     private static final boolean debugTurnPid = true;
-    private static final double VISION_TIMEOUT = 1.0;
+    private static final double VISION_TIMEOUT = 0.5;
 
     private enum State
     {
+        DO_DELAY,
         MOVE_CLOSER,
         SETUP_VISION,
         GET_TARGET_POSE,
@@ -48,6 +50,7 @@ public class CmdAutoLoadingZone2 implements TrcRobot.RobotCommand
         NEXT_SKYSTONE_POSITION,
         ALIGN_SKYSTONE,
         GOTO_SKYSTONE,
+        GO_DOWN_ON_SKYSTONE,
         GRAB_SKYSTONE,
         PULL_SKYSTONE,
         GOTO_FOUNDATION,
@@ -67,6 +70,7 @@ public class CmdAutoLoadingZone2 implements TrcRobot.RobotCommand
 
     private final Robot robot;
     private final CommonAuto.AutoChoices autoChoices;
+    private final TrcTimer timer;
     private final TrcEvent event;
     private final TrcStateMachine<State> sm;
     private final TrcAbsTargetDrive<State> absTargetDrive;
@@ -87,6 +91,7 @@ public class CmdAutoLoadingZone2 implements TrcRobot.RobotCommand
 
         this.robot = robot;
         this.autoChoices = autoChoices;
+        timer = new TrcTimer(moduleName);
         event = new TrcEvent(moduleName);
         sm = new TrcStateMachine<>(moduleName);
         absTargetDrive = new TrcAbsTargetDrive<>(
@@ -95,7 +100,7 @@ public class CmdAutoLoadingZone2 implements TrcRobot.RobotCommand
         {
             visionTrigger = new TrcTrigger("VisionTrigger", this::isTriggered, this::targetDetected);
         }
-        sm.start(State.MOVE_CLOSER);
+        sm.start(State.DO_DELAY);
     }   //CmdAutoLoadingZone2
 
     //
@@ -159,13 +164,33 @@ public class CmdAutoLoadingZone2 implements TrcRobot.RobotCommand
 
             switch (state)
             {
+                case DO_DELAY:
+                    //
+                    // Do delay if any.
+                    //
+                    robot.pidDrive.getXPidCtrl().saveAndSetOutputLimit(0.5);
+                    robot.pidDrive.getYPidCtrl().saveAndSetOutputLimit(0.5);
+                    if (autoChoices.delay == 0.0)
+                    {
+                        sm.setState(State.MOVE_CLOSER);
+                        //
+                        // Intentionally falling through to the next state.
+                        //
+                    }
+                    else
+                    {
+                        timer.set(autoChoices.delay, event);
+                        sm.waitForSingleEvent(event, State.MOVE_CLOSER);
+                        break;
+                    }
+
                 case MOVE_CLOSER:
                     //
                     // Move closer slowly for a distance so Vuforia can detect the target.
                     //
-                    robot.extenderArm.extend();
-                    robot.wrist.setPosition(0.0);
                     robot.grabber.release();
+                    robot.wrist.extend();
+                    robot.extenderArm.extend();
                     robot.pidDrive.getXPidCtrl().saveAndSetOutputLimit(0.5);
                     robot.pidDrive.getYPidCtrl().saveAndSetOutputLimit(0.5);
                     yTarget = 22.0;
@@ -244,18 +269,22 @@ public class CmdAutoLoadingZone2 implements TrcRobot.RobotCommand
                         visionTrigger.setEnabled(false);
                     }
                     // If we did not detect the skystone, assume it's right in front of us.
-                    yTarget = 8.0;
-                    absTargetDrive.setYTarget(yTarget, State.GRAB_SKYSTONE);
+                    yTarget = 10.0;
+                    absTargetDrive.setYTarget(yTarget, State.GO_DOWN_ON_SKYSTONE);
+                    break;
+
+                case GO_DOWN_ON_SKYSTONE:
+                    robot.extenderArm.retract(2.0, event);
+                    sm.waitForSingleEvent(event, State.GRAB_SKYSTONE);
                     break;
 
                 case GRAB_SKYSTONE:
-                    robot.extenderArm.retract(event);
+                    robot.grabber.grab(1.0, event);
                     sm.waitForSingleEvent(event, State.PULL_SKYSTONE);
                     break;
 
                 case PULL_SKYSTONE:
-                    robot.grabber.grab();
-                    yTarget = -12.0;
+                    yTarget = -15.0;
                     absTargetDrive.setYTarget(yTarget, State.GOTO_FOUNDATION);
                     break;
 
@@ -276,7 +305,8 @@ public class CmdAutoLoadingZone2 implements TrcRobot.RobotCommand
                     break;
 
                 case DROP_SKYSTONE:
-                    robot.grabber.release(event);
+                    robot.grabber.release();
+                    timer.set(1.0, event);
                     sm.waitForSingleEvent(event, State.BACK_OFF_FOUNDATION);
                     break;
 
@@ -287,12 +317,13 @@ public class CmdAutoLoadingZone2 implements TrcRobot.RobotCommand
                     break;
 
                 case TURN_AROUND:
+                    robot.wrist.retract();
                     turnTarget = 180.0;
                     absTargetDrive.setTurnTarget(turnTarget, State.BACKUP_TO_FOUNDATION);
                     break;
 
                 case BACKUP_TO_FOUNDATION:
-                    yTarget = -6.0;
+                    yTarget = -10.0;
                     absTargetDrive.setYTarget(yTarget, State.HOOK_FOUNDATION);
                     break;
 
@@ -312,6 +343,8 @@ public class CmdAutoLoadingZone2 implements TrcRobot.RobotCommand
                     break;
 
                 case PARK_UNDER_BRIDGE:
+                    robot.pidDrive.getXPidCtrl().restoreOutputLimit();
+                    robot.pidDrive.getYPidCtrl().restoreOutputLimit();
                     xTarget = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE? 48.0: -48.0;
                     absTargetDrive.setXTarget(xTarget, State.DONE);
                     break;

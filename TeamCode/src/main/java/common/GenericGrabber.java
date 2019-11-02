@@ -28,6 +28,8 @@ public interface GenericGrabber
 {
     void grab();
     void grab(TrcEvent finishedEvent);
+    void grab(double time, TrcEvent finishedEvent);
     void release();
     void release(TrcEvent finishedEvent);
+    void release(double time, TrcEvent finishedEvent);
 }   //interface GenericGrabber

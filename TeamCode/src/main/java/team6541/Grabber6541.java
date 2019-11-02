@@ -80,6 +80,12 @@ public class Grabber6541 implements GenericGrabber
     }   //grab
 
     @Override
+    public void grab(double time, TrcEvent finishedEvent)
+    {
+        setTimedPower(RobotInfo6541.GRABBER_GRAB_POWER, time, finishedEvent);
+    }   //grab
+
+    @Override
     public void release()
     {
         setTimedPower(RobotInfo6541.GRABBER_RELEASE_POWER, RobotInfo6541.GRABBER_RELEASE_TIME, null);
@@ -89,6 +95,12 @@ public class Grabber6541 implements GenericGrabber
     public void release(TrcEvent finsihedEvent)
     {
         setTimedPower(RobotInfo6541.GRABBER_RELEASE_POWER, RobotInfo6541.GRABBER_RELEASE_TIME, finishedEvent);
+    }   //release
+
+    @Override
+    public void release(double time, TrcEvent finsihedEvent)
+    {
+        setTimedPower(RobotInfo6541.GRABBER_RELEASE_POWER, time, finishedEvent);
     }   //release
 
 }   //class Grabber6541
