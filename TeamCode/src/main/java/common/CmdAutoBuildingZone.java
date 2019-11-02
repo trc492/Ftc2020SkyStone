@@ -78,8 +78,7 @@ public class CmdAutoBuildingZone implements TrcRobot.RobotCommand
         sm = new TrcStateMachine<>(moduleName);
         sm.start(State.DO_DELAY);
         absTargetDrive = new TrcAbsTargetDrive<>(
-                "CmdAutoBuildingZone", robot.driveBase, robot.pidDrive, event, sm,
-                false, true);
+                "CmdAutoBuildingZone", robot.driveBase, robot.pidDrive, event, sm);
     }   //CmdAutoBuildingZone
 
     @Override

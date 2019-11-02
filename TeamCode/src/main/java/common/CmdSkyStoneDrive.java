@@ -90,8 +90,7 @@ public class CmdSkyStoneDrive implements TrcRobot.RobotCommand
         event = new TrcEvent(moduleName);
         sm = new TrcStateMachine<>(moduleName);
         absTargetDrive = new TrcAbsTargetDrive<>(
-                "SkyStoneDrive", robot.driveBase, robot.pidDrive, event, sm,
-                false, true);
+                "SkyStoneDrive", robot.driveBase, robot.pidDrive, event, sm);
         if (useVisionTrigger)
         {
             visionTrigger = new TrcTrigger("VisionTrigger", this::isTriggered, this::targetDetected);
@@ -243,7 +242,7 @@ public class CmdSkyStoneDrive implements TrcRobot.RobotCommand
                         visionTrigger.setEnabled(false);
                     }
                     // If we did not detect the skystone, assume it's right in front of us.
-                    yTarget = skystonePose != null? skystonePose.y: 8.0;
+                    yTarget = 8.0;
                     absTargetDrive.setYTarget(yTarget, State.GRAB_SKYSTONE);
                     break;
 
@@ -285,7 +284,7 @@ public class CmdSkyStoneDrive implements TrcRobot.RobotCommand
                     break;
 
                 case TURN_AROUND:
-                    turnTarget = 180.0;
+                    robot.targetHeading = turnTarget = 180.0;
                     absTargetDrive.setTurnTarget(turnTarget, State.BACKUP_TO_FOUNDATION);
                     break;
 

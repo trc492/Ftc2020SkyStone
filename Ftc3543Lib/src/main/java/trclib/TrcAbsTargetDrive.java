@@ -45,9 +45,8 @@ public class TrcAbsTargetDrive<StateType>
     private final TrcPidDrive pidDrive;
     private final TrcEvent event;
     private final TrcStateMachine<StateType> sm;
-    private final boolean absXYControllers;
-    private final boolean absTurnController;
-    private double absXTarget, absYTarget, absTurnTarget;
+    private TrcPose2D currentPose;
+    private double targetHeading;
 
     /**
      * Constructor: Creates an instance of the object.
@@ -57,24 +56,18 @@ public class TrcAbsTargetDrive<StateType>
      * @param pidDrive specifies the PidDrive object to use for PID controlled drive.
      * @param event specifies the event to signal at the end of the drive.
      * @param sm specifies the state machine to advance to the next state at the end of the drive.
-     * @param absXYControllers specifies true if the X and Y controllers are absolute, false otherwise.
-     * @param absTurnController specifies true if the turn controller is absolute, false otherwise.
      */
     public TrcAbsTargetDrive(
             String instanceName, TrcDriveBase driveBase, TrcPidDrive pidDrive, TrcEvent event,
-            TrcStateMachine<StateType> sm, boolean absXYControllers, boolean absTurnController)
+            TrcStateMachine<StateType> sm)
     {
         this.instanceName = instanceName;
         this.driveBase = driveBase;
         this.pidDrive = pidDrive;
         this.event = event;
         this.sm = sm;
-        this.absXYControllers = absXYControllers;
-        this.absTurnController = absTurnController;
-
-        absXTarget = driveBase.getXPosition();
-        absYTarget = driveBase.getYPosition();
-        absTurnTarget = driveBase.getHeading();
+        currentPose = driveBase.getRelativePose();
+        targetHeading = driveBase.getHeading();
     }   //TrcAbsTargetDrive
 
     /**
@@ -91,38 +84,21 @@ public class TrcAbsTargetDrive<StateType>
     /**
      * This method sets the PID controlled relative drive targets.
      *
-     * @param xTarget specifies the X target relative to the current X position.
-     * @param yTarget specifies the Y target relative to the current Y position.
-     * @param turnTarget specifies the turn target relative to the current heading.
+     * @param xDelta specifies the X target relative to the current X position.
+     * @param yDelta specifies the Y target relative to the current Y position.
+     * @param turnDelta specifies the turn target relative to the current heading.
      * @param nextState specifies the next state the state machine should advance to at the end of the drive.
      */
-    public void setTarget(double xTarget, double yTarget, double turnTarget, StateType nextState)
+    public void setTarget(double xDelta, double yDelta, double turnDelta, StateType nextState)
     {
-        absXTarget += xTarget;
-        absYTarget += yTarget;
-        absTurnTarget += turnTarget;
+        TrcPose2D targetPose = currentPose.translatePose(xDelta, yDelta);
+        TrcPose2D relativePose = targetPose.relativeTo(currentPose);
+        targetHeading += turnDelta;
 
-        if (absXYControllers)
-        {
-            xTarget = absXTarget;
-            yTarget = absYTarget;
-        }
-        else
-        {
-            xTarget = absXTarget - driveBase.getXPosition();
-            yTarget = absYTarget - driveBase.getYPosition();
-        }
-
-        if (absTurnController)
-        {
-            turnTarget = absTurnTarget;
-        }
-        else
-        {
-            turnTarget = absTurnTarget - driveBase.getHeading();
-        }
-
-        pidDrive.setTarget(xTarget, yTarget, turnTarget, false, event);
+        pidDrive.setTarget(
+                relativePose.x, relativePose.y,
+                pidDrive.getTurnPidCtrl().hasAbsoluteSetPoint()? targetHeading: turnDelta,
+                false, event);
         sm.waitForSingleEvent(event, nextState);
     }   //setTarget
 

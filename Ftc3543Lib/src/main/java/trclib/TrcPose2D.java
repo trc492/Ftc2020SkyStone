@@ -160,4 +160,24 @@ public class TrcPose2D
         return transformed;
     }   //relativeTo
 
+    /**
+     * This method translates the this pose with the x and y offset in reference to the heading of the pose.
+     *
+     * @param xOffset specifies the x offset in reference to the heading of the pose.
+     * @param yOffset specifies the y offset in reference to the heading of the pose.
+     * @return translated pose.
+     */
+    public TrcPose2D translatePose(double xOffset, double yOffset)
+    {
+        TrcPose2D newPose = clone();
+        double headingRadians = Math.toRadians(newPose.heading);
+        double cosHeading = Math.cos(headingRadians);
+        double sinHeading = Math.sin(headingRadians);
+
+        newPose.x += xOffset*cosHeading + yOffset*sinHeading;
+        newPose.y += -xOffset*sinHeading + yOffset*cosHeading;
+
+        return newPose;
+    }   //translatePose
+
 }   //class TrcPose2D

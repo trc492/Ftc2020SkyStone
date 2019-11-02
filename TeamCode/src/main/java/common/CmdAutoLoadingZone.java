@@ -82,8 +82,7 @@ public class CmdAutoLoadingZone implements TrcRobot.RobotCommand
         sm = new TrcStateMachine<>(moduleName);
         sm.start(State.DO_DELAY);
         absTargetDrive = new TrcAbsTargetDrive<>(
-                "CmdAutoLoadingZone", robot.driveBase, robot.pidDrive, event, sm,
-                false, true);
+                "CmdAutoLoadingZone", robot.driveBase, robot.pidDrive, event, sm);
     }   //CmdAutoLoadingZone
 
     @Override

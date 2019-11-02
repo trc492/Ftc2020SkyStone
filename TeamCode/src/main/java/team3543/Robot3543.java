@@ -114,7 +114,7 @@ public class Robot3543 extends Robot
 
                 wrist = new Wrist(RobotInfo3543.WRIST_MAX_STEPRATE, RobotInfo3543.WRIST_MIN_POS,
                         RobotInfo3543.WRIST_MAX_POS, RobotInfo3543.WRIST_INVERTED);
-                wrist.setPosition(RobotInfo3543.WRIST_MIN_POS);
+                wrist.setPosition(RobotInfo3543.WRIST_MAX_POS);
                 grabber = new Grabber3543();
                 grabber.release();
                 foundationLatch = new FoundationLatch(
