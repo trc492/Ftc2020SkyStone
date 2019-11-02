@@ -31,7 +31,7 @@ import trclib.TrcStateMachine;
 import trclib.TrcTrigger;
 import trclib.TrcUtil;
 
-public class CmdSkyStoneDrive implements TrcRobot.RobotCommand
+public class CmdAutoLoadingZone2 implements TrcRobot.RobotCommand
 {
     private static final boolean useVisionTrigger = false;
     private static final boolean debugXPid = true;
@@ -63,10 +63,10 @@ public class CmdSkyStoneDrive implements TrcRobot.RobotCommand
         DONE
     }   //enum State
 
-    private static final String moduleName = "CmdSkyStoneDrive";
+    private static final String moduleName = "CmdAutoLoadingZone2";
 
     private final Robot robot;
-    private final boolean redAlliance;
+    private final CommonAuto.AutoChoices autoChoices;
     private final TrcEvent event;
     private final TrcStateMachine<State> sm;
     private final TrcAbsTargetDrive<State> absTargetDrive;
@@ -81,12 +81,12 @@ public class CmdSkyStoneDrive implements TrcRobot.RobotCommand
      *
      * @param robot specifies the robot object for providing access to various global objects.
      */
-    public CmdSkyStoneDrive(Robot robot, boolean redAlliance)
+    public CmdAutoLoadingZone2(Robot robot, CommonAuto.AutoChoices autoChoices)
     {
         robot.globalTracer.traceInfo(moduleName, "robot=%s", robot);
 
         this.robot = robot;
-        this.redAlliance = redAlliance;
+        this.autoChoices = autoChoices;
         event = new TrcEvent(moduleName);
         sm = new TrcStateMachine<>(moduleName);
         absTargetDrive = new TrcAbsTargetDrive<>(
@@ -96,7 +96,7 @@ public class CmdSkyStoneDrive implements TrcRobot.RobotCommand
             visionTrigger = new TrcTrigger("VisionTrigger", this::isTriggered, this::targetDetected);
         }
         sm.start(State.MOVE_CLOSER);
-    }   //CmdSkyStoneDrive
+    }   //CmdAutoLoadingZone2
 
     //
     // Implements the TrcRobot.RobotCommand interface.
@@ -208,7 +208,7 @@ public class CmdSkyStoneDrive implements TrcRobot.RobotCommand
                 case SCAN_FOR_SKYSTONE:
                     visionTrigger.setEnabled(true);
                     scanningForSkyStone = true;
-                    xTarget = redAlliance? -16.0: 16.0;
+                    xTarget = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE? -16.0: 16.0;
                     absTargetDrive.setXTarget(xTarget, State.SETUP_VISION);
                     break;
 
@@ -216,14 +216,16 @@ public class CmdSkyStoneDrive implements TrcRobot.RobotCommand
                     if (scootCount > 0)
                     {
                         scootCount--;
-                        xTarget = redAlliance? -8.0: 8.0;
+                        xTarget = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE? -8.0: 8.0;
                         absTargetDrive.setXTarget(xTarget, State.SETUP_VISION);
                     }
                     else
                     {
                         // Still can't detect the target. Just assume the one in front is a skystone. We will still
                         // get some points even if we are wrong, better than nothing!
-                        sm.setState(State.SETUP_VISION);//GOTO_SKYSTONE);
+                        robot.globalTracer.traceInfo(
+                                "NextSkyStonePos", "Skystone not found, giving up.");
+                        sm.setState(State.GOTO_SKYSTONE);
                     }
                     break;
 
@@ -261,7 +263,8 @@ public class CmdSkyStoneDrive implements TrcRobot.RobotCommand
                     robot.extenderArm.extend();
                     robot.pidDrive.getXPidCtrl().restoreOutputLimit();
                     robot.pidDrive.getYPidCtrl().restoreOutputLimit();
-                    xTarget = (redAlliance? 72.0: -72.0) - robot.driveBase.getXPosition();
+                    xTarget = (autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE? 72.0: -72.0)
+                              - robot.driveBase.getXPosition();
                     absTargetDrive.setXTarget(xTarget, State.APPROACH_FOUNDATION);
                     break;
 
@@ -309,7 +312,7 @@ public class CmdSkyStoneDrive implements TrcRobot.RobotCommand
                     break;
 
                 case PARK_UNDER_BRIDGE:
-                    xTarget = redAlliance? 48.0: -48.0;
+                    xTarget = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE? 48.0: -48.0;
                     absTargetDrive.setXTarget(xTarget, State.DONE);
                     break;
 
@@ -375,4 +378,4 @@ public class CmdSkyStoneDrive implements TrcRobot.RobotCommand
         }
     }   //targetDetected
 
-}   //class CmdSkyStoneDrive
+}   //class CmdAutoLoadingZone2

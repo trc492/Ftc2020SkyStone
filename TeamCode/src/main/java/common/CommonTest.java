@@ -54,8 +54,7 @@ public class CommonTest
         TUNE_X_PID,
         TUNE_Y_PID,
         TUNE_TURN_PID,
-        PURE_PURSUIT_DRIVE,
-        SKYSTONE_DRIVE
+        PURE_PURSUIT_DRIVE
     }   //enum Test
 
     private enum State
@@ -200,14 +199,6 @@ public class CommonTest
                             robot.driveBase, posPidCoeff, turnPidCoeff, velPidCoeff);
                 }
                 break;
-
-            case SKYSTONE_DRIVE:
-                if (hasRobot)
-                {
-                    // Testing for blue alliance.
-                    testCommand = new CmdSkyStoneDrive(robot, false);
-                }
-                break;
         }
         //
         // Only SENSORS_TEST needs TensorFlow, shut it down for all other tests.
@@ -322,7 +313,6 @@ public class CommonTest
             case TUNE_X_PID:
             case TUNE_Y_PID:
             case TUNE_TURN_PID:
-            case SKYSTONE_DRIVE:
                 if (hasRobot)
                 {
                     robot.dashboard.displayPrintf(9, "xPos=%.1f,yPos=%.1f,heading=%.1f",
@@ -418,7 +408,6 @@ public class CommonTest
         testMenu.addChoice("Tune Y PID", Test.TUNE_Y_PID, false, tuneKpMenu);
         testMenu.addChoice("Tune Turn PID", Test.TUNE_TURN_PID, false, tuneKpMenu);
         testMenu.addChoice("Pure Pursuit Drive", Test.PURE_PURSUIT_DRIVE, false);
-        testMenu.addChoice("SkyStone Drive", Test.SKYSTONE_DRIVE, false);
 
         driveTimeMenu.setChildMenu(drivePowerMenu);
         driveDistanceMenu.setChildMenu(drivePowerMenu);

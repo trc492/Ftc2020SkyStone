@@ -125,7 +125,7 @@ public abstract class CommonAuto extends FtcOpMode
             case START_AT_LOADING_ZONE:
                 if (hasRobot)
                 {
-                    autoCommand = new CmdAutoLoadingZone(robot, autoChoices);
+                    autoCommand = new CmdAutoLoadingZone2(robot, autoChoices);
                 }
                 break;
 
