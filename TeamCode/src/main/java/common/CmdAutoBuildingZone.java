@@ -49,13 +49,21 @@ public class CmdAutoBuildingZone implements TrcRobot.RobotCommand
         SCOOT_TO_SIDE,
         NOT_FOUNDATION_TURN,
         NOT_FOUNDATION_MOVE,
+        DECIDE_INITIAL_ROUTE_6541,
+        DRIVE_DIRECTLY_UNDER_BRIDGE_IF_NOT_MOVING_FOUNDATION_6541,
         RAISE_ELEVATOR_6541,
         DRIVE_UNTIL_GRABBER_ALIGNED_WITH_FOUNDATION_6541,
         CRAB_TO_ALIGN_WITH_FOUNDATION_6541,
+        GO_FORWARD_A_BIT_MORE_6541,
         HOOK_FOUNDATION_6541,
+        ROTATE_FOUNDATION_TO_CORNER_6541,
         PUSH_FOUNDATION_TO_WALL_6541,
-        CRAB_TO_WALL_6541_WHILE_HOOKING_FOUNDATION_6541,
         UNHOOK_FOUNDATION_6541,
+        BACK_OFF_FROM_FOUNDATION_6541,
+        LOWER_ELEVATOR_AFTER_BACKING_OFF_6541,
+        CRAB_TOWARD_WALL_6541,
+        ALIGN_WITH_BRIDGE_6541,
+        KISS_THE_WALL_6541,
         PARK_UNDER_BRIDGE_6541,
         DONE
     }   //enum State
@@ -122,7 +130,8 @@ public class CmdAutoBuildingZone implements TrcRobot.RobotCommand
                     robot.pidDrive.getYPidCtrl().saveAndSetOutputLimit(0.5);
 
                     nextState = robot.preferences.get("team3543") ?
-                            State.MOVE_TO_FOUNDATION : State.RAISE_ELEVATOR_6541;
+                            State.MOVE_TO_FOUNDATION :
+                            State.DECIDE_INITIAL_ROUTE_6541;
 
                     if (autoChoices.delay == 0.0)
                     {
@@ -244,57 +253,132 @@ public class CmdAutoBuildingZone implements TrcRobot.RobotCommand
                     absTargetDrive.setYTarget(yTarget, state.DONE);
                     break;
 
+                case DECIDE_INITIAL_ROUTE_6541:
+                    // are we going to move the foundation?
+                    // if so, we will set the next state to raising the elevator and moving the foundation.
+                    // if not so, we will check if we will park under the bridge.
+                    // if we will park under the bridge, then we will drive forwards directly under the bridge.
+                    // if we will not park under the bridge, then we will do nothing, and go to done.
+                    nextState = autoChoices.moveFoundation ?
+                            State.RAISE_ELEVATOR_6541 :
+                            (autoChoices.parkUnderBridge ?
+                                    State.DRIVE_DIRECTLY_UNDER_BRIDGE_IF_NOT_MOVING_FOUNDATION_6541 :
+                                    State.DONE);
+                    sm.setState(nextState);
+                    break;
+
+                case DRIVE_DIRECTLY_UNDER_BRIDGE_IF_NOT_MOVING_FOUNDATION_6541:
+                    // if not moving the foundation and parking under bridge, drive directly forwards to bridge.
+                    yTarget = 24.0;
+                    absTargetDrive.setYTarget(yTarget, State.DONE);
+                    break;
+
                 case RAISE_ELEVATOR_6541:
+                    // raise the elevator to prevent end effector from colliding with bridge.
                     robot.elevator.setPosition(15.0, event, 0.0);
                     sm.waitForSingleEvent(event, State.DRIVE_UNTIL_GRABBER_ALIGNED_WITH_FOUNDATION_6541);
                     break;
 
                 case DRIVE_UNTIL_GRABBER_ALIGNED_WITH_FOUNDATION_6541:
-                    yTarget = 14.0;
+                    // drive forward 3 inches to prevent robot base from colliding orthogonally to foundation.
+                    yTarget = 3.0;
                     absTargetDrive.setYTarget(yTarget, State.CRAB_TO_ALIGN_WITH_FOUNDATION_6541);
                     break;
 
                 case CRAB_TO_ALIGN_WITH_FOUNDATION_6541:
-                    xTarget = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE ? 48.0 : -48.0;
-                    absTargetDrive.setXTarget(xTarget, State.HOOK_FOUNDATION_6541);
+                    // crab over to the foundation, and target the center of the foundation with the grabber.
+                    xTarget = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE ? 50.0 : -50.0;
+                    absTargetDrive.setXTarget(xTarget, State.GO_FORWARD_A_BIT_MORE_6541);
+                    break;
+
+                case GO_FORWARD_A_BIT_MORE_6541:
+                    // drive backward 5 inches to align grabber vertically with foundation.
+                    yTarget = -5.0;
+                    absTargetDrive.setYTarget(yTarget, State.HOOK_FOUNDATION_6541);
                     break;
 
                 case HOOK_FOUNDATION_6541:
+                    // hook the foundation.
+                    // after that, rotate a magnitude of 60 degrees to face the corner.
+                    nextState = State.ROTATE_FOUNDATION_TO_CORNER_6541;
                     if (robot.foundationLatch != null)
                     {
                         robot.foundationLatch.grab(event);
-                        sm.waitForSingleEvent(event, State.PUSH_FOUNDATION_TO_WALL_6541);
+                        sm.waitForSingleEvent(event, nextState);
                     }
                     else
                     {
-                        sm.setState(State.PUSH_FOUNDATION_TO_WALL_6541);
+                        sm.setState(nextState);
                     }
+                    break;
+
+                case ROTATE_FOUNDATION_TO_CORNER_6541:
+                    // rotate with an angular displacement magnitude of 60 degrees to face the building zone corner.
+                    // direction of rotation will vary based on red alliance or blue alliance.
+                    // if red alliance, rotate 60 degrees clockwise.
+                    // if blue alliance, rotate 60 degrees anti-clockwise.
+                    turnTarget = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE ? 60.0 : -60.0;
+                    absTargetDrive.setTurnTarget(turnTarget, State.PUSH_FOUNDATION_TO_WALL_6541);
                     break;
 
                 case PUSH_FOUNDATION_TO_WALL_6541:
-                    yTarget = -4.0;
-                    absTargetDrive.setYTarget(yTarget, State.CRAB_TO_WALL_6541_WHILE_HOOKING_FOUNDATION_6541);
-                    break;
-
-                case CRAB_TO_WALL_6541_WHILE_HOOKING_FOUNDATION_6541:
-                    xTarget = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE ? -48.0 : 48.0;
-                    absTargetDrive.setXTarget(xTarget, State.UNHOOK_FOUNDATION_6541);
+                    // pid drive is unreliable due to wheel slip when robot is overcoming significant kinetic friction,
+                    // which is present when the robot is pushing heavy loads such as foundation.
+                    // as a result, blindly drive the board into the corner for 2 seconds, applying moderate torque.
+                    // afterwards, unhook the foundation and decide whether to park under the bridge.
+                    robot.driveBase.holonomicDrive(0.0, -0.6, 0.0);
+                    timer.set(1.0, event);
+                    sm.waitForSingleEvent(event, State.UNHOOK_FOUNDATION_6541);
                     break;
 
                 case UNHOOK_FOUNDATION_6541:
+                    // will we park under the bridge?
+                    // for both cases, we will first unhook the foundation.
+                    // if we are parking under bridge, we will drive to the bridge.
+                    // otherwise, we will remain at the site of the foundation until match end. (set state to done)
+                    nextState = autoChoices.parkUnderBridge ?
+                            State.BACK_OFF_FROM_FOUNDATION_6541 :
+                            State.DONE;
                     if(robot.foundationLatch != null)
                     {
                         robot.foundationLatch.release(event);
-                        sm.waitForSingleEvent(event, State.PARK_UNDER_BRIDGE_6541);
+                        sm.waitForSingleEvent(event, nextState);
                     }
                     else
                     {
-                        sm.setState(State.PARK_UNDER_BRIDGE_6541);
+                        sm.setState(nextState);
                     }
                     break;
 
+                case BACK_OFF_FROM_FOUNDATION_6541:
+                    yTarget = 4.0;
+                    absTargetDrive.setYTarget(yTarget, State.LOWER_ELEVATOR_AFTER_BACKING_OFF_6541);
+                    break;
+
+                case LOWER_ELEVATOR_AFTER_BACKING_OFF_6541:
+                    robot.elevator.setPosition(0.0, event, 0.0);
+                    sm.waitForSingleEvent(event, State.DONE); // TODO: uwu, crab toward wall 6541
+                    break;
+
+                case CRAB_TOWARD_WALL_6541:
+                    xTarget = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE ? -21.0 : 21.0;
+                    absTargetDrive.setXTarget(xTarget, State.ALIGN_WITH_BRIDGE_6541);
+                    break;
+
+                case ALIGN_WITH_BRIDGE_6541:
+                    turnTarget = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE ? -60.0 : 60.0;
+                    absTargetDrive.setTurnTarget(turnTarget, State.KISS_THE_WALL_6541);
+                    break;
+
+                case KISS_THE_WALL_6541:
+                    double xPower = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE ? -1.0 : 1.0;
+                    robot.driveBase.holonomicDrive(xPower, 0.0, 0.0);
+                    timer.set(1.0, event);
+                    sm.waitForSingleEvent(event, State.PARK_UNDER_BRIDGE_6541);
+                    break;
+
                 case PARK_UNDER_BRIDGE_6541:
-                    yTarget = 36.0;
+                    yTarget = 12.0;
                     absTargetDrive.setYTarget(yTarget, State.DONE);
                     break;
 
