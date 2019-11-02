@@ -125,7 +125,7 @@ public class CmdAutoBuildingZone implements TrcRobot.RobotCommand
 
                     nextState = robot.preferences.get("team3543") ?
                             State.MOVE_TO_FOUNDATION : State.RAISE_ELEVATOR_6541;
-                    
+
                     if (autoChoices.delay == 0.0)
                     {
                         sm.setState(nextState);
@@ -262,13 +262,14 @@ public class CmdAutoBuildingZone implements TrcRobot.RobotCommand
                     break;
 
                 case HOOK_FOUNDATION_6541:
-                    if(robot.foundationLatch != null) {
+                    if (robot.foundationLatch != null)
+                    {
                         robot.foundationLatch.grab(event);
                         sm.waitForSingleEvent(event, State.PUSH_FOUNDATION_TO_WALL_6541);
-                        //sm.waitForSingleEvent(event, State.DONE);
-                    } else {
+                    }
+                    else
+                    {
                         sm.setState(State.PUSH_FOUNDATION_TO_WALL_6541);
-                        //sm.setState(State.DONE);
                     }
                     break;
 
@@ -283,13 +284,14 @@ public class CmdAutoBuildingZone implements TrcRobot.RobotCommand
                     break;
 
                 case UNHOOK_FOUNDATION_6541:
-                    if(robot.foundationLatch != null) {
+                    if(robot.foundationLatch != null)
+                    {
                         robot.foundationLatch.release(event);
                         sm.waitForSingleEvent(event, State.PARK_UNDER_BRIDGE_6541);
-                        //sm.waitForSingleEvent(event, State.DONE);
-                    } else {
+                    }
+                    else
+                    {
                         sm.setState(State.PARK_UNDER_BRIDGE_6541);
-                        //sm.setState(State.DONE);
                     }
                     break;
 
