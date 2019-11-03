@@ -37,12 +37,12 @@ public class Elevator
     private TrcPidController pidController;
     private TrcPidActuator pidElevator;
 
-    private double elevatorBaseTierHeight;
-    private double elevatorLevelHeightDelta;
+    private double[] elevatorHeightPresets;
+    private int elevatorLevel;
 
     public Elevator(
             double minHeight, double maxHeight, double scale, double offset, TrcPidController.PidCoefficients pidCoeff,
-            double tolerance, double calPower, TrcHashMap<String, Boolean> preferences, double elevatorBaseTierHeight, double elevatorLevelHeightDelta)
+            double tolerance, double calPower, TrcHashMap<String, Boolean> preferences, double[] elevatorHeightPresets)
     {
         lowerLimitSwitch = new FtcDigitalInput("elevatorLowerLimit");
         if (!preferences.get("team3543"))
@@ -72,14 +72,14 @@ public class Elevator
                 minHeight, maxHeight);
         pidElevator.setPositionScale(scale, offset);
 
-        this.elevatorBaseTierHeight = elevatorBaseTierHeight;
-        this.elevatorLevelHeightDelta = elevatorLevelHeightDelta;
+        this.elevatorHeightPresets = elevatorHeightPresets;
+        this.elevatorLevel = 0;
     }   //Elevator
 
     public Elevator(double minHeight, double maxHeight, double scale, double offset, TrcPidController.PidCoefficients pidCoeff,
                     double tolerance, double calPower, TrcHashMap<String, Boolean> preferences)
     {
-        this(minHeight, maxHeight, scale, offset, pidCoeff, tolerance, calPower, preferences, 0.0, 0.0);
+        this(minHeight, maxHeight, scale, offset, pidCoeff, tolerance, calPower, preferences, new double[]{0.0});
     }
 
     public void zeroCalibrate()
@@ -109,12 +109,28 @@ public class Elevator
 
     public void setLevel(int level)
     {
-        double targetHeight = 0.0;
-        if (level >= 0)
+        if (level < 0)
         {
-            targetHeight = elevatorBaseTierHeight + (level * elevatorLevelHeightDelta);
+            elevatorLevel = 0;
         }
-        setPosition(targetHeight);
+        else if (level >= elevatorHeightPresets.length)
+        {
+            elevatorLevel = elevatorHeightPresets.length - 1;
+        }
+
+        setPosition(elevatorHeightPresets[elevatorLevel]);
+    }
+
+    public void levelUp()
+    {
+        elevatorLevel++;
+        setLevel(elevatorLevel);
+    }
+
+    public void levelDown()
+    {
+        elevatorLevel--;
+        setLevel(elevatorLevel);
     }
 
     public double getPosition()

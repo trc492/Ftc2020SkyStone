@@ -106,7 +106,7 @@ public class Robot6541 extends Robot
                             new TrcPidController.PidCoefficients(RobotInfo6541.ELEVATOR_KP, RobotInfo6541.ELEVATOR_KI,
                                     RobotInfo6541.ELEVATOR_KD),
                             RobotInfo6541.ELEVATOR_TOLERANCE, RobotInfo6541.ELEVATOR_CAL_POWER, preferences6541,
-                            RobotInfo6541.ELEVATOR_BASE_TIER_HEIGHT, RobotInfo6541.ELEVATOR_LEVEL_HEIGHT_DELTA);
+                            RobotInfo6541.ELEVATOR_HEIGHT_PRESETS);
                     elevator.zeroCalibrate();
                 }
 

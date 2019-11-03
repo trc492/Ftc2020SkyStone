@@ -33,7 +33,6 @@ import trclib.TrcRobot;
 public class FtcTeleOp6541 extends CommonTeleOp
 {
     private static final String MODULE_NAME = "FtcTeleOp6541";
-    private int elevatorLevel = 0;
 
     //
     // Implements FtcOpMode abstract method.
@@ -122,22 +121,12 @@ public class FtcTeleOp6541 extends CommonTeleOp
 
                 case FtcGamepad.GAMEPAD_DPAD_UP:
                     processed = true;
-                    elevatorLevel++;
-                    if (elevatorLevel > 5)
-                    {
-                        elevatorLevel = 5;
-                    }
-                    robot.elevator.setLevel(elevatorLevel);
+                    robot.elevator.levelUp();
                     break;
 
                 case FtcGamepad.GAMEPAD_DPAD_DOWN:
                     processed = true;
-                    elevatorLevel--;
-                    if (elevatorLevel < 0)
-                    {
-                        elevatorLevel = 0;
-                    }
-                    robot.elevator.setLevel(elevatorLevel);
+                    robot.elevator.levelDown();
                     break;
 
                 case FtcGamepad.GAMEPAD_DPAD_LEFT:
