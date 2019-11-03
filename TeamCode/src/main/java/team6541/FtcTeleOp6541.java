@@ -120,23 +120,35 @@ public class FtcTeleOp6541 extends CommonTeleOp
                     break;
 
                 case FtcGamepad.GAMEPAD_DPAD_UP:
-                    processed = true;
-                    robot.elevator.levelUp();
+                    if (pressed)
+                    {
+                        processed = true;
+                        robot.elevator.levelUp();
+                    }
                     break;
 
                 case FtcGamepad.GAMEPAD_DPAD_DOWN:
-                    processed = true;
-                    robot.elevator.levelDown();
+                    if (pressed)
+                    {
+                        processed = true;
+                        robot.elevator.levelDown();
+                    }
                     break;
 
                 case FtcGamepad.GAMEPAD_DPAD_LEFT:
-                    processed = true;
-                    robot.elevator.setLevel(0); // set elevator to base level.
+                    if (pressed)
+                    {
+                        processed = true;
+                        robot.elevator.setLevel(0); // set elevator to base level.
+                    }
                     break;
 
                 case FtcGamepad.GAMEPAD_DPAD_RIGHT:
-                    processed = true;
-                    robot.elevator.setLevel(1); // set elevator to first level.
+                    if (pressed)
+                    {
+                        processed = true;
+                        robot.elevator.setLevel(1); // set elevator to first level.
+                    }
                     break;
 
                 case FtcGamepad.GAMEPAD_BACK:

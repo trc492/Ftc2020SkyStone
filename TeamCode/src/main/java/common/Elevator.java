@@ -117,6 +117,10 @@ public class Elevator
         {
             elevatorLevel = elevatorHeightPresets.length - 1;
         }
+        else
+        {
+            elevatorLevel = level;
+        }
 
         setPosition(elevatorHeightPresets[elevatorLevel]);
     } // setLevel
