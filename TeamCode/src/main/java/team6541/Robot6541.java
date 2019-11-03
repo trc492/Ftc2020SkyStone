@@ -45,10 +45,10 @@ public class Robot6541 extends Robot
             .add("useLoopPerformanceMonitor", true)
             .add("useBlinkin", true)
             .add("useVelocityControl", false)
-            .add("useVuforia", true)
+            .add("useVuforia", false)
             .add("useTensorFlow", false)
-            .add("useFlashLight", true)
-            .add("showVuforiaView", true)
+            .add("useFlashLight", false)
+            .add("showVuforiaView", false)
             .add("showTensorFlowView", false)
             .add("initSubsystems", true)
             .add("team3543", false);

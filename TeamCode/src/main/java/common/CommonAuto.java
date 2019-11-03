@@ -170,47 +170,6 @@ public abstract class CommonAuto extends FtcOpMode
     }   //initRobot
 
     @Override
-    public void initPeriodic()
-    {
-        if (robot.tensorFlowVision != null)
-        {
-            TensorFlowVision.TargetInfo[] targetsInfo =
-                    robot.tensorFlowVision.getDetectedTargetsInfo(TensorFlowVision.LABEL_SKYSTONE);
-
-            if (targetsInfo != null)
-            {
-                long currNanoTime = TrcUtil.getCurrentTimeNanos();
-
-                robot.detectionSuccessCount++;
-                robot.targetsInfo = targetsInfo;
-                if (robot.detectionIntervalStartTime == 0)
-                {
-                    //
-                    // This is the first time we detected target.
-                    //
-                    robot.detectionIntervalStartTime = currNanoTime;
-                }
-                else
-                {
-                    //
-                    // Sum the interval between each successful detection.
-                    //
-                    robot.detectionIntervalTotalTime += currNanoTime - robot.detectionIntervalStartTime;
-                    robot.detectionIntervalStartTime = currNanoTime;
-                }
-            }
-            else
-            {
-                robot.detectionFailedCount++;
-            }
-        }
-        else
-        {
-            super.initPeriodic();
-        }
-    }   //initPeriodic
-
-    @Override
     public void startMode(TrcRobot.RunMode prevMode, TrcRobot.RunMode nextMode)
     {
         if (robot.preferences.get("useTraceLog"))
@@ -241,9 +200,6 @@ public abstract class CommonAuto extends FtcOpMode
 
             robot.globalTracer.traceInfo(moduleName, "%s: DetectionAvgTime=%.3f, SuccessCount=%d, FailedCount=%d",
                     msg, avgDetectionTime, robot.detectionSuccessCount, robot.detectionFailedCount);
-//            robot.globalTracer.traceInfo(moduleName, "Shutting down TensorFlow.");
-//            robot.tensorFlowVision.shutdown();
-//            robot.tensorFlowVision = null;
         }
 
         if (robot.battery != null)

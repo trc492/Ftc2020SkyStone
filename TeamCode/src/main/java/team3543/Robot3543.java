@@ -48,7 +48,7 @@ public class Robot3543 extends Robot
             .add("useVuforia", true)
             .add("useTensorFlow", false)
             .add("useFlashLight", true)
-            .add("showVuforiaView", true)
+            .add("showVuforiaView", false)
             .add("showTensorFlowView", false)
             .add("initSubsystems", true)
             .add("team3543", true);
