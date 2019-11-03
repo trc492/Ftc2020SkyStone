@@ -138,8 +138,8 @@ class RobotInfo6541
 
     // Wrist subsystem.
     static final double WRIST_MAX_STEPRATE              = 1.0 / 0.75;
-    static final double WRIST_MIN_POS                   = 130.0 / 255.0;
-    static final double WRIST_MAX_POS                   = 1.0;
+    static final double WRIST_MIN_POS                   = 0.0;
+    static final double WRIST_MAX_POS                   = 0.5;
     static final boolean WRIST_INVERTED                 = true;
 
     // Grabber subsystem.
