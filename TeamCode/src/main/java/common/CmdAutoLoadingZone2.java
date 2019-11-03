@@ -38,7 +38,7 @@ public class CmdAutoLoadingZone2 implements TrcRobot.RobotCommand
     private static final boolean debugXPid = true;
     private static final boolean debugYPid = true;
     private static final boolean debugTurnPid = true;
-    private static final double VISION_TIMEOUT = 0.5;
+    private static final double VISION_TIMEOUT = 1.0;
 
     private enum State
     {
@@ -168,8 +168,8 @@ public class CmdAutoLoadingZone2 implements TrcRobot.RobotCommand
                     //
                     // Do delay if any.
                     //
-                    robot.pidDrive.getXPidCtrl().saveAndSetOutputLimit(0.5);
-                    robot.pidDrive.getYPidCtrl().saveAndSetOutputLimit(0.5);
+                    robot.pidDrive.getXPidCtrl().setOutputLimit(0.5);
+                    robot.pidDrive.getYPidCtrl().setOutputLimit(0.5);
                     if (autoChoices.delay == 0.0)
                     {
                         sm.setState(State.MOVE_CLOSER);
@@ -191,8 +191,8 @@ public class CmdAutoLoadingZone2 implements TrcRobot.RobotCommand
                     robot.grabber.release();
                     robot.wrist.extend();
                     robot.extenderArm.extend();
-                    robot.pidDrive.getXPidCtrl().saveAndSetOutputLimit(0.5);
-                    robot.pidDrive.getYPidCtrl().saveAndSetOutputLimit(0.5);
+                    robot.pidDrive.getXPidCtrl().setOutputLimit(0.5);
+                    robot.pidDrive.getYPidCtrl().setOutputLimit(0.5);
                     yTarget = 22.0;
                     absTargetDrive.setYTarget(yTarget, State.SETUP_VISION);
                     break;
@@ -241,8 +241,8 @@ public class CmdAutoLoadingZone2 implements TrcRobot.RobotCommand
                     if (scootCount > 0)
                     {
                         scootCount--;
-                        xTarget = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE? -8.0: 8.0;
-                        absTargetDrive.setXTarget(xTarget, State.SETUP_VISION);
+                        xTarget = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE? -9.0: 9.0;
+                        absTargetDrive.setXTarget(xTarget, (scootCount == 0? State.GOTO_SKYSTONE : State.SETUP_VISION));
                     }
                     else
                     {
@@ -269,7 +269,7 @@ public class CmdAutoLoadingZone2 implements TrcRobot.RobotCommand
                         visionTrigger.setEnabled(false);
                     }
                     // If we did not detect the skystone, assume it's right in front of us.
-                    yTarget = 10.0;
+                    yTarget = 9.2;
                     absTargetDrive.setYTarget(yTarget, State.GO_DOWN_ON_SKYSTONE);
                     break;
 
@@ -284,22 +284,22 @@ public class CmdAutoLoadingZone2 implements TrcRobot.RobotCommand
                     break;
 
                 case PULL_SKYSTONE:
-                    yTarget = -15.0;
+                    yTarget = -14.2;
                     absTargetDrive.setYTarget(yTarget, State.GOTO_FOUNDATION);
                     break;
 
                 case GOTO_FOUNDATION:
                     robot.extenderArm.extend();
-                    robot.pidDrive.getXPidCtrl().restoreOutputLimit();
-                    robot.pidDrive.getYPidCtrl().restoreOutputLimit();
+                    robot.pidDrive.getXPidCtrl().setOutputLimit(1.0);
+                    robot.pidDrive.getYPidCtrl().setOutputLimit(1.0);
                     xTarget = (autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE? 72.0: -72.0)
                               - robot.driveBase.getXPosition();
                     absTargetDrive.setXTarget(xTarget, State.APPROACH_FOUNDATION);
                     break;
 
                 case APPROACH_FOUNDATION:
-                    robot.pidDrive.getXPidCtrl().saveAndSetOutputLimit(0.5);
-                    robot.pidDrive.getYPidCtrl().saveAndSetOutputLimit(0.5);
+//                    robot.pidDrive.getXPidCtrl().saveAndSetOutputLimit(0.5);
+//                    robot.pidDrive.getYPidCtrl().saveAndSetOutputLimit(0.5);
                     yTarget = 12.0;
                     absTargetDrive.setYTarget(yTarget, State.DROP_SKYSTONE);
                     break;
@@ -311,12 +311,14 @@ public class CmdAutoLoadingZone2 implements TrcRobot.RobotCommand
                     break;
 
                 case BACK_OFF_FOUNDATION:
-                    robot.extenderArm.retract();
+                    robot.pidDrive.getXPidCtrl().setOutputLimit(1.0);
+                    robot.pidDrive.getYPidCtrl().setOutputLimit(1.0);
                     yTarget = -6.0;
                     absTargetDrive.setYTarget(yTarget, State.TURN_AROUND);
                     break;
 
                 case TURN_AROUND:
+                    robot.extenderArm.retract();
                     robot.wrist.retract();
                     turnTarget = 180.0;
                     absTargetDrive.setTurnTarget(turnTarget, State.BACKUP_TO_FOUNDATION);
@@ -333,7 +335,7 @@ public class CmdAutoLoadingZone2 implements TrcRobot.RobotCommand
                     break;
 
                 case PULL_FOUNDATION_TO_WALL:
-                    yTarget = 36.0;
+                    yTarget = 45.0;
                     absTargetDrive.setYTarget(yTarget, State.UNHOOK_FOUNDATION);
                     break;
 
@@ -343,8 +345,6 @@ public class CmdAutoLoadingZone2 implements TrcRobot.RobotCommand
                     break;
 
                 case PARK_UNDER_BRIDGE:
-                    robot.pidDrive.getXPidCtrl().restoreOutputLimit();
-                    robot.pidDrive.getYPidCtrl().restoreOutputLimit();
                     xTarget = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE? 48.0: -48.0;
                     absTargetDrive.setXTarget(xTarget, State.DONE);
                     break;
@@ -354,8 +354,8 @@ public class CmdAutoLoadingZone2 implements TrcRobot.RobotCommand
                     //
                     // We are done.
                     //
-                    robot.pidDrive.getXPidCtrl().restoreOutputLimit();
-                    robot.pidDrive.getYPidCtrl().restoreOutputLimit();
+                    robot.pidDrive.getXPidCtrl().setOutputLimit(1.0);
+                    robot.pidDrive.getYPidCtrl().setOutputLimit(1.0);
                     sm.stop();
                     break;
             }
