@@ -40,6 +40,12 @@ public class FoundationLatch implements GenericGrabber
     }   //FoundationLatch
 
     @Override
+    public double getPosition()
+    {
+        return servo.getPosition();
+    }   //getPosition
+
+    @Override
     public void grab()
     {
         servo.setPosition(closePos);

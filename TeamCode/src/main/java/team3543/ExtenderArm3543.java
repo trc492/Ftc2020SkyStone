@@ -33,13 +33,13 @@ public class ExtenderArm3543
 
     public ExtenderArm3543()
     {
-        extender.setLogicalRange(
-                RobotInfo3543.EXTENDER_ARM_LOGICAL_MIN_POS, RobotInfo3543.EXTENDER_ARM_LOGICAL_MAX_POS);
-        extender.setPhysicalRange(
-                RobotInfo3543.EXTENDER_ARM_PHYSICAL_MIN_POS, RobotInfo3543.EXTENDER_ARM_PHYSICAL_MAX_POS);
+//        extender.setLogicalRange(
+//                RobotInfo3543.EXTENDER_ARM_LOGICAL_MIN_POS, RobotInfo3543.EXTENDER_ARM_LOGICAL_MAX_POS);
+//        extender.setPhysicalRange(
+//                RobotInfo3543.EXTENDER_ARM_PHYSICAL_MIN_POS, RobotInfo3543.EXTENDER_ARM_PHYSICAL_MAX_POS);
         enhancedExtender.setStepMode(
-                RobotInfo3543.EXTENDER_ARM_MAX_STEPRATE, RobotInfo3543.EXTENDER_ARM_PHYSICAL_MIN_POS,
-                RobotInfo3543.EXTENDER_ARM_PHYSICAL_MAX_POS);
+                RobotInfo3543.EXTENDER_ARM_MAX_STEPRATE, RobotInfo3543.EXTENDER_ARM_LOGICAL_MIN_POS,
+                RobotInfo3543.EXTENDER_ARM_LOGICAL_MAX_POS);
     }   //ExtenderArm3543
 
     public void setPower(double power)

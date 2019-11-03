@@ -241,7 +241,7 @@ public class CmdAutoLoadingZone2 implements TrcRobot.RobotCommand
                     if (scootCount > 0)
                     {
                         scootCount--;
-                        xTarget = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE? -9.0: 9.0;
+                        xTarget = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE? -8.5: 8.5;
                         absTargetDrive.setXTarget(xTarget, (scootCount == 0? State.GOTO_SKYSTONE : State.SETUP_VISION));
                     }
                     else
@@ -269,22 +269,22 @@ public class CmdAutoLoadingZone2 implements TrcRobot.RobotCommand
                         visionTrigger.setEnabled(false);
                     }
                     // If we did not detect the skystone, assume it's right in front of us.
-                    yTarget = 9.2;
+                    yTarget = 8.0;
                     absTargetDrive.setYTarget(yTarget, State.GO_DOWN_ON_SKYSTONE);
                     break;
 
                 case GO_DOWN_ON_SKYSTONE:
-                    robot.extenderArm.retract(2.0, event);
+                    robot.extenderArm.retract(2.5, event);
                     sm.waitForSingleEvent(event, State.GRAB_SKYSTONE);
                     break;
 
                 case GRAB_SKYSTONE:
-                    robot.grabber.grab(1.0, event);
+                    robot.grabber.grab(1.5, event);
                     sm.waitForSingleEvent(event, State.PULL_SKYSTONE);
                     break;
 
                 case PULL_SKYSTONE:
-                    yTarget = -14.2;
+                    yTarget = -12.0;
                     absTargetDrive.setYTarget(yTarget, State.GOTO_FOUNDATION);
                     break;
 
@@ -292,7 +292,7 @@ public class CmdAutoLoadingZone2 implements TrcRobot.RobotCommand
                     robot.extenderArm.extend();
                     robot.pidDrive.getXPidCtrl().setOutputLimit(1.0);
                     robot.pidDrive.getYPidCtrl().setOutputLimit(1.0);
-                    xTarget = (autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE? 72.0: -72.0)
+                    xTarget = (autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE? 76.0: -76.0)
                               - robot.driveBase.getXPosition();
                     absTargetDrive.setXTarget(xTarget, State.APPROACH_FOUNDATION);
                     break;
@@ -300,14 +300,14 @@ public class CmdAutoLoadingZone2 implements TrcRobot.RobotCommand
                 case APPROACH_FOUNDATION:
 //                    robot.pidDrive.getXPidCtrl().saveAndSetOutputLimit(0.5);
 //                    robot.pidDrive.getYPidCtrl().saveAndSetOutputLimit(0.5);
-                    yTarget = 12.0;
+                    yTarget = 15.0;
                     absTargetDrive.setYTarget(yTarget, State.DROP_SKYSTONE);
                     break;
 
                 case DROP_SKYSTONE:
                     robot.grabber.release();
-                    timer.set(1.0, event);
-                    sm.waitForSingleEvent(event, State.BACK_OFF_FOUNDATION);
+                    timer.set(1.5, event);
+                    sm.waitForSingleEvent(event, State.TURN_AROUND);//BACK_OFF_FOUNDATION);
                     break;
 
                 case BACK_OFF_FOUNDATION:
@@ -335,7 +335,7 @@ public class CmdAutoLoadingZone2 implements TrcRobot.RobotCommand
                     break;
 
                 case PULL_FOUNDATION_TO_WALL:
-                    yTarget = 45.0;
+                    yTarget = 54.0;
                     absTargetDrive.setYTarget(yTarget, State.UNHOOK_FOUNDATION);
                     break;
 
@@ -345,7 +345,7 @@ public class CmdAutoLoadingZone2 implements TrcRobot.RobotCommand
                     break;
 
                 case PARK_UNDER_BRIDGE:
-                    xTarget = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE? 48.0: -48.0;
+                    xTarget = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE? 50.0: -50.0;
                     absTargetDrive.setXTarget(xTarget, State.DONE);
                     break;
 

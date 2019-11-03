@@ -41,6 +41,12 @@ public class Grabber3543 implements GenericGrabber
     }   //grab
 
     @Override
+    public double getPosition()
+    {
+        return grabber.getPosition();
+    }   //getPosition
+
+    @Override
     public void grab(TrcEvent event)
     {
         grabber.setPosition(RobotInfo3543.GRABBER_CLOSE_POS, RobotInfo3543.GRABBER_GRAB_TIME, event);

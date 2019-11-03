@@ -179,7 +179,7 @@ public class CmdAutoBuildingZone implements TrcRobot.RobotCommand
                     break;
 
                 case MOVE_FOUNDATION_BACK:
-                    yTarget = 36.0;
+                    yTarget = 38.0;
                     absTargetDrive.setYTarget(yTarget, State.LET_GO_FOUNDATION);
                     break;
 

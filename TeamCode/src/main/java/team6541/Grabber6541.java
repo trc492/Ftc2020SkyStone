@@ -68,6 +68,12 @@ public class Grabber6541 implements GenericGrabber
     //
 
     @Override
+    public double getPosition()
+    {
+        return 0.0;
+    }   //getPosition
+
+    @Override
     public void grab()
     {
         setTimedPower(RobotInfo6541.GRABBER_GRAB_POWER, RobotInfo6541.GRABBER_GRAB_TIME, null);

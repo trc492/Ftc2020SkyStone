@@ -26,6 +26,7 @@ import trclib.TrcEvent;
 
 public interface GenericGrabber
 {
+    double getPosition();
     void grab();
     void grab(TrcEvent finishedEvent);
     void grab(double time, TrcEvent finishedEvent);
