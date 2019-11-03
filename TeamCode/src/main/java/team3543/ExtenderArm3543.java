@@ -81,4 +81,9 @@ public class ExtenderArm3543
                 RobotInfo3543.EXTENDER_ARM_RETRACTED_POS, time, event);
     }   //retract
 
+    public double getPosition()
+    {
+        return extender.getPosition();
+    }
+
 }   //class ExtenderArm3543
