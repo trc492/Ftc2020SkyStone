@@ -33,7 +33,6 @@ import trclib.TrcRobot;
 public class FtcTeleOp6541 extends CommonTeleOp
 {
     private static final String MODULE_NAME = "FtcTeleOp6541";
-    private int elevatorLevel = 0;
 
     //
     // Implements FtcOpMode abstract method.
@@ -121,33 +120,35 @@ public class FtcTeleOp6541 extends CommonTeleOp
                     break;
 
                 case FtcGamepad.GAMEPAD_DPAD_UP:
-                    processed = true;
-                    elevatorLevel++;
-                    if (elevatorLevel > 5)
+                    if (pressed)
                     {
-                        elevatorLevel = 5;
+                        processed = true;
+                        robot.elevator.levelUp();
                     }
-                    robot.elevator.setLevel(elevatorLevel);
                     break;
 
                 case FtcGamepad.GAMEPAD_DPAD_DOWN:
-                    processed = true;
-                    elevatorLevel--;
-                    if (elevatorLevel < 0)
+                    if (pressed)
                     {
-                        elevatorLevel = 0;
+                        processed = true;
+                        robot.elevator.levelDown();
                     }
-                    robot.elevator.setLevel(elevatorLevel);
                     break;
 
                 case FtcGamepad.GAMEPAD_DPAD_LEFT:
-                    processed = true;
-                    robot.elevator.setLevel(0); // set elevator to base level.
+                    if (pressed)
+                    {
+                        processed = true;
+                        robot.elevator.setLevel(0); // set elevator to base level.
+                    }
                     break;
 
                 case FtcGamepad.GAMEPAD_DPAD_RIGHT:
-                    processed = true;
-                    robot.elevator.setLevel(1); // set elevator to first level.
+                    if (pressed)
+                    {
+                        processed = true;
+                        robot.elevator.setLevel(1); // set elevator to first level.
+                    }
                     break;
 
                 case FtcGamepad.GAMEPAD_BACK:
