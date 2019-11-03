@@ -63,7 +63,6 @@ public class CmdAutoBuildingZone implements TrcRobot.RobotCommand
         LOWER_ELEVATOR_AFTER_BACKING_OFF_6541,
         CRAB_TOWARD_WALL_6541,
         ALIGN_WITH_BRIDGE_6541,
-        KISS_THE_WALL_6541,
         PARK_UNDER_BRIDGE_6541,
         DONE
     }   //enum State
@@ -356,29 +355,23 @@ public class CmdAutoBuildingZone implements TrcRobot.RobotCommand
                     break;
 
                 case LOWER_ELEVATOR_AFTER_BACKING_OFF_6541:
-                    robot.elevator.setPosition(0.0, event, 0.0);
+                    robot.elevator.zeroCalibrate();
+                    timer.set(2.0, event);
                     sm.waitForSingleEvent(event, State.CRAB_TOWARD_WALL_6541);
                     break;
 
                 case CRAB_TOWARD_WALL_6541:
-                    xTarget = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE ? -21.0 : 21.0;
+                    xTarget = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE ? -48.0 : 48.0;
                     absTargetDrive.setXTarget(xTarget, State.ALIGN_WITH_BRIDGE_6541);
                     break;
 
                 case ALIGN_WITH_BRIDGE_6541:
-                    turnTarget = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE ? -60.0 : 60.0;
-                    absTargetDrive.setTurnTarget(turnTarget, State.KISS_THE_WALL_6541);
-                    break;
-
-                case KISS_THE_WALL_6541:
-                    double xPower = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE ? -1.0 : 1.0;
-                    robot.driveBase.holonomicDrive(xPower, 0.0, 0.0);
-                    timer.set(0.5, event);
-                    sm.waitForSingleEvent(event, State.PARK_UNDER_BRIDGE_6541);
+                    turnTarget = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE ? 30.0 : -30.0;
+                    absTargetDrive.setTurnTarget(turnTarget, State.PARK_UNDER_BRIDGE_6541);
                     break;
 
                 case PARK_UNDER_BRIDGE_6541:
-                    yTarget = 12.0;
+                    yTarget = -12.0;
                     absTargetDrive.setYTarget(yTarget, State.DONE);
                     break;
 
