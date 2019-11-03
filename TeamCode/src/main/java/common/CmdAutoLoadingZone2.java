@@ -306,8 +306,6 @@ public class CmdAutoLoadingZone2 implements TrcRobot.RobotCommand
                     break;
 
                 case BACK_OFF_FOUNDATION:
-                    robot.pidDrive.getXPidCtrl().setOutputLimit(1.0);
-                    robot.pidDrive.getYPidCtrl().setOutputLimit(1.0);
                     yTarget = -6.0;
                     absTargetDrive.setYTarget(yTarget, State.TURN_AROUND);
                     break;
