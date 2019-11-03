@@ -119,18 +119,23 @@ public class Elevator
         }
 
         setPosition(elevatorHeightPresets[elevatorLevel]);
-    }
+    } // setLevel
 
     public void levelUp()
     {
         elevatorLevel++;
         setLevel(elevatorLevel);
-    }
+    } // levelUp
 
     public void levelDown()
     {
         elevatorLevel--;
         setLevel(elevatorLevel);
+    } // levelDown
+
+    public int getLevel()
+    {
+        return elevatorLevel;
     }
 
     public double getPosition()
