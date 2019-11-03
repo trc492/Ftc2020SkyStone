@@ -133,8 +133,8 @@ public class CmdAutoLoadingZone2 implements TrcRobot.RobotCommand
             visionTrigger.setEnabled(false);
         }
 
-        robot.pidDrive.getXPidCtrl().restoreOutputLimit();
-        robot.pidDrive.getYPidCtrl().restoreOutputLimit();
+        robot.pidDrive.getXPidCtrl().setOutputLimit(1.0);
+        robot.pidDrive.getYPidCtrl().setOutputLimit(1.0);
         sm.stop();
     }   //cancel
 
@@ -145,7 +145,6 @@ public class CmdAutoLoadingZone2 implements TrcRobot.RobotCommand
      * @return true if the command sequence is completed, false otherwise.
      */
     @Override
-    @SuppressWarnings("unused")
     public boolean cmdPeriodic(double elapsedTime)
     {
         State state = sm.checkReadyAndGetState();
@@ -168,8 +167,6 @@ public class CmdAutoLoadingZone2 implements TrcRobot.RobotCommand
                     //
                     // Do delay if any.
                     //
-                    robot.pidDrive.getXPidCtrl().setOutputLimit(0.5);
-                    robot.pidDrive.getYPidCtrl().setOutputLimit(0.5);
                     if (autoChoices.delay == 0.0)
                     {
                         sm.setState(State.MOVE_CLOSER);
@@ -289,7 +286,7 @@ public class CmdAutoLoadingZone2 implements TrcRobot.RobotCommand
                     break;
 
                 case GOTO_FOUNDATION:
-                    robot.extenderArm.extend();
+                    robot.extenderArm.extendMax();
                     robot.pidDrive.getXPidCtrl().setOutputLimit(1.0);
                     robot.pidDrive.getYPidCtrl().setOutputLimit(1.0);
                     xTarget = (autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE? 76.0: -76.0)
@@ -298,8 +295,6 @@ public class CmdAutoLoadingZone2 implements TrcRobot.RobotCommand
                     break;
 
                 case APPROACH_FOUNDATION:
-//                    robot.pidDrive.getXPidCtrl().saveAndSetOutputLimit(0.5);
-//                    robot.pidDrive.getYPidCtrl().saveAndSetOutputLimit(0.5);
                     yTarget = 15.0;
                     absTargetDrive.setYTarget(yTarget, State.DROP_SKYSTONE);
                     break;
@@ -318,13 +313,13 @@ public class CmdAutoLoadingZone2 implements TrcRobot.RobotCommand
                     break;
 
                 case TURN_AROUND:
-                    robot.extenderArm.retract();
-                    robot.wrist.retract();
                     turnTarget = 180.0;
                     absTargetDrive.setTurnTarget(turnTarget, State.BACKUP_TO_FOUNDATION);
                     break;
 
                 case BACKUP_TO_FOUNDATION:
+                    robot.extenderArm.retract();
+                    robot.wrist.retract();
                     yTarget = -10.0;
                     absTargetDrive.setYTarget(yTarget, State.HOOK_FOUNDATION);
                     break;

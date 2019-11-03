@@ -52,6 +52,11 @@ public class ExtenderArm3543
         enhancedExtender.setPosition(RobotInfo3543.EXTENDER_ARM_PLACEMENT_POS);
     }   //extend
 
+    public void extendMax()
+    {
+        enhancedExtender.setPosition(RobotInfo3543.EXTENDER_ARM_LOGICAL_MAX_POS);
+    }   //extendMax
+
     public void extend(TrcEvent event)
     {
         enhancedExtender.setPosition(
