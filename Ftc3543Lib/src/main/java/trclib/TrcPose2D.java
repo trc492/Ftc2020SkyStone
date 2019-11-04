@@ -161,7 +161,7 @@ public class TrcPose2D
     }   //relativeTo
 
     /**
-     * This method translates the this pose with the x and y offset in reference to the heading of the pose.
+     * This method translates this pose with the x and y offset in reference to the heading of the pose.
      *
      * @param xOffset specifies the x offset in reference to the heading of the pose.
      * @param yOffset specifies the y offset in reference to the heading of the pose.

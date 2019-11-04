@@ -45,8 +45,8 @@ public class TrcAbsTargetDrive<StateType>
     private final TrcPidDrive pidDrive;
     private final TrcEvent event;
     private final TrcStateMachine<StateType> sm;
-    private TrcPose2D currentPose;
-    private double targetHeading;
+    private TrcPose2D absTargetPose;
+    private double absTargetHeading;
 
     /**
      * Constructor: Creates an instance of the object.
@@ -66,8 +66,8 @@ public class TrcAbsTargetDrive<StateType>
         this.pidDrive = pidDrive;
         this.event = event;
         this.sm = sm;
-        currentPose = driveBase.getRelativePose();
-        targetHeading = driveBase.getHeading();
+        absTargetPose = driveBase.getAbsolutePose();
+        absTargetHeading = driveBase.getHeading();
     }   //TrcAbsTargetDrive
 
     /**
@@ -91,14 +91,14 @@ public class TrcAbsTargetDrive<StateType>
      */
     public void setTarget(double xDelta, double yDelta, double turnDelta, StateType nextState)
     {
-        TrcPose2D targetPose = currentPose.translatePose(xDelta, yDelta);
-        TrcPose2D relativePose = targetPose.relativeTo(currentPose);
-        targetHeading += turnDelta;
-        currentPose = targetPose;
+        TrcPose2D newTargetPose = absTargetPose.translatePose(xDelta, yDelta);
+        TrcPose2D relativePose = newTargetPose.relativeTo(driveBase.getAbsolutePose());
+        absTargetHeading += turnDelta;
+        absTargetPose = newTargetPose;
 
         pidDrive.setTarget(
                 relativePose.x, relativePose.y,
-                pidDrive.getTurnPidCtrl().hasAbsoluteSetPoint()? targetHeading: turnDelta,
+                pidDrive.getTurnPidCtrl().hasAbsoluteSetPoint()? absTargetHeading: turnDelta,
                 false, event);
         sm.waitForSingleEvent(event, nextState);
     }   //setTarget
