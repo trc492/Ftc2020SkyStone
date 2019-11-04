@@ -20,8 +20,10 @@
  * SOFTWARE.
  */
 
-package common;
+package team3543;
 
+import common.CommonAuto;
+import common.Robot;
 import trclib.TrcAbsTargetDrive;
 import trclib.TrcEvent;
 import trclib.TrcPidController;
@@ -32,7 +34,7 @@ import trclib.TrcTimer;
 import trclib.TrcTrigger;
 import trclib.TrcUtil;
 
-public class CmdAutoLoadingZone2 implements TrcRobot.RobotCommand
+public class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
 {
     private static final boolean useVisionTrigger = false;
     private static final boolean debugXPid = true;
@@ -66,7 +68,7 @@ public class CmdAutoLoadingZone2 implements TrcRobot.RobotCommand
         DONE
     }   //enum State
 
-    private static final String moduleName = "CmdAutoLoadingZone2";
+    private static final String moduleName = "CmdAutoLoadingZone3543";
 
     private final Robot robot;
     private final CommonAuto.AutoChoices autoChoices;
@@ -85,7 +87,7 @@ public class CmdAutoLoadingZone2 implements TrcRobot.RobotCommand
      *
      * @param robot specifies the robot object for providing access to various global objects.
      */
-    public CmdAutoLoadingZone2(Robot robot, CommonAuto.AutoChoices autoChoices)
+    public CmdAutoLoadingZone3543(Robot robot, CommonAuto.AutoChoices autoChoices)
     {
         robot.globalTracer.traceInfo(moduleName, "robot=%s", robot);
 
@@ -101,7 +103,7 @@ public class CmdAutoLoadingZone2 implements TrcRobot.RobotCommand
             visionTrigger = new TrcTrigger("VisionTrigger", this::isTriggered, this::targetDetected);
         }
         sm.start(State.DO_DELAY);
-    }   //CmdAutoLoadingZone2
+    }   //CmdAutoLoadingZone3543
 
     //
     // Implements the TrcRobot.RobotCommand interface.
@@ -404,4 +406,4 @@ public class CmdAutoLoadingZone2 implements TrcRobot.RobotCommand
         }
     }   //targetDetected
 
-}   //class CmdAutoLoadingZone2
+}   //class CmdAutoLoadingZone3543

@@ -24,6 +24,8 @@ package team6541;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
+import common.CmdPidDrive;
+import common.CmdTimedDrive;
 import common.CommonAuto;
 import trclib.TrcRobot;
 
@@ -45,6 +47,58 @@ public class FtcAuto6541 extends CommonAuto
         moduleName = MODULE_NAME;
         robot = new Robot6541(TrcRobot.getRunMode());
         super.initRobot();
+        //
+        // Strategies.
+        //
+        boolean hasRobot = robot.preferences.get("hasRobot");
+
+        switch (autoChoices.strategy)
+        {
+            case START_AT_LOADING_ZONE:
+                if (hasRobot)
+                {
+                    autoCommand = new CmdAutoLoadingZone6541(robot, autoChoices);
+                }
+                break;
+
+            case START_AT_BUILDING_ZONE:
+                if (hasRobot)
+                {
+                    autoCommand = new CmdAutoBuildingZone6541(robot, autoChoices);
+                }
+                break;
+
+            case PURE_PURSUIT_DRIVE:
+                if (hasRobot)
+                {
+//                    autoCommand = new CmdPurePursuitDrive(
+//                            robot.driveBase, posPidCoeff, turnPidCoeff, velPidCoeff);
+                }
+                break;
+
+            case DISTANCE_DRIVE:
+                if (hasRobot)
+                {
+                    autoCommand = new CmdPidDrive(
+                            robot, robot.pidDrive, autoChoices.delay,
+                            0.0, autoChoices.driveDistance * 12.0, 0.0);
+                }
+                break;
+
+            case TIMED_DRIVE:
+                if (hasRobot)
+                {
+                    autoCommand = new CmdTimedDrive(
+                            robot, autoChoices.delay, autoChoices.driveTime,
+                            0.0, autoChoices.drivePower, 0.0);
+                }
+                break;
+
+            case DO_NOTHING:
+            default:
+                autoCommand = null;
+                break;
+        }
     }   //initRobot
 
 }   //class FtcAuto6541

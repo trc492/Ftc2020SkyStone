@@ -20,15 +20,17 @@
  * SOFTWARE.
  */
 
-package common;
+package team6541;
 
+import common.CommonAuto;
+import common.Robot;
 import trclib.TrcAbsTargetDrive;
 import trclib.TrcEvent;
 import trclib.TrcRobot;
 import trclib.TrcStateMachine;
 import trclib.TrcTimer;
 
-public class CmdAutoLoadingZone implements TrcRobot.RobotCommand
+public class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
 {
     private enum State
     {
@@ -62,7 +64,7 @@ public class CmdAutoLoadingZone implements TrcRobot.RobotCommand
         DONE
     }   //enum State
 
-    private static final String moduleName = "CmdAutoLoadingZone";
+    private static final String moduleName = "CmdAutoLoadingZone6541";
 
     private final Robot robot;
     private final CommonAuto.AutoChoices autoChoices;
@@ -73,7 +75,7 @@ public class CmdAutoLoadingZone implements TrcRobot.RobotCommand
 
     private double xSkyStoneOffSetPosition;
 
-    public CmdAutoLoadingZone(Robot robot, CommonAuto.AutoChoices autoChoices)
+    public CmdAutoLoadingZone6541(Robot robot, CommonAuto.AutoChoices autoChoices)
     {
         this.robot = robot;
         this.autoChoices = autoChoices;
@@ -82,8 +84,8 @@ public class CmdAutoLoadingZone implements TrcRobot.RobotCommand
         sm = new TrcStateMachine<>(moduleName);
         sm.start(State.DO_DELAY);
         absTargetDrive = new TrcAbsTargetDrive<>(
-                "CmdAutoLoadingZone", robot.driveBase, robot.pidDrive, event, sm);
-    }   //CmdAutoLoadingZone
+                "CmdAutoLoadingZone6541", robot.driveBase, robot.pidDrive, event, sm);
+    }   //CmdAutoLoadingZone6541
 
     @Override
     public boolean isActive()
@@ -280,4 +282,4 @@ public class CmdAutoLoadingZone implements TrcRobot.RobotCommand
         return !sm.isEnabled();
     }   //cmdPeriodic
 
-}   //CmdAutoLoadingZone
+}   //CmdAutoLoadingZone6541
