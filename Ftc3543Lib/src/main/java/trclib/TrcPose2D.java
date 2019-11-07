@@ -106,7 +106,7 @@ public class TrcPose2D
     }   //TrcPose2D
 
     /**
-     * This method returns the instance name.
+     * This method returns the string representation of the pose.
      *
      * @return string representation of the pose.
      */
