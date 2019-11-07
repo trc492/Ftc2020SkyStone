@@ -96,12 +96,18 @@ public class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
         timer = new TrcTimer(moduleName);
         event = new TrcEvent(moduleName);
         sm = new TrcStateMachine<>(moduleName);
+
+        robot.encoderXPidCtrl.setNoOscillation(true);
+        robot.encoderYPidCtrl.setNoOscillation(true);
+        robot.gyroPidCtrl.setNoOscillation(true);
         absTargetDrive = new TrcAbsTargetDrive<>(
                 "SkyStoneDrive", robot.driveBase, robot.pidDrive, event, sm);
+
         if (useVisionTrigger)
         {
             visionTrigger = new TrcTrigger("VisionTrigger", this::isTriggered, this::targetDetected);
         }
+
         sm.start(State.DO_DELAY);
     }   //CmdAutoLoadingZone3543
 
@@ -365,6 +371,10 @@ public class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                 robot.globalTracer.traceInfo("Battery", "Voltage=%5.2fV (%5.2fV)",
                         robot.battery.getVoltage(), robot.battery.getLowestVoltage());
             }
+
+            TrcPose2D absPose = robot.driveBase.getAbsolutePose();
+            robot.globalTracer.traceInfo(moduleName, "DriveBase: x=%.1f, y=%.1f, heading=%.1f",
+                    absPose.x, absPose.y, absPose.heading);
 
             TrcPidController pidCtrl = robot.pidDrive.getXPidCtrl();
             if (debugXPid && pidCtrl != null)

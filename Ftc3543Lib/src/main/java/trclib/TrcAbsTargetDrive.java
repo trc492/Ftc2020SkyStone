@@ -40,6 +40,14 @@ package trclib;
 
 public class TrcAbsTargetDrive<StateType>
 {
+    private static final String moduleName = "TrcAbsTargetDrive";
+    private static final boolean debugEnabled = false;
+    private static final boolean tracingEnabled = false;
+    private static final boolean useGlobalTracer = false;
+    private static final TrcDbgTrace.TraceLevel traceLevel = TrcDbgTrace.TraceLevel.API;
+    private static final TrcDbgTrace.MsgLevel msgLevel = TrcDbgTrace.MsgLevel.INFO;
+    private TrcDbgTrace dbgTrace = null;
+
     private final String instanceName;
     private final TrcDriveBase driveBase;
     private final TrcPidDrive pidDrive;
@@ -61,6 +69,13 @@ public class TrcAbsTargetDrive<StateType>
             String instanceName, TrcDriveBase driveBase, TrcPidDrive pidDrive, TrcEvent event,
             TrcStateMachine<StateType> sm)
     {
+        if (debugEnabled)
+        {
+            dbgTrace = useGlobalTracer?
+                    TrcDbgTrace.getGlobalTracer():
+                    new TrcDbgTrace(moduleName + "." + instanceName, tracingEnabled, traceLevel, msgLevel);
+        }
+
         this.instanceName = instanceName;
         this.driveBase = driveBase;
         this.pidDrive = pidDrive;
@@ -91,10 +106,24 @@ public class TrcAbsTargetDrive<StateType>
      */
     public void setTarget(double xDelta, double yDelta, double turnDelta, StateType nextState)
     {
+        final String funcName = "setTarget";
         TrcPose2D newTargetPose = absTargetPose.translatePose(xDelta, yDelta);
         TrcPose2D relativePose = newTargetPose.relativeTo(driveBase.getAbsolutePose());
+
+        if (debugEnabled)
+        {
+            dbgTrace.traceInfo(funcName, "xDelta=%.1f, yDelta=%.1f, turnDelta=%.1f, CurrPose:%s, AbsHeading=%.1f",
+                    xDelta, yDelta, turnDelta, absTargetPose, absTargetHeading);
+        }
+
         absTargetHeading += turnDelta;
         absTargetPose = newTargetPose;
+
+        if (debugEnabled)
+        {
+            dbgTrace.traceInfo(funcName, "RelPose:%s, NewPose:%s, NewHeading=%.1f",
+                    relativePose, newTargetPose, absTargetHeading);
+        }
 
         pidDrive.setTarget(
                 relativePose.x, relativePose.y,

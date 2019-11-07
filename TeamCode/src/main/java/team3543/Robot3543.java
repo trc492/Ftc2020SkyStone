@@ -193,7 +193,6 @@ public class Robot3543 extends Robot
         pidDrive = new TrcPidDrive("pidDrive", driveBase, encoderXPidCtrl, encoderYPidCtrl, gyroPidCtrl);
         pidDrive.setStallTimeout(RobotInfo3543.PIDDRIVE_STALL_TIMEOUT);
         pidDrive.setBeep(androidTone);
-        pidDrive.setMsgTracer(globalTracer, true);
     }   //initDriveBase
 
 }   //class Robot3543

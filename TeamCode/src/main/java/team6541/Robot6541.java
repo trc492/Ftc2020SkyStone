@@ -190,7 +190,6 @@ public class Robot6541 extends Robot
         pidDrive = new TrcPidDrive("pidDrive", driveBase, encoderXPidCtrl, encoderYPidCtrl, gyroPidCtrl);
         pidDrive.setStallTimeout(RobotInfo6541.PIDDRIVE_STALL_TIMEOUT);
         pidDrive.setBeep(androidTone);
-        pidDrive.setMsgTracer(globalTracer, true);
     }   //initDriveBase
 
 }   //class Robot6541
