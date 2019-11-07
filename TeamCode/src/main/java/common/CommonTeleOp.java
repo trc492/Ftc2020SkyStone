@@ -144,7 +144,7 @@ public abstract class CommonTeleOp extends FtcOpMode
             extenderArmPos = robot.extenderArm.getPosition();
         }
 
-        double wristPower = operatorGamepad.getLeftStickX(true);
+        double wristPower = operatorGamepad.getLeftStickX(true) / 3.0;
         double wristPos = 0.0;
         if (robot.wrist != null)
         {

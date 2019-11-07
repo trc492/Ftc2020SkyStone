@@ -163,6 +163,11 @@ public class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
 
             robot.dashboard.displayPrintf(1, "State: %s", state);
 
+            robot.globalTracer.traceInfo("cmdPeriodic", "DriveBase: x=%.2f,y=%.2f,heading=%.2f",
+                    robot.driveBase.getXPosition(),
+                    robot.driveBase.getYPosition(),
+                    robot.driveBase.getHeading());
+
             switch (state)
             {
                 case DO_DELAY:
