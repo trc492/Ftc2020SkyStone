@@ -223,6 +223,7 @@ public class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                             // Can't find any skystone here, move on to the next position.
                             sm.setState(visionTrigger == null? State.NEXT_SKYSTONE_POSITION:
                                         scanningForSkyStone? State.GOTO_SKYSTONE: State.SCAN_FOR_SKYSTONE);
+                            robot.speak("Sky stone not found.");
                         }
                     }
                     else
@@ -231,6 +232,7 @@ public class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                         robot.globalTracer.traceInfo(
                                 "getTargetPose", "Skystone found at x=%.1f, y=%.1f.",
                                 skystonePose.x, skystonePose.y);
+                        robot.speak(String.format("Sky stone found at %.1f inches.", skystonePose.x));
                         sm.setState(State.ALIGN_SKYSTONE);
                     }
                     break;
