@@ -72,8 +72,8 @@ public class Robot
     //
     // Global objects.
     //
-    public TrcHashMap<String, Boolean> preferences;
     public String robotName;
+    public TrcHashMap<String, Boolean> preferences;
     public FtcOpMode opMode;
     public HalDashboard dashboard;
     public TrcDbgTrace globalTracer;
@@ -124,15 +124,15 @@ public class Robot
     @Nullable public FoundationLatch foundationLatch = null;
 
     public Robot(
-            TrcRobot.RunMode runMode, TrcHashMap<String, Boolean> preferences, String robotName,
+            TrcRobot.RunMode runMode, String robotName, TrcHashMap<String, Boolean> preferences,
             VuforiaLocalizer.CameraDirection cameraDir,
             VuforiaLocalizer.Parameters.CameraMonitorFeedback cameraMonitorFeedback)
     {
         //
         // Initialize global objects.
         //
-        this.preferences = preferences;
         this.robotName = robotName;
+        this.preferences = preferences;
         opMode = FtcOpMode.getInstance();
         opMode.hardwareMap.logDevices();
         dashboard = HalDashboard.getInstance();

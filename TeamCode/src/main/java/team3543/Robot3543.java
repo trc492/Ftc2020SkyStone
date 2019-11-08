@@ -65,7 +65,7 @@ public class Robot3543 extends Robot
 
     public Robot3543(TrcRobot.RunMode runMode)
     {
-        super(runMode, preferences3543, RobotInfo3543.ROBOT_NAME, RobotInfo3543.CAMERA_DIR,
+        super(runMode, RobotInfo3543.ROBOT_NAME, preferences3543, RobotInfo3543.CAMERA_DIR,
                 RobotInfo3543.CAMERA_MONITOR_FEEDBACK);
         //
         // Initialize vision subsystems.
