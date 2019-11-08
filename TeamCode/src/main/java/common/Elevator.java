@@ -79,7 +79,7 @@ public class Elevator
     public Elevator(double minHeight, double maxHeight, double scale, double offset, TrcPidController.PidCoefficients pidCoeff,
                     double tolerance, double calPower, TrcHashMap<String, Boolean> preferences)
     {
-        this(minHeight, maxHeight, scale, offset, pidCoeff, tolerance, calPower, preferences, new double[]{0.0});
+        this(minHeight, maxHeight, scale, offset, pidCoeff, tolerance, calPower, preferences, null);
     }
 
     public void zeroCalibrate()
@@ -109,32 +109,33 @@ public class Elevator
 
     public void setLevel(int level)
     {
-        if (level < 0)
+        if (elevatorHeightPresets != null)
         {
-            elevatorLevel = 0;
-        }
-        else if (level >= elevatorHeightPresets.length)
-        {
-            elevatorLevel = elevatorHeightPresets.length - 1;
-        }
-        else
-        {
-            elevatorLevel = level;
-        }
+            if (level < 0)
+            {
+                elevatorLevel = 0;
+            }
+            else if (level >= elevatorHeightPresets.length)
+            {
+                elevatorLevel = elevatorHeightPresets.length - 1;
+            }
+            else
+            {
+                elevatorLevel = level;
+            }
 
-        setPosition(elevatorHeightPresets[elevatorLevel]);
+            setPosition(elevatorHeightPresets[elevatorLevel]);
+        }
     } // setLevel
 
     public void levelUp()
     {
-        elevatorLevel++;
-        setLevel(elevatorLevel);
+        setLevel(elevatorLevel + 1);
     } // levelUp
 
     public void levelDown()
     {
-        elevatorLevel--;
-        setLevel(elevatorLevel);
+        setLevel(elevatorLevel - 1);
     } // levelDown
 
     public int getLevel()
