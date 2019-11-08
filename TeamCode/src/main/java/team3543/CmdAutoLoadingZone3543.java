@@ -299,7 +299,7 @@ public class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                     robot.extenderArm.extendMax();
                     robot.pidDrive.getXPidCtrl().setOutputLimit(1.0);
                     robot.pidDrive.getYPidCtrl().setOutputLimit(1.0);
-                    xTarget = (autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE? 76.0: -76.0)
+                    xTarget = (autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE? 72.0: -72.0)
                               - robot.driveBase.getXPosition();
                     absTargetDrive.setXTarget(xTarget, State.APPROACH_FOUNDATION);
                     break;
@@ -312,7 +312,7 @@ public class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                 case DROP_SKYSTONE:
                     robot.grabber.release();
                     timer.set(1.5, event);
-                    sm.waitForSingleEvent(event, State.TURN_AROUND);//BACK_OFF_FOUNDATION);
+                    sm.waitForSingleEvent(event, State.BACK_OFF_FOUNDATION);
                     break;
 
                 case BACK_OFF_FOUNDATION:
@@ -338,7 +338,7 @@ public class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                     break;
 
                 case PULL_FOUNDATION_TO_WALL:
-                    yTarget = 54.0;
+                    yTarget = 48;
                     absTargetDrive.setYTarget(yTarget, State.UNHOOK_FOUNDATION);
                     break;
 

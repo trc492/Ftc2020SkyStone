@@ -54,7 +54,6 @@ public class TrcAbsTargetDrive<StateType>
     private final TrcEvent event;
     private final TrcStateMachine<StateType> sm;
     private TrcPose2D absTargetPose;
-    private double absTargetHeading;
 
     /**
      * Constructor: Creates an instance of the object.
@@ -82,7 +81,6 @@ public class TrcAbsTargetDrive<StateType>
         this.event = event;
         this.sm = sm;
         absTargetPose = driveBase.getAbsolutePose();
-        absTargetHeading = driveBase.getHeading();
     }   //TrcAbsTargetDrive
 
     /**
@@ -108,26 +106,25 @@ public class TrcAbsTargetDrive<StateType>
     {
         final String funcName = "setTarget";
         TrcPose2D newTargetPose = absTargetPose.translatePose(xDelta, yDelta);
+        newTargetPose.heading += turnDelta;
         TrcPose2D relativePose = newTargetPose.relativeTo(driveBase.getAbsolutePose());
 
         if (debugEnabled)
         {
-            dbgTrace.traceInfo(funcName, "xDelta=%.1f, yDelta=%.1f, turnDelta=%.1f, CurrPose:%s, AbsHeading=%.1f",
-                    xDelta, yDelta, turnDelta, absTargetPose, absTargetHeading);
+            dbgTrace.traceInfo(funcName, "xDelta=%.1f, yDelta=%.1f, turnDelta=%.1f, CurrPose:%s",
+                    xDelta, yDelta, turnDelta, absTargetPose);
         }
 
-        absTargetHeading += turnDelta;
         absTargetPose = newTargetPose;
 
         if (debugEnabled)
         {
-            dbgTrace.traceInfo(funcName, "RelPose:%s, NewPose:%s, NewHeading=%.1f",
-                    relativePose, newTargetPose, absTargetHeading);
+            dbgTrace.traceInfo(funcName, "RelPose:%s, NewPose:%s", relativePose, newTargetPose);
         }
 
         pidDrive.setTarget(
                 relativePose.x, relativePose.y,
-                pidDrive.getTurnPidCtrl().hasAbsoluteSetPoint()? absTargetHeading: turnDelta,
+                pidDrive.getTurnPidCtrl().hasAbsoluteSetPoint()? absTargetPose.heading: turnDelta,
                 false, event);
         sm.waitForSingleEvent(event, nextState);
     }   //setTarget
