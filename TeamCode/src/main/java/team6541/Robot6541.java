@@ -52,6 +52,16 @@ public class Robot6541 extends Robot
             .add("showTensorFlowView", false)
             .add("initSubsystems", true)
             .add("team3543", false);
+    private static TrcHashMap<String, Double> elevatorParams6541 = new TrcHashMap<String, Double>()
+            .add("minHeight", RobotInfo6541.ELEVATOR_MIN_HEIGHT)
+            .add("maxHeight", RobotInfo6541.ELEVATOR_MAX_HEIGHT)
+            .add("scale", RobotInfo6541.ELEVATOR_SCALE)
+            .add("offset", RobotInfo6541.ELEVATOR_OFFSET)
+            .add("Kp", RobotInfo6541.ELEVATOR_KP)
+            .add("Ki", RobotInfo6541.ELEVATOR_KI)
+            .add("Kd", RobotInfo6541.ELEVATOR_KD)
+            .add("tolerance", RobotInfo6541.ELEVATOR_TOLERANCE)
+            .add("calPower", RobotInfo6541.ELEVATOR_CAL_POWER);
 
     public Robot6541(TrcRobot.RunMode runMode)
     {
@@ -100,13 +110,7 @@ public class Robot6541 extends Robot
             {
                 if (preferences.get("hasElevator"))
                 {
-                    elevator = new Elevator(
-                            RobotInfo6541.ELEVATOR_MIN_HEIGHT, RobotInfo6541.ELEVATOR_MAX_HEIGHT,
-                            RobotInfo6541.ELEVATOR_SCALE, RobotInfo6541.ELEVATOR_OFFSET,
-                            new TrcPidController.PidCoefficients(RobotInfo6541.ELEVATOR_KP, RobotInfo6541.ELEVATOR_KI,
-                                    RobotInfo6541.ELEVATOR_KD),
-                            RobotInfo6541.ELEVATOR_TOLERANCE, RobotInfo6541.ELEVATOR_CAL_POWER, preferences6541,
-                            RobotInfo6541.ELEVATOR_HEIGHT_PRESETS);
+                    elevator = new Elevator(preferences6541, elevatorParams6541, RobotInfo6541.ELEVATOR_HEIGHT_PRESETS);
                     elevator.zeroCalibrate();
                 }
 

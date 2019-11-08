@@ -52,6 +52,16 @@ public class Robot3543 extends Robot
             .add("showTensorFlowView", false)
             .add("initSubsystems", true)
             .add("team3543", true);
+    private static TrcHashMap<String, Double> elevatorParams3543 = new TrcHashMap<String, Double>()
+            .add("minHeight", RobotInfo3543.ELEVATOR_MIN_HEIGHT)
+            .add("maxHeight", RobotInfo3543.ELEVATOR_MAX_HEIGHT)
+            .add("scale", RobotInfo3543.ELEVATOR_SCALE)
+            .add("offset", RobotInfo3543.ELEVATOR_OFFSET)
+            .add("Kp", RobotInfo3543.ELEVATOR_KP)
+            .add("Ki", RobotInfo3543.ELEVATOR_KI)
+            .add("Kd", RobotInfo3543.ELEVATOR_KD)
+            .add("tolerance", RobotInfo3543.ELEVATOR_TOLERANCE)
+            .add("calPower", RobotInfo3543.ELEVATOR_CAL_POWER);
 
     public Robot3543(TrcRobot.RunMode runMode)
     {
@@ -100,12 +110,7 @@ public class Robot3543 extends Robot
             {
                 if (preferences.get("hasElevator"))
                 {
-                    elevator = new Elevator(
-                            RobotInfo3543.ELEVATOR_MIN_HEIGHT, RobotInfo3543.ELEVATOR_MAX_HEIGHT,
-                            RobotInfo3543.ELEVATOR_SCALE, RobotInfo3543.ELEVATOR_OFFSET,
-                            new TrcPidController.PidCoefficients(RobotInfo3543.ELEVATOR_KP, RobotInfo3543.ELEVATOR_KI,
-                                    RobotInfo3543.ELEVATOR_KD),
-                            RobotInfo3543.ELEVATOR_TOLERANCE, RobotInfo3543.ELEVATOR_CAL_POWER, preferences3543);
+                    elevator = new Elevator(preferences3543, elevatorParams3543, null);
                     elevator.zeroCalibrate();
                 }
 

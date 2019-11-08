@@ -41,8 +41,8 @@ public class Elevator
     private int elevatorLevel;
 
     public Elevator(
-            double minHeight, double maxHeight, double scale, double offset, TrcPidController.PidCoefficients pidCoeff,
-            double tolerance, double calPower, TrcHashMap<String, Boolean> preferences, double[] elevatorHeightPresets)
+            TrcHashMap<String, Boolean> preferences, TrcHashMap<String, Double> elevatorParams,
+            double[] elevatorHeightPresets)
     {
         lowerLimitSwitch = new FtcDigitalInput("elevatorLowerLimit");
         if (!preferences.get("team3543"))
@@ -65,22 +65,19 @@ public class Elevator
         }
 
         pidController = new TrcPidController(
-                "elevatorPidController", pidCoeff, tolerance, this::getPosition);
+                "elevatorPidController",
+                new TrcPidController.PidCoefficients(
+                        elevatorParams.get("Kp"), elevatorParams.get("Ki"), elevatorParams.get("Kd")),
+                elevatorParams.get("tolerance"), this::getPosition);
 
         pidElevator = new TrcPidActuator(
-                "pidElevator", elevatorMotor, lowerLimitSwitch, pidController, calPower,
-                minHeight, maxHeight);
-        pidElevator.setPositionScale(scale, offset);
+                "pidElevator", elevatorMotor, lowerLimitSwitch, pidController,
+                elevatorParams.get("calPower"), elevatorParams.get("minHeight"), elevatorParams.get("maxHeight"));
+        pidElevator.setPositionScale(elevatorParams.get("scale"), elevatorParams.get("offset"));
 
         this.elevatorHeightPresets = elevatorHeightPresets;
         this.elevatorLevel = 0;
     }   //Elevator
-
-    public Elevator(double minHeight, double maxHeight, double scale, double offset, TrcPidController.PidCoefficients pidCoeff,
-                    double tolerance, double calPower, TrcHashMap<String, Boolean> preferences)
-    {
-        this(minHeight, maxHeight, scale, offset, pidCoeff, tolerance, calPower, preferences, null);
-    }
 
     public void zeroCalibrate()
     {
