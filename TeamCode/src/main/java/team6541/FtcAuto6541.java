@@ -24,7 +24,7 @@ package team6541;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
-import common.CmdPidDrive;
+import common.CmdEnhancedPidDrive;
 import common.CmdTimedDrive;
 import common.CommonAuto;
 import trclib.TrcRobot;
@@ -76,12 +76,13 @@ public class FtcAuto6541 extends CommonAuto
                 }
                 break;
 
-            case DISTANCE_DRIVE:
+            case PID_DRIVE:
                 if (hasRobot)
                 {
-                    autoCommand = new CmdPidDrive(
-                            robot, robot.pidDrive, autoChoices.delay,
-                            0.0, autoChoices.driveDistance * 12.0, 0.0);
+                    autoCommand = new CmdEnhancedPidDrive(
+                            robot, robot.driveBase, robot.pidDrive, autoChoices.delay,
+                            autoChoices.xTarget*12.0, autoChoices.yTarget*12.0, autoChoices.turnTarget,
+                            autoChoices.drivePower, false);
                 }
                 break;
 

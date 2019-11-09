@@ -30,7 +30,6 @@ import ftclib.FtcMenu;
 import ftclib.FtcOpMode;
 import ftclib.FtcValueMenu;
 import trclib.TrcRobot;
-import trclib.TrcUtil;
 
 public abstract class CommonAuto extends FtcOpMode
 {
@@ -64,7 +63,7 @@ public abstract class CommonAuto extends FtcOpMode
         START_AT_LOADING_ZONE,
         START_AT_BUILDING_ZONE,
         PURE_PURSUIT_DRIVE,
-        DISTANCE_DRIVE,
+        PID_DRIVE,
         TIMED_DRIVE,
         DO_NOTHING
     }   //AutoStrategy
@@ -86,7 +85,9 @@ public abstract class CommonAuto extends FtcOpMode
         public double foundationHeading = 0.0;
         public boolean moveFoundation = true;
         public ParkPosition parkUnderBridge = ParkPosition.NO_PARK;
-        public double driveDistance = 0.0;
+        public double xTarget = 0.0;
+        public double yTarget = 0.0;
+        public double turnTarget = 0.0;
         public double driveTime = 0.0;
         public double drivePower = 0.0;
 
@@ -94,9 +95,9 @@ public abstract class CommonAuto extends FtcOpMode
         {
             return String.format(Locale.US,
                     "%s: Strategy=%s, delay=%.0f, moveFoundation=%s, foundationPos=(%.1f,%.1f), park=%s, " +
-                    "driveDist=%.1f, driveTime=%.1f, drivePower=%.1f",
+                    "xTarget=%.1f, yTarget=%.1f, turnTarget=%.1f, driveTime=%.1f, drivePower=%.1f",
                     alliance, strategy, delay, moveFoundation, foundationXPos, foundationYPos, parkUnderBridge,
-                    driveDistance, driveTime, drivePower);
+                    xTarget, yTarget, turnTarget, driveTime, drivePower);
         }   //toString
     }   //class AutoChoices
 
@@ -135,28 +136,6 @@ public abstract class CommonAuto extends FtcOpMode
         robot.globalTracer.traceInfo(moduleName, "[%s] %s", matchInfo, autoChoices);
 
         robot.startMode(nextMode);
-
-        if (robot.tensorFlowVision != null)
-        {
-            String msg;
-
-            if (robot.targetsInfo != null)
-            {
-                msg = String.format(Locale.US, "Sky Stone found at position %d",
-                        robot.targetsInfo[0].rect.x + robot.targetsInfo[0].rect.width/2);
-            }
-            else
-            {
-                msg = "Sky Stone not found";
-            }
-
-            double avgDetectionTime = robot.detectionSuccessCount > 0 ?
-                    robot.detectionIntervalTotalTime / robot.detectionSuccessCount / 1000000000.0 : 0;
-
-            robot.globalTracer.traceInfo(moduleName, "%s: DetectionAvgTime=%.3f, SuccessCount=%d, FailedCount=%d",
-                    msg, avgDetectionTime, robot.detectionSuccessCount, robot.detectionFailedCount);
-        }
-
         if (robot.battery != null)
         {
             robot.battery.setEnabled(true);
@@ -238,8 +217,14 @@ public abstract class CommonAuto extends FtcOpMode
         FtcChoiceMenu<Boolean> moveFoundationMenu = new FtcChoiceMenu<>("Move foundation:",
                 foundationHeadingMenu);
         FtcChoiceMenu<ParkPosition> parkMenu = new FtcChoiceMenu<>("Park under bridge:", moveFoundationMenu);
-        FtcValueMenu driveDistanceMenu = new FtcValueMenu(
-                "Distance:", strategyMenu, -12.0, 12.0, 0.5, 4.0,
+        FtcValueMenu xTargetMenu = new FtcValueMenu(
+                "xTarget:", strategyMenu, -12.0, 12.0, 0.5, 4.0,
+                " %.0f ft");
+        FtcValueMenu yTargetMenu = new FtcValueMenu(
+                "yTarget:", strategyMenu, -12.0, 12.0, 0.5, 4.0,
+                " %.0f ft");
+        FtcValueMenu turnTargetMenu = new FtcValueMenu(
+                "turnTarget:", strategyMenu, -180.0, 180.0, 5.0, 90.0,
                 " %.0f ft");
         FtcValueMenu driveTimeMenu = new FtcValueMenu(
                 "Drive time:", strategyMenu, 0.0, 30.0, 1.0, 5.0,
@@ -252,6 +237,9 @@ public abstract class CommonAuto extends FtcOpMode
         foundationXMenu.setChildMenu(foundationYMenu);
         foundationYMenu.setChildMenu(foundationHeadingMenu);
         foundationHeadingMenu.setChildMenu(moveFoundationMenu);
+        xTargetMenu.setChildMenu(yTargetMenu);
+        yTargetMenu.setChildMenu(turnTargetMenu);
+        turnTargetMenu.setChildMenu(drivePowerMenu);
         driveTimeMenu.setChildMenu(drivePowerMenu);
         //
         // Populate choice menus.
@@ -266,7 +254,7 @@ public abstract class CommonAuto extends FtcOpMode
                 moveFoundationMenu);
         strategyMenu.addChoice("Pure Pursuit Drive", AutoStrategy.PURE_PURSUIT_DRIVE, false);
         strategyMenu.addChoice(
-                "Distance Drive", AutoStrategy.DISTANCE_DRIVE, false, driveDistanceMenu);
+                "PID Drive", AutoStrategy.PID_DRIVE, false, xTargetMenu);
         strategyMenu.addChoice("Timed Drive", AutoStrategy.TIMED_DRIVE, false, driveTimeMenu);
         strategyMenu.addChoice("Do nothing", AutoStrategy.DO_NOTHING, false);
 
@@ -291,15 +279,19 @@ public abstract class CommonAuto extends FtcOpMode
         autoChoices.foundationHeading = foundationHeadingMenu.getCurrentValue();
         autoChoices.moveFoundation = moveFoundationMenu.getCurrentChoiceObject();
         autoChoices.parkUnderBridge = parkMenu.getCurrentChoiceObject();
-        autoChoices.driveDistance = driveDistanceMenu.getCurrentValue();
+        autoChoices.xTarget = xTargetMenu.getCurrentValue();
+        autoChoices.yTarget = yTargetMenu.getCurrentValue();
+        autoChoices.turnTarget = turnTargetMenu.getCurrentValue();
         autoChoices.driveTime = driveTimeMenu.getCurrentValue();
         autoChoices.drivePower = drivePowerMenu.getCurrentValue();
         //
         // Show choices.
         //
         robot.dashboard.displayPrintf(2, "Auto Strategy: %s", strategyMenu.getCurrentChoiceText());
-        robot.dashboard.displayPrintf(3, "Drive: distance=%.0f ft,Time=%.0f,Power=%.1f",
-                autoChoices.driveDistance, autoChoices.driveTime, autoChoices.drivePower);
+        robot.dashboard.displayPrintf(
+                3, "Drive: xTarget=%.0f ft,yTarget=%.0f ft,turnTarget=%.0f ft,Time=%.0f,Power=%.1f",
+                autoChoices.xTarget, autoChoices.yTarget, autoChoices.turnTarget, autoChoices.driveTime,
+                autoChoices.drivePower);
     }   //doAutoChoicesMenus
 
     protected void createTraceLog()

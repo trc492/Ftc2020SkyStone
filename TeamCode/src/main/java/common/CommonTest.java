@@ -48,9 +48,7 @@ public class CommonTest
         MOTORS_TEST,
         X_TIMED_DRIVE,
         Y_TIMED_DRIVE,
-        X_DISTANCE_DRIVE,
-        Y_DISTANCE_DRIVE,
-        GYRO_TURN,
+        PID_DRIVE,
         TUNE_X_PID,
         TUNE_Y_PID,
         TUNE_TURN_PID,
@@ -85,10 +83,11 @@ public class CommonTest
     // Menu choices.
     //
     private Test test = Test.SENSORS_TEST;
+    private double xTarget = 0.0;
+    private double yTarget = 0.0;
+    private double turnTarget = 0.0;
     private double driveTime = 0.0;
     private double drivePower = 0.0;
-    private double driveDistance = 0.0;
-    private double turnDegrees = 0.0;
 
     private TrcRobot.RobotCommand testCommand = null;
     private int motorIndex = 0;
@@ -138,57 +137,39 @@ public class CommonTest
                 }
                 break;
 
-            case X_DISTANCE_DRIVE:
+            case PID_DRIVE:
                 if (hasRobot)
                 {
-                    testCommand = new CmdPidDrive(
-                            robot, robot.pidDrive, 0.0, driveDistance * 12.0, 0.0, 0.0,
-                            drivePower, false);
-                }
-                break;
-
-            case Y_DISTANCE_DRIVE:
-                if (hasRobot)
-                {
-                    testCommand = new CmdPidDrive(
-                            robot, robot.pidDrive, 0.0, 0.0, driveDistance * 12.0, 0.0,
-                            drivePower, false);
-                }
-                break;
-
-            case GYRO_TURN:
-                if (hasRobot)
-                {
-                    testCommand = new CmdPidDrive(
-                            robot, robot.pidDrive, 0.0, 0.0, 0.0, turnDegrees,
-                            drivePower, false);
+                    testCommand = new CmdEnhancedPidDrive(
+                            robot, robot.driveBase, robot.pidDrive, 0.0,
+                            xTarget*12.0, yTarget*12.0, turnTarget, drivePower, false);
                 }
                 break;
 
             case TUNE_X_PID:
                 if (hasRobot)
                 {
-                    testCommand = new CmdPidDrive(
-                            robot, robot.pidDrive, 0.0, driveDistance * 12.0, 0.0, 0.0,
-                            drivePower, true);
+                    testCommand = new CmdEnhancedPidDrive(
+                            robot, robot.driveBase, robot.pidDrive, 0.0,
+                            xTarget*12.0, 0.0, 0.0, drivePower, true);
                 }
                 break;
 
             case TUNE_Y_PID:
                 if (hasRobot)
                 {
-                    testCommand = new CmdPidDrive(
-                            robot, robot.pidDrive, 0.0, 0.0, driveDistance * 12.0, 0.0,
-                            drivePower, true);
+                    testCommand = new CmdEnhancedPidDrive(
+                            robot, robot.driveBase, robot.pidDrive, 0.0,
+                            0.0, yTarget*12.0, 0.0, drivePower, true);
                 }
                 break;
 
             case TUNE_TURN_PID:
                 if (hasRobot)
                 {
-                    testCommand = new CmdPidDrive(
-                            robot, robot.pidDrive, 0.0, 0.0, 0.0, turnDegrees,
-                            drivePower, true);
+                    testCommand = new CmdEnhancedPidDrive(
+                            robot, robot.driveBase, robot.pidDrive, 0.0,
+                            0.0, 0.0, turnTarget, drivePower, true);
                 }
                 break;
 
@@ -307,9 +288,7 @@ public class CommonTest
                 }
                 break;
 
-            case X_DISTANCE_DRIVE:
-            case Y_DISTANCE_DRIVE:
-            case GYRO_TURN:
+            case PID_DRIVE:
             case TUNE_X_PID:
             case TUNE_Y_PID:
             case TUNE_TURN_PID:
@@ -353,18 +332,21 @@ public class CommonTest
         // Create menus.
         //
         FtcChoiceMenu<Test> testMenu = new FtcChoiceMenu<>("Tests:", null);
+        FtcValueMenu xTargetMenu = new FtcValueMenu(
+                "xTarget:", testMenu, -10.0, 10.0, 0.5, 4.0,
+                " %.1f ft");
+        FtcValueMenu yTargetMenu = new FtcValueMenu(
+                "yTarget:", testMenu, -10.0, 10.0, 0.5, 4.0,
+                " %.1f ft");
+        FtcValueMenu turnTargetMenu = new FtcValueMenu(
+                "turnTarget:", testMenu, -180.0, 180.0, 5.0, 90.0,
+                " %.0f deg");
         FtcValueMenu driveTimeMenu = new FtcValueMenu(
                 "Drive time:", testMenu, 1.0, 10.0, 1.0, 4.0,
                 " %.0f sec");
         FtcValueMenu drivePowerMenu = new FtcValueMenu(
                 "Drive power:", testMenu, 0.0, 1.0, 0.1, 0.5,
                 " %.1f");
-        FtcValueMenu driveDistanceMenu = new FtcValueMenu(
-                "Drive distance:", testMenu, -10.0, 10.0, 0.5, 4.0,
-                " %.1f ft");
-        FtcValueMenu turnDegreesMenu = new FtcValueMenu(
-                "Turn degrees:", testMenu, -360.0, 360.0, 5.0, 90.0,
-                " %.0f deg");
 
         if (tuneKpMenu == null)
         {
@@ -401,17 +383,16 @@ public class CommonTest
         testMenu.addChoice("Motors test", Test.MOTORS_TEST, false);
         testMenu.addChoice("X Timed drive", Test.X_TIMED_DRIVE, false, driveTimeMenu);
         testMenu.addChoice("Y Timed drive", Test.Y_TIMED_DRIVE, false, driveTimeMenu);
-        testMenu.addChoice("X Distance drive", Test.X_DISTANCE_DRIVE, false, driveDistanceMenu);
-        testMenu.addChoice("Y Distance drive", Test.Y_DISTANCE_DRIVE, false, driveDistanceMenu);
-        testMenu.addChoice("Degrees turn", Test.GYRO_TURN, false, turnDegreesMenu);
+        testMenu.addChoice("PID drive", Test.PID_DRIVE, false, xTargetMenu);
         testMenu.addChoice("Tune X PID", Test.TUNE_X_PID, false, tuneKpMenu);
         testMenu.addChoice("Tune Y PID", Test.TUNE_Y_PID, false, tuneKpMenu);
         testMenu.addChoice("Tune Turn PID", Test.TUNE_TURN_PID, false, tuneKpMenu);
         testMenu.addChoice("Pure Pursuit Drive", Test.PURE_PURSUIT_DRIVE, false);
 
+        xTargetMenu.setChildMenu(yTargetMenu);
+        yTargetMenu.setChildMenu(turnTargetMenu);
+        turnTargetMenu.setChildMenu(drivePowerMenu);
         driveTimeMenu.setChildMenu(drivePowerMenu);
-        driveDistanceMenu.setChildMenu(drivePowerMenu);
-        turnDegreesMenu.setChildMenu(drivePowerMenu);
         tuneKpMenu.setChildMenu(tuneKiMenu);
         tuneKiMenu.setChildMenu(tuneKdMenu);
         tuneKdMenu.setChildMenu(tuneKfMenu);
@@ -424,10 +405,11 @@ public class CommonTest
         // Fetch choices.
         //
         test = testMenu.getCurrentChoiceObject();
+        xTarget = xTargetMenu.getCurrentValue();
+        yTarget = yTargetMenu.getCurrentValue();
+        turnTarget = turnTargetMenu.getCurrentValue();
         driveTime = driveTimeMenu.getCurrentValue();
         drivePower = drivePowerMenu.getCurrentValue();
-        driveDistance = driveDistanceMenu.getCurrentValue();
-        turnDegrees = turnDegreesMenu.getCurrentValue();
         //
         // Show choices.
         //
