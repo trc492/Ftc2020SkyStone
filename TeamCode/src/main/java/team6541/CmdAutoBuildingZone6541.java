@@ -55,7 +55,8 @@ public class CmdAutoBuildingZone6541 implements TrcRobot.RobotCommand
         LOWER_ELEVATOR_AFTER_BACKING_OFF,
         CRAB_TOWARD_WALL,
         ALIGN_WITH_BRIDGE,
-        PARK_UNDER_BRIDGE,
+        PARK_UNDER_BRIDGE_TOUCHING_FENCE,
+        PARK_UNDER_BRIDGE_TOUCHING_CENTER,
         DONE
     }   //enum State
 
@@ -77,7 +78,7 @@ public class CmdAutoBuildingZone6541 implements TrcRobot.RobotCommand
         sm = new TrcStateMachine<>(moduleName);
         sm.start(State.DO_DELAY);
         enhancedPidDrive = new TrcEnhancedPidDrive<>(
-                "CmdAutoBuildingZone3543", robot.driveBase, robot.pidDrive, event, sm);
+                "CmdAutoBuildingZone3543", robot.driveBase, robot.pidDrive, event, sm, false);
     }   //CmdAutoBuildingZone3543
 
     @Override
@@ -246,12 +247,29 @@ public class CmdAutoBuildingZone6541 implements TrcRobot.RobotCommand
                     break;
 
                 case ALIGN_WITH_BRIDGE:
+                    if (autoChoices.parkUnderBridge == CommonAuto.ParkPosition.NO_PARK)
+                    {
+                        nextState = State.DONE;
+                    }
+                    else if (autoChoices.parkUnderBridge == CommonAuto.ParkPosition.PARK_CLOSE_TO_WALL)
+                    {
+                        nextState = State.PARK_UNDER_BRIDGE_TOUCHING_FENCE;
+                    }
+                    else if (autoChoices.parkUnderBridge == CommonAuto.ParkPosition.PARK_CLOSE_TO_CENTER)
+                    {
+                        nextState = State.PARK_UNDER_BRIDGE_TOUCHING_CENTER;
+                    }
                     turnTarget = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE ? 30.0 : -30.0;
-                    enhancedPidDrive.setTurnTarget(turnTarget, State.PARK_UNDER_BRIDGE);
+                    enhancedPidDrive.setTurnTarget(turnTarget, nextState);
                     break;
 
-                case PARK_UNDER_BRIDGE:
+                case PARK_UNDER_BRIDGE_TOUCHING_FENCE:
                     yTarget = -12.0;
+                    enhancedPidDrive.setYTarget(yTarget, State.DONE);
+                    break;
+
+                case PARK_UNDER_BRIDGE_TOUCHING_CENTER:
+                    yTarget = 12.0;
                     enhancedPidDrive.setYTarget(yTarget, State.DONE);
                     break;
 
