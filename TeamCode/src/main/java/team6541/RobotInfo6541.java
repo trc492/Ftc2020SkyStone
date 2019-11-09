@@ -134,6 +134,9 @@ class RobotInfo6541
     static final double ELEVATOR_MAX_HEIGHT             = 18.0;
     static final double ELEVATOR_SCALE                  = 0.0078226858;
     static final double ELEVATOR_OFFSET                 = 0.0;
+    static final double ELEVATOR_RELEASE_HEIGHT         = 18.0;
+    static final double ELEVATOR_PICKUP_HEIGHT          = 4.0;
+
     static final double[] ELEVATOR_HEIGHT_PRESETS       = {2.5, 6.5, 10.5, 14.5, 18.5};
 
     // Wrist subsystem.

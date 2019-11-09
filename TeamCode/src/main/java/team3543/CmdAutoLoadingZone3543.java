@@ -210,8 +210,9 @@ public class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                 case SETUP_VISION:
                     visionTimeout = TrcUtil.getCurrentTime() + VISION_TIMEOUT;
                     sm.setState(State.GET_TARGET_POSE);
-                    break;
-
+                    //
+                    // Intentionally falling through to the next state.
+                    //
                 case GET_TARGET_POSE:
                     //
                     // Get the detected skystone pose. If pose is null, it could be because Vuforia is still
