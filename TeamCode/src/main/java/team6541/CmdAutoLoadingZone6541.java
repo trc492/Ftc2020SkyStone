@@ -22,50 +22,53 @@
 
 package team6541;
 
+import java.util.Locale;
+
 import common.CommonAuto;
 import common.Robot;
 import trclib.TrcEnhancedPidDrive;
 import trclib.TrcEvent;
 import trclib.TrcPidController;
+import trclib.TrcPose2D;
 import trclib.TrcRobot;
 import trclib.TrcStateMachine;
 import trclib.TrcTimer;
+import trclib.TrcTrigger;
+import trclib.TrcUtil;
 
 public class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
 {
     private static final boolean debugXPid = true;
     private static final boolean debugYPid = true;
     private static final boolean debugTurnPid = true;
+    private static final boolean useVisionTrigger = false;
+    private static final double VISION_TIMEOUT = 1.0;
 
     private enum State
     {
         DO_DELAY,
-        // CodeReview: you may want to go forward 12 to 15 inches before looking because I found the starting distance
-        // is a little too far for reliable object recognition.
-        LOOKING_FOR_SKYSTONES,
-        FIRST_SKYSTONE_ALIGN_GRABBER_TO_SKYSTONE,
-        // drive to skystone and pick it up
-        FIRST_SKYSTONE_OPEN_GRABBER_AND_EXTEND_ARM,
-        FIRST_SKYSTONE_DRIVE_FORWARD,
-        FIRST_SKYSTONE_ARM_GOES_DOWN_ON_SKYSTONE,
-        FIRST_SKYSTONE_GRAB_SKYSTONE,
-        FIRST_SKYSTONE_EXTEND_ARM_WITH_SKYSTONE,
-        // move skystone to foundation
-        FIRST_SKYSTONE_BACK_UP,
-        FIRST_SKYSTONE_TURN_TOWARDS_BUILDING_SIDE,
-        FIRST_SKYSTONE_GO_FORWARDS,
-        FIRST_SKYSTONE_TURN_TOWARD_MIDDLE,
-        FIRST_SKYSTONE_MOVE_TOWARD_MIDDLE,
-        FIRST_SKYSTONE_TURN_TO_FOUNDATION,
-        FIRST_SKYSTONE_MOVE_TO_FOUNDATION,
-        FIRST_SKYSTONE_RELEASE_SKYSTONE,
-        // go back to loadingzone
-        FIRST_SKYSTONE_REVERSE,
-        FIRST_SKYSTONE_TURN_TOWARDS_WALL,
-        FIRST_SKYSTONE_MOVE_TOWARDS_WALL,
-        FIRST_SKYSTONE_TURN_TOWARDS_LOADINGZONE,
-        FIRST_SKYSTONE_MOVE_TOWARDS_LOADINGZONE,
-
+        MOVE_CLOSER,
+        ELEVATOR_TO_RELEASE_HEIGHT,
+        ELEVATOR_TO_PICKUP_HEIGHT,
+        SETUP_VISION,
+        GET_TARGET_POSE,
+        SCAN_FOR_SKYSTONE,
+        NEXT_SKYSTONE_POSITION,
+        ALIGN_SKYSTONE,
+        GOTO_SKYSTONE,
+        GO_DOWN_ON_SKYSTONE,
+        GRAB_SKYSTONE,
+        PULL_SKYSTONE,
+        GOTO_FOUNDATION,
+        APPROACH_FOUNDATION,
+        DROP_SKYSTONE,
+        BACK_OFF_FOUNDATION,
+        TURN_AROUND,
+        BACKUP_TO_FOUNDATION,
+        HOOK_FOUNDATION,
+        PULL_FOUNDATION_TO_WALL,
+        UNHOOK_FOUNDATION,
+        PARK_UNDER_BRIDGE,
         DONE
     }   //enum State
 
@@ -77,8 +80,11 @@ public class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
     private final TrcTimer timer;
     private final TrcStateMachine<State> sm;
     private final TrcEnhancedPidDrive<State> enhancedPidDrive;
-
-    private double xSkyStoneOffSetPosition;
+    private TrcTrigger visionTrigger;
+    private TrcPose2D skystonePose = null;
+    private double visionTimeout = 0.0;
+    private int scootCount = 2;
+    private boolean scanningForSkyStone = false;
 
     public CmdAutoLoadingZone6541(Robot robot, CommonAuto.AutoChoices autoChoices)
     {
@@ -87,9 +93,19 @@ public class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
         event = new TrcEvent(moduleName);
         timer = new TrcTimer(moduleName);
         sm = new TrcStateMachine<>(moduleName);
-        sm.start(State.DO_DELAY);
+
+        robot.encoderXPidCtrl.setNoOscillation(true);
+        robot.encoderYPidCtrl.setNoOscillation(true);
+        robot.gyroPidCtrl.setNoOscillation(true);
         enhancedPidDrive = new TrcEnhancedPidDrive<>(
                 "CmdAutoLoadingZone6541", robot.driveBase, robot.pidDrive, event, sm);
+
+        if (useVisionTrigger)
+        {
+            visionTrigger = new TrcTrigger("VisionTrigger", this::isTriggered, this::targetDetected);
+        }
+
+        sm.start(State.DO_DELAY);
     }   //CmdAutoLoadingZone6541
 
     @Override
@@ -115,159 +131,215 @@ public class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
         }
         else
         {
-            robot.dashboard.displayPrintf(1, "State: %s", state);
+            double xTarget = 0.0;
+            double yTarget = 0.0;
+            double turnTarget = 0.0;
 
-            State nextState = null;
+            robot.dashboard.displayPrintf(1, "State: %s", state);
 
             switch (state)
             {
-
                 case DO_DELAY:
+                    robot.elevator.setPosition(RobotInfo6541.ELEVATOR_RELEASE_HEIGHT);
                     //
                     // Do delay if any.
                     //
                     if (autoChoices.delay == 0.0)
                     {
-                        sm.setState(State.LOOKING_FOR_SKYSTONES);
+                        sm.setState(State.MOVE_CLOSER);
                         //
                         // Intentionally falling through to the next state.
                         //
-                    }
-                    else
+                    } else
                     {
                         timer.set(autoChoices.delay, event);
-                        sm.waitForSingleEvent(event, State.LOOKING_FOR_SKYSTONES);
+                        sm.waitForSingleEvent(event, State.MOVE_CLOSER);
                         break;
                     }
-                case LOOKING_FOR_SKYSTONES:
-                    //TODO: look for the skystones
-                    sm.setState(State.FIRST_SKYSTONE_OPEN_GRABBER_AND_EXTEND_ARM);
+
+                case MOVE_CLOSER:
+                    //
+                    // Move closer slowly for a distance so Vuforia can detect the target.
+                    //
+                    robot.grabber.release();
+                    //robot.wrist.extend();
+                    robot.pidDrive.getXPidCtrl().setOutputLimit(0.5);
+                    robot.pidDrive.getYPidCtrl().setOutputLimit(0.5);
+                    yTarget = 22.0;
+                    enhancedPidDrive.setYTarget(yTarget, State.ELEVATOR_TO_RELEASE_HEIGHT);
                     break;
 
-                case FIRST_SKYSTONE_ALIGN_GRABBER_TO_SKYSTONE:
-                    enhancedPidDrive.setXTarget(
-                            xSkyStoneOffSetPosition, State.FIRST_SKYSTONE_OPEN_GRABBER_AND_EXTEND_ARM);
+                case ELEVATOR_TO_RELEASE_HEIGHT:
+                    robot.elevator.setPosition(RobotInfo6541.ELEVATOR_RELEASE_HEIGHT, event, 0);
+                    sm.waitForSingleEvent(event, State.ELEVATOR_TO_PICKUP_HEIGHT);
                     break;
 
-                case FIRST_SKYSTONE_OPEN_GRABBER_AND_EXTEND_ARM:
-                    if(robot.extenderArm != null)
+                case ELEVATOR_TO_PICKUP_HEIGHT:
+                    robot.elevator.setPosition(RobotInfo6541.ELEVATOR_PICKUP_HEIGHT, event, 0);
+                    sm.waitForSingleEvent(event, State.SETUP_VISION);
+                    break;
+
+                case SETUP_VISION:
+                    visionTimeout = TrcUtil.getCurrentTime() + VISION_TIMEOUT;
+                    sm.setState(State.GET_TARGET_POSE);
+                    //
+                    // Intentionally falling through to the next state.
+                    //
+                case GET_TARGET_POSE:
+                    //
+                    // Get the detected skystone pose. If pose is null, it could be because Vuforia is still
+                    // processing the image. So keep repeating this state until it finds the target or we pass
+                    // vision timeout.
+                    //
+                    skystonePose = robot.getSkyStonePose();
+                    if (skystonePose == null)
                     {
-                        robot.extenderArm.extend();
+                        // Vuforia either did not detect the target or it's still busy processing the image.
+                        robot.globalTracer.traceInfo("getTargetPose", "Skystone not found.");
+                        if (TrcUtil.getCurrentTime() > visionTimeout)
+                        {
+                            // Can't find any skystone here, move on to the next position.
+                            sm.setState(visionTrigger == null ? State.NEXT_SKYSTONE_POSITION :
+                                    scanningForSkyStone ? State.GOTO_SKYSTONE : State.SCAN_FOR_SKYSTONE);
+                            robot.speak("Sky stone not found.");
+                        }
+                    } else
+                    {
+                        // Vuforia found the skystone.
+                        robot.globalTracer.traceInfo(
+                                "getTargetPose", "Skystone found at x=%.1f, y=%.1f.",
+                                skystonePose.x, skystonePose.y);
+                        robot.speak(String.format(Locale.US, "Sky stone found at %.1f inches.", skystonePose.x));
+                        sm.setState(State.ALIGN_SKYSTONE);
+                    }
+                    break;
+
+                case SCAN_FOR_SKYSTONE:
+                    visionTrigger.setEnabled(true);
+                    scanningForSkyStone = true;
+                    xTarget = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE ? -16.0 : 16.0;
+                    enhancedPidDrive.setXTarget(xTarget, State.SETUP_VISION);
+                    break;
+
+                case NEXT_SKYSTONE_POSITION:
+                    if (scootCount > 0)
+                    {
+                        scootCount--;
+                        xTarget = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE ? -8.5 : 8.5;
+                        enhancedPidDrive.setXTarget(xTarget, (scootCount == 0 ? State.GOTO_SKYSTONE : State.SETUP_VISION));
+                    } else
+                    {
+                        // Still can't detect the target. Just assume the one in front is a skystone. We will still
+                        // get some points even if we are wrong, better than nothing!
+                        robot.globalTracer.traceInfo(
+                                "NextSkyStonePos", "Skystone not found, giving up.");
+                        sm.setState(State.GOTO_SKYSTONE);
+                    }
+                    break;
+
+                case ALIGN_SKYSTONE:
+                    if (visionTrigger != null)
+                    {
+                        visionTrigger.setEnabled(false);
+                    }
+                    xTarget = skystonePose.x;
+                    enhancedPidDrive.setXTarget(xTarget, State.GOTO_SKYSTONE);
+                    break;
+
+                case GOTO_SKYSTONE:
+                    if (visionTrigger != null)
+                    {
+                        visionTrigger.setEnabled(false);
+                    }
+                    // If we did not detect the skystone, assume it's right in front of us.
+                    yTarget = 8.0;
+                    enhancedPidDrive.setYTarget(yTarget, State.GO_DOWN_ON_SKYSTONE);
+                    break;
+
+                case GO_DOWN_ON_SKYSTONE:
+                    if (robot.extenderArm != null)
+                    {
+                        robot.extenderArm.retract(2.5, event);
+                        sm.waitForSingleEvent(event, State.GRAB_SKYSTONE);
+                    } else
+                    {
+                        sm.setState(State.GRAB_SKYSTONE);
+                    }
+                    break;
+
+                case GRAB_SKYSTONE:
+                    robot.grabber.grab(1.5, event);
+                    sm.waitForSingleEvent(event, State.PULL_SKYSTONE);
+                    break;
+
+                case PULL_SKYSTONE:
+                    yTarget = -12.0;
+                    enhancedPidDrive.setYTarget(yTarget, State.GOTO_FOUNDATION);
+                    break;
+
+                case GOTO_FOUNDATION:
+                    if (robot.extenderArm != null)
+                    {
+                        robot.extenderArm.extendMax();
                     }
 
-                    if(robot.grabber != null) {
-                        robot.grabber.release();
-                    }
+                    robot.pidDrive.getXPidCtrl().setOutputLimit(1.0);
+                    robot.pidDrive.getYPidCtrl().setOutputLimit(1.0);
+                    xTarget = (autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE ? 72.0 : -72.0)
+                            - robot.driveBase.getXPosition();
+                    enhancedPidDrive.setXTarget(xTarget, State.APPROACH_FOUNDATION);
+                    break;
 
+                case APPROACH_FOUNDATION:
+                    yTarget = 15.0;
+                    enhancedPidDrive.setYTarget(yTarget, State.DROP_SKYSTONE);
+                    break;
+
+                case DROP_SKYSTONE:
+                    robot.grabber.release();
                     timer.set(1.5, event);
-                    sm.waitForSingleEvent(event, State.FIRST_SKYSTONE_DRIVE_FORWARD);
+                    sm.waitForSingleEvent(event, State.BACK_OFF_FOUNDATION);
                     break;
 
-                case FIRST_SKYSTONE_DRIVE_FORWARD:
-                    enhancedPidDrive.setYTarget(29.0, State.FIRST_SKYSTONE_ARM_GOES_DOWN_ON_SKYSTONE);
+                case BACK_OFF_FOUNDATION:
+                    yTarget = -6.0;
+                    enhancedPidDrive.setYTarget(yTarget, State.TURN_AROUND);
                     break;
 
-                case FIRST_SKYSTONE_ARM_GOES_DOWN_ON_SKYSTONE:
-                    nextState = State.FIRST_SKYSTONE_GRAB_SKYSTONE;
+                case TURN_AROUND:
+                    turnTarget = 180.0;
+                    enhancedPidDrive.setTurnTarget(turnTarget, State.BACKUP_TO_FOUNDATION);
+                    break;
 
-                    if(robot.extenderArm != null)
+                case BACKUP_TO_FOUNDATION:
+                    if (robot.extenderArm != null)
                     {
-                        robot.extenderArm.retract(event);
-                        sm.waitForSingleEvent(event, nextState);
-                    } else {
-                        sm.setState(nextState);
+                        robot.extenderArm.retract();
                     }
 
+                    robot.wrist.retract();
+                    yTarget = -10.0;
+                    enhancedPidDrive.setYTarget(yTarget, State.HOOK_FOUNDATION);
                     break;
 
-                case FIRST_SKYSTONE_GRAB_SKYSTONE:
-                    nextState = State.FIRST_SKYSTONE_EXTEND_ARM_WITH_SKYSTONE;
-
-                    if(robot.grabber != null) {
-                        robot.grabber.grab(event);
-                        sm.waitForSingleEvent(event, nextState);
-                    } else {
-                        sm.setState(nextState);
-                    }
-
+                case HOOK_FOUNDATION:
+                    robot.foundationLatch.grab(event);
+                    sm.waitForSingleEvent(event, State.PULL_FOUNDATION_TO_WALL);
                     break;
 
-                case FIRST_SKYSTONE_EXTEND_ARM_WITH_SKYSTONE:
-                    nextState = State.FIRST_SKYSTONE_BACK_UP;
-                    if (robot.extenderArm != null) {
-                        robot.extenderArm.extend(event);
-                        sm.waitForSingleEvent(event, nextState);
-                    } else {
-                        sm.setState(nextState);
-                    }
+                case PULL_FOUNDATION_TO_WALL:
+                    yTarget = 48;
+                    enhancedPidDrive.setYTarget(yTarget, State.UNHOOK_FOUNDATION);
                     break;
 
-                case FIRST_SKYSTONE_BACK_UP:
-                    enhancedPidDrive.setYTarget(-9.0, State.FIRST_SKYSTONE_TURN_TOWARDS_BUILDING_SIDE);
+                case UNHOOK_FOUNDATION:
+                    robot.foundationLatch.release(event);
+                    sm.waitForSingleEvent(event, State.PARK_UNDER_BRIDGE);
                     break;
 
-                case FIRST_SKYSTONE_TURN_TOWARDS_BUILDING_SIDE:
-                    int turnDegrees = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE?90:-90;
-                    enhancedPidDrive.setTurnTarget(turnDegrees, State.FIRST_SKYSTONE_GO_FORWARDS);
-                    break;
-
-                case FIRST_SKYSTONE_GO_FORWARDS:
-                    enhancedPidDrive.setYTarget(85 - 34.5, State.FIRST_SKYSTONE_TURN_TOWARD_MIDDLE);
-                    break;
-
-                case FIRST_SKYSTONE_TURN_TOWARD_MIDDLE:
-                    turnDegrees = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE?-90:90;
-                    enhancedPidDrive.setTurnTarget(turnDegrees, State.FIRST_SKYSTONE_MOVE_TOWARD_MIDDLE);
-                    break;
-
-                case FIRST_SKYSTONE_MOVE_TOWARD_MIDDLE:
-                    enhancedPidDrive.setYTarget(
-                            32 + autoChoices.foundationXPos, State.FIRST_SKYSTONE_TURN_TO_FOUNDATION);
-                    break;
-
-                case FIRST_SKYSTONE_TURN_TO_FOUNDATION:
-                    turnDegrees = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE?90:-90;
-                    enhancedPidDrive.setTurnTarget(turnDegrees, State.FIRST_SKYSTONE_MOVE_TO_FOUNDATION);
-                    break;
-
-                case FIRST_SKYSTONE_MOVE_TO_FOUNDATION:
-                    enhancedPidDrive.setYTarget(
-                            5.5 + autoChoices.foundationYPos,State.FIRST_SKYSTONE_RELEASE_SKYSTONE);
-                    break;
-
-                case FIRST_SKYSTONE_RELEASE_SKYSTONE:
-                    nextState = State.FIRST_SKYSTONE_REVERSE;
-                    if (robot.grabber != null) {
-                        robot.grabber.release(event);
-                        sm.waitForSingleEvent(event, nextState);
-                    } else {
-                        sm.setState(nextState);
-                    }
-                    break;
-
-                case FIRST_SKYSTONE_REVERSE:
-                    enhancedPidDrive.setYTarget(-5.5 - autoChoices.foundationYPos,
-                            State.FIRST_SKYSTONE_TURN_TOWARDS_WALL);
-                    break;
-
-                case FIRST_SKYSTONE_TURN_TOWARDS_WALL:
-                    turnDegrees = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE?90:-90;
-                    enhancedPidDrive.setTurnTarget(turnDegrees, State.FIRST_SKYSTONE_MOVE_TOWARDS_WALL);
-                    break;
-
-                case FIRST_SKYSTONE_MOVE_TOWARDS_WALL:
-                    enhancedPidDrive.setYTarget(32 + autoChoices.foundationXPos,
-                            State.FIRST_SKYSTONE_TURN_TOWARDS_LOADINGZONE);
-                    break;
-
-                case FIRST_SKYSTONE_TURN_TOWARDS_LOADINGZONE:
-                    turnDegrees = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE?90:-90;
-                    enhancedPidDrive.setTurnTarget(turnDegrees, State.FIRST_SKYSTONE_MOVE_TOWARDS_LOADINGZONE);
-                    break;
-
-                case FIRST_SKYSTONE_MOVE_TOWARDS_LOADINGZONE:
-                    // Line up with skystones closer to center of the field
-                    enhancedPidDrive.setYTarget(33, State.DONE);
+                case PARK_UNDER_BRIDGE:
+                    xTarget = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE ? 50.0 : -50.0;
+                    enhancedPidDrive.setXTarget(xTarget, State.DONE);
                     break;
 
                 case DONE:
@@ -275,13 +347,13 @@ public class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
                     //
                     // We are done.
                     //
+                    robot.pidDrive.getXPidCtrl().setOutputLimit(1.0);
+                    robot.pidDrive.getYPidCtrl().setOutputLimit(1.0);
                     sm.stop();
                     break;
             }
 
-            // TODO: Declare variables for xDistance and yDistance values, set them,
-            // and pass in the values here
-            robot.traceStateInfo(elapsedTime, state.toString(), 0, 0, 0);
+            robot.traceStateInfo(elapsedTime, state.toString(), xTarget, yTarget, turnTarget);
         }
 
         if (robot.pidDrive.isActive() && (debugXPid || debugYPid || debugTurnPid))
@@ -313,5 +385,25 @@ public class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
 
         return !sm.isEnabled();
     }   //cmdPeriodic
+
+    private boolean isTriggered()
+    {
+        TrcPose2D pose = robot.getSkyStonePose();
+
+        if (pose != null)
+        {
+            skystonePose = pose;
+        }
+
+        return pose != null;
+    }   //isTriggered
+
+    private void targetDetected()
+    {
+        if (robot.pidDrive.isActive())
+        {
+            robot.pidDrive.cancel();
+        }
+    }   //targetDetected
 
 }   //CmdAutoLoadingZone6541
