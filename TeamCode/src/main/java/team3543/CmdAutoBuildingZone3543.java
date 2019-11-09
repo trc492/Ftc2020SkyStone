@@ -44,7 +44,11 @@ public class CmdAutoBuildingZone3543 implements TrcRobot.RobotCommand
         HOOK_FOUNDATION,
         MOVE_FOUNDATION_BACK,
         LET_GO_FOUNDATION,
+        SETUP_PARKING,
         SCOOT_TO_LINE,
+        SCOOT_CLOSER_TO_LINE,
+        MOVE_CLOSER_TO_CENTER,
+        SCOOT_TO_LINE_SHORT,
         DONE
     }   //enum State
 
@@ -106,9 +110,11 @@ public class CmdAutoBuildingZone3543 implements TrcRobot.RobotCommand
                     robot.pidDrive.getXPidCtrl().saveAndSetOutputLimit(0.5);
                     robot.pidDrive.getYPidCtrl().saveAndSetOutputLimit(0.5);
 
+                    State nextState = autoChoices.moveFoundation? State.MOVE_TO_FOUNDATION: State.SETUP_PARKING;
+
                     if (autoChoices.delay == 0.0)
                     {
-                        sm.setState(State.MOVE_TO_FOUNDATION);
+                        sm.setState(nextState);
                         //
                         // Intentionally falling through to the next state.
                         //
@@ -116,7 +122,7 @@ public class CmdAutoBuildingZone3543 implements TrcRobot.RobotCommand
                     else
                     {
                         timer.set(autoChoices.delay, event);
-                        sm.waitForSingleEvent(event, State.MOVE_TO_FOUNDATION);
+                        sm.waitForSingleEvent(event, nextState);
                         break;
                     }
 
@@ -156,8 +162,32 @@ public class CmdAutoBuildingZone3543 implements TrcRobot.RobotCommand
                     }
                     break;
 
+                case SETUP_PARKING:
+                    if (autoChoices.parkUnderBridge == CommonAuto.ParkPosition.NO_PARK)
+                        sm.setState(State.DONE);
+                    else if (autoChoices.parkUnderBridge == CommonAuto.ParkPosition.PARK_CLOSE_TO_WALL)
+                        sm.setState(State.SCOOT_TO_LINE);
+                    else if (autoChoices.parkUnderBridge == CommonAuto.ParkPosition.PARK_CLOSE_TO_CENTER)
+                        sm.setState(State.SCOOT_CLOSER_TO_LINE);
+                    break;
+
                 case SCOOT_TO_LINE:
                     xTarget = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE ? 48.0 : -48.0;
+                    enhancedPidDrive.setXTarget(xTarget, State.DONE);
+                    break;
+
+                case SCOOT_CLOSER_TO_LINE:
+                    xTarget = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE ? 28.0 : -28.0;
+                    enhancedPidDrive.setXTarget(xTarget, State.MOVE_CLOSER_TO_CENTER);
+                    break;
+
+                case MOVE_CLOSER_TO_CENTER:
+                    yTarget = -20.0;
+                    enhancedPidDrive.setYTarget(yTarget, State.SCOOT_TO_LINE_SHORT);
+                    break;
+
+                case SCOOT_TO_LINE_SHORT:
+                    xTarget = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE ? 20.0 : -20.0;
                     enhancedPidDrive.setXTarget(xTarget, State.DONE);
                     break;
 
