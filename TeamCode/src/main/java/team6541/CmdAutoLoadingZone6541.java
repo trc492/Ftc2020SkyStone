@@ -24,7 +24,7 @@ package team6541;
 
 import common.CommonAuto;
 import common.Robot;
-import trclib.TrcAbsTargetDrive;
+import trclib.TrcEnhancedPidDrive;
 import trclib.TrcEvent;
 import trclib.TrcRobot;
 import trclib.TrcStateMachine;
@@ -71,7 +71,7 @@ public class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
     private final TrcEvent event;
     private final TrcTimer timer;
     private final TrcStateMachine<State> sm;
-    private final TrcAbsTargetDrive<State> absTargetDrive;
+    private final TrcEnhancedPidDrive<State> enhancedPidDrive;
 
     private double xSkyStoneOffSetPosition;
 
@@ -83,7 +83,7 @@ public class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
         timer = new TrcTimer(moduleName);
         sm = new TrcStateMachine<>(moduleName);
         sm.start(State.DO_DELAY);
-        absTargetDrive = new TrcAbsTargetDrive<>(
+        enhancedPidDrive = new TrcEnhancedPidDrive<>(
                 "CmdAutoLoadingZone6541", robot.driveBase, robot.pidDrive, event, sm);
     }   //CmdAutoLoadingZone6541
 
@@ -140,7 +140,7 @@ public class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
                     break;
 
                 case FIRST_SKYSTONE_ALIGN_GRABBER_TO_SKYSTONE:
-                    absTargetDrive.setXTarget(
+                    enhancedPidDrive.setXTarget(
                             xSkyStoneOffSetPosition, State.FIRST_SKYSTONE_OPEN_GRABBER_AND_EXTEND_ARM);
                     break;
 
@@ -159,7 +159,7 @@ public class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
                     break;
 
                 case FIRST_SKYSTONE_DRIVE_FORWARD:
-                    absTargetDrive.setYTarget(29.0, State.FIRST_SKYSTONE_ARM_GOES_DOWN_ON_SKYSTONE);
+                    enhancedPidDrive.setYTarget(29.0, State.FIRST_SKYSTONE_ARM_GOES_DOWN_ON_SKYSTONE);
                     break;
 
                 case FIRST_SKYSTONE_ARM_GOES_DOWN_ON_SKYSTONE:
@@ -198,35 +198,35 @@ public class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
                     break;
 
                 case FIRST_SKYSTONE_BACK_UP:
-                    absTargetDrive.setYTarget(-9.0, State.FIRST_SKYSTONE_TURN_TOWARDS_BUILDING_SIDE);
+                    enhancedPidDrive.setYTarget(-9.0, State.FIRST_SKYSTONE_TURN_TOWARDS_BUILDING_SIDE);
                     break;
 
                 case FIRST_SKYSTONE_TURN_TOWARDS_BUILDING_SIDE:
                     int turnDegrees = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE?90:-90;
-                    absTargetDrive.setTurnTarget(turnDegrees, State.FIRST_SKYSTONE_GO_FORWARDS);
+                    enhancedPidDrive.setTurnTarget(turnDegrees, State.FIRST_SKYSTONE_GO_FORWARDS);
                     break;
 
                 case FIRST_SKYSTONE_GO_FORWARDS:
-                    absTargetDrive.setYTarget(85 - 34.5, State.FIRST_SKYSTONE_TURN_TOWARD_MIDDLE);
+                    enhancedPidDrive.setYTarget(85 - 34.5, State.FIRST_SKYSTONE_TURN_TOWARD_MIDDLE);
                     break;
 
                 case FIRST_SKYSTONE_TURN_TOWARD_MIDDLE:
                     turnDegrees = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE?-90:90;
-                    absTargetDrive.setTurnTarget(turnDegrees, State.FIRST_SKYSTONE_MOVE_TOWARD_MIDDLE);
+                    enhancedPidDrive.setTurnTarget(turnDegrees, State.FIRST_SKYSTONE_MOVE_TOWARD_MIDDLE);
                     break;
 
                 case FIRST_SKYSTONE_MOVE_TOWARD_MIDDLE:
-                    absTargetDrive.setYTarget(
+                    enhancedPidDrive.setYTarget(
                             32 + autoChoices.foundationXPos, State.FIRST_SKYSTONE_TURN_TO_FOUNDATION);
                     break;
 
                 case FIRST_SKYSTONE_TURN_TO_FOUNDATION:
                     turnDegrees = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE?90:-90;
-                    absTargetDrive.setTurnTarget(turnDegrees, State.FIRST_SKYSTONE_MOVE_TO_FOUNDATION);
+                    enhancedPidDrive.setTurnTarget(turnDegrees, State.FIRST_SKYSTONE_MOVE_TO_FOUNDATION);
                     break;
 
                 case FIRST_SKYSTONE_MOVE_TO_FOUNDATION:
-                    absTargetDrive.setYTarget(
+                    enhancedPidDrive.setYTarget(
                             5.5 + autoChoices.foundationYPos,State.FIRST_SKYSTONE_RELEASE_SKYSTONE);
                     break;
 
@@ -241,28 +241,28 @@ public class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
                     break;
 
                 case FIRST_SKYSTONE_REVERSE:
-                    absTargetDrive.setYTarget(-5.5 - autoChoices.foundationYPos,
+                    enhancedPidDrive.setYTarget(-5.5 - autoChoices.foundationYPos,
                             State.FIRST_SKYSTONE_TURN_TOWARDS_WALL);
                     break;
 
                 case FIRST_SKYSTONE_TURN_TOWARDS_WALL:
                     turnDegrees = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE?90:-90;
-                    absTargetDrive.setTurnTarget(turnDegrees, State.FIRST_SKYSTONE_MOVE_TOWARDS_WALL);
+                    enhancedPidDrive.setTurnTarget(turnDegrees, State.FIRST_SKYSTONE_MOVE_TOWARDS_WALL);
                     break;
 
                 case FIRST_SKYSTONE_MOVE_TOWARDS_WALL:
-                    absTargetDrive.setYTarget(32 + autoChoices.foundationXPos,
+                    enhancedPidDrive.setYTarget(32 + autoChoices.foundationXPos,
                             State.FIRST_SKYSTONE_TURN_TOWARDS_LOADINGZONE);
                     break;
 
                 case FIRST_SKYSTONE_TURN_TOWARDS_LOADINGZONE:
                     turnDegrees = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE?90:-90;
-                    absTargetDrive.setTurnTarget(turnDegrees, State.FIRST_SKYSTONE_MOVE_TOWARDS_LOADINGZONE);
+                    enhancedPidDrive.setTurnTarget(turnDegrees, State.FIRST_SKYSTONE_MOVE_TOWARDS_LOADINGZONE);
                     break;
 
                 case FIRST_SKYSTONE_MOVE_TOWARDS_LOADINGZONE:
                     // Line up with skystones closer to center of the field
-                    absTargetDrive.setYTarget(33, State.DONE);
+                    enhancedPidDrive.setYTarget(33, State.DONE);
                     break;
 
                 case DONE:

@@ -24,7 +24,7 @@ package team6541;
 
 import common.CommonAuto;
 import common.Robot;
-import trclib.TrcAbsTargetDrive;
+import trclib.TrcEnhancedPidDrive;
 import trclib.TrcEvent;
 import trclib.TrcRobot;
 import trclib.TrcStateMachine;
@@ -62,7 +62,7 @@ public class CmdAutoBuildingZone6541 implements TrcRobot.RobotCommand
     private final TrcEvent event;
     private final TrcTimer timer;
     private final TrcStateMachine<State> sm;
-    private final TrcAbsTargetDrive<State> absTargetDrive;
+    private final TrcEnhancedPidDrive<State> enhancedPidDrive;
 
     public CmdAutoBuildingZone6541(Robot robot, CommonAuto.AutoChoices autoChoices)
     {
@@ -72,7 +72,7 @@ public class CmdAutoBuildingZone6541 implements TrcRobot.RobotCommand
         timer = new TrcTimer(moduleName);
         sm = new TrcStateMachine<>(moduleName);
         sm.start(State.DO_DELAY);
-        absTargetDrive = new TrcAbsTargetDrive<>(
+        enhancedPidDrive = new TrcEnhancedPidDrive<>(
                 "CmdAutoBuildingZone3543", robot.driveBase, robot.pidDrive, event, sm);
     }   //CmdAutoBuildingZone3543
 
@@ -145,7 +145,7 @@ public class CmdAutoBuildingZone6541 implements TrcRobot.RobotCommand
                 case DRIVE_DIRECTLY_UNDER_BRIDGE_IF_NOT_MOVING_FOUNDATION:
                     // if not moving the foundation and parking under bridge, drive directly forwards to bridge.
                     yTarget = 24.0;
-                    absTargetDrive.setYTarget(yTarget, State.DONE);
+                    enhancedPidDrive.setYTarget(yTarget, State.DONE);
                     break;
 
                 case RAISE_ELEVATOR:
@@ -157,19 +157,19 @@ public class CmdAutoBuildingZone6541 implements TrcRobot.RobotCommand
                 case DRIVE_UNTIL_GRABBER_ALIGNED_WITH_FOUNDATION:
                     // drive forward 3 inches to prevent robot base from colliding orthogonally to foundation.
                     yTarget = 3.0;
-                    absTargetDrive.setYTarget(yTarget, State.CRAB_TO_ALIGN_WITH_FOUNDATION);
+                    enhancedPidDrive.setYTarget(yTarget, State.CRAB_TO_ALIGN_WITH_FOUNDATION);
                     break;
 
                 case CRAB_TO_ALIGN_WITH_FOUNDATION:
                     // crab over to the foundation, and target the center of the foundation with the grabber.
                     xTarget = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE ? 50.0 : -50.0;
-                    absTargetDrive.setXTarget(xTarget, State.GO_FORWARD_A_BIT_MORE);
+                    enhancedPidDrive.setXTarget(xTarget, State.GO_FORWARD_A_BIT_MORE);
                     break;
 
                 case GO_FORWARD_A_BIT_MORE:
                     // drive backward 5 inches to align grabber vertically with foundation.
                     yTarget = -5.0;
-                    absTargetDrive.setYTarget(yTarget, State.HOOK_FOUNDATION);
+                    enhancedPidDrive.setYTarget(yTarget, State.HOOK_FOUNDATION);
                     break;
 
                 case HOOK_FOUNDATION:
@@ -193,7 +193,7 @@ public class CmdAutoBuildingZone6541 implements TrcRobot.RobotCommand
                     // if red alliance, rotate 60 degrees clockwise.
                     // if blue alliance, rotate 60 degrees anti-clockwise.
                     turnTarget = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE ? 60.0 : -60.0;
-                    absTargetDrive.setTurnTarget(turnTarget, State.PUSH_FOUNDATION_TO_WALL);
+                    enhancedPidDrive.setTurnTarget(turnTarget, State.PUSH_FOUNDATION_TO_WALL);
                     break;
 
                 case PUSH_FOUNDATION_TO_WALL:
@@ -227,7 +227,7 @@ public class CmdAutoBuildingZone6541 implements TrcRobot.RobotCommand
 
                 case BACK_OFF_FROM_FOUNDATION:
                     yTarget = 4.0;
-                    absTargetDrive.setYTarget(yTarget, State.LOWER_ELEVATOR_AFTER_BACKING_OFF);
+                    enhancedPidDrive.setYTarget(yTarget, State.LOWER_ELEVATOR_AFTER_BACKING_OFF);
                     break;
 
                 case LOWER_ELEVATOR_AFTER_BACKING_OFF:
@@ -238,17 +238,17 @@ public class CmdAutoBuildingZone6541 implements TrcRobot.RobotCommand
 
                 case CRAB_TOWARD_WALL:
                     xTarget = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE ? -48.0 : 48.0;
-                    absTargetDrive.setXTarget(xTarget, State.ALIGN_WITH_BRIDGE);
+                    enhancedPidDrive.setXTarget(xTarget, State.ALIGN_WITH_BRIDGE);
                     break;
 
                 case ALIGN_WITH_BRIDGE:
                     turnTarget = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE ? 30.0 : -30.0;
-                    absTargetDrive.setTurnTarget(turnTarget, State.PARK_UNDER_BRIDGE);
+                    enhancedPidDrive.setTurnTarget(turnTarget, State.PARK_UNDER_BRIDGE);
                     break;
 
                 case PARK_UNDER_BRIDGE:
                     yTarget = -12.0;
-                    absTargetDrive.setYTarget(yTarget, State.DONE);
+                    enhancedPidDrive.setYTarget(yTarget, State.DONE);
                     break;
 
                 case DONE:

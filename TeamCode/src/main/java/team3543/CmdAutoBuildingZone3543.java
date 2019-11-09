@@ -24,7 +24,7 @@ package team3543;
 
 import common.CommonAuto;
 import common.Robot;
-import trclib.TrcAbsTargetDrive;
+import trclib.TrcEnhancedPidDrive;
 import trclib.TrcEvent;
 import trclib.TrcRobot;
 import trclib.TrcStateMachine;
@@ -50,7 +50,7 @@ public class CmdAutoBuildingZone3543 implements TrcRobot.RobotCommand
     private final TrcEvent event;
     private final TrcTimer timer;
     private final TrcStateMachine<State> sm;
-    private final TrcAbsTargetDrive<State> absTargetDrive;
+    private final TrcEnhancedPidDrive<State> enhancedPidDrive;
 
     public CmdAutoBuildingZone3543(Robot robot, CommonAuto.AutoChoices autoChoices)
     {
@@ -60,7 +60,7 @@ public class CmdAutoBuildingZone3543 implements TrcRobot.RobotCommand
         timer = new TrcTimer(moduleName);
         sm = new TrcStateMachine<>(moduleName);
         sm.start(State.DO_DELAY);
-        absTargetDrive = new TrcAbsTargetDrive<>(
+        enhancedPidDrive = new TrcEnhancedPidDrive<>(
                 "CmdAutoBuildingZone3543", robot.driveBase, robot.pidDrive, event, sm);
     }   //CmdAutoBuildingZone3543
 
@@ -118,7 +118,7 @@ public class CmdAutoBuildingZone3543 implements TrcRobot.RobotCommand
                 case MOVE_TO_FOUNDATION:
                     // Robot will move backwards so that the hook is facing the foundation
                     yTarget = -30;
-                    absTargetDrive.setYTarget(yTarget, State.HOOK_FOUNDATION);
+                    enhancedPidDrive.setYTarget(yTarget, State.HOOK_FOUNDATION);
                     break;
 
                 case HOOK_FOUNDATION:
@@ -136,7 +136,7 @@ public class CmdAutoBuildingZone3543 implements TrcRobot.RobotCommand
 
                 case MOVE_FOUNDATION_BACK:
                     yTarget = 38.0;
-                    absTargetDrive.setYTarget(yTarget, State.LET_GO_FOUNDATION);
+                    enhancedPidDrive.setYTarget(yTarget, State.LET_GO_FOUNDATION);
                     break;
 
                 case LET_GO_FOUNDATION:
@@ -153,7 +153,7 @@ public class CmdAutoBuildingZone3543 implements TrcRobot.RobotCommand
 
                 case SCOOT_TO_LINE:
                     xTarget = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE ? 48.0 : -48.0;
-                    absTargetDrive.setXTarget(xTarget, State.DONE);
+                    enhancedPidDrive.setXTarget(xTarget, State.DONE);
                     break;
 
                 case DONE:

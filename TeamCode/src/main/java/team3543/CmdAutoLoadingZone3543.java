@@ -24,7 +24,7 @@ package team3543;
 
 import common.CommonAuto;
 import common.Robot;
-import trclib.TrcAbsTargetDrive;
+import trclib.TrcEnhancedPidDrive;
 import trclib.TrcEvent;
 import trclib.TrcPidController;
 import trclib.TrcPose2D;
@@ -75,7 +75,7 @@ public class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
     private final TrcTimer timer;
     private final TrcEvent event;
     private final TrcStateMachine<State> sm;
-    private final TrcAbsTargetDrive<State> absTargetDrive;
+    private final TrcEnhancedPidDrive<State> enhancedPidDrive;
     private TrcTrigger visionTrigger;
     private TrcPose2D skystonePose = null;
     private double visionTimeout = 0.0;
@@ -100,7 +100,7 @@ public class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
         robot.encoderXPidCtrl.setNoOscillation(true);
         robot.encoderYPidCtrl.setNoOscillation(true);
         robot.gyroPidCtrl.setNoOscillation(true);
-        absTargetDrive = new TrcAbsTargetDrive<>(
+        enhancedPidDrive = new TrcEnhancedPidDrive<>(
                 "SkyStoneDrive", robot.driveBase, robot.pidDrive, event, sm);
 
         if (useVisionTrigger)
@@ -199,7 +199,7 @@ public class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                     robot.pidDrive.getXPidCtrl().setOutputLimit(0.5);
                     robot.pidDrive.getYPidCtrl().setOutputLimit(0.5);
                     yTarget = 22.0;
-                    absTargetDrive.setYTarget(yTarget, State.SETUP_VISION);
+                    enhancedPidDrive.setYTarget(yTarget, State.SETUP_VISION);
                     break;
 
                 case SETUP_VISION:
@@ -241,7 +241,7 @@ public class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                     visionTrigger.setEnabled(true);
                     scanningForSkyStone = true;
                     xTarget = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE? -16.0: 16.0;
-                    absTargetDrive.setXTarget(xTarget, State.SETUP_VISION);
+                    enhancedPidDrive.setXTarget(xTarget, State.SETUP_VISION);
                     break;
 
                 case NEXT_SKYSTONE_POSITION:
@@ -249,7 +249,7 @@ public class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                     {
                         scootCount--;
                         xTarget = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE? -8.5: 8.5;
-                        absTargetDrive.setXTarget(xTarget, (scootCount == 0? State.GOTO_SKYSTONE : State.SETUP_VISION));
+                        enhancedPidDrive.setXTarget(xTarget, (scootCount == 0? State.GOTO_SKYSTONE : State.SETUP_VISION));
                     }
                     else
                     {
@@ -267,7 +267,7 @@ public class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                         visionTrigger.setEnabled(false);
                     }
                     xTarget = skystonePose.x;
-                    absTargetDrive.setXTarget(xTarget, State.GOTO_SKYSTONE);
+                    enhancedPidDrive.setXTarget(xTarget, State.GOTO_SKYSTONE);
                     break;
 
                 case GOTO_SKYSTONE:
@@ -277,7 +277,7 @@ public class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                     }
                     // If we did not detect the skystone, assume it's right in front of us.
                     yTarget = 8.0;
-                    absTargetDrive.setYTarget(yTarget, State.GO_DOWN_ON_SKYSTONE);
+                    enhancedPidDrive.setYTarget(yTarget, State.GO_DOWN_ON_SKYSTONE);
                     break;
 
                 case GO_DOWN_ON_SKYSTONE:
@@ -292,7 +292,7 @@ public class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
 
                 case PULL_SKYSTONE:
                     yTarget = -12.0;
-                    absTargetDrive.setYTarget(yTarget, State.GOTO_FOUNDATION);
+                    enhancedPidDrive.setYTarget(yTarget, State.GOTO_FOUNDATION);
                     break;
 
                 case GOTO_FOUNDATION:
@@ -301,12 +301,12 @@ public class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                     robot.pidDrive.getYPidCtrl().setOutputLimit(1.0);
                     xTarget = (autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE? 72.0: -72.0)
                               - robot.driveBase.getXPosition();
-                    absTargetDrive.setXTarget(xTarget, State.APPROACH_FOUNDATION);
+                    enhancedPidDrive.setXTarget(xTarget, State.APPROACH_FOUNDATION);
                     break;
 
                 case APPROACH_FOUNDATION:
                     yTarget = 15.0;
-                    absTargetDrive.setYTarget(yTarget, State.DROP_SKYSTONE);
+                    enhancedPidDrive.setYTarget(yTarget, State.DROP_SKYSTONE);
                     break;
 
                 case DROP_SKYSTONE:
@@ -317,19 +317,19 @@ public class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
 
                 case BACK_OFF_FOUNDATION:
                     yTarget = -6.0;
-                    absTargetDrive.setYTarget(yTarget, State.TURN_AROUND);
+                    enhancedPidDrive.setYTarget(yTarget, State.TURN_AROUND);
                     break;
 
                 case TURN_AROUND:
                     turnTarget = 180.0;
-                    absTargetDrive.setTurnTarget(turnTarget, State.BACKUP_TO_FOUNDATION);
+                    enhancedPidDrive.setTurnTarget(turnTarget, State.BACKUP_TO_FOUNDATION);
                     break;
 
                 case BACKUP_TO_FOUNDATION:
                     robot.extenderArm.retract();
                     robot.wrist.retract();
                     yTarget = -10.0;
-                    absTargetDrive.setYTarget(yTarget, State.HOOK_FOUNDATION);
+                    enhancedPidDrive.setYTarget(yTarget, State.HOOK_FOUNDATION);
                     break;
 
                 case HOOK_FOUNDATION:
@@ -339,7 +339,7 @@ public class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
 
                 case PULL_FOUNDATION_TO_WALL:
                     yTarget = 48;
-                    absTargetDrive.setYTarget(yTarget, State.UNHOOK_FOUNDATION);
+                    enhancedPidDrive.setYTarget(yTarget, State.UNHOOK_FOUNDATION);
                     break;
 
                 case UNHOOK_FOUNDATION:
@@ -349,7 +349,7 @@ public class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
 
                 case PARK_UNDER_BRIDGE:
                     xTarget = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE? 50.0: -50.0;
-                    absTargetDrive.setXTarget(xTarget, State.DONE);
+                    enhancedPidDrive.setXTarget(xTarget, State.DONE);
                     break;
 
                 case DONE:
