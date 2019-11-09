@@ -69,6 +69,13 @@ public abstract class CommonAuto extends FtcOpMode
         DO_NOTHING
     }   //AutoStrategy
 
+    public enum ParkPosition
+    {
+        NO_PARK,
+        PARK_CLOSE_TO_WALL,
+        PARK_CLOSE_TO_CENTER
+    }
+
     public class AutoChoices
     {
         public Alliance alliance = Alliance.RED_ALLIANCE;
@@ -77,7 +84,7 @@ public abstract class CommonAuto extends FtcOpMode
         public boolean moveFoundation = true;
         public double foundationXPos = 0.0;
         public double foundationYPos = 0.0;
-        public boolean parkUnderBridge = true;
+        public ParkPosition parkUnderBridge = ParkPosition.NO_PARK;
         public double driveDistance = 0.0;
         public double driveTime = 0.0;
         public double drivePower = 0.0;
@@ -230,7 +237,7 @@ public abstract class CommonAuto extends FtcOpMode
         FtcValueMenu foundationXMenu = new FtcValueMenu("Foundation X:", strategyMenu, 0.0, 24.0, 0.1, 0.0, "%.1f");
         FtcValueMenu foundationYMenu = new FtcValueMenu("Foundation Y:", foundationXMenu, 0.0, 24.0, 0.1, 0.0, "%.1f");
         FtcChoiceMenu<Boolean> moveFoundationMenu = new FtcChoiceMenu<>("Move foundation:", foundationYMenu);
-        FtcChoiceMenu<Boolean> parkMenu = new FtcChoiceMenu<>("Park under bridge:", moveFoundationMenu);
+        FtcChoiceMenu<ParkPosition> parkMenu = new FtcChoiceMenu<>("Park under bridge:", moveFoundationMenu);
 
         delayMenu.setChildMenu(strategyMenu);
         driveTimeMenu.setChildMenu(drivePowerMenu);
@@ -255,8 +262,9 @@ public abstract class CommonAuto extends FtcOpMode
         moveFoundationMenu.addChoice("Yes", true, true, parkMenu);
         moveFoundationMenu.addChoice("No", false, false, parkMenu);
 
-        parkMenu.addChoice("Yes", true, true);
-        parkMenu.addChoice("No", false, false);
+        parkMenu.addChoice("No Parking", ParkPosition.NO_PARK, true);
+        parkMenu.addChoice("Close to wall", ParkPosition.PARK_CLOSE_TO_WALL, false);
+        parkMenu.addChoice("Close to center bridge", ParkPosition.PARK_CLOSE_TO_CENTER, false);
         //
         // Traverse menus.
         //

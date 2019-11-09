@@ -140,7 +140,7 @@ public class CmdAutoBuildingZone6541 implements TrcRobot.RobotCommand
                     // if we will not park under the bridge, then we will do nothing, and go to done.
                     nextState = autoChoices.moveFoundation ?
                             State.RAISE_ELEVATOR :
-                            (autoChoices.parkUnderBridge ?
+                            (autoChoices.parkUnderBridge != CommonAuto.ParkPosition.NO_PARK ?
                                     State.DRIVE_DIRECTLY_UNDER_BRIDGE_IF_NOT_MOVING_FOUNDATION :
                                     State.DONE);
                     sm.setState(nextState);
@@ -215,7 +215,7 @@ public class CmdAutoBuildingZone6541 implements TrcRobot.RobotCommand
                     // for both cases, we will first unhook the foundation.
                     // if we are parking under bridge, we will drive to the bridge.
                     // otherwise, we will remain at the site of the foundation until match end. (set state to done)
-                    nextState = autoChoices.parkUnderBridge ?
+                    nextState = autoChoices.parkUnderBridge != CommonAuto.ParkPosition.NO_PARK ?
                             State.BACK_OFF_FROM_FOUNDATION :
                             State.DONE;
                     if(robot.foundationLatch != null)
