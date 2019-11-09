@@ -115,16 +115,13 @@ public class CmdAutoBuildingZone3543 implements TrcRobot.RobotCommand
                     if (autoChoices.delay == 0.0)
                     {
                         sm.setState(nextState);
-                        //
-                        // Intentionally falling through to the next state.
-                        //
                     }
                     else
                     {
                         timer.set(autoChoices.delay, event);
                         sm.waitForSingleEvent(event, nextState);
-                        break;
                     }
+                    break;
 
                 case MOVE_TO_FOUNDATION:
                     // Robot will move backwards so that the hook is facing the foundation
