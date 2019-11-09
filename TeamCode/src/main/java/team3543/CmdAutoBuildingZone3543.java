@@ -44,7 +44,6 @@ public class CmdAutoBuildingZone3543 implements TrcRobot.RobotCommand
         HOOK_FOUNDATION,
         MOVE_FOUNDATION_BACK,
         LET_GO_FOUNDATION,
-        SETUP_PARKING,
         SCOOT_TO_LINE,
         SCOOT_CLOSER_TO_LINE,
         MOVE_CLOSER_TO_CENTER,
@@ -68,9 +67,9 @@ public class CmdAutoBuildingZone3543 implements TrcRobot.RobotCommand
         event = new TrcEvent(moduleName);
         timer = new TrcTimer(moduleName);
         sm = new TrcStateMachine<>(moduleName);
-        sm.start(State.DO_DELAY);
         enhancedPidDrive = new TrcEnhancedPidDrive<>(
                 "CmdAutoBuildingZone3543", robot.driveBase, robot.pidDrive, event, sm);
+        sm.start(State.DO_DELAY);
     }   //CmdAutoBuildingZone3543
 
     @Override
@@ -82,6 +81,11 @@ public class CmdAutoBuildingZone3543 implements TrcRobot.RobotCommand
     @Override
     public void cancel()
     {
+        if (robot.pidDrive.isActive())
+        {
+            robot.pidDrive.cancel();
+        }
+
         robot.pidDrive.getXPidCtrl().restoreOutputLimit();
         robot.pidDrive.getYPidCtrl().restoreOutputLimit();
         sm.stop();
@@ -99,19 +103,24 @@ public class CmdAutoBuildingZone3543 implements TrcRobot.RobotCommand
         else
         {
             double xTarget = 0.0, yTarget = 0.0, turnTarget = 0.0;
+            State nextState = null;
 
             robot.dashboard.displayPrintf(1, "State: %s", state);
             switch (state)
             {
                 case DO_DELAY:
-                    //
-                    // Do delay if any.
-                    //
                     robot.pidDrive.getXPidCtrl().saveAndSetOutputLimit(0.5);
                     robot.pidDrive.getYPidCtrl().saveAndSetOutputLimit(0.5);
 
-                    State nextState = autoChoices.moveFoundation? State.MOVE_TO_FOUNDATION: State.SETUP_PARKING;
-
+                    nextState = autoChoices.moveFoundation?
+                                    State.MOVE_TO_FOUNDATION:
+                                autoChoices.parkUnderBridge == CommonAuto.ParkPosition.PARK_CLOSE_TO_WALL?
+                                    State.SCOOT_TO_LINE:
+                                autoChoices.parkUnderBridge == CommonAuto.ParkPosition.PARK_CLOSE_TO_CENTER?
+                                    State.SCOOT_CLOSER_TO_LINE: State.DONE;
+                    //
+                    // Do delay if any.
+                    //
                     if (autoChoices.delay == 0.0)
                     {
                         sm.setState(nextState);
@@ -124,22 +133,19 @@ public class CmdAutoBuildingZone3543 implements TrcRobot.RobotCommand
                     break;
 
                 case MOVE_TO_FOUNDATION:
-                    // Robot will move backwards so that the hook is facing the foundation
+                    //
+                    // Robot will move backwards so that the hook is facing the foundation.
+                    //
                     yTarget = -30;
                     enhancedPidDrive.setYTarget(yTarget, State.HOOK_FOUNDATION);
                     break;
 
                 case HOOK_FOUNDATION:
-                    // The hook latches onto the foundation
-                    if (robot.foundationLatch != null)
-                    {
-                        robot.foundationLatch.grab(event);
-                        sm.waitForSingleEvent(event, State.MOVE_FOUNDATION_BACK);
-                    }
-                    else
-                    {
-                        sm.setState(State.MOVE_FOUNDATION_BACK);
-                    }
+                    //
+                    // The hook latches onto the foundation.
+                    //
+                    robot.foundationLatch.grab(event);
+                    sm.waitForSingleEvent(event, State.MOVE_FOUNDATION_BACK);
                     break;
 
                 case MOVE_FOUNDATION_BACK:
@@ -148,24 +154,12 @@ public class CmdAutoBuildingZone3543 implements TrcRobot.RobotCommand
                     break;
 
                 case LET_GO_FOUNDATION:
-                    if(robot.foundationLatch != null)
-                    {
-                        robot.foundationLatch.release(event);
-                        sm.waitForSingleEvent(event, State.SCOOT_TO_LINE);
-                    }
-                    else
-                    {
-                        sm.setState(State.SCOOT_TO_LINE);
-                    }
-                    break;
-
-                case SETUP_PARKING:
-                    if (autoChoices.parkUnderBridge == CommonAuto.ParkPosition.NO_PARK)
-                        sm.setState(State.DONE);
-                    else if (autoChoices.parkUnderBridge == CommonAuto.ParkPosition.PARK_CLOSE_TO_WALL)
-                        sm.setState(State.SCOOT_TO_LINE);
-                    else if (autoChoices.parkUnderBridge == CommonAuto.ParkPosition.PARK_CLOSE_TO_CENTER)
-                        sm.setState(State.SCOOT_CLOSER_TO_LINE);
+                    nextState = autoChoices.parkUnderBridge == CommonAuto.ParkPosition.PARK_CLOSE_TO_WALL?
+                                        State.SCOOT_TO_LINE:
+                                autoChoices.parkUnderBridge == CommonAuto.ParkPosition.PARK_CLOSE_TO_CENTER?
+                                        State.SCOOT_CLOSER_TO_LINE: State.DONE;
+                    robot.foundationLatch.release(event);
+                    sm.waitForSingleEvent(event, nextState);
                     break;
 
                 case SCOOT_TO_LINE:
