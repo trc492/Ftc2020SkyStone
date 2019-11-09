@@ -58,13 +58,18 @@ public class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
         GOTO_FOUNDATION,
         APPROACH_FOUNDATION,
         DROP_SKYSTONE,
+        BACK_UP_TO_WALL,
         BACK_OFF_FOUNDATION,
         TURN_AROUND,
         BACKUP_TO_FOUNDATION,
         HOOK_FOUNDATION,
         PULL_FOUNDATION_TO_WALL,
         UNHOOK_FOUNDATION,
-        PARK_UNDER_BRIDGE,
+        SETUP_PARKING,
+        PARK_UNDER_BRIDGE_WALL_SIDE,
+        MOVE_CLOSER_TO_BRIDGE,
+        MOVE_TOWARDS_CENTER,
+        MOVE_UNDER_BRIDGE,
         DONE
     }   //enum State
 
@@ -316,6 +321,12 @@ public class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                     sm.waitForSingleEvent(event, State.BACK_OFF_FOUNDATION);
                     break;
 
+                case BACK_UP_TO_WALL:
+                    yTarget = -44.0;
+                    enhancedPidDrive.setYTarget(yTarget, State.SETUP_PARKING);
+                    break;
+
+
                 case BACK_OFF_FOUNDATION:
                     yTarget = -6.0;
                     enhancedPidDrive.setYTarget(yTarget, State.TURN_AROUND);
@@ -339,17 +350,53 @@ public class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                     break;
 
                 case PULL_FOUNDATION_TO_WALL:
-                    yTarget = 48;
+                    yTarget = 48.0;
                     enhancedPidDrive.setYTarget(yTarget, State.UNHOOK_FOUNDATION);
                     break;
 
                 case UNHOOK_FOUNDATION:
                     robot.foundationLatch.release(event);
-                    sm.waitForSingleEvent(event, State.PARK_UNDER_BRIDGE);
+                    sm.waitForSingleEvent(event, State.SETUP_PARKING);
                     break;
 
-                case PARK_UNDER_BRIDGE:
-                    xTarget = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE? 50.0: -50.0;
+                case SETUP_PARKING:
+                    if (autoChoices.parkUnderBridge == CommonAuto.ParkPosition.NO_PARK)
+                        sm.setState(State.DONE);
+                    else if (autoChoices.parkUnderBridge == CommonAuto.ParkPosition.PARK_CLOSE_TO_WALL)
+                        sm.setState(State.PARK_UNDER_BRIDGE_WALL_SIDE);
+                    else if (autoChoices.parkUnderBridge == CommonAuto.ParkPosition.PARK_CLOSE_TO_CENTER)
+                        sm.setState(State.MOVE_CLOSER_TO_BRIDGE);
+                    break;
+
+                case PARK_UNDER_BRIDGE_WALL_SIDE:
+                    // procedure changes if we are turned around from moving the foundation
+                    if (autoChoices.moveFoundation)
+                        xTarget = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE? 50.0: -50.0;
+                    else
+                        xTarget = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE? -50.0: 50.0;
+                    enhancedPidDrive.setXTarget(xTarget, State.DONE);
+                    break;
+
+                case MOVE_CLOSER_TO_BRIDGE:
+                    // procedure changes if we are turned around from moving the foundation
+                    if (autoChoices.moveFoundation)
+                        xTarget = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE? 30.0: -30.0;
+                    else
+                        xTarget = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE? -30.0: 30.0;
+                    enhancedPidDrive.setXTarget(xTarget, State.MOVE_TOWARDS_CENTER);
+                    break;
+
+                case MOVE_TOWARDS_CENTER:
+                    yTarget = -20.0;
+                    enhancedPidDrive.setYTarget(yTarget, State.MOVE_UNDER_BRIDGE);
+                    break;
+
+                case MOVE_UNDER_BRIDGE:
+                    // procedure changes if we are turned around from moving the foundation
+                    if (autoChoices.moveFoundation)
+                        xTarget = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE? 20.0: -20.0;
+                    else
+                        xTarget = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE? -20.0: 20.0;
                     enhancedPidDrive.setXTarget(xTarget, State.DONE);
                     break;
 
