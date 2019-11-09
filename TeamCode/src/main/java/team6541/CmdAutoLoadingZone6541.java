@@ -22,8 +22,6 @@
 
 package team6541;
 
-import java.util.Locale;
-
 import common.CmdSkystoneVision;
 import common.CommonAuto;
 import common.Robot;

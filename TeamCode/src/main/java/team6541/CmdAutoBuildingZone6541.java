@@ -36,17 +36,15 @@ public class CmdAutoBuildingZone6541 implements TrcRobot.RobotCommand
     private static final boolean debugXPid = true;
     private static final boolean debugYPid = true;
     private static final boolean debugTurnPid = true;
-    private static final boolean useSimpleRoute = true;
 
     private enum State
     {
         DO_DELAY,
-        DECIDE_INITIAL_ROUTE,
         DRIVE_DIRECTLY_UNDER_BRIDGE_IF_NOT_MOVING_FOUNDATION,
         RAISE_ELEVATOR,
         DRIVE_UNTIL_GRABBER_ALIGNED_WITH_FOUNDATION,
         CRAB_TO_ALIGN_WITH_FOUNDATION,
-        GO_FORWARD_A_BIT_MORE,
+        GOTO_FOUNDATION,
         HOOK_FOUNDATION,
         ROTATE_FOUNDATION_TO_CORNER,
         PUSH_FOUNDATION_TO_WALL,
@@ -60,7 +58,7 @@ public class CmdAutoBuildingZone6541 implements TrcRobot.RobotCommand
         DONE
     }   //enum State
 
-    private static final String moduleName = "CmdAutoBuildingZone3543";
+    private static final String moduleName = "CmdAutoBuildingZone6541";
 
     private final Robot robot;
     private final CommonAuto.AutoChoices autoChoices;
@@ -76,9 +74,9 @@ public class CmdAutoBuildingZone6541 implements TrcRobot.RobotCommand
         event = new TrcEvent(moduleName);
         timer = new TrcTimer(moduleName);
         sm = new TrcStateMachine<>(moduleName);
-        sm.start(State.DO_DELAY);
         enhancedPidDrive = new TrcEnhancedPidDrive<>(
                 "CmdAutoBuildingZone6541", robot.driveBase, robot.pidDrive, event, sm, false);
+        sm.start(State.DO_DELAY);
     }   //CmdAutoBuildingZone3543
 
     @Override
@@ -90,6 +88,11 @@ public class CmdAutoBuildingZone6541 implements TrcRobot.RobotCommand
     @Override
     public void cancel()
     {
+        if (robot.pidDrive.isActive())
+        {
+            robot.pidDrive.cancel();
+        }
+
         robot.pidDrive.getXPidCtrl().restoreOutputLimit();
         robot.pidDrive.getYPidCtrl().restoreOutputLimit();
         sm.stop();
@@ -113,15 +116,26 @@ public class CmdAutoBuildingZone6541 implements TrcRobot.RobotCommand
             switch (state)
             {
                 case DO_DELAY:
+                    robot.pidDrive.getXPidCtrl().saveAndSetOutputLimit(0.5);
+                    robot.pidDrive.getYPidCtrl().saveAndSetOutputLimit(0.5);
+                    //
+                    // are we going to move the foundation?
+                    // if so, we will set the next state to raising the elevator and moving the foundation.
+                    // if not, we will check if we will park under the bridge.
+                    // if we will park under the bridge, then we will drive forwards directly under the bridge.
+                    // if we will not park under the bridge, then we will do nothing, and go to done.
+                    //
+                    nextState = autoChoices.moveFoundation ?
+                                        State.RAISE_ELEVATOR :
+                                autoChoices.parkUnderBridge != CommonAuto.ParkPosition.NO_PARK ?
+                                        State.DRIVE_DIRECTLY_UNDER_BRIDGE_IF_NOT_MOVING_FOUNDATION :
+                                        State.DONE;
                     //
                     // Do delay if any.
                     //
-                    robot.pidDrive.getXPidCtrl().saveAndSetOutputLimit(0.5);
-                    robot.pidDrive.getYPidCtrl().saveAndSetOutputLimit(0.5);
-
                     if (autoChoices.delay == 0.0)
                     {
-                        sm.setState(State.DECIDE_INITIAL_ROUTE);
+                        sm.setState(nextState);
                         //
                         // Intentionally falling through to the next state.
                         //
@@ -129,25 +143,12 @@ public class CmdAutoBuildingZone6541 implements TrcRobot.RobotCommand
                     else
                     {
                         timer.set(autoChoices.delay, event);
-                        sm.waitForSingleEvent(event, State.DECIDE_INITIAL_ROUTE);
+                        sm.waitForSingleEvent(event, nextState);
                         break;
                     }
 
-                case DECIDE_INITIAL_ROUTE:
-                    // are we going to move the foundation?
-                    // if so, we will set the next state to raising the elevator and moving the foundation.
-                    // if not so, we will check if we will park under the bridge.
-                    // if we will park under the bridge, then we will drive forwards directly under the bridge.
-                    // if we will not park under the bridge, then we will do nothing, and go to done.
-                    nextState = autoChoices.moveFoundation ?
-                            State.RAISE_ELEVATOR :
-                            (autoChoices.parkUnderBridge != CommonAuto.ParkPosition.NO_PARK ?
-                                    State.DRIVE_DIRECTLY_UNDER_BRIDGE_IF_NOT_MOVING_FOUNDATION :
-                                    State.DONE);
-                    sm.setState(nextState);
-                    break;
-
                 case DRIVE_DIRECTLY_UNDER_BRIDGE_IF_NOT_MOVING_FOUNDATION:
+                    // CodeReview: what if ParkPosition.PARK_CLOSE_TO_CENTER?
                     // if not moving the foundation and parking under bridge, drive directly forwards to bridge.
                     yTarget = 24.0;
                     enhancedPidDrive.setYTarget(yTarget, State.DONE);
@@ -160,6 +161,7 @@ public class CmdAutoBuildingZone6541 implements TrcRobot.RobotCommand
                     break;
 
                 case DRIVE_UNTIL_GRABBER_ALIGNED_WITH_FOUNDATION:
+                    // CodeReview: why do we drive forward instead of just setting up the robot 3 inches forward?
                     // drive forward 3 inches to prevent robot base from colliding orthogonally to foundation.
                     yTarget = 3.0;
                     enhancedPidDrive.setYTarget(yTarget, State.CRAB_TO_ALIGN_WITH_FOUNDATION);
@@ -168,10 +170,10 @@ public class CmdAutoBuildingZone6541 implements TrcRobot.RobotCommand
                 case CRAB_TO_ALIGN_WITH_FOUNDATION:
                     // crab over to the foundation, and target the center of the foundation with the grabber.
                     xTarget = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE ? 50.0 : -50.0;
-                    enhancedPidDrive.setXTarget(xTarget, State.GO_FORWARD_A_BIT_MORE);
+                    enhancedPidDrive.setXTarget(xTarget, State.GOTO_FOUNDATION);
                     break;
 
-                case GO_FORWARD_A_BIT_MORE:
+                case GOTO_FOUNDATION:
                     // drive backward 5 inches to align grabber vertically with foundation.
                     yTarget = -5.0;
                     enhancedPidDrive.setYTarget(yTarget, State.HOOK_FOUNDATION);
@@ -180,16 +182,8 @@ public class CmdAutoBuildingZone6541 implements TrcRobot.RobotCommand
                 case HOOK_FOUNDATION:
                     // hook the foundation.
                     // after that, rotate a magnitude of 60 degrees to face the corner.
-                    nextState = State.ROTATE_FOUNDATION_TO_CORNER;
-                    if (robot.foundationLatch != null)
-                    {
-                        robot.foundationLatch.grab(event);
-                        sm.waitForSingleEvent(event, nextState);
-                    }
-                    else
-                    {
-                        sm.setState(nextState);
-                    }
+                    robot.foundationLatch.grab(event);
+                    sm.waitForSingleEvent(event, State.ROTATE_FOUNDATION_TO_CORNER);
                     break;
 
                 case ROTATE_FOUNDATION_TO_CORNER:
@@ -202,6 +196,9 @@ public class CmdAutoBuildingZone6541 implements TrcRobot.RobotCommand
                     break;
 
                 case PUSH_FOUNDATION_TO_WALL:
+                    // CodeReview: you are using timed drive here. That's why EnhancedPidDrive lost track of the
+                    // robot position so subsequent EnhancedPidDrive will be off!
+                    //
                     // pid drive is unreliable due to wheel slip when robot is overcoming significant kinetic friction,
                     // which is present when the robot is pushing heavy loads such as foundation.
                     // as a result, blindly drive the board into the corner for 2 seconds, applying moderate torque.
@@ -219,15 +216,8 @@ public class CmdAutoBuildingZone6541 implements TrcRobot.RobotCommand
                     nextState = autoChoices.parkUnderBridge != CommonAuto.ParkPosition.NO_PARK ?
                             State.BACK_OFF_FROM_FOUNDATION :
                             State.DONE;
-                    if(robot.foundationLatch != null)
-                    {
-                        robot.foundationLatch.release(event);
-                        sm.waitForSingleEvent(event, nextState);
-                    }
-                    else
-                    {
-                        sm.setState(nextState);
-                    }
+                    robot.foundationLatch.release(event);
+                    sm.waitForSingleEvent(event, nextState);
                     break;
 
                 case BACK_OFF_FROM_FOUNDATION:
@@ -236,6 +226,7 @@ public class CmdAutoBuildingZone6541 implements TrcRobot.RobotCommand
                     break;
 
                 case LOWER_ELEVATOR_AFTER_BACKING_OFF:
+                    // CodeReview: you are lowering the elevator. Do you really need to wait for it to finish?
                     robot.elevator.zeroCalibrate();
                     timer.set(2.0, event);
                     sm.waitForSingleEvent(event, State.CRAB_TOWARD_WALL);
@@ -247,18 +238,11 @@ public class CmdAutoBuildingZone6541 implements TrcRobot.RobotCommand
                     break;
 
                 case ALIGN_WITH_BRIDGE:
-                    if (autoChoices.parkUnderBridge == CommonAuto.ParkPosition.NO_PARK)
-                    {
-                        nextState = State.DONE;
-                    }
-                    else if (autoChoices.parkUnderBridge == CommonAuto.ParkPosition.PARK_CLOSE_TO_WALL)
-                    {
-                        nextState = State.PARK_UNDER_BRIDGE_TOUCHING_FENCE;
-                    }
-                    else if (autoChoices.parkUnderBridge == CommonAuto.ParkPosition.PARK_CLOSE_TO_CENTER)
-                    {
-                        nextState = State.PARK_UNDER_BRIDGE_TOUCHING_CENTER;
-                    }
+                    nextState = autoChoices.parkUnderBridge == CommonAuto.ParkPosition.PARK_CLOSE_TO_WALL ?
+                                        State.PARK_UNDER_BRIDGE_TOUCHING_FENCE:
+                                autoChoices.parkUnderBridge == CommonAuto.ParkPosition.PARK_CLOSE_TO_CENTER ?
+                                        State.PARK_UNDER_BRIDGE_TOUCHING_CENTER:
+                                        State.DONE;
                     turnTarget = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE ? 30.0 : -30.0;
                     enhancedPidDrive.setTurnTarget(turnTarget, nextState);
                     break;
