@@ -81,9 +81,10 @@ public abstract class CommonAuto extends FtcOpMode
         public Alliance alliance = Alliance.RED_ALLIANCE;
         public double delay = 0.0;
         public AutoStrategy strategy = AutoStrategy.DO_NOTHING;
-        public boolean moveFoundation = true;
         public double foundationXPos = 0.0;
         public double foundationYPos = 0.0;
+        public double foundationHeading = 0.0;
+        public boolean moveFoundation = true;
         public ParkPosition parkUnderBridge = ParkPosition.NO_PARK;
         public double driveDistance = 0.0;
         public double driveTime = 0.0;
@@ -225,6 +226,18 @@ public abstract class CommonAuto extends FtcOpMode
                 "Delay time:", allianceMenu, 0.0, 30.0, 1.0, 0.0,
                 " %.0f sec");
         FtcChoiceMenu<AutoStrategy> strategyMenu = new FtcChoiceMenu<>("Auto Strategies:", delayMenu);
+        FtcValueMenu foundationXMenu = new FtcValueMenu(
+                "Foundation X:", strategyMenu, 0.0, 24.0, 1.0, 0.0,
+                "%.1f");
+        FtcValueMenu foundationYMenu = new FtcValueMenu(
+                "Foundation Y:", foundationXMenu, 0.0, 24.0, 1.0, 0.0,
+                "%.1f");
+        FtcValueMenu foundationHeadingMenu = new FtcValueMenu(
+                "Foundation Heading:", foundationYMenu, 0.0, 360.0, 45.0,
+                0.0, "%.1f");
+        FtcChoiceMenu<Boolean> moveFoundationMenu = new FtcChoiceMenu<>("Move foundation:",
+                foundationHeadingMenu);
+        FtcChoiceMenu<ParkPosition> parkMenu = new FtcChoiceMenu<>("Park under bridge:", moveFoundationMenu);
         FtcValueMenu driveDistanceMenu = new FtcValueMenu(
                 "Distance:", strategyMenu, -12.0, 12.0, 0.5, 4.0,
                 " %.0f ft");
@@ -234,15 +247,12 @@ public abstract class CommonAuto extends FtcOpMode
         FtcValueMenu drivePowerMenu = new FtcValueMenu(
                 "Drive power:", strategyMenu, -1.0, 1.0, 0.1, 0.5,
                 " %.1f");
-        FtcValueMenu foundationXMenu = new FtcValueMenu("Foundation X:", strategyMenu, 0.0, 24.0, 0.1, 0.0, "%.1f");
-        FtcValueMenu foundationYMenu = new FtcValueMenu("Foundation Y:", foundationXMenu, 0.0, 24.0, 0.1, 0.0, "%.1f");
-        FtcChoiceMenu<Boolean> moveFoundationMenu = new FtcChoiceMenu<>("Move foundation:", foundationYMenu);
-        FtcChoiceMenu<ParkPosition> parkMenu = new FtcChoiceMenu<>("Park under bridge:", moveFoundationMenu);
 
         delayMenu.setChildMenu(strategyMenu);
-        driveTimeMenu.setChildMenu(drivePowerMenu);
         foundationXMenu.setChildMenu(foundationYMenu);
-        foundationYMenu.setChildMenu(moveFoundationMenu);
+        foundationYMenu.setChildMenu(foundationHeadingMenu);
+        foundationHeadingMenu.setChildMenu(moveFoundationMenu);
+        driveTimeMenu.setChildMenu(drivePowerMenu);
         //
         // Populate choice menus.
         //
@@ -252,7 +262,8 @@ public abstract class CommonAuto extends FtcOpMode
         strategyMenu.addChoice(
                 "Start at Loading Zone", AutoStrategy.START_AT_LOADING_ZONE, true, foundationXMenu);
         strategyMenu.addChoice(
-                "Start at Building Zone", AutoStrategy.START_AT_BUILDING_ZONE, false, moveFoundationMenu);
+                "Start at Building Zone", AutoStrategy.START_AT_BUILDING_ZONE, false,
+                moveFoundationMenu);
         strategyMenu.addChoice("Pure Pursuit Drive", AutoStrategy.PURE_PURSUIT_DRIVE, false);
         strategyMenu.addChoice(
                 "Distance Drive", AutoStrategy.DISTANCE_DRIVE, false, driveDistanceMenu);
@@ -275,13 +286,14 @@ public abstract class CommonAuto extends FtcOpMode
         autoChoices.alliance = allianceMenu.getCurrentChoiceObject();
         autoChoices.delay = delayMenu.getCurrentValue();
         autoChoices.strategy = strategyMenu.getCurrentChoiceObject();
+        autoChoices.foundationXPos = foundationXMenu.getCurrentValue();
+        autoChoices.foundationYPos = foundationYMenu.getCurrentValue();
+        autoChoices.foundationHeading = foundationHeadingMenu.getCurrentValue();
+        autoChoices.moveFoundation = moveFoundationMenu.getCurrentChoiceObject();
+        autoChoices.parkUnderBridge = parkMenu.getCurrentChoiceObject();
         autoChoices.driveDistance = driveDistanceMenu.getCurrentValue();
         autoChoices.driveTime = driveTimeMenu.getCurrentValue();
         autoChoices.drivePower = drivePowerMenu.getCurrentValue();
-        autoChoices.foundationXPos = foundationXMenu.getCurrentValue();
-        autoChoices.foundationYPos = foundationYMenu.getCurrentValue();
-        autoChoices.moveFoundation = moveFoundationMenu.getCurrentChoiceObject();
-        autoChoices.parkUnderBridge = parkMenu.getCurrentChoiceObject();
         //
         // Show choices.
         //

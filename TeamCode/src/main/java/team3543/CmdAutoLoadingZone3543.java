@@ -22,17 +22,15 @@
 
 package team3543;
 
+import common.CmdSkystoneVision;
 import common.CommonAuto;
 import common.Robot;
 import trclib.TrcEnhancedPidDrive;
 import trclib.TrcEvent;
 import trclib.TrcPidController;
-import trclib.TrcPose2D;
 import trclib.TrcRobot;
 import trclib.TrcStateMachine;
 import trclib.TrcTimer;
-import trclib.TrcTrigger;
-import trclib.TrcUtil;
 
 public class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
 {
@@ -40,36 +38,30 @@ public class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
     private static final boolean debugYPid = true;
     private static final boolean debugTurnPid = true;
     private static final boolean useVisionTrigger = false;
-    private static final double VISION_TIMEOUT = 1.0;
 
     private enum State
     {
         DO_DELAY,
         MOVE_CLOSER,
-        SETUP_VISION,
-        GET_TARGET_POSE,
-        SCAN_FOR_SKYSTONE,
-        NEXT_SKYSTONE_POSITION,
-        ALIGN_SKYSTONE,
-        GOTO_SKYSTONE,
+        DO_VISION,
         GO_DOWN_ON_SKYSTONE,
         GRAB_SKYSTONE,
         PULL_SKYSTONE,
         GOTO_FOUNDATION,
         APPROACH_FOUNDATION,
         DROP_SKYSTONE,
-        BACK_UP_TO_WALL,
         BACK_OFF_FOUNDATION,
         TURN_AROUND,
         BACKUP_TO_FOUNDATION,
         HOOK_FOUNDATION,
         PULL_FOUNDATION_TO_WALL,
         UNHOOK_FOUNDATION,
-        SETUP_PARKING,
-        PARK_UNDER_BRIDGE_WALL_SIDE,
         MOVE_CLOSER_TO_BRIDGE,
-        MOVE_TOWARDS_CENTER,
+        MOVE_BACK_TO_CENTER,
         MOVE_UNDER_BRIDGE,
+        SKIP_MOVE_FOUNDATION_PARK_WALL,
+        STRAFE_TO_PARK,
+        MOVE_TOWARDS_CENTER,
         DONE
     }   //enum State
 
@@ -81,11 +73,7 @@ public class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
     private final TrcEvent event;
     private final TrcStateMachine<State> sm;
     private final TrcEnhancedPidDrive<State> enhancedPidDrive;
-    private TrcTrigger visionTrigger;
-    private TrcPose2D skystonePose = null;
-    private double visionTimeout = 0.0;
-    private int scootCount = 2;
-    private boolean scanningForSkyStone = false;
+    private final CmdSkystoneVision skystoneVisionCommand;
 
     /**
      * Constructor: Create an instance of the object.
@@ -105,13 +93,8 @@ public class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
         robot.encoderXPidCtrl.setNoOscillation(true);
         robot.encoderYPidCtrl.setNoOscillation(true);
         robot.gyroPidCtrl.setNoOscillation(true);
-        enhancedPidDrive = new TrcEnhancedPidDrive<>(
-                "SkyStoneDrive", robot.driveBase, robot.pidDrive, event, sm);
-
-        if (useVisionTrigger)
-        {
-            visionTrigger = new TrcTrigger("VisionTrigger", this::isTriggered, this::targetDetected);
-        }
+        enhancedPidDrive = new TrcEnhancedPidDrive<>(moduleName, robot.driveBase, robot.pidDrive, event, sm);
+        skystoneVisionCommand = new CmdSkystoneVision(robot, autoChoices, useVisionTrigger);
 
         sm.start(State.DO_DELAY);
     }   //CmdAutoLoadingZone3543
@@ -125,6 +108,7 @@ public class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
      *
      * @return true if the command is running, false otherwise.
      */
+    @Override
     public boolean isActive()
     {
         return sm.isEnabled();
@@ -139,11 +123,6 @@ public class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
         if (robot.pidDrive.isActive())
         {
             robot.pidDrive.cancel();
-        }
-
-        if (visionTrigger != null)
-        {
-            visionTrigger.setEnabled(false);
         }
 
         robot.pidDrive.getXPidCtrl().setOutputLimit(1.0);
@@ -168,9 +147,11 @@ public class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
         }
         else
         {
+            boolean traceState = true;
             double xTarget = 0.0;
             double yTarget = 0.0;
             double turnTarget = 0.0;
+            State nextState = null;
 
             robot.dashboard.displayPrintf(1, "State: %s", state);
 
@@ -196,95 +177,40 @@ public class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
 
                 case MOVE_CLOSER:
                     //
-                    // Move closer slowly for a distance so Vuforia can detect the target.
+                    // Move closer slowly to a distance so Vuforia can detect the target.
                     //
                     robot.grabber.release();
                     robot.wrist.extend();
                     robot.extenderArm.extend();
+
                     robot.pidDrive.getXPidCtrl().setOutputLimit(0.5);
                     robot.pidDrive.getYPidCtrl().setOutputLimit(0.5);
                     yTarget = 22.0;
-                    enhancedPidDrive.setYTarget(yTarget, State.SETUP_VISION);
+                    enhancedPidDrive.setYTarget(yTarget, State.DO_VISION);
                     break;
 
-                case SETUP_VISION:
-                    visionTimeout = TrcUtil.getCurrentTime() + VISION_TIMEOUT;
-                    sm.setState(State.GET_TARGET_POSE);
+                case DO_VISION:
                     //
-                    // Intentionally falling through to the next state.
+                    // Do vision to detect and go to the skystone. If vision did not detect skystone, it will stop
+                    // at the last stone.
                     //
-                case GET_TARGET_POSE:
-                    //
-                    // Get the detected skystone pose. If pose is null, it could be because Vuforia is still
-                    // processing the image. So keep repeating this state until it finds the target or we pass
-                    // vision timeout.
-                    //
-                    skystonePose = robot.getSkyStonePose();
-                    if (skystonePose == null)
+                    if (skystoneVisionCommand.cmdPeriodic(elapsedTime))
                     {
-                        // Vuforia either did not detect the target or it's still busy processing the image.
-                        robot.globalTracer.traceInfo("getTargetPose", "Skystone not found.");
-                        if (TrcUtil.getCurrentTime() > visionTimeout)
-                        {
-                            // Can't find any skystone here, move on to the next position.
-                            sm.setState(visionTrigger == null? State.NEXT_SKYSTONE_POSITION:
-                                        scanningForSkyStone? State.GOTO_SKYSTONE: State.SCAN_FOR_SKYSTONE);
-                            robot.speak("Sky stone not found.");
-                        }
+                        //
+                        // Skystone vision is done. Sync our absolute target pose with the last robot position from
+                        // skystone vision and continue.
+                        //
+                        enhancedPidDrive.syncAbsTargetPose(skystoneVisionCommand.getEnhancedPidDrive());
+                        sm.setState(State.GO_DOWN_ON_SKYSTONE);
+                        //
+                        // Intentionally falling through to the next state.
+                        //
                     }
                     else
                     {
-                        // Vuforia found the skystone.
-                        robot.globalTracer.traceInfo(
-                                "getTargetPose", "Skystone found at x=%.1f, y=%.1f.",
-                                skystonePose.x, skystonePose.y);
-                        robot.speak(String.format("Sky stone found at %.1f inches.", skystonePose.x));
-                        sm.setState(State.ALIGN_SKYSTONE);
+                        traceState = false;
+                        break;
                     }
-                    break;
-
-                case SCAN_FOR_SKYSTONE:
-                    visionTrigger.setEnabled(true);
-                    scanningForSkyStone = true;
-                    xTarget = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE? -16.0: 16.0;
-                    enhancedPidDrive.setXTarget(xTarget, State.SETUP_VISION);
-                    break;
-
-                case NEXT_SKYSTONE_POSITION:
-                    if (scootCount > 0)
-                    {
-                        scootCount--;
-                        xTarget = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE? -8.5: 8.5;
-                        enhancedPidDrive.setXTarget(xTarget, (scootCount == 0? State.GOTO_SKYSTONE : State.SETUP_VISION));
-                    }
-                    else
-                    {
-                        // Still can't detect the target. Just assume the one in front is a skystone. We will still
-                        // get some points even if we are wrong, better than nothing!
-                        robot.globalTracer.traceInfo(
-                                "NextSkyStonePos", "Skystone not found, giving up.");
-                        sm.setState(State.GOTO_SKYSTONE);
-                    }
-                    break;
-
-                case ALIGN_SKYSTONE:
-                    if (visionTrigger != null)
-                    {
-                        visionTrigger.setEnabled(false);
-                    }
-                    xTarget = skystonePose.x;
-                    enhancedPidDrive.setXTarget(xTarget, State.GOTO_SKYSTONE);
-                    break;
-
-                case GOTO_SKYSTONE:
-                    if (visionTrigger != null)
-                    {
-                        visionTrigger.setEnabled(false);
-                    }
-                    // If we did not detect the skystone, assume it's right in front of us.
-                    yTarget = 8.0;
-                    enhancedPidDrive.setYTarget(yTarget, State.GO_DOWN_ON_SKYSTONE);
-                    break;
 
                 case GO_DOWN_ON_SKYSTONE:
                     robot.extenderArm.retract(2.5, event);
@@ -316,20 +242,17 @@ public class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                     break;
 
                 case DROP_SKYSTONE:
-                    robot.grabber.release();
-                    timer.set(1.5, event);
+                    robot.grabber.release(1.5, event);
                     sm.waitForSingleEvent(event, State.BACK_OFF_FOUNDATION);
                     break;
 
-                case BACK_UP_TO_WALL:
-                    yTarget = -44.0;
-                    enhancedPidDrive.setYTarget(yTarget, State.SETUP_PARKING);
-                    break;
-
-
                 case BACK_OFF_FOUNDATION:
+                    nextState = autoChoices.moveFoundation? State.TURN_AROUND:
+                                autoChoices.parkUnderBridge == CommonAuto.ParkPosition.PARK_CLOSE_TO_CENTER?
+                                        State.STRAFE_TO_PARK:
+                                        State.SKIP_MOVE_FOUNDATION_PARK_WALL;
                     yTarget = -6.0;
-                    enhancedPidDrive.setYTarget(yTarget, State.TURN_AROUND);
+                    enhancedPidDrive.setYTarget(yTarget, nextState);
                     break;
 
                 case TURN_AROUND:
@@ -355,49 +278,47 @@ public class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                     break;
 
                 case UNHOOK_FOUNDATION:
+                    nextState = autoChoices.parkUnderBridge == CommonAuto.ParkPosition.PARK_CLOSE_TO_WALL?
+                                    State.STRAFE_TO_PARK:
+                                autoChoices.parkUnderBridge == CommonAuto.ParkPosition.PARK_CLOSE_TO_CENTER?
+                                    State.MOVE_CLOSER_TO_BRIDGE: State.DONE;
                     robot.foundationLatch.release(event);
-                    sm.waitForSingleEvent(event, State.SETUP_PARKING);
-                    break;
-
-                case SETUP_PARKING:
-                    if (autoChoices.parkUnderBridge == CommonAuto.ParkPosition.NO_PARK)
-                        sm.setState(State.DONE);
-                    else if (autoChoices.parkUnderBridge == CommonAuto.ParkPosition.PARK_CLOSE_TO_WALL)
-                        sm.setState(State.PARK_UNDER_BRIDGE_WALL_SIDE);
-                    else if (autoChoices.parkUnderBridge == CommonAuto.ParkPosition.PARK_CLOSE_TO_CENTER)
-                        sm.setState(State.MOVE_CLOSER_TO_BRIDGE);
-                    break;
-
-                case PARK_UNDER_BRIDGE_WALL_SIDE:
-                    // procedure changes if we are turned around from moving the foundation
-                    if (autoChoices.moveFoundation)
-                        xTarget = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE? 50.0: -50.0;
-                    else
-                        xTarget = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE? -50.0: 50.0;
-                    enhancedPidDrive.setXTarget(xTarget, State.DONE);
+                    sm.waitForSingleEvent(event, nextState);
                     break;
 
                 case MOVE_CLOSER_TO_BRIDGE:
-                    // procedure changes if we are turned around from moving the foundation
-                    if (autoChoices.moveFoundation)
-                        xTarget = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE? 30.0: -30.0;
-                    else
-                        xTarget = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE? -30.0: 30.0;
+                    xTarget = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE? 30.0: -30.0;
                     enhancedPidDrive.setXTarget(xTarget, State.MOVE_TOWARDS_CENTER);
                     break;
 
-                case MOVE_TOWARDS_CENTER:
+                case MOVE_BACK_TO_CENTER:
                     yTarget = -20.0;
                     enhancedPidDrive.setYTarget(yTarget, State.MOVE_UNDER_BRIDGE);
                     break;
 
                 case MOVE_UNDER_BRIDGE:
-                    // procedure changes if we are turned around from moving the foundation
-                    if (autoChoices.moveFoundation)
-                        xTarget = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE? 20.0: -20.0;
-                    else
-                        xTarget = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE? -20.0: 20.0;
+                    xTarget = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE? 20.0: -20.0;
                     enhancedPidDrive.setXTarget(xTarget, State.DONE);
+                    break;
+
+                case SKIP_MOVE_FOUNDATION_PARK_WALL:
+                    nextState = autoChoices.parkUnderBridge == CommonAuto.ParkPosition.PARK_CLOSE_TO_WALL?
+                                    State.STRAFE_TO_PARK: State.DONE;
+                    yTarget = -44.0;
+                    enhancedPidDrive.setYTarget(yTarget, nextState);
+                    break;
+
+                case STRAFE_TO_PARK:
+                    nextState = autoChoices.parkUnderBridge == CommonAuto.ParkPosition.PARK_CLOSE_TO_CENTER?
+                                    State.MOVE_TOWARDS_CENTER: State.DONE;
+                    xTarget = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE? -50.0: 50.0;
+                    if (autoChoices.moveFoundation) xTarget = -xTarget;
+                    enhancedPidDrive.setXTarget(xTarget, nextState);
+                    break;
+
+                case MOVE_TOWARDS_CENTER:
+                    yTarget = 8.0;
+                    enhancedPidDrive.setYTarget(yTarget, State.DONE);
                     break;
 
                 case DONE:
@@ -411,7 +332,10 @@ public class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                     break;
             }
 
-            robot.traceStateInfo(elapsedTime, state.toString(), xTarget, yTarget, turnTarget);
+            if (traceState)
+            {
+                robot.traceStateInfo(elapsedTime, state.toString(), xTarget, yTarget, turnTarget);
+            }
         }
 
         if (robot.pidDrive.isActive() && (debugXPid || debugYPid || debugTurnPid))
@@ -443,25 +367,5 @@ public class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
 
         return !sm.isEnabled();
     }   //cmdPeriodic
-
-    private boolean isTriggered()
-    {
-        TrcPose2D pose = robot.getSkyStonePose();
-
-        if (pose != null)
-        {
-            skystonePose = pose;
-        }
-
-        return pose != null;
-    }   //isTriggered
-
-    private void targetDetected()
-    {
-        if (robot.pidDrive.isActive())
-        {
-            robot.pidDrive.cancel();
-        }
-    }   //targetDetected
 
 }   //class CmdAutoLoadingZone3543
