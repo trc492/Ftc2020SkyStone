@@ -36,10 +36,10 @@ import trclib.TrcUtil;
 
 public class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
 {
-    private static final boolean useVisionTrigger = false;
     private static final boolean debugXPid = true;
     private static final boolean debugYPid = true;
     private static final boolean debugTurnPid = true;
+    private static final boolean useVisionTrigger = false;
     private static final double VISION_TIMEOUT = 1.0;
 
     private enum State
@@ -374,9 +374,7 @@ public class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                         robot.battery.getVoltage(), robot.battery.getLowestVoltage());
             }
 
-            TrcPose2D absPose = robot.driveBase.getAbsolutePose();
-            robot.globalTracer.traceInfo(moduleName, "DriveBase: x=%.1f, y=%.1f, heading=%.1f",
-                    absPose.x, absPose.y, absPose.heading);
+            robot.globalTracer.traceInfo(moduleName, "%s", robot.driveBase.getAbsolutePose());
 
             TrcPidController pidCtrl = robot.pidDrive.getXPidCtrl();
             if (debugXPid && pidCtrl != null)

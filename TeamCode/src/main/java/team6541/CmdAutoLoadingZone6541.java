@@ -26,12 +26,17 @@ import common.CommonAuto;
 import common.Robot;
 import trclib.TrcEnhancedPidDrive;
 import trclib.TrcEvent;
+import trclib.TrcPidController;
 import trclib.TrcRobot;
 import trclib.TrcStateMachine;
 import trclib.TrcTimer;
 
 public class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
 {
+    private static final boolean debugXPid = true;
+    private static final boolean debugYPid = true;
+    private static final boolean debugTurnPid = true;
+
     private enum State
     {
         DO_DELAY,
@@ -277,6 +282,33 @@ public class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
             // TODO: Declare variables for xDistance and yDistance values, set them,
             // and pass in the values here
             robot.traceStateInfo(elapsedTime, state.toString(), 0, 0, 0);
+        }
+
+        if (robot.pidDrive.isActive() && (debugXPid || debugYPid || debugTurnPid))
+        {
+            if (robot.battery != null)
+            {
+                robot.globalTracer.traceInfo("Battery", "Voltage=%5.2fV (%5.2fV)",
+                        robot.battery.getVoltage(), robot.battery.getLowestVoltage());
+            }
+
+            robot.globalTracer.traceInfo(moduleName, "%s", robot.driveBase.getAbsolutePose());
+
+            TrcPidController pidCtrl = robot.pidDrive.getXPidCtrl();
+            if (debugXPid && pidCtrl != null)
+            {
+                pidCtrl.printPidInfo(robot.globalTracer, elapsedTime);
+            }
+
+            if (debugYPid)
+            {
+                robot.pidDrive.getYPidCtrl().printPidInfo(robot.globalTracer, elapsedTime);
+            }
+
+            if (debugTurnPid)
+            {
+                robot.pidDrive.getTurnPidCtrl().printPidInfo(robot.globalTracer, elapsedTime);
+            }
         }
 
         return !sm.isEnabled();
