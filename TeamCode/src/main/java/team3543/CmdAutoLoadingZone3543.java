@@ -39,6 +39,13 @@ public class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
     private static final boolean debugTurnPid = true;
     private static final boolean useVisionTrigger = false;
 
+    // Absolute position waypoint coordinates
+    private static final int FOUNDATION_DROP_ABS_POS_X_INCHES = 120;
+    private static final int WALL_ABS_POS_Y_INCHES = 9;
+    private static final int ON_LINE_ABS_POS_X_INCHES = 69;
+    private static final int CENTER_FIELD_ABS_POS_Y_INCHES = 35;
+    private static final int AVOID_PARTNER_ABS_POS_X_INCHES = 89;
+
     private enum State
     {
         DO_DELAY,
@@ -237,9 +244,12 @@ public class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                     robot.extenderArm.extendMax();
                     robot.pidDrive.getXPidCtrl().setOutputLimit(1.0);
                     robot.pidDrive.getYPidCtrl().setOutputLimit(1.0);
-                    xTarget = (autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE? 72.0: -72.0)
-                              - robot.driveBase.getXPosition();
-                    enhancedPidDrive.setRelativeXTarget(xTarget, State.APPROACH_FOUNDATION);
+                    //xTarget = (autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE? 72.0: -72.0)
+                    //          - robot.driveBase.getXPosition();
+                    //enhancedPidDrive.setRelativeXTarget(xTarget, State.APPROACH_FOUNDATION);
+                    xTarget = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE?
+                            FOUNDATION_DROP_ABS_POS_X_INCHES : -FOUNDATION_DROP_ABS_POS_X_INCHES;
+                    enhancedPidDrive.setAbsoluteXTarget(xTarget, State.APPROACH_FOUNDATION);
                     break;
 
                 case APPROACH_FOUNDATION:
@@ -279,8 +289,10 @@ public class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                     break;
 
                 case PULL_FOUNDATION_TO_WALL:
-                    yTarget = 46.0;
-                    enhancedPidDrive.setRelativeYTarget(yTarget, State.UNHOOK_FOUNDATION);
+                    //yTarget = 46.0;
+                    //enhancedPidDrive.setRelativeYTarget(yTarget, State.UNHOOK_FOUNDATION);
+                    yTarget = WALL_ABS_POS_Y_INCHES;
+                    enhancedPidDrive.setAbsoluteYTarget(yTarget, State.UNHOOK_FOUNDATION);
                     break;
 
                 case UNHOOK_FOUNDATION:
@@ -293,38 +305,53 @@ public class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                     break;
 
                 case MOVE_CLOSER_TO_BRIDGE:
-                    xTarget = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE? 30.0: -30.0;
-                    enhancedPidDrive.setRelativeXTarget(xTarget, State.MOVE_BACK_TO_CENTER);
+                    //xTarget = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE? 30.0: -30.0;
+                    //enhancedPidDrive.setRelativeXTarget(xTarget, State.MOVE_BACK_TO_CENTER);
+                    xTarget = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE?
+                            AVOID_PARTNER_ABS_POS_X_INCHES : -AVOID_PARTNER_ABS_POS_X_INCHES;
+                    enhancedPidDrive.setAbsoluteXTarget(xTarget,State.MOVE_BACK_TO_CENTER);
                     break;
 
                 case MOVE_BACK_TO_CENTER:
-                    yTarget = -20.0;
-                    enhancedPidDrive.setRelativeYTarget(yTarget, State.MOVE_UNDER_BRIDGE);
+                    //yTarget = -20.0;
+                    //enhancedPidDrive.setRelativeYTarget(yTarget, State.MOVE_UNDER_BRIDGE);
+                    yTarget = CENTER_FIELD_ABS_POS_Y_INCHES;
+                    enhancedPidDrive.setAbsoluteYTarget(yTarget, State.MOVE_UNDER_BRIDGE);
                     break;
 
                 case MOVE_UNDER_BRIDGE:
-                    xTarget = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE? 20.0: -20.0;
-                    enhancedPidDrive.setRelativeXTarget(xTarget, State.DONE);
+                    //xTarget = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE? 20.0: -20.0;
+                    //enhancedPidDrive.setRelativeXTarget(xTarget, State.DONE);
+                    xTarget = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE?
+                            ON_LINE_ABS_POS_X_INCHES : -ON_LINE_ABS_POS_X_INCHES;
+                    enhancedPidDrive.setAbsoluteXTarget(xTarget, State.DONE);
                     break;
 
                 case SKIP_MOVE_FOUNDATION_PARK_WALL:
                     nextState = autoChoices.parkUnderBridge == CommonAuto.ParkPosition.PARK_CLOSE_TO_WALL?
                                     State.STRAFE_TO_PARK: State.DONE;
-                    yTarget = -44.0;
-                    enhancedPidDrive.setRelativeYTarget(yTarget, nextState);
+                    //yTarget = -44.0;
+                    //enhancedPidDrive.setRelativeYTarget(yTarget, nextState);
+                    yTarget = WALL_ABS_POS_Y_INCHES;
+                    enhancedPidDrive.setAbsoluteYTarget(yTarget, nextState);
                     break;
 
                 case STRAFE_TO_PARK:
                     nextState = autoChoices.parkUnderBridge == CommonAuto.ParkPosition.PARK_CLOSE_TO_CENTER?
                                     State.MOVE_TOWARDS_CENTER: State.DONE;
-                    xTarget = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE? -50.0: 50.0;
-                    if (autoChoices.moveFoundation) xTarget = -xTarget;
-                    enhancedPidDrive.setRelativeXTarget(xTarget, nextState);
+                    //xTarget = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE? -50.0: 50.0;
+                    //if (autoChoices.moveFoundation) xTarget = -xTarget;
+                    //enhancedPidDrive.setRelativeXTarget(xTarget, nextState);
+                    xTarget = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE?
+                            ON_LINE_ABS_POS_X_INCHES : -ON_LINE_ABS_POS_X_INCHES;
+                    enhancedPidDrive.setAbsoluteXTarget(xTarget, nextState);
                     break;
 
                 case MOVE_TOWARDS_CENTER:
-                    yTarget = 8.0;
-                    enhancedPidDrive.setRelativeYTarget(yTarget, State.DONE);
+                    //yTarget = 8.0;
+                    //enhancedPidDrive.setRelativeYTarget(yTarget, State.DONE);
+                    yTarget = CENTER_FIELD_ABS_POS_Y_INCHES;
+                    enhancedPidDrive.setAbsoluteYTarget(yTarget, State.DONE);
                     break;
 
                 case DONE:
