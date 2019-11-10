@@ -223,7 +223,7 @@ public class CmdSkystoneVision implements TrcRobot.RobotCommand
                     scanningForSkyStone = true;
 
                     xTarget = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE? -16.0: 16.0;
-                    enhancedPidDrive.setXTarget(xTarget, State.SETUP_VISION);
+                    enhancedPidDrive.setRelativeXTarget(xTarget, State.SETUP_VISION);
                     break;
 
                 case NEXT_SKYSTONE_POSITION:
@@ -234,7 +234,7 @@ public class CmdSkystoneVision implements TrcRobot.RobotCommand
                     {
                         scootCount--;
                         xTarget = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE? -8.5: 8.5;
-                        enhancedPidDrive.setXTarget(xTarget, (scootCount == 0? State.GOTO_SKYSTONE : State.SETUP_VISION));
+                        enhancedPidDrive.setRelativeXTarget(xTarget, (scootCount == 0? State.GOTO_SKYSTONE : State.SETUP_VISION));
                     }
                     else
                     {
@@ -258,7 +258,7 @@ public class CmdSkystoneVision implements TrcRobot.RobotCommand
                         visionTrigger.setEnabled(false);
                     }
                     xTarget = skystonePose.x;
-                    enhancedPidDrive.setXTarget(xTarget, State.GOTO_SKYSTONE);
+                    enhancedPidDrive.setRelativeXTarget(xTarget, State.GOTO_SKYSTONE);
                     break;
 
                 case GOTO_SKYSTONE:
@@ -268,7 +268,7 @@ public class CmdSkystoneVision implements TrcRobot.RobotCommand
                     }
 
                     yTarget = 8.0;
-                    enhancedPidDrive.setYTarget(yTarget, State.DONE);
+                    enhancedPidDrive.setRelativeYTarget(yTarget, State.DONE);
                     break;
 
                 case DONE:

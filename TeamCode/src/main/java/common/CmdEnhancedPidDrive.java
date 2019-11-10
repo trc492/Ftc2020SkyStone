@@ -268,7 +268,7 @@ public class CmdEnhancedPidDrive implements TrcRobot.RobotCommand
                         turnPidCtrl.saveAndSetOutputLimit(drivePowerLimit);
                     }
 
-                    enhancedPidDrive.setTarget(xDistance, yDistance, heading, State.DONE);
+                    enhancedPidDrive.setRelativeTarget(xDistance, yDistance, heading, State.DONE);
                     break;
 
                 case DONE:

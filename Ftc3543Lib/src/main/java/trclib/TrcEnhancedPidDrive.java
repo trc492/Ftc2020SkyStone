@@ -155,9 +155,9 @@ public class TrcEnhancedPidDrive<StateType>
      * @param turnDelta specifies the turn target relative to the current heading.
      * @param nextState specifies the next state the state machine should advance to at the end of the drive.
      */
-    public void setTarget(double xDelta, double yDelta, double turnDelta, StateType nextState)
+    public void setRelativeTarget(double xDelta, double yDelta, double turnDelta, StateType nextState)
     {
-        final String funcName = "setTarget";
+        final String funcName = "setRelativeTarget";
         TrcPose2D newTargetPose = absTargetPose.translatePose(xDelta, yDelta);
         newTargetPose.heading += turnDelta;
         double xTarget, yTarget, turnTarget;
@@ -190,7 +190,7 @@ public class TrcEnhancedPidDrive<StateType>
         absTargetPose = newTargetPose;
         pidDrive.setTarget(xTarget, yTarget, turnTarget, false, event);
         sm.waitForSingleEvent(event, nextState);
-    }   //setTarget
+    }   //setRelativeTarget
 
     /**
      * This method sets the PID controlled relative drive targets.
@@ -199,10 +199,10 @@ public class TrcEnhancedPidDrive<StateType>
      * @param yTarget specifies the Y target relative to the current Y position.
      * @param nextState specifies the next state the state machine should advance to at the end of the drive.
      */
-    public void setXYTarget(double xTarget, double yTarget, StateType nextState)
+    public void setRelativeXYTarget(double xTarget, double yTarget, StateType nextState)
     {
-        setTarget(xTarget, yTarget, 0.0, nextState);
-    }   //setXYTarget
+        setRelativeTarget(xTarget, yTarget, 0.0, nextState);
+    }   //setRelativeXYTarget
 
     /**
      * This method sets the PID controlled relative drive targets.
@@ -210,10 +210,10 @@ public class TrcEnhancedPidDrive<StateType>
      * @param xTarget specifies the X target relative to the current X position.
      * @param nextState specifies the next state the state machine should advance to at the end of the drive.
      */
-    public void setXTarget(double xTarget, StateType nextState)
+    public void setRelativeXTarget(double xTarget, StateType nextState)
     {
-        setTarget(xTarget, 0.0, 0.0, nextState);
-    }   //setXTarget
+        setRelativeTarget(xTarget, 0.0, 0.0, nextState);
+    }   //setRelativeXTarget
 
     /**
      * This method sets the PID controlled relative drive targets.
@@ -221,10 +221,10 @@ public class TrcEnhancedPidDrive<StateType>
      * @param yTarget specifies the Y target relative to the current Y position.
      * @param nextState specifies the next state the state machine should advance to at the end of the drive.
      */
-    public void setYTarget(double yTarget, StateType nextState)
+    public void setRelativeYTarget(double yTarget, StateType nextState)
     {
-        setTarget(0.0, yTarget, 0.0, nextState);
-    }   //setYTarget
+        setRelativeTarget(0.0, yTarget, 0.0, nextState);
+    }   //setRelativeYTarget
 
     /**
      * This method sets the PID controlled relative drive targets.
@@ -232,9 +232,85 @@ public class TrcEnhancedPidDrive<StateType>
      * @param turnTarget specifies the turn target relative to the current heading.
      * @param nextState specifies the next state the state machine should advance to at the end of the drive.
      */
-    public void setTurnTarget(double turnTarget, StateType nextState)
+    public void setRelativeTurnTarget(double turnTarget, StateType nextState)
     {
-        setTarget(0.0, 0.0, turnTarget, nextState);
-    }   //setXYTarget
+        setRelativeTarget(0.0, 0.0, turnTarget, nextState);
+    }   //setRelativeTurnTarget
+
+    /**
+     * This method sets the PID controlled absolute drive targets.
+     *
+     * @param absX specifies the absolute X target position.
+     * @param absY specifies the absolute Y target position.
+     * @param absHeading specifies the absolute target heading.
+     * @param nextState specifies the next state the state machine should advance to at the end of the drive.
+     */
+    public void setAbsoluteTarget(double absX, double absY, double absHeading, StateType nextState)
+    {
+        final String funcName = "setAbsoluteTarget";
+        TrcPose2D newTargetPose = new TrcPose2D(absX, absY, absHeading);
+        TrcPose2D currRobotPose = driveBase.getAbsolutePose();
+        TrcPose2D  relativePose = newTargetPose.relativeTo(currRobotPose);
+        double turnTarget = pidDrive.getTurnPidCtrl().hasAbsoluteSetPoint()?
+                newTargetPose.heading: newTargetPose.heading - currRobotPose.heading;
+
+        if (debugEnabled)
+        {
+            dbgTrace.traceInfo(funcName, "absX=%.1f, absY=%.1f, absHeading=%.1f, CurrPose:%s",
+                    absX, absY, absHeading, absTargetPose);
+            dbgTrace.traceInfo(funcName, "xTarget=%.1f, yTarget=%.1f, turnTarget=%.1f, NewPose:%s",
+                    relativePose.x, relativePose.y, turnTarget, newTargetPose);
+        }
+
+        pidDrive.setTarget(relativePose.x, relativePose.y, turnTarget, false, event);
+        sm.waitForSingleEvent(event, nextState);
+
+        absTargetPose = newTargetPose;
+    }   //setAbsoluteTarget
+
+    /**
+     * This method sets the PID controlled absolute drive targets.
+     *
+     * @param absX specifies the absolute X target position.
+     * @param absY specifies the absolute Y target position.
+     * @param nextState specifies the next state the state machine should advance to at the end of the drive.
+     */
+    public void setAbsoluteXYTarget(double absX, double absY, StateType nextState)
+    {
+        setAbsoluteTarget(absX, absY, absTargetPose.heading, nextState);
+    }   //setAbsoluteXYTarget
+
+    /**
+     * This method sets the PID controlled absolute drive targets.
+     *
+     * @param absX specifies the absolute X target position.
+     * @param nextState specifies the next state the state machine should advance to at the end of the drive.
+     */
+    public void setAbsoluteXTarget(double absX, StateType nextState)
+    {
+        setAbsoluteTarget(absX, absTargetPose.y, absTargetPose.heading, nextState);
+    }   //setAbsoluteXTarget
+
+    /**
+     * This method sets the PID controlled absolute drive targets.
+     *
+     * @param absY specifies the absolute Y target position.
+     * @param nextState specifies the next state the state machine should advance to at the end of the drive.
+     */
+    public void setAbsoluteYTarget(double absY, StateType nextState)
+    {
+        setAbsoluteTarget(absTargetPose.x, absY, absTargetPose.heading, nextState);
+    }   //setAbsoluteYTarget
+
+    /**
+     * This method sets the PID controlled absolute drive targets.
+     *
+     * @param absHeading specifies the absolute heading target.
+     * @param nextState specifies the next state the state machine should advance to at the end of the drive.
+     */
+    public void setAbsoluteHeadingTarget(double absHeading, StateType nextState)
+    {
+        setAbsoluteTarget(absTargetPose.x, absTargetPose.y, absHeading, nextState);
+    }   //setAbsoluteHeadingTarget
 
 }   //TrcEnhancedPidDrive
