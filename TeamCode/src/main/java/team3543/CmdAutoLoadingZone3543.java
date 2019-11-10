@@ -43,6 +43,7 @@ public class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
     {
         DO_DELAY,
         MOVE_CLOSER,
+        START_VISION,
         DO_VISION,
         GO_DOWN_ON_SKYSTONE,
         GRAB_SKYSTONE,
@@ -73,7 +74,7 @@ public class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
     private final TrcEvent event;
     private final TrcStateMachine<State> sm;
     private final TrcEnhancedPidDrive<State> enhancedPidDrive;
-    private final CmdSkystoneVision skystoneVisionCommand;
+    private CmdSkystoneVision skystoneVisionCommand = null;
 
     /**
      * Constructor: Create an instance of the object.
@@ -94,7 +95,6 @@ public class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
         robot.encoderYPidCtrl.setNoOscillation(true);
         robot.gyroPidCtrl.setNoOscillation(true);
         enhancedPidDrive = new TrcEnhancedPidDrive<>(moduleName, robot.driveBase, robot.pidDrive, event, sm);
-        skystoneVisionCommand = new CmdSkystoneVision(robot, autoChoices, useVisionTrigger);
 
         sm.start(State.DO_DELAY);
     }   //CmdAutoLoadingZone3543
@@ -186,9 +186,15 @@ public class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                     robot.pidDrive.getXPidCtrl().setOutputLimit(0.5);
                     robot.pidDrive.getYPidCtrl().setOutputLimit(0.5);
                     yTarget = 22.0;
-                    enhancedPidDrive.setYTarget(yTarget, State.DO_VISION);
+                    enhancedPidDrive.setYTarget(yTarget, State.START_VISION);
                     break;
 
+                case START_VISION:
+                    skystoneVisionCommand = new CmdSkystoneVision(robot, autoChoices, useVisionTrigger);
+                    sm.setState(State.DO_VISION);
+                    //
+                    // Intentionally falling through to the next state.
+                    //
                 case DO_VISION:
                     //
                     // Do vision to detect and go to the skystone. If vision did not detect skystone, it will stop
@@ -200,8 +206,7 @@ public class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                         // Skystone vision is done. Sync our absolute target pose with the last robot position from
                         // skystone vision and continue.
                         //
-                        enhancedPidDrive.setAbsTargetPose(
-                                skystoneVisionCommand.getEnhancedPidDrive().getAbsTargetPose());
+                        enhancedPidDrive.setAbsTargetPose(skystoneVisionCommand.getRobotPose());
                         sm.setState(State.GO_DOWN_ON_SKYSTONE);
                         //
                         // Intentionally falling through to the next state.
@@ -224,7 +229,7 @@ public class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                     break;
 
                 case PULL_SKYSTONE:
-                    yTarget = -12.0;
+                    yTarget = -6.0;
                     enhancedPidDrive.setYTarget(yTarget, State.GOTO_FOUNDATION);
                     break;
 
@@ -238,7 +243,7 @@ public class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                     break;
 
                 case APPROACH_FOUNDATION:
-                    yTarget = 15.0;
+                    yTarget = 12.0;
                     enhancedPidDrive.setYTarget(yTarget, State.DROP_SKYSTONE);
                     break;
 
@@ -274,7 +279,7 @@ public class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                     break;
 
                 case PULL_FOUNDATION_TO_WALL:
-                    yTarget = 48.0;
+                    yTarget = 46.0;
                     enhancedPidDrive.setYTarget(yTarget, State.UNHOOK_FOUNDATION);
                     break;
 
@@ -289,7 +294,7 @@ public class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
 
                 case MOVE_CLOSER_TO_BRIDGE:
                     xTarget = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE? 30.0: -30.0;
-                    enhancedPidDrive.setXTarget(xTarget, State.MOVE_TOWARDS_CENTER);
+                    enhancedPidDrive.setXTarget(xTarget, State.MOVE_BACK_TO_CENTER);
                     break;
 
                 case MOVE_BACK_TO_CENTER:

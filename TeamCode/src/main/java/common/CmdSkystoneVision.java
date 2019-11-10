@@ -84,10 +84,15 @@ public class CmdSkystoneVision implements TrcRobot.RobotCommand
         sm.start(State.SETUP_VISION);
     }   //CmdSkystoneVision
 
-    public TrcEnhancedPidDrive getEnhancedPidDrive()
+    public TrcPose2D getRobotPose()
     {
-        return enhancedPidDrive;
-    }   //getEnhancedPidDrive
+        return enhancedPidDrive.getAbsTargetPose();
+    }   //getRobotPose
+
+    public void setRobotPose(TrcPose2D pose)
+    {
+        enhancedPidDrive.setAbsTargetPose(pose);
+    }   //setRobotPopse
 
     private boolean isTriggered()
     {

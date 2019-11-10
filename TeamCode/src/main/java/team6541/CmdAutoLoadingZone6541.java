@@ -45,6 +45,7 @@ public class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
         MOVE_CLOSER,
         ELEVATOR_TO_RELEASE_HEIGHT,
         ELEVATOR_TO_PICKUP_HEIGHT,
+        START_VISION,
         DO_VISION,
         GRAB_SKYSTONE,
         PULL_SKYSTONE,
@@ -69,7 +70,7 @@ public class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
     private final TrcTimer timer;
     private final TrcStateMachine<State> sm;
     private final TrcEnhancedPidDrive<State> enhancedPidDrive;
-    private final CmdSkystoneVision skystoneVisionCommand;
+    private CmdSkystoneVision skystoneVisionCommand = null;
 
     /**
      * Constructor: Create an instance of the object.
@@ -90,7 +91,6 @@ public class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
         robot.encoderYPidCtrl.setNoOscillation(true);
         robot.gyroPidCtrl.setNoOscillation(true);
         enhancedPidDrive = new TrcEnhancedPidDrive<>(moduleName, robot.driveBase, robot.pidDrive, event, sm);
-        skystoneVisionCommand = new CmdSkystoneVision(robot, autoChoices, useVisionTrigger);
 
         sm.start(State.DO_DELAY);
     }   //CmdAutoLoadingZone6541
@@ -191,6 +191,12 @@ public class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
                     sm.waitForSingleEvent(event, State.DO_VISION);
                     break;
 
+                case START_VISION:
+                    skystoneVisionCommand = new CmdSkystoneVision(robot, autoChoices, useVisionTrigger);
+                    sm.setState(State.DO_VISION);
+                    //
+                    // Intentionally falling through to the next state.
+                    //
                 case DO_VISION:
                     //
                     // Do vision to detect and go to the skystone. If vision did not detect skystone, it will stop
@@ -202,8 +208,7 @@ public class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
                         // Skystone vision is done. Sync our absolute target pose with the last robot position from
                         // skystone vision and continue.
                         //
-                        enhancedPidDrive.setAbsTargetPose(
-                                skystoneVisionCommand.getEnhancedPidDrive().getAbsTargetPose());
+                        enhancedPidDrive.setAbsTargetPose(skystoneVisionCommand.getRobotPose());
                         sm.setState(State.GRAB_SKYSTONE);
                         //
                         // Intentionally falling through to the next state.
