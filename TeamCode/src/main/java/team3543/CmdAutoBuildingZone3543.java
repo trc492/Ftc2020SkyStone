@@ -137,7 +137,7 @@ public class CmdAutoBuildingZone3543 implements TrcRobot.RobotCommand
                     // Robot will move backwards so that the hook is facing the foundation.
                     //
                     yTarget = -30;
-                    enhancedPidDrive.setYTarget(yTarget, State.HOOK_FOUNDATION);
+                    enhancedPidDrive.setRelativeYTarget(yTarget, State.HOOK_FOUNDATION);
                     break;
 
                 case HOOK_FOUNDATION:
@@ -150,7 +150,7 @@ public class CmdAutoBuildingZone3543 implements TrcRobot.RobotCommand
 
                 case MOVE_FOUNDATION_BACK:
                     yTarget = 38.0;
-                    enhancedPidDrive.setYTarget(yTarget, State.LET_GO_FOUNDATION);
+                    enhancedPidDrive.setRelativeYTarget(yTarget, State.LET_GO_FOUNDATION);
                     break;
 
                 case LET_GO_FOUNDATION:
@@ -164,22 +164,22 @@ public class CmdAutoBuildingZone3543 implements TrcRobot.RobotCommand
 
                 case SCOOT_TO_LINE:
                     xTarget = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE ? 48.0 : -48.0;
-                    enhancedPidDrive.setXTarget(xTarget, State.DONE);
+                    enhancedPidDrive.setRelativeXTarget(xTarget, State.DONE);
                     break;
 
                 case SCOOT_CLOSER_TO_LINE:
                     xTarget = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE ? 28.0 : -28.0;
-                    enhancedPidDrive.setXTarget(xTarget, State.MOVE_CLOSER_TO_CENTER);
+                    enhancedPidDrive.setRelativeXTarget(xTarget, State.MOVE_CLOSER_TO_CENTER);
                     break;
 
                 case MOVE_CLOSER_TO_CENTER:
                     yTarget = -20.0;
-                    enhancedPidDrive.setYTarget(yTarget, State.SCOOT_TO_LINE_SHORT);
+                    enhancedPidDrive.setRelativeYTarget(yTarget, State.SCOOT_TO_LINE_SHORT);
                     break;
 
                 case SCOOT_TO_LINE_SHORT:
                     xTarget = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE ? 20.0 : -20.0;
-                    enhancedPidDrive.setXTarget(xTarget, State.DONE);
+                    enhancedPidDrive.setRelativeXTarget(xTarget, State.DONE);
                     break;
 
                 case DONE:
