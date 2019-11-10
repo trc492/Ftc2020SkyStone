@@ -188,7 +188,7 @@ public class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
 
                 case ELEVATOR_TO_PICKUP_HEIGHT:
                     robot.elevator.setPosition(RobotInfo6541.ELEVATOR_PICKUP_HEIGHT, event, 0);
-                    sm.waitForSingleEvent(event, State.DO_VISION);
+                    sm.waitForSingleEvent(event, State.START_VISION);
                     break;
 
                 case START_VISION:
