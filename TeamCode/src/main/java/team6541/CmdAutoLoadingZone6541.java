@@ -202,7 +202,8 @@ public class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
                         // Skystone vision is done. Sync our absolute target pose with the last robot position from
                         // skystone vision and continue.
                         //
-                        enhancedPidDrive.syncAbsTargetPose(skystoneVisionCommand.getEnhancedPidDrive());
+                        enhancedPidDrive.setAbsTargetPose(
+                                skystoneVisionCommand.getEnhancedPidDrive().getAbsTargetPose());
                         sm.setState(State.GRAB_SKYSTONE);
                         //
                         // Intentionally falling through to the next state.

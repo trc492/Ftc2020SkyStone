@@ -108,14 +108,14 @@ public class TrcEnhancedPidDrive<StateType>
     }   //TrcEnhancedPidDrive
 
     /**
-     * This method returns the instance name and the current target pose.
+     * This method returns the instance name.
      *
-     * @return instance name and current target pose.
+     * @return instance name.
      */
     @Override
     public String toString()
     {
-        return instanceName + ": " + absTargetPose.toString();
+        return instanceName;
     }   //toString
 
     /**
@@ -146,16 +146,6 @@ public class TrcEnhancedPidDrive<StateType>
     {
         absTargetPose = driveBase.getAbsolutePose();
     }   //resetAbsTargetPose
-
-    /**
-     * This method sets the absolute target pose of this instance with the other instance.
-     *
-     * @param other specifies the other TrcEnhancedPidDrive instance to sync with.
-     */
-    public void syncAbsTargetPose(TrcEnhancedPidDrive other)
-    {
-        this.absTargetPose = other.getAbsTargetPose();
-    }   //syncAbsTargetPose
 
     /**
      * This method sets the PID controlled relative drive targets.
