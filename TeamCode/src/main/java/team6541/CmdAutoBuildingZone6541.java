@@ -41,6 +41,7 @@ public class CmdAutoBuildingZone6541 implements TrcRobot.RobotCommand
     {
         DO_DELAY,
         DRIVE_DIRECTLY_UNDER_BRIDGE_IF_NOT_MOVING_FOUNDATION,
+        CRAB_TO_CENTER_IF_NOT_MOVING_FOUNDATION,
         RAISE_ELEVATOR,
         DRIVE_UNTIL_GRABBER_ALIGNED_WITH_FOUNDATION,
         CRAB_TO_ALIGN_WITH_FOUNDATION,
@@ -136,9 +137,7 @@ public class CmdAutoBuildingZone6541 implements TrcRobot.RobotCommand
                     if (autoChoices.delay == 0.0)
                     {
                         sm.setState(nextState);
-                        //
-                        // Intentionally falling through to the next state.
-                        //
+                        break;
                     }
                     else
                     {
@@ -148,10 +147,17 @@ public class CmdAutoBuildingZone6541 implements TrcRobot.RobotCommand
                     }
 
                 case DRIVE_DIRECTLY_UNDER_BRIDGE_IF_NOT_MOVING_FOUNDATION:
-                    // CodeReview: what if ParkPosition.PARK_CLOSE_TO_CENTER?
                     // if not moving the foundation and parking under bridge, drive directly forwards to bridge.
+                    nextState = autoChoices.parkUnderBridge == CommonAuto.ParkPosition.PARK_CLOSE_TO_WALL ?
+                            State.DONE :
+                            State.CRAB_TO_CENTER_IF_NOT_MOVING_FOUNDATION;
                     yTarget = 24.0;
-                    enhancedPidDrive.setYTarget(yTarget, State.DONE);
+                    enhancedPidDrive.setYTarget(yTarget, nextState);
+                    break;
+
+                case CRAB_TO_CENTER_IF_NOT_MOVING_FOUNDATION:
+                    xTarget = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE ? 28.0 : -28.0;
+                    enhancedPidDrive.setXTarget(xTarget, State.DONE);
                     break;
 
                 case RAISE_ELEVATOR:
