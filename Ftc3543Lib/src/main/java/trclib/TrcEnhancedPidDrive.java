@@ -88,7 +88,7 @@ public class TrcEnhancedPidDrive<StateType>
         this.event = event;
         this.sm = sm;
         this.useAbsTarget = useAbsTarget;
-        absTargetPose = driveBase.getAbsolutePose();
+        resetAbsTargetPose();
     }   //TrcEnhancedPidDrive
 
     /**
@@ -128,6 +128,24 @@ public class TrcEnhancedPidDrive<StateType>
     {
         return absTargetPose.clone();
     }   //getAbsTargetPose
+
+    /**
+     * This method sets the current absolute target pose to the given pose.
+     *
+     * @param pose specifies the pose to be set as the current absolute target pose.
+     */
+    public void setAbsTargetPose(TrcPose2D pose)
+    {
+        absTargetPose = pose;
+    }   //setAbsTargetPose
+
+    /**
+     * This method sets the current robot pose as the absolute target pose.
+     */
+    public void resetAbsTargetPose()
+    {
+        absTargetPose = driveBase.getAbsolutePose();
+    }   //resetAbsTargetPose
 
     /**
      * This method sets the absolute target pose of this instance with the other instance.
