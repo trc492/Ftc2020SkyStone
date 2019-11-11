@@ -22,7 +22,6 @@
 
 package common;
 
-import trclib.TrcDriveBase;
 import trclib.TrcEvent;
 import trclib.TrcPidController;
 import trclib.TrcPidController.PidCoefficients;

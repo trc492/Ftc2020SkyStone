@@ -133,8 +133,6 @@ public class CmdSkystoneVision implements TrcRobot.RobotCommand
             visionTrigger.setEnabled(false);
         }
 
-        robot.pidDrive.getXPidCtrl().setOutputLimit(1.0);
-        robot.pidDrive.getYPidCtrl().setOutputLimit(1.0);
         sm.stop();
     }   //cancel
 

@@ -299,9 +299,7 @@ public class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
                     //
                     // We are done.
                     //
-                    robot.pidDrive.getXPidCtrl().setOutputLimit(1.0);
-                    robot.pidDrive.getYPidCtrl().setOutputLimit(1.0);
-                    sm.stop();
+                    cancel();
                     break;
             }
 

@@ -267,9 +267,7 @@ public class CmdAutoBuildingZone6541 implements TrcRobot.RobotCommand
                     //
                     // We are done.
                     //
-                    robot.pidDrive.getXPidCtrl().restoreOutputLimit();
-                    robot.pidDrive.getYPidCtrl().restoreOutputLimit();
-                    sm.stop();
+                    cancel();
                     break;
             }
 
