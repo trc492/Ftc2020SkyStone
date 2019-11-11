@@ -26,7 +26,7 @@ import trclib.TrcEvent;
 import trclib.TrcPidDrive;
 import trclib.TrcStateMachine;
 
-public class EnhancedPidDrive<StateType>
+public class SimplePidDrive<StateType>
 {
     private final TrcPidDrive pidDrive;
     private final TrcEvent event;
@@ -42,7 +42,7 @@ public class EnhancedPidDrive<StateType>
      * @param startX specifies the robot's starting X position in the field.
      * @param startY specifies the robot's starting Y position in the field.
      */
-    public EnhancedPidDrive(
+    public SimplePidDrive(
             TrcPidDrive pidDrive, TrcEvent event, TrcStateMachine<StateType> sm, double startX, double startY)
     {
         this.pidDrive = pidDrive;
@@ -50,7 +50,7 @@ public class EnhancedPidDrive<StateType>
         this.sm = sm;
         this.startX = startX;
         this.startY = startY;
-    }   //EnhancedPidDrive
+    }   //SimplePidDrive
 
     /**
      * This method sets the PID controlled absolute drive targets.
@@ -178,4 +178,4 @@ public class EnhancedPidDrive<StateType>
         sm.waitForSingleEvent(event, nextState);
     }   //setRelativeTurnTarget
 
-}   //EnhancedPidDrive
+}   //class SimplePidDrive

@@ -23,7 +23,7 @@
 package team3543;
 
 import common.CommonAuto;
-import common.EnhancedPidDrive;
+import common.SimplePidDrive;
 import common.Robot;
 import trclib.TrcEvent;
 import trclib.TrcPidController;
@@ -58,7 +58,7 @@ public class CmdAutoBuildingZone3543 implements TrcRobot.RobotCommand
     private final TrcEvent event;
     private final TrcTimer timer;
     private final TrcStateMachine<State> sm;
-    private final EnhancedPidDrive<State> enhancedPidDrive;
+    private final SimplePidDrive<State> simplePidDrive;
 
     public CmdAutoBuildingZone3543(Robot robot, CommonAuto.AutoChoices autoChoices, double startX, double startY)
     {
@@ -67,7 +67,7 @@ public class CmdAutoBuildingZone3543 implements TrcRobot.RobotCommand
         event = new TrcEvent(moduleName);
         timer = new TrcTimer(moduleName);
         sm = new TrcStateMachine<>(moduleName);
-        enhancedPidDrive = new EnhancedPidDrive<>(robot.pidDrive, event, sm, startX, startY);
+        simplePidDrive = new SimplePidDrive<>(robot.pidDrive, event, sm, startX, startY);
         sm.start(State.DO_DELAY);
     }   //CmdAutoBuildingZone3543
 
@@ -136,7 +136,7 @@ public class CmdAutoBuildingZone3543 implements TrcRobot.RobotCommand
                     // Robot will move backwards so that the hook is facing the foundation.
                     //
                     yTarget = -30;
-                    enhancedPidDrive.setRelativeYTarget(yTarget, State.HOOK_FOUNDATION);
+                    simplePidDrive.setRelativeYTarget(yTarget, State.HOOK_FOUNDATION);
                     break;
 
                 case HOOK_FOUNDATION:
@@ -149,7 +149,7 @@ public class CmdAutoBuildingZone3543 implements TrcRobot.RobotCommand
 
                 case MOVE_FOUNDATION_BACK:
                     yTarget = 38.0;
-                    enhancedPidDrive.setRelativeYTarget(yTarget, State.LET_GO_FOUNDATION);
+                    simplePidDrive.setRelativeYTarget(yTarget, State.LET_GO_FOUNDATION);
                     break;
 
                 case LET_GO_FOUNDATION:
@@ -163,22 +163,22 @@ public class CmdAutoBuildingZone3543 implements TrcRobot.RobotCommand
 
                 case SCOOT_TO_LINE:
                     xTarget = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE ? 48.0 : -48.0;
-                    enhancedPidDrive.setRelativeXTarget(xTarget, State.DONE);
+                    simplePidDrive.setRelativeXTarget(xTarget, State.DONE);
                     break;
 
                 case SCOOT_CLOSER_TO_LINE:
                     xTarget = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE ? 28.0 : -28.0;
-                    enhancedPidDrive.setRelativeXTarget(xTarget, State.MOVE_CLOSER_TO_CENTER);
+                    simplePidDrive.setRelativeXTarget(xTarget, State.MOVE_CLOSER_TO_CENTER);
                     break;
 
                 case MOVE_CLOSER_TO_CENTER:
                     yTarget = -20.0;
-                    enhancedPidDrive.setRelativeYTarget(yTarget, State.SCOOT_TO_LINE_SHORT);
+                    simplePidDrive.setRelativeYTarget(yTarget, State.SCOOT_TO_LINE_SHORT);
                     break;
 
                 case SCOOT_TO_LINE_SHORT:
                     xTarget = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE ? 20.0 : -20.0;
-                    enhancedPidDrive.setRelativeXTarget(xTarget, State.DONE);
+                    simplePidDrive.setRelativeXTarget(xTarget, State.DONE);
                     break;
 
                 case DONE:
