@@ -44,8 +44,9 @@ public abstract class CommonTeleOp extends FtcOpMode
     protected FtcGamepad driverGamepad;
     protected FtcGamepad operatorGamepad;
 
+    private static final double SLOW_DRIVE_POWER_SCALE = 0.5;
     protected DriveMode driveMode = DriveMode.HOLONOMIC_MODE;
-    protected double drivePowerScale = 1.0;
+    protected double drivePowerScale = SLOW_DRIVE_POWER_SCALE;
     protected boolean invertedDrive = false;
 
     //
@@ -185,7 +186,7 @@ public abstract class CommonTeleOp extends FtcOpMode
                     break;
 
                 case FtcGamepad.GAMEPAD_LBUMPER:
-                    drivePowerScale = pressed? 0.5: 1.0;
+                    drivePowerScale = pressed? 1.0: SLOW_DRIVE_POWER_SCALE;
                     break;
 
                 case FtcGamepad.GAMEPAD_RBUMPER:
