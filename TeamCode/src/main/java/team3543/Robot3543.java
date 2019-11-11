@@ -195,7 +195,8 @@ public class Robot3543 extends Robot
         gyroPidCtrl.setAbsoluteSetPoint(true);
         gyroPidCtrl.setOutputRange(-RobotInfo3543.TURN_POWER_LIMIT, RobotInfo3543.TURN_POWER_LIMIT);
 
-        pidDrive = new TrcPidDrive("pidDrive", driveBase, encoderXPidCtrl, encoderYPidCtrl, gyroPidCtrl);
+        pidDrive = new TrcPidDrive(
+                "pidDrive", driveBase, encoderXPidCtrl, encoderYPidCtrl, gyroPidCtrl, true);
         pidDrive.setStallTimeout(RobotInfo3543.PIDDRIVE_STALL_TIMEOUT);
         pidDrive.setBeep(androidTone);
     }   //initDriveBase

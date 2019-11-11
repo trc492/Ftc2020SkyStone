@@ -24,8 +24,8 @@ package team6541;
 
 import common.CmdSkystoneVision;
 import common.CommonAuto;
+import common.EnhancedPidDrive;
 import common.Robot;
-import trclib.TrcEnhancedPidDrive;
 import trclib.TrcEvent;
 import trclib.TrcPidController;
 import trclib.TrcRobot;
@@ -69,7 +69,7 @@ public class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
     private final TrcEvent event;
     private final TrcTimer timer;
     private final TrcStateMachine<State> sm;
-    private final TrcEnhancedPidDrive<State> enhancedPidDrive;
+    private final EnhancedPidDrive<State> enhancedPidDrive;
     private CmdSkystoneVision skystoneVisionCommand = null;
 
     /**
@@ -77,7 +77,7 @@ public class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
      *
      * @param robot specifies the robot object for providing access to various global objects.
      */
-    public CmdAutoLoadingZone6541(Robot robot, CommonAuto.AutoChoices autoChoices)
+    public CmdAutoLoadingZone6541(Robot robot, CommonAuto.AutoChoices autoChoices, double startX, double startY)
     {
         robot.globalTracer.traceInfo(moduleName, "robot=%s", robot);
 
@@ -90,7 +90,7 @@ public class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
         robot.encoderXPidCtrl.setNoOscillation(true);
         robot.encoderYPidCtrl.setNoOscillation(true);
         robot.gyroPidCtrl.setNoOscillation(true);
-        enhancedPidDrive = new TrcEnhancedPidDrive<>(moduleName, robot.driveBase, robot.pidDrive, event, sm);
+        enhancedPidDrive = new EnhancedPidDrive<>(robot.pidDrive, event, sm, startX, startY);
 
         sm.start(State.DO_DELAY);
     }   //CmdAutoLoadingZone6541
@@ -208,7 +208,6 @@ public class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
                         // Skystone vision is done. Sync our absolute target pose with the last robot position from
                         // skystone vision and continue.
                         //
-                        enhancedPidDrive.setAbsTargetPose(skystoneVisionCommand.getRobotPose());
                         sm.setState(State.GRAB_SKYSTONE);
                         //
                         // Intentionally falling through to the next state.

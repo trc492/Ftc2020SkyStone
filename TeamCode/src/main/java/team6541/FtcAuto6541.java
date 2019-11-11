@@ -24,7 +24,7 @@ package team6541;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
-import common.CmdEnhancedPidDrive;
+import common.CmdPidDrive;
 import common.CmdTimedDrive;
 import common.CommonAuto;
 import trclib.TrcRobot;
@@ -57,14 +57,16 @@ public class FtcAuto6541 extends CommonAuto
             case START_AT_LOADING_ZONE:
                 if (hasRobot)
                 {
-                    autoCommand = new CmdAutoLoadingZone6541(robot, autoChoices);
+                    autoCommand = new CmdAutoLoadingZone6541(
+                            robot, autoChoices, autoChoices.alliance == Alliance.RED_ALLIANCE? 36.0: -36.0, 9.0);
                 }
                 break;
 
             case START_AT_BUILDING_ZONE:
                 if (hasRobot)
                 {
-                    autoCommand = new CmdAutoBuildingZone6541(robot, autoChoices);
+                    autoCommand = new CmdAutoBuildingZone6541(
+                            robot, autoChoices, autoChoices.alliance == Alliance.RED_ALLIANCE? 36.0: -36.0, 9.0);
                 }
                 break;
 
@@ -79,8 +81,8 @@ public class FtcAuto6541 extends CommonAuto
             case PID_DRIVE:
                 if (hasRobot)
                 {
-                    autoCommand = new CmdEnhancedPidDrive(
-                            robot, robot.driveBase, robot.pidDrive, autoChoices.delay,
+                    autoCommand = new CmdPidDrive(
+                            robot, robot.pidDrive, autoChoices.delay,
                             autoChoices.xTarget*12.0, autoChoices.yTarget*12.0, autoChoices.turnTarget,
                             autoChoices.drivePower, false);
                 }

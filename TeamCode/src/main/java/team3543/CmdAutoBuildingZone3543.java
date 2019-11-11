@@ -23,8 +23,8 @@
 package team3543;
 
 import common.CommonAuto;
+import common.EnhancedPidDrive;
 import common.Robot;
-import trclib.TrcEnhancedPidDrive;
 import trclib.TrcEvent;
 import trclib.TrcPidController;
 import trclib.TrcRobot;
@@ -58,17 +58,16 @@ public class CmdAutoBuildingZone3543 implements TrcRobot.RobotCommand
     private final TrcEvent event;
     private final TrcTimer timer;
     private final TrcStateMachine<State> sm;
-    private final TrcEnhancedPidDrive<State> enhancedPidDrive;
+    private final EnhancedPidDrive<State> enhancedPidDrive;
 
-    public CmdAutoBuildingZone3543(Robot robot, CommonAuto.AutoChoices autoChoices)
+    public CmdAutoBuildingZone3543(Robot robot, CommonAuto.AutoChoices autoChoices, double startX, double startY)
     {
         this.robot = robot;
         this.autoChoices = autoChoices;
         event = new TrcEvent(moduleName);
         timer = new TrcTimer(moduleName);
         sm = new TrcStateMachine<>(moduleName);
-        enhancedPidDrive = new TrcEnhancedPidDrive<>(
-                "CmdAutoBuildingZone3543", robot.driveBase, robot.pidDrive, event, sm);
+        enhancedPidDrive = new EnhancedPidDrive<>(robot.pidDrive, event, sm, startX, startY);
         sm.start(State.DO_DELAY);
     }   //CmdAutoBuildingZone3543
 

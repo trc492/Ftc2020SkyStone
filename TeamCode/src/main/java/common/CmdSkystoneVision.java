@@ -22,7 +22,8 @@
 
 package common;
 
-import trclib.TrcEnhancedPidDrive;
+import java.util.Locale;
+
 import trclib.TrcEvent;
 import trclib.TrcPidController;
 import trclib.TrcPose2D;
@@ -55,7 +56,6 @@ public class CmdSkystoneVision implements TrcRobot.RobotCommand
     private final CommonAuto.AutoChoices autoChoices;
     private final TrcEvent event;
     private final TrcStateMachine<State> sm;
-    private final TrcEnhancedPidDrive<State> enhancedPidDrive;
     private TrcTrigger visionTrigger;
     private TrcPose2D skystonePose = null;
     private double visionTimeout = 0.0;
@@ -74,8 +74,6 @@ public class CmdSkystoneVision implements TrcRobot.RobotCommand
         event = new TrcEvent(moduleName);
         sm = new TrcStateMachine<>(moduleName);
 
-        enhancedPidDrive = new TrcEnhancedPidDrive<>(moduleName, robot.driveBase, robot.pidDrive, event, sm);
-
         if (useVisionTrigger)
         {
             visionTrigger = new TrcTrigger("VisionTrigger", this::isTriggered, this::targetDetected);
@@ -83,16 +81,6 @@ public class CmdSkystoneVision implements TrcRobot.RobotCommand
 
         sm.start(State.SETUP_VISION);
     }   //CmdSkystoneVision
-
-    public TrcPose2D getRobotPose()
-    {
-        return enhancedPidDrive.getAbsTargetPose();
-    }   //getRobotPose
-
-    public void setRobotPose(TrcPose2D pose)
-    {
-        enhancedPidDrive.setAbsTargetPose(pose);
-    }   //setRobotPopse
 
     private boolean isTriggered()
     {
@@ -170,6 +158,7 @@ public class CmdSkystoneVision implements TrcRobot.RobotCommand
             double xTarget = 0.0;
             double yTarget = 0.0;
             double turnTarget = 0.0;
+            State nextState = null;
 
             robot.dashboard.displayPrintf(1, "State: %s", state);
 
@@ -209,7 +198,7 @@ public class CmdSkystoneVision implements TrcRobot.RobotCommand
                         robot.globalTracer.traceInfo(
                                 "getTargetPose", "Skystone found at x=%.1f, y=%.1f.",
                                 skystonePose.x, skystonePose.y);
-                        robot.speak(String.format("Sky stone found at %.1f inches.", skystonePose.x));
+                        robot.speak(String.format(Locale.US, "Sky stone found at %.1f inches.", skystonePose.x));
                         sm.setState(State.ALIGN_SKYSTONE);
                     }
                     break;
@@ -223,7 +212,8 @@ public class CmdSkystoneVision implements TrcRobot.RobotCommand
                     scanningForSkyStone = true;
 
                     xTarget = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE? -16.0: 16.0;
-                    enhancedPidDrive.setRelativeXTarget(xTarget, State.SETUP_VISION);
+                    robot.pidDrive.setRelativeXTarget(xTarget, event);
+                    sm.waitForSingleEvent(event, State.SETUP_VISION);
                     break;
 
                 case NEXT_SKYSTONE_POSITION:
@@ -233,8 +223,10 @@ public class CmdSkystoneVision implements TrcRobot.RobotCommand
                     if (scootCount > 0)
                     {
                         scootCount--;
+                        nextState = scootCount == 0? State.GOTO_SKYSTONE: State.SETUP_VISION;
                         xTarget = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE? -8.5: 8.5;
-                        enhancedPidDrive.setRelativeXTarget(xTarget, (scootCount == 0? State.GOTO_SKYSTONE : State.SETUP_VISION));
+                        robot.pidDrive.setRelativeXTarget(xTarget, event);
+                        sm.waitForSingleEvent(event, nextState);
                     }
                     else
                     {
@@ -258,7 +250,8 @@ public class CmdSkystoneVision implements TrcRobot.RobotCommand
                         visionTrigger.setEnabled(false);
                     }
                     xTarget = skystonePose.x;
-                    enhancedPidDrive.setRelativeXTarget(xTarget, State.GOTO_SKYSTONE);
+                    robot.pidDrive.setRelativeXTarget(xTarget, event);
+                    sm.waitForSingleEvent(event, State.GOTO_SKYSTONE);
                     break;
 
                 case GOTO_SKYSTONE:
@@ -268,7 +261,8 @@ public class CmdSkystoneVision implements TrcRobot.RobotCommand
                     }
 
                     yTarget = 8.0;
-                    enhancedPidDrive.setRelativeYTarget(yTarget, State.DONE);
+                    robot.pidDrive.setRelativeYTarget(yTarget, event);
+                    sm.waitForSingleEvent(event, State.DONE);
                     break;
 
                 case DONE:
@@ -276,9 +270,7 @@ public class CmdSkystoneVision implements TrcRobot.RobotCommand
                     //
                     // We are done.
                     //
-                    robot.pidDrive.getXPidCtrl().setOutputLimit(1.0);
-                    robot.pidDrive.getYPidCtrl().setOutputLimit(1.0);
-                    sm.stop();
+                    cancel();
                     break;
             }
 

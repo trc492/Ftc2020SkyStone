@@ -23,7 +23,6 @@
 package common;
 
 import trclib.TrcDriveBase;
-import trclib.TrcEnhancedPidDrive;
 import trclib.TrcEvent;
 import trclib.TrcPidController;
 import trclib.TrcPidController.PidCoefficients;
@@ -40,7 +39,7 @@ import trclib.TrcTimer;
  * controller. The caller can also use the encoders to control the X and Y PID controllers but a camera to
  * control the turn PID controller.
  */
-public class CmdEnhancedPidDrive implements TrcRobot.RobotCommand
+public class CmdPidDrive implements TrcRobot.RobotCommand
 {
     private static final boolean debugXPid = false;
     private static final boolean debugYPid = false;
@@ -53,10 +52,9 @@ public class CmdEnhancedPidDrive implements TrcRobot.RobotCommand
         DONE
     }   //enum State
 
-    private static final String moduleName = "CmdEnhancedPidDrive";
+    private static final String moduleName = "CmdPidDrive";
 
     private final Robot robot;
-    private final TrcDriveBase driveBase;
     private final TrcPidDrive pidDrive;
     private final double delay;
     private final double xDistance;
@@ -67,7 +65,6 @@ public class CmdEnhancedPidDrive implements TrcRobot.RobotCommand
     private final TrcEvent event;
     private final TrcTimer timer;
     private final TrcStateMachine<State> sm;
-    private final TrcEnhancedPidDrive<State> enhancedPidDrive;
     private final TrcPidController xPidCtrl;
     private final TrcPidController yPidCtrl;
     private final TrcPidController turnPidCtrl;
@@ -80,7 +77,6 @@ public class CmdEnhancedPidDrive implements TrcRobot.RobotCommand
      * Constructor: Create an instance of the object.
      *
      * @param robot specifies the robot object for providing access to various global objects.
-     * @param driveBase specifies the drive base object.
      * @param pidDrive specifies the PID drive object to be used for PID controlled drive.
      * @param delay specifies delay in seconds before PID drive starts. 0 means no delay.
      * @param xDistance specifies the target distance for the X direction.
@@ -90,9 +86,9 @@ public class CmdEnhancedPidDrive implements TrcRobot.RobotCommand
      * @param tuneMode specifies true if in tune mode which allows getting PID constants from the robot object
      *        for PID tuning, false otherwise.
      */
-    public CmdEnhancedPidDrive(
-            Robot robot, TrcDriveBase driveBase, TrcPidDrive pidDrive, double delay,
-            double xDistance, double yDistance, double heading, double drivePowerLimit, boolean tuneMode)
+    public CmdPidDrive(
+            Robot robot, TrcPidDrive pidDrive, double delay, double xDistance, double yDistance, double heading,
+            double drivePowerLimit, boolean tuneMode)
     {
         robot.globalTracer.traceInfo(
                 moduleName,
@@ -100,7 +96,6 @@ public class CmdEnhancedPidDrive implements TrcRobot.RobotCommand
                 pidDrive, delay, xDistance, yDistance, heading, drivePowerLimit, tuneMode);
 
         this.robot = robot;
-        this.driveBase = driveBase;
         this.pidDrive = pidDrive;
         this.delay = delay;
         this.xDistance = xDistance;
@@ -112,35 +107,28 @@ public class CmdEnhancedPidDrive implements TrcRobot.RobotCommand
         event = new TrcEvent(moduleName);
         timer = new TrcTimer(moduleName);
         sm = new TrcStateMachine<>(moduleName);
-        enhancedPidDrive = new TrcEnhancedPidDrive<>(moduleName, driveBase, pidDrive, event, sm);
         xPidCtrl = pidDrive.getXPidCtrl();
         yPidCtrl = pidDrive.getYPidCtrl();
         turnPidCtrl = pidDrive.getTurnPidCtrl();
 
-        if (xPidCtrl != null) xPidCtrl.setNoOscillation(true);
-        yPidCtrl.setNoOscillation(true);
-        turnPidCtrl.setNoOscillation(true);
-
         sm.start(State.DO_DELAY);
-    }   //CmdEnhancedPidDrive
+    }   //CmdPidDrive
 
     /**
      * Constructor: Create an instance of the object.
      *
      * @param robot specifies the robot object for providing access to various global objects.
-     * @param driveBase specifies the drive base object.
      * @param pidDrive specifies the PID drive object to be used for PID controlled drive.
      * @param delay specifies delay in seconds before PID drive starts. 0 means no delay.
      * @param xDistance specifies the target distance for the X direction.
      * @param yDistance specifies the target distance for the Y direction.
      * @param heading specifies the target heading.
     */
-    public CmdEnhancedPidDrive(
-            Robot robot, TrcDriveBase driveBase, TrcPidDrive pidDrive, double delay,
-            double xDistance, double yDistance, double heading)
+    public CmdPidDrive(
+            Robot robot, TrcPidDrive pidDrive, double delay, double xDistance, double yDistance, double heading)
     {
-        this(robot, driveBase, pidDrive, delay, xDistance, yDistance, heading, 1.0, false);
-    }   //CmdEnhancedPidDrive
+        this(robot, pidDrive, delay, xDistance, yDistance, heading, 1.0, false);
+    }   //CmdPidDrive
 
     //
     // Implements the TrcRobot.RobotCommand interface.
@@ -268,7 +256,8 @@ public class CmdEnhancedPidDrive implements TrcRobot.RobotCommand
                         turnPidCtrl.saveAndSetOutputLimit(drivePowerLimit);
                     }
 
-                    enhancedPidDrive.setRelativeTarget(xDistance, yDistance, heading, State.DONE);
+                    pidDrive.setRelativeTarget(xDistance, yDistance, heading, event);
+                    sm.waitForSingleEvent(event, State.DONE);
                     break;
 
                 case DONE:
@@ -310,4 +299,4 @@ public class CmdEnhancedPidDrive implements TrcRobot.RobotCommand
         return !sm.isEnabled();
     }   //cmdPeriodic
 
-}   //class CmdEnhancedPidDrive
+}   //class CmdPidDrive

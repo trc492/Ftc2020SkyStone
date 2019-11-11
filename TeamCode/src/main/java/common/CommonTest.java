@@ -140,44 +140,43 @@ public class CommonTest
             case PID_DRIVE:
                 if (hasRobot)
                 {
-                    testCommand = new CmdEnhancedPidDrive(
-                            robot, robot.driveBase, robot.pidDrive, 0.0,
-                            xTarget*12.0, yTarget*12.0, turnTarget, drivePower, false);
+                    testCommand = new CmdPidDrive(
+                            robot, robot.pidDrive, 0.0, xTarget*12.0, yTarget*12.0, turnTarget,
+                            drivePower, false);
                 }
                 break;
 
             case TUNE_X_PID:
                 if (hasRobot)
                 {
-                    testCommand = new CmdEnhancedPidDrive(
-                            robot, robot.driveBase, robot.pidDrive, 0.0,
-                            xTarget*12.0, 0.0, 0.0, drivePower, true);
+                    testCommand = new CmdPidDrive(
+                            robot, robot.pidDrive, 0.0, xTarget*12.0, 0.0, 0.0, drivePower,
+                            true);
                 }
                 break;
 
             case TUNE_Y_PID:
                 if (hasRobot)
                 {
-                    testCommand = new CmdEnhancedPidDrive(
-                            robot, robot.driveBase, robot.pidDrive, 0.0,
-                            0.0, yTarget*12.0, 0.0, drivePower, true);
+                    testCommand = new CmdPidDrive(
+                            robot, robot.pidDrive, 0.0, 0.0, yTarget*12.0, 0.0, drivePower,
+                            true);
                 }
                 break;
 
             case TUNE_TURN_PID:
                 if (hasRobot)
                 {
-                    testCommand = new CmdEnhancedPidDrive(
-                            robot, robot.driveBase, robot.pidDrive, 0.0,
-                            0.0, 0.0, turnTarget, drivePower, true);
+                    testCommand = new CmdPidDrive(
+                            robot, robot.pidDrive, 0.0, 0.0, 0.0, turnTarget, drivePower,
+                            true);
                 }
                 break;
 
             case PURE_PURSUIT_DRIVE:
                 if (hasRobot)
                 {
-                    testCommand = new CmdPurePursuitDrive(
-                            robot.driveBase, posPidCoeff, turnPidCoeff, velPidCoeff);
+                    testCommand = new CmdPurePursuitDrive(robot.driveBase, posPidCoeff, turnPidCoeff, velPidCoeff);
                 }
                 break;
         }

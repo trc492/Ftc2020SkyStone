@@ -24,8 +24,8 @@ package team3543;
 
 import common.CmdSkystoneVision;
 import common.CommonAuto;
+import common.EnhancedPidDrive;
 import common.Robot;
-import trclib.TrcEnhancedPidDrive;
 import trclib.TrcEvent;
 import trclib.TrcPidController;
 import trclib.TrcRobot;
@@ -40,11 +40,11 @@ public class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
     private static final boolean useVisionTrigger = false;
 
     // Absolute position waypoint coordinates
-    private static final int FOUNDATION_DROP_ABS_POS_X_INCHES = 120;
-    private static final int WALL_ABS_POS_Y_INCHES = 9;
-    private static final int ON_LINE_ABS_POS_X_INCHES = 69;
-    private static final int CENTER_FIELD_ABS_POS_Y_INCHES = 35;
-    private static final int AVOID_PARTNER_ABS_POS_X_INCHES = 89;
+    private static final double FOUNDATION_DROP_ABS_POS_X_INCHES = 120.0;
+    private static final double WALL_ABS_POS_Y_INCHES = 9.0;
+    private static final double ON_LINE_ABS_POS_X_INCHES = 69.0;
+    private static final double CENTER_FIELD_ABS_POS_Y_INCHES = 35.0;
+    private static final double AVOID_PARTNER_ABS_POS_X_INCHES = 89.0;
 
     private enum State
     {
@@ -80,7 +80,7 @@ public class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
     private final TrcTimer timer;
     private final TrcEvent event;
     private final TrcStateMachine<State> sm;
-    private final TrcEnhancedPidDrive<State> enhancedPidDrive;
+    private final EnhancedPidDrive<State> enhancedPidDrive;
     private CmdSkystoneVision skystoneVisionCommand = null;
 
     /**
@@ -88,7 +88,7 @@ public class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
      *
      * @param robot specifies the robot object for providing access to various global objects.
      */
-    public CmdAutoLoadingZone3543(Robot robot, CommonAuto.AutoChoices autoChoices)
+    public CmdAutoLoadingZone3543(Robot robot, CommonAuto.AutoChoices autoChoices, double startX, double startY)
     {
         robot.globalTracer.traceInfo(moduleName, "robot=%s", robot);
 
@@ -101,7 +101,7 @@ public class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
         robot.encoderXPidCtrl.setNoOscillation(true);
         robot.encoderYPidCtrl.setNoOscillation(true);
         robot.gyroPidCtrl.setNoOscillation(true);
-        enhancedPidDrive = new TrcEnhancedPidDrive<>(moduleName, robot.driveBase, robot.pidDrive, event, sm);
+        enhancedPidDrive = new EnhancedPidDrive<State>(robot.pidDrive, event, sm, startX, startY);
 
         sm.start(State.DO_DELAY);
     }   //CmdAutoLoadingZone3543
@@ -210,10 +210,8 @@ public class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                     if (skystoneVisionCommand.cmdPeriodic(elapsedTime))
                     {
                         //
-                        // Skystone vision is done. Sync our absolute target pose with the last robot position from
-                        // skystone vision and continue.
+                        // Skystone vision is done, continue on.
                         //
-                        enhancedPidDrive.setAbsTargetPose(skystoneVisionCommand.getRobotPose());
                         sm.setState(State.GO_DOWN_ON_SKYSTONE);
                         //
                         // Intentionally falling through to the next state.

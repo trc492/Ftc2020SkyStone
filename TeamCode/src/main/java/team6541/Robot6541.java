@@ -191,7 +191,8 @@ public class Robot6541 extends Robot
         gyroPidCtrl.setAbsoluteSetPoint(true);
         gyroPidCtrl.setOutputRange(-RobotInfo6541.TURN_POWER_LIMIT, RobotInfo6541.TURN_POWER_LIMIT);
 
-        pidDrive = new TrcPidDrive("pidDrive", driveBase, encoderXPidCtrl, encoderYPidCtrl, gyroPidCtrl);
+        pidDrive = new TrcPidDrive(
+                "pidDrive", driveBase, encoderXPidCtrl, encoderYPidCtrl, gyroPidCtrl, true);
         pidDrive.setStallTimeout(RobotInfo6541.PIDDRIVE_STALL_TIMEOUT);
         pidDrive.setBeep(androidTone);
     }   //initDriveBase
