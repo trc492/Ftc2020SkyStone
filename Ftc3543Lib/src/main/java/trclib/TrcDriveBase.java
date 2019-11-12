@@ -216,6 +216,19 @@ public abstract class TrcDriveBase implements TrcExclusiveSubsystem
     }   //getAbsolutePose
 
     /**
+     * This method sets the given pose as the current pose.
+     *
+     * @param pose specifies the pose to be set as the current pose.
+     */
+    public void setAbsolutePose(TrcPose2D pose)
+    {
+        synchronized (odometry)
+        {
+            odometry.setAs(pose);
+        }
+    }   //setAbsolutePose
+
+    /**
      * This method returns the robot pose relative to <code>pose</code>.
      *
      * @param pose The new reference pose to transform to.
