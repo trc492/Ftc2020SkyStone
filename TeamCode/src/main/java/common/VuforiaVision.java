@@ -28,6 +28,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
 
 import ftclib.FtcVuforia;
+import trclib.TrcPose2D;
 import trclib.TrcUtil;
 
 import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.DEGREES;
@@ -98,7 +99,7 @@ public class VuforiaVision
         // This can be used for generic target-centric approach algorithms
         OpenGLMatrix stoneTargetLocation = OpenGLMatrix
                 .translation(0, 0, stoneZ)
-                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, -90));
+                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, 0));
 
         //Set the position of the bridge support targets with relation to origin (center of field)
         OpenGLMatrix blueFrontBridgeLocation = OpenGLMatrix
@@ -184,36 +185,6 @@ public class VuforiaVision
         vuforia.setTrackingEnabled(enabled);
     }   //setEnabled
 
-    public OpenGLMatrix getRobotLocation()
-    {
-        OpenGLMatrix robotLocation = null;
-        boolean targetVisible = false;
-
-        for (VuforiaTrackable target: imageTargets)
-        {
-            if (vuforia.isTargetVisible(target))
-            {
-                targetVisible = true;
-                // getUpdatedRobotLocation() will return null if no new information is available since
-                // the last time that call was made, or if the trackable is not currently visible.
-                OpenGLMatrix location = vuforia.getRobotLocation(target);
-                if (location != null)
-                {
-                    lastRobotLocation = location;
-                    lastImageName = target.getName();
-                }
-                break;
-            }
-        }
-
-        if (targetVisible)
-        {
-            robotLocation = lastRobotLocation;
-        }
-
-        return robotLocation;
-    }   //getRobotLocation
-
     public String getLastSeenImageName()
     {
         return lastImageName;
@@ -228,5 +199,72 @@ public class VuforiaVision
     {
         return Orientation.getOrientation(location, EXTRINSIC, XYZ, DEGREES);
     }   //getLocationOrientation
+
+    public OpenGLMatrix getRobotLocation(String targetName)
+    {
+        OpenGLMatrix robotLocation = null;
+        VuforiaTrackable target = vuforia.getTarget(targetName);
+
+        if (target != null)
+        {
+            robotLocation = vuforia.getRobotLocation(target);
+        }
+
+        return robotLocation;
+    }   //getRobotLocation
+
+    public OpenGLMatrix getRobotLocation(String targetName, boolean exclude)
+    {
+        OpenGLMatrix robotLocation = null;
+
+        if (targetName == null || exclude)
+        {
+            boolean targetVisible = false;
+
+            for (VuforiaTrackable target: imageTargets)
+            {
+                String name = target.getName();
+                boolean isMatched = targetName == null || !targetName.equals(name);
+
+                if (isMatched && vuforia.isTargetVisible(target))
+                {
+                    targetVisible = true;
+                    // getUpdatedRobotLocation() will return null if no new information is available since
+                    // the last time that call was made, or if the trackable is not currently visible.
+                    OpenGLMatrix location = vuforia.getRobotLocation(target);
+                    if (location != null)
+                    {
+                        lastRobotLocation = location;
+                        lastImageName = targetName;
+                    }
+                    break;
+                }
+            }
+
+            if (targetVisible)
+            {
+                robotLocation = lastRobotLocation;
+            }
+        }
+        else
+        {
+            robotLocation = getRobotLocation(targetName);
+        }
+
+        return robotLocation;
+    }   //getRobotLocation
+
+    public TrcPose2D getRobotPose(String targetName, boolean exclude)
+    {
+        OpenGLMatrix robotLocation = getRobotLocation(targetName, exclude);
+        VectorF translation = robotLocation == null? null: getLocationTranslation(robotLocation);
+        Orientation orientation = robotLocation == null? null: getLocationOrientation(robotLocation);
+        TrcPose2D robotPose = (translation == null || orientation == null)? null:
+                                new TrcPose2D(translation.get(0)/TrcUtil.MM_PER_INCH,
+                                              translation.get(1)/TrcUtil.MM_PER_INCH,
+                                               orientation.thirdAngle);
+
+        return robotPose;
+    }   //getRobotPose
 
 }   //class VuforiaVision

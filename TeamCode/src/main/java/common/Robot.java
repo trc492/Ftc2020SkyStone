@@ -113,6 +113,7 @@ public class Robot
     public TrcPidController encoderYPidCtrl = null;
     public TrcPidController gyroPidCtrl = null;
     public TrcPidDrive pidDrive = null;
+    public TrcPose2D robotStartPose = null;
 
     public TrcPidController.PidCoefficients tunePidCoeff = new TrcPidController.PidCoefficients();
     //
@@ -370,13 +371,13 @@ public class Robot
 
         if (vuforiaVision != null)
         {
-            OpenGLMatrix robotLocation = vuforiaVision.getRobotLocation();
+            OpenGLMatrix robotLocation = vuforiaVision.getRobotLocation("Stone Target");
             if (robotLocation != null)
             {
                 VectorF translation = vuforiaVision.getLocationTranslation(robotLocation);
                 Orientation orientation = vuforiaVision.getLocationOrientation(robotLocation);
                 pose = new TrcPose2D(
-                        translation.get(1)/TrcUtil.MM_PER_INCH, -translation.get(0)/TrcUtil.MM_PER_INCH,
+                        -translation.get(0)/TrcUtil.MM_PER_INCH, -translation.get(1)/TrcUtil.MM_PER_INCH,
                         orientation.thirdAngle);
                 targetFinder = "Vuforia:" + vuforiaVision.getLastSeenImageName();
             }
@@ -407,5 +408,16 @@ public class Robot
 
         return pose;
     }   //getSkyStonePose
+
+    public void setRobotStartPose(TrcPose2D pose)
+    {
+        robotStartPose = pose;
+    }   //setRobotStartPose
+
+    public TrcPose2D getRobotPose()
+    {
+        TrcPose2D robotPose = vuforiaVision.getRobotPose("Stone Target", true);
+        return robotStartPose == null? robotPose: robotPose.relativeTo(robotStartPose);
+    }   //getRobotPose
 
 }   //class Robot
