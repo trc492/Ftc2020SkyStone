@@ -32,7 +32,7 @@ import trclib.TrcRobot;
 import trclib.TrcStateMachine;
 import trclib.TrcTimer;
 
-public class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
+public class CmdAutoLoadingZoneFar3543 implements TrcRobot.RobotCommand
 {
     private static final boolean debugXPid = true;
     private static final boolean debugYPid = true;
@@ -73,7 +73,7 @@ public class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
         DONE
     }   //enum State
 
-    private static final String moduleName = "CmdAutoLoadingZone3543";
+    private static final String moduleName = "CmdAutoLoadingZoneFar3543";
 
     private final Robot robot;
     private final CommonAuto.AutoChoices autoChoices;
@@ -88,7 +88,7 @@ public class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
      *
      * @param robot specifies the robot object for providing access to various global objects.
      */
-    public CmdAutoLoadingZone3543(Robot robot, CommonAuto.AutoChoices autoChoices, double startX, double startY)
+    public CmdAutoLoadingZoneFar3543(Robot robot, CommonAuto.AutoChoices autoChoices, double startX, double startY)
     {
         robot.globalTracer.traceInfo(moduleName, "robot=%s", robot);
 
@@ -104,7 +104,7 @@ public class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
         simplePidDrive = new SimplePidDrive<State>(robot.pidDrive, event, sm, startX, startY);
 
         sm.start(State.DO_DELAY);
-    }   //CmdAutoLoadingZone3543
+    }   //CmdAutoLoadingZoneFar3543
 
     //
     // Implements the TrcRobot.RobotCommand interface.
@@ -397,4 +397,4 @@ public class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
         return !sm.isEnabled();
     }   //cmdPeriodic
 
-}   //class CmdAutoLoadingZone3543
+}   //class CmdAutoLoadingZoneFar3543

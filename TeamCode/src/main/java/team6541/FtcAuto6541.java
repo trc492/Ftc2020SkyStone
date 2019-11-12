@@ -54,15 +54,21 @@ public class FtcAuto6541 extends CommonAuto
 
         switch (autoChoices.strategy)
         {
-            case START_AT_LOADING_ZONE:
+            case LOADING_ZONE_FAR:
                 if (hasRobot)
                 {
-                    autoCommand = new CmdAutoLoadingZone6541(
+                    autoCommand = new CmdAutoLoadingZoneFar6541(
                             robot, autoChoices, autoChoices.alliance == Alliance.RED_ALLIANCE? 36.0: -36.0, 9.0);
                 }
                 break;
 
-            case START_AT_BUILDING_ZONE:
+            case LOADING_ZONE_WALL:
+                if (hasRobot)
+                {
+                }
+                break;
+
+            case BUILDING_ZONE:
                 if (hasRobot)
                 {
                     autoCommand = new CmdAutoBuildingZone6541(
