@@ -31,18 +31,18 @@ public class LEDIndicator
     private static final LEDPattern normalPattern = LEDPattern.FixedBreathRed;
     private static final TrcHashMap<String, LEDPattern> visionPatternMap = new TrcHashMap<String, LEDPattern>()
             .add(VuforiaVision.skystoneTargetName, LEDPattern.SolidGreen)
-            .add("Blue Rear Bridge", LEDPattern.SolidViolet)
-            .add("Red Rear Bridge", LEDPattern.SolidAqua)
-            .add("Red Front Bridge", LEDPattern.SolidYellow)
-            .add("Blue Front Bridge", LEDPattern.SolidOrange)
-            .add("Red Perimeter 1", LEDPattern.SolidRed)
-            .add("Red Perimeter 2", LEDPattern.FixedStrobeRed)
-            .add("Front Perimeter 1", LEDPattern.SolidGold)
-            .add("Front Perimeter 2", LEDPattern.FixedStrobeGold)
-            .add("Blue Perimeter 1", LEDPattern.SolidBlue)
-            .add("Blue Perimeter 2", LEDPattern.FixedStrobeBlue)
-            .add("Rear Perimeter 1", LEDPattern.SolidWhite)
-            .add("Rear Perimeter 2", LEDPattern.FixedStrobeWhite);
+            .add(VuforiaVision.blueBridgeBackTargetName, LEDPattern.SolidViolet)
+            .add(VuforiaVision.redBridgeBackTargetName, LEDPattern.SolidAqua)
+            .add(VuforiaVision.redBridgeFrontTargetName, LEDPattern.SolidYellow)
+            .add(VuforiaVision.blueBridgeFrontTargetName, LEDPattern.SolidOrange)
+            .add(VuforiaVision.red1TargetName, LEDPattern.SolidRed)
+            .add(VuforiaVision.red2TargetName, LEDPattern.FixedStrobeRed)
+            .add(VuforiaVision.front1TargetName, LEDPattern.SolidGold)
+            .add(VuforiaVision.front2TargetName, LEDPattern.FixedStrobeGold)
+            .add(VuforiaVision.blue1TargetName, LEDPattern.SolidBlue)
+            .add(VuforiaVision.blue2TargetName, LEDPattern.FixedStrobeBlue)
+            .add(VuforiaVision.back1TargetName, LEDPattern.SolidWhite)
+            .add(VuforiaVision.back2TargetName, LEDPattern.FixedStrobeWhite);
 
     private FtcRevBlinkin blinkin;
 

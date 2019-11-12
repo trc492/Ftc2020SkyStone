@@ -50,6 +50,18 @@ public class VuforiaVision
 
     // Constant for Stone Target.
     public static final String skystoneTargetName = "Stone Target";
+    public static final String blueBridgeBackTargetName = "Blue Rear Bridge";
+    public static final String redBridgeBackTargetName = "Red Rear Bridge";
+    public static final String redBridgeFrontTargetName = "Red Front Bridge";
+    public static final String blueBridgeFrontTargetName = "Blue Front Bridge";
+    public static final String red1TargetName = "Red Perimeter 1";
+    public static final String red2TargetName = "Red Perimeter 2";
+    public static final String front1TargetName = "Front Perimeter 1";
+    public static final String front2TargetName = "Front Perimeter 2";
+    public static final String blue1TargetName = "Blue Perimeter 1";
+    public static final String blue2TargetName = "Blue Perimeter 2";
+    public static final String back1TargetName = "Rear Perimeter 1";
+    public static final String back2TargetName = "Rear Perimeter 2";
     private static final float stoneZ = 2.0f * (float)TrcUtil.MM_PER_INCH;
 
     // Constants for the center support targets.
@@ -154,18 +166,18 @@ public class VuforiaVision
         FtcVuforia.TargetInfo[] imageTargetsInfo =
         {
                 new FtcVuforia.TargetInfo(0, skystoneTargetName, false, stoneTargetLocation),
-                new FtcVuforia.TargetInfo(1, "Blue Rear Bridge", false, blueRearBridgeLocation),
-                new FtcVuforia.TargetInfo(2, "Red Rear Bridge", false, redRearBridgeLocation),
-                new FtcVuforia.TargetInfo(3, "Red Front Bridge", false, redFrontBridgeLocation),
-                new FtcVuforia.TargetInfo(4, "Blue Front Bridge", false, blueFrontBridgeLocation),
-                new FtcVuforia.TargetInfo(5, "Red Perimeter 1", false, redPerimeter1Location),
-                new FtcVuforia.TargetInfo(6, "Red Perimeter 2", false, redPerimeter2Location),
-                new FtcVuforia.TargetInfo(7, "Front Perimeter 1", false, frontPerimeter1Location),
-                new FtcVuforia.TargetInfo(8, "Front Perimeter 2", false, frontPerimeter2Location),
-                new FtcVuforia.TargetInfo(9, "Blue Perimeter 1", false, bluePerimeter1Location),
-                new FtcVuforia.TargetInfo(10, "Blue Perimeter 2", false, bluePerimeter2Location),
-                new FtcVuforia.TargetInfo(11, "Rear Perimeter 1", false, rearPerimeter1Location),
-                new FtcVuforia.TargetInfo(12, "Rear Perimeter 2", false, rearPerimeter2Location)
+                new FtcVuforia.TargetInfo(1, blueBridgeBackTargetName, false, blueRearBridgeLocation),
+                new FtcVuforia.TargetInfo(2, redBridgeBackTargetName, false, redRearBridgeLocation),
+                new FtcVuforia.TargetInfo(3, redBridgeFrontTargetName, false, redFrontBridgeLocation),
+                new FtcVuforia.TargetInfo(4, blueBridgeFrontTargetName, false, blueFrontBridgeLocation),
+                new FtcVuforia.TargetInfo(5, red1TargetName, false, redPerimeter1Location),
+                new FtcVuforia.TargetInfo(6, red2TargetName, false, redPerimeter2Location),
+                new FtcVuforia.TargetInfo(7, front1TargetName, false, frontPerimeter1Location),
+                new FtcVuforia.TargetInfo(8, front2TargetName, false, frontPerimeter2Location),
+                new FtcVuforia.TargetInfo(9, blue1TargetName, false, bluePerimeter1Location),
+                new FtcVuforia.TargetInfo(10, blue2TargetName, false, bluePerimeter2Location),
+                new FtcVuforia.TargetInfo(11, back1TargetName, false, rearPerimeter1Location),
+                new FtcVuforia.TargetInfo(12, back2TargetName, false, rearPerimeter2Location)
         };
 
         vuforia.addTargetList(TRACKABLE_IMAGES_FILE, imageTargetsInfo, phoneLocation);
