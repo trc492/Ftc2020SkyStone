@@ -346,68 +346,68 @@ public abstract class FtcOpMode extends LinearOpMode implements TrcRobot.RobotMo
         {
             if (debugEnabled)
             {
-                dbgTrace.traceInfo(funcName, "Odometry motors list is not empty (numMotors=%d)!",
+                dbgTrace.traceWarn(funcName, "Odometry motors list is not empty (numMotors=%d)!",
                         TrcMotor.getNumOdometryMotors());
             }
             TrcMotor.clearOdometryMotorsList();
         }
 
-        //
-        // robotInit contains code to initialize the robot.
-        //
-        if (debugEnabled)
-        {
-            dbgTrace.traceInfo(funcName, "Current RunMode: %s", runMode);
-            dbgTrace.traceInfo(funcName, "Running initRobot");
-        }
-        dashboard.displayPrintf(0, "initRobot starting...");
-        initRobot();
-        dashboard.displayPrintf(0, "initRobot completed!");
-
-        //
-        // Run initPeriodic while waiting for competition to start.
-        //
-        if (debugEnabled)
-        {
-            dbgTrace.traceInfo(funcName, "Running initPeriodic");
-        }
-        loopCounter = 0;
-        dashboard.displayPrintf(0, "initPeriodic starting...");
-        while (!isStarted())
-        {
-            loopCounter++;
-            loopStartNanoTime = TrcUtil.getCurrentTimeNanos();
-            if (debugEnabled)
-            {
-                dbgTrace.traceInfo(funcName, "[%d:%.3f]: InitPeriodic loop",
-                        loopCounter, loopStartNanoTime/1000000000.0);
-            }
-            initPeriodic();
-        }
-        dashboard.displayPrintf(0, "initPeriodic completed!");
-        opModeStartNanoTime = TrcUtil.getCurrentTimeNanos();
-
-        //
-        // Prepare for starting the run mode.
-        //
-        if (debugEnabled)
-        {
-            dbgTrace.traceInfo(funcName, "Running Start Mode Tasks");
-        }
-        taskMgr.executeTaskType(TrcTaskMgr.TaskType.START_TASK, runMode);
-
-        if (debugEnabled)
-        {
-            dbgTrace.traceInfo(funcName, "Running startMode");
-        }
-        startMode(null, runMode);
-
-        long nextPeriodNanoTime = TrcUtil.getCurrentTimeNanos();
-        long startNanoTime = TrcUtil.getCurrentTimeNanos();
-
-        loopCounter = 0;
         try
         {
+            //
+            // robotInit contains code to initialize the robot.
+            //
+            if (debugEnabled)
+            {
+                dbgTrace.traceInfo(funcName, "Current RunMode: %s", runMode);
+                dbgTrace.traceInfo(funcName, "Running initRobot");
+            }
+            dashboard.displayPrintf(0, "initRobot starting...");
+            initRobot();
+            dashboard.displayPrintf(0, "initRobot completed!");
+
+            //
+            // Run initPeriodic while waiting for competition to start.
+            //
+            if (debugEnabled)
+            {
+                dbgTrace.traceInfo(funcName, "Running initPeriodic");
+            }
+            loopCounter = 0;
+            dashboard.displayPrintf(0, "initPeriodic starting...");
+            while (!isStarted())
+            {
+                loopCounter++;
+                loopStartNanoTime = TrcUtil.getCurrentTimeNanos();
+                if (debugEnabled)
+                {
+                    dbgTrace.traceInfo(funcName, "[%d:%.3f]: InitPeriodic loop",
+                            loopCounter, loopStartNanoTime/1000000000.0);
+                }
+                initPeriodic();
+            }
+            dashboard.displayPrintf(0, "initPeriodic completed!");
+            opModeStartNanoTime = TrcUtil.getCurrentTimeNanos();
+
+            //
+            // Prepare for starting the run mode.
+            //
+            if (debugEnabled)
+            {
+                dbgTrace.traceInfo(funcName, "Running Start Mode Tasks");
+            }
+            taskMgr.executeTaskType(TrcTaskMgr.TaskType.START_TASK, runMode);
+
+            if (debugEnabled)
+            {
+                dbgTrace.traceInfo(funcName, "Running startMode");
+            }
+            startMode(null, runMode);
+
+            long nextPeriodNanoTime = TrcUtil.getCurrentTimeNanos();
+            long startNanoTime = TrcUtil.getCurrentTimeNanos();
+
+            loopCounter = 0;
             while (opModeIsActive())
             {
                 loopStartNanoTime = TrcUtil.getCurrentTimeNanos();
@@ -468,6 +468,18 @@ public abstract class FtcOpMode extends LinearOpMode implements TrcRobot.RobotMo
 
                 startNanoTime = TrcUtil.getCurrentTimeNanos();
             }
+
+            if (debugEnabled)
+            {
+                dbgTrace.traceInfo(funcName, "Running stopMode");
+            }
+            stopMode(runMode, null);
+
+            if (debugEnabled)
+            {
+                dbgTrace.traceInfo(funcName, "Running Stop Mode Tasks");
+            }
+            taskMgr.executeTaskType(TrcTaskMgr.TaskType.STOP_TASK, runMode);
         }
         catch (Exception e)
         {
@@ -478,24 +490,6 @@ public abstract class FtcOpMode extends LinearOpMode implements TrcRobot.RobotMo
         }
 
         TrcMotor.clearOdometryMotorsList();
-//        //
-//        // runOpMode could be "interrupted" soon, so the taskmgr.shutdown() call below may not run.
-//        // Explicitly terminating all taskmgr threads while we still can.
-//        //
-//        taskMgr.terminateAllThreads();
-
-        if (debugEnabled)
-        {
-            dbgTrace.traceInfo(funcName, "Running stopMode");
-        }
-        stopMode(runMode, null);
-
-        if (debugEnabled)
-        {
-            dbgTrace.traceInfo(funcName, "Running Stop Mode Tasks");
-        }
-        taskMgr.executeTaskType(TrcTaskMgr.TaskType.STOP_TASK, runMode);
-
         taskMgr.shutdown();
     }   //runOpMode
 
