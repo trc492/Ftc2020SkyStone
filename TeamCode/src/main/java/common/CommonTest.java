@@ -453,16 +453,6 @@ public class CommonTest
 
         if (robot.vuforiaVision != null)
         {
-//            OpenGLMatrix robotLocation = robot.vuforiaVision.getRobotLocation();
-//
-//            if (robotLocation != null)
-//            {
-//                VectorF translation = robot.vuforiaVision.getLocationTranslation(robotLocation);
-//                Orientation orientation = robot.vuforiaVision.getLocationOrientation(robotLocation);
-//                robot.dashboard.displayPrintf(13, "RobotLocation: x=%.1f, y=%.1f, z=%.1f, heading=%.1f",
-//                        translation.get(1)/ TrcUtil.MM_PER_INCH, -translation.get(0)/TrcUtil.MM_PER_INCH,
-//                        translation.get(2)/TrcUtil.MM_PER_INCH, orientation.thirdAngle);
-//            }
             TrcPose2D robotPose = robot.getRobotPose();
             robot.dashboard.displayPrintf(13, "RobotLocation %s: %s",
                     robot.vuforiaVision.getLastSeenImageName(), robotPose);

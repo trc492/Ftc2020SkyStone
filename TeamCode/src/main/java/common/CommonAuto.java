@@ -171,6 +171,11 @@ public abstract class CommonAuto extends FtcOpMode
     {
         if (autoCommand != null)
         {
+            if (robot.vuforiaVision != null)
+            {
+                TrcPose2D robotPose = robot.getRobotPose();
+                robot.dashboard.displayPrintf(2, "RobotPose: %s", robotPose);
+            }
             autoCommand.cmdPeriodic(elapsedTime);
         }
     }   //runContinuous

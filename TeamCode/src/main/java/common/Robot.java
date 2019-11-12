@@ -39,7 +39,6 @@ import ftclib.FtcAndroidTone;
 import ftclib.FtcBNO055Imu;
 import ftclib.FtcDcMotor;
 import ftclib.FtcOpMode;
-import ftclib.FtcRevBlinkin;
 import ftclib.FtcRobotBattery;
 import ftclib.FtcVuforia;
 import hallib.HalDashboard;
@@ -52,7 +51,6 @@ import trclib.TrcHomographyMapper;
 import trclib.TrcPidController;
 import trclib.TrcPidDrive;
 import trclib.TrcPose2D;
-import trclib.TrcRevBlinkin;
 import trclib.TrcRobot;
 import trclib.TrcUtil;
 
@@ -81,7 +79,7 @@ public class Robot
     public FtcAndroidTone androidTone;
     public TextToSpeech textToSpeech = null;
     public FtcRobotBattery battery = null;
-    public FtcRevBlinkin blinkin = null;
+    public LEDIndicator ledIndicator = null;
     //
     // Sensors.
     //
@@ -172,8 +170,7 @@ public class Robot
 
             if (preferences.get("useBlinkin"))
             {
-                blinkin = new FtcRevBlinkin("blinkin");
-                blinkin.setPattern(TrcRevBlinkin.LEDPattern.SolidAqua);
+                ledIndicator = new LEDIndicator();
             }
 
             //
@@ -371,7 +368,7 @@ public class Robot
 
         if (vuforiaVision != null)
         {
-            OpenGLMatrix robotLocation = vuforiaVision.getRobotLocation("Stone Target");
+            OpenGLMatrix robotLocation = vuforiaVision.getRobotLocation(VuforiaVision.skystoneTargetName);
             if (robotLocation != null)
             {
                 VectorF translation = vuforiaVision.getLocationTranslation(robotLocation);

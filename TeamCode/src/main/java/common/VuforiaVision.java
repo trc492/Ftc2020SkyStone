@@ -49,6 +49,7 @@ public class VuforiaVision
     private static final float mmTargetHeight = 6.0f * (float)TrcUtil.MM_PER_INCH;
 
     // Constant for Stone Target.
+    public static final String skystoneTargetName = "Stone Target";
     private static final float stoneZ = 2.0f * (float)TrcUtil.MM_PER_INCH;
 
     // Constants for the center support targets.
@@ -65,7 +66,6 @@ public class VuforiaVision
     private Robot robot;
     private FtcVuforia vuforia;
     private VuforiaTrackable[] imageTargets;
-    private OpenGLMatrix lastRobotLocation = null;
     private String lastImageName = null;
 
     public VuforiaVision(Robot robot, FtcVuforia vuforia, OpenGLMatrix phoneLocation)
@@ -153,7 +153,7 @@ public class VuforiaVision
 
         FtcVuforia.TargetInfo[] imageTargetsInfo =
         {
-                new FtcVuforia.TargetInfo(0, "Stone Target", false, stoneTargetLocation),
+                new FtcVuforia.TargetInfo(0, skystoneTargetName, false, stoneTargetLocation),
                 new FtcVuforia.TargetInfo(1, "Blue Rear Bridge", false, blueRearBridgeLocation),
                 new FtcVuforia.TargetInfo(2, "Red Rear Bridge", false, redRearBridgeLocation),
                 new FtcVuforia.TargetInfo(3, "Red Front Bridge", false, redFrontBridgeLocation),
@@ -219,8 +219,6 @@ public class VuforiaVision
 
         if (targetName == null || exclude)
         {
-            boolean targetVisible = false;
-
             for (VuforiaTrackable target: imageTargets)
             {
                 String name = target.getName();
@@ -228,27 +226,31 @@ public class VuforiaVision
 
                 if (isMatched && vuforia.isTargetVisible(target))
                 {
-                    targetVisible = true;
                     // getUpdatedRobotLocation() will return null if no new information is available since
                     // the last time that call was made, or if the trackable is not currently visible.
                     OpenGLMatrix location = vuforia.getRobotLocation(target);
                     if (location != null)
                     {
-                        lastRobotLocation = location;
+                        robotLocation = location;
                         lastImageName = targetName;
                     }
                     break;
                 }
             }
-
-            if (targetVisible)
-            {
-                robotLocation = lastRobotLocation;
-            }
         }
         else
         {
             robotLocation = getRobotLocation(targetName);
+            lastImageName = targetName;
+        }
+
+        if (robotLocation != null)
+        {
+            robot.ledIndicator.setDetectedTarget(lastImageName);
+        }
+        else
+        {
+            robot.ledIndicator.reset();
         }
 
         return robotLocation;
