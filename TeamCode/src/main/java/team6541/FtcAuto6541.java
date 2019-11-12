@@ -65,6 +65,8 @@ public class FtcAuto6541 extends CommonAuto
             case LOADING_ZONE_WALL:
                 if (hasRobot)
                 {
+                    autoCommand = new CmdAutoLoadingZoneWall6541(
+                            robot, autoChoices, autoChoices.alliance == Alliance.RED_ALLIANCE? 36.0: -36.0, 9.0);
                 }
                 break;
 
