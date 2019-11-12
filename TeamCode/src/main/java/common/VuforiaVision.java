@@ -59,8 +59,8 @@ public class VuforiaVision
     private static final float bridgeRotZ = 180.0f;
 
     // Constants for perimeter targets
-    private static final float halfField = 72.0f * (float)TrcUtil.MM_PER_INCH;
-    private static final float quadField = 36.0f * (float)TrcUtil.MM_PER_INCH;
+    public static final float halfField = 72.0f * (float)TrcUtil.MM_PER_INCH;
+    public static final float quadField = 36.0f * (float)TrcUtil.MM_PER_INCH;
 
     private Robot robot;
     private FtcVuforia vuforia;

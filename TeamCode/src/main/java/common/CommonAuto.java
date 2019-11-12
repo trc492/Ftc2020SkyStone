@@ -29,6 +29,7 @@ import ftclib.FtcChoiceMenu;
 import ftclib.FtcMenu;
 import ftclib.FtcOpMode;
 import ftclib.FtcValueMenu;
+import trclib.TrcPose2D;
 import trclib.TrcRobot;
 
 public abstract class CommonAuto extends FtcOpMode
@@ -101,6 +102,10 @@ public abstract class CommonAuto extends FtcOpMode
         }   //toString
     }   //class AutoChoices
 
+    private static final TrcPose2D RED_ALLIANCE_FIELD_ORIGIN =
+            new TrcPose2D(-VuforiaVision.halfField, -VuforiaVision.halfField, 90.0);
+    private static final TrcPose2D BLUE_ALLIANCE_FIELD_ORIGIN =
+            new TrcPose2D(-VuforiaVision.halfField, VuforiaVision.halfField, -90.0);
     protected String moduleName = null;
     protected Robot robot = null;
     protected MatchInfo matchInfo = new MatchInfo();
@@ -123,6 +128,8 @@ public abstract class CommonAuto extends FtcOpMode
             createTraceLog();
         }
         doAutoChoicesMenus();
+        robot.setFieldOrigin(
+                autoChoices.alliance == Alliance.RED_ALLIANCE? RED_ALLIANCE_FIELD_ORIGIN: BLUE_ALLIANCE_FIELD_ORIGIN);
     }   //initRobot
 
     @Override

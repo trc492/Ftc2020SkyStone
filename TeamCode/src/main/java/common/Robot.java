@@ -113,7 +113,7 @@ public class Robot
     public TrcPidController encoderYPidCtrl = null;
     public TrcPidController gyroPidCtrl = null;
     public TrcPidDrive pidDrive = null;
-    public TrcPose2D robotStartPose = null;
+    public TrcPose2D fieldOrigin = null;
 
     public TrcPidController.PidCoefficients tunePidCoeff = new TrcPidController.PidCoefficients();
     //
@@ -409,15 +409,15 @@ public class Robot
         return pose;
     }   //getSkyStonePose
 
-    public void setRobotStartPose(TrcPose2D pose)
+    public void setFieldOrigin(TrcPose2D pose)
     {
-        robotStartPose = pose;
-    }   //setRobotStartPose
+        fieldOrigin = pose;
+    }   //setFieldOrigin
 
     public TrcPose2D getRobotPose()
     {
         TrcPose2D robotPose = vuforiaVision.getRobotPose("Stone Target", true);
-        return robotStartPose == null? robotPose: robotPose.relativeTo(robotStartPose);
+        return fieldOrigin == null? robotPose: robotPose.relativeTo(fieldOrigin);
     }   //getRobotPose
 
 }   //class Robot
