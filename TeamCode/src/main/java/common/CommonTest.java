@@ -116,6 +116,10 @@ public class CommonTest
 
         switch (test)
         {
+//            case SENSORS_TEST:
+//                robot.setFieldOrigin(CommonAuto.RED_ALLIANCE_FIELD_ORIGIN);
+//                break;
+
             case X_TIMED_DRIVE:
                 if (hasRobot)
                 {

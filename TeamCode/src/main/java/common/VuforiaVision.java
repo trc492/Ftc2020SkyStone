@@ -37,18 +37,6 @@ import static org.firstinspires.ftc.robotcore.external.navigation.AxesReference.
 
 public class VuforiaVision
 {
-    private static final int IMAGE_WIDTH = 1280;     //in pixels
-    private static final int IMAGE_HEIGHT = 720;    //in pixels
-    private static final int FRAME_QUEUE_CAPACITY = 2;
-    //
-    // Since ImageTarget trackables use mm to specify their dimensions, we must use mm for all the physical dimension.
-    // We will define some constants and conversions here.
-    //
-
-    // Height of the center of the target image above the floor.
-    private static final float mmTargetHeight = 6.0f * (float)TrcUtil.MM_PER_INCH;
-
-    // Constant for Stone Target.
     public static final String skystoneTargetName = "Stone Target";
     public static final String blueBridgeBackTargetName = "Blue Rear Bridge";
     public static final String redBridgeBackTargetName = "Red Rear Bridge";
@@ -62,6 +50,21 @@ public class VuforiaVision
     public static final String blue2TargetName = "Blue Perimeter 2";
     public static final String back1TargetName = "Rear Perimeter 1";
     public static final String back2TargetName = "Rear Perimeter 2";
+    public static final double HALF_FIELD_INCHES = 72.0f;
+    public static final double QUAD_FIELD_INCHES = 36.0f;
+
+    private static final int IMAGE_WIDTH = 1280;     //in pixels
+    private static final int IMAGE_HEIGHT = 720;    //in pixels
+    private static final int FRAME_QUEUE_CAPACITY = 2;
+    //
+    // Since ImageTarget trackables use mm to specify their dimensions, we must use mm for all the physical dimension.
+    // We will define some constants and conversions here.
+    //
+
+    // Height of the center of the target image above the floor.
+    private static final float mmTargetHeight = 6.0f * (float)TrcUtil.MM_PER_INCH;
+
+    // Constant for Stone Target.
     private static final float stoneZ = 2.0f * (float)TrcUtil.MM_PER_INCH;
 
     // Constants for the center support targets.
@@ -72,8 +75,8 @@ public class VuforiaVision
     private static final float bridgeRotZ = 180.0f;
 
     // Constants for perimeter targets
-    public static final float halfField = 72.0f * (float)TrcUtil.MM_PER_INCH;
-    public static final float quadField = 36.0f * (float)TrcUtil.MM_PER_INCH;
+    private static final float halfField = (float)(HALF_FIELD_INCHES * TrcUtil.MM_PER_INCH);
+    private static final float quadField = (float)(QUAD_FIELD_INCHES * TrcUtil.MM_PER_INCH);
 
     private Robot robot;
     private FtcVuforia vuforia;
@@ -244,7 +247,7 @@ public class VuforiaVision
                     if (location != null)
                     {
                         robotLocation = location;
-                        lastImageName = targetName;
+                        lastImageName = name;
                     }
                     break;
                 }
@@ -276,7 +279,7 @@ public class VuforiaVision
         TrcPose2D robotPose = (translation == null || orientation == null)? null:
                                 new TrcPose2D(translation.get(0)/TrcUtil.MM_PER_INCH,
                                               translation.get(1)/TrcUtil.MM_PER_INCH,
-                                               orientation.thirdAngle);
+                                              -orientation.thirdAngle + 90.0);
 
         return robotPose;
     }   //getRobotPose

@@ -197,6 +197,7 @@ public class TrcPose2D
 
         transformed.x = newPos.getEntry(0);
         transformed.y = newPos.getEntry(1);
+        transformed.heading = heading - pose.heading;
 
         transformed.xVel = newVel.getEntry(0);
         transformed.yVel = newVel.getEntry(1);

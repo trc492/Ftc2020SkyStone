@@ -48,7 +48,7 @@ public class LEDIndicator
 
     public LEDIndicator()
     {
-        blinkin = new FtcRevBlinkin("LEDIndicator");
+        blinkin = new FtcRevBlinkin("blinkin");
         blinkin.setPatternState(normalPattern, true);
     }   //LEDIndicator
 

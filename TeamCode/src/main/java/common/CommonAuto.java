@@ -103,10 +103,10 @@ public abstract class CommonAuto extends FtcOpMode
         }   //toString
     }   //class AutoChoices
 
-    private static final TrcPose2D RED_ALLIANCE_FIELD_ORIGIN =
-            new TrcPose2D(-VuforiaVision.halfField, -VuforiaVision.halfField, 90.0);
-    private static final TrcPose2D BLUE_ALLIANCE_FIELD_ORIGIN =
-            new TrcPose2D(-VuforiaVision.halfField, VuforiaVision.halfField, -90.0);
+    public static final TrcPose2D RED_ALLIANCE_FIELD_ORIGIN =
+            new TrcPose2D(-VuforiaVision.HALF_FIELD_INCHES, -VuforiaVision.HALF_FIELD_INCHES, 0.0);
+    public static final TrcPose2D BLUE_ALLIANCE_FIELD_ORIGIN =
+            new TrcPose2D(-VuforiaVision.HALF_FIELD_INCHES, VuforiaVision.HALF_FIELD_INCHES, 180.0);
     protected String moduleName = null;
     protected Robot robot = null;
     protected MatchInfo matchInfo = new MatchInfo();

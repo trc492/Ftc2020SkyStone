@@ -414,7 +414,12 @@ public class Robot
     public TrcPose2D getRobotPose()
     {
         TrcPose2D robotPose = vuforiaVision.getRobotPose("Stone Target", true);
-        return fieldOrigin == null? robotPose: robotPose.relativeTo(fieldOrigin);
+        if (robotPose != null && fieldOrigin != null)
+        {
+            robotPose = robotPose.relativeTo(fieldOrigin);
+        }
+
+        return robotPose;
     }   //getRobotPose
 
 }   //class Robot
