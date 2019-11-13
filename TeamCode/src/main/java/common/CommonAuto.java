@@ -103,6 +103,10 @@ public abstract class CommonAuto extends FtcOpMode
         }   //toString
     }   //class AutoChoices
 
+    // These field origin poses can be used to transform the Vuforia coordinate system to the alliance oriented
+    // field coordinate system. Without this type of transform, the autonomous navigation will have to deal
+    // with very different coordinates for different alliances. With this type of transform, the autonomous
+    // for different alliances will only have to deal with changing the sign of one dimension.
     public static final TrcPose2D RED_ALLIANCE_FIELD_ORIGIN =
             new TrcPose2D(-VuforiaVision.HALF_FIELD_INCHES, -VuforiaVision.HALF_FIELD_INCHES, 0.0);
     public static final TrcPose2D BLUE_ALLIANCE_FIELD_ORIGIN =

@@ -276,6 +276,11 @@ public class VuforiaVision
         OpenGLMatrix robotLocation = getRobotLocation(targetName, exclude);
         VectorF translation = robotLocation == null? null: getLocationTranslation(robotLocation);
         Orientation orientation = robotLocation == null? null: getLocationOrientation(robotLocation);
+        //
+        // The returned RobotPose have the X axis pointing from the audience side to the back of the field,
+        // the Y axis pointing from the red alliance to the blue alliance and the direction of the Y axis
+        // is zero degree.
+        //
         TrcPose2D robotPose = (translation == null || orientation == null)? null:
                                 new TrcPose2D(translation.get(0)/TrcUtil.MM_PER_INCH,
                                               translation.get(1)/TrcUtil.MM_PER_INCH,

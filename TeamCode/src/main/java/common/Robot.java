@@ -416,6 +416,7 @@ public class Robot
         TrcPose2D robotPose = vuforiaVision.getRobotPose("Stone Target", true);
         if (robotPose != null && fieldOrigin != null)
         {
+            // There is a field origin, make the robot pose relative to it.
             robotPose = robotPose.relativeTo(fieldOrigin);
         }
 
