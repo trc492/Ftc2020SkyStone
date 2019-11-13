@@ -428,7 +428,6 @@ public class TrcPidDrive
     /**
      * This method starts a PID operation by setting the PID targets.
      *
-     * @param owner specifies the ID string of the caller requesting exclusive access.
      * @param xTarget specifies the X target position.
      * @param yTarget specifies the Y target position.
      * @param turnTarget specifies the target heading.
@@ -439,8 +438,7 @@ public class TrcPidDrive
      *                specified, it should be set to zero.
      */
     private void setTarget(
-            String owner, double xTarget, double yTarget, double turnTarget,
-            boolean holdTarget, TrcEvent event, double timeout)
+            double xTarget, double yTarget, double turnTarget, boolean holdTarget, TrcEvent event, double timeout)
     {
         final String funcName = "setTarget";
 
@@ -452,60 +450,56 @@ public class TrcPidDrive
                     owner, xTarget, yTarget, turnTarget, holdTarget, event.toString(), timeout);
         }
 
-        if (driveBase.validateOwnership(owner))
-        {
-            this.owner = owner;
-            double xError = 0.0, yError = 0.0, turnError = 0.0;
+        double xError = 0.0, yError = 0.0, turnError = 0.0;
 
-            if (xPidCtrl != null && yPidCtrl != null &&
+        if (xPidCtrl != null && yPidCtrl != null &&
                 xPidCtrl.hasAbsoluteSetPoint() != yPidCtrl.hasAbsoluteSetPoint())
-            {
-                throw new IllegalStateException("X and Y PID controller must have the same absolute setpoint state.");
-            }
-
-            if (xPidCtrl != null && !xPidCtrl.hasAbsoluteSetPoint() ||
-                yPidCtrl != null && !yPidCtrl.hasAbsoluteSetPoint())
-            {
-                driveBase.pushReferencePose();
-                savedReferencePose = true;
-            }
-
-            if (xPidCtrl != null)
-            {
-                xPidCtrl.setTarget(xTarget);
-                xError = xPidCtrl.getError();
-            }
-
-            if (yPidCtrl != null)
-            {
-                yPidCtrl.setTarget(yTarget);
-                yError = yPidCtrl.getError();
-            }
-
-            if (turnPidCtrl != null)
-            {
-                turnPidCtrl.setTarget(turnTarget, warpSpaceEnabled? warpSpace: null);
-                turnError = turnPidCtrl.getError();
-            }
-
-            if (event != null)
-            {
-                event.clear();
-            }
-            this.notifyEvent = event;
-
-            this.expiredTime = timeout;
-            if (timeout != 0)
-            {
-                this.expiredTime += TrcUtil.getCurrentTime();
-            }
-
-            this.holdTarget = holdTarget;
-            this.turnOnly = xError == 0.0 && yError == 0.0 && turnError != 0.0;
-            driveBase.resetStallTimer();
-
-            setTaskEnabled(true);
+        {
+            throw new IllegalStateException("X and Y PID controller must have the same absolute setpoint state.");
         }
+
+        if (xPidCtrl != null && !xPidCtrl.hasAbsoluteSetPoint() ||
+                yPidCtrl != null && !yPidCtrl.hasAbsoluteSetPoint())
+        {
+            driveBase.pushReferencePose();
+            savedReferencePose = true;
+        }
+
+        if (xPidCtrl != null)
+        {
+            xPidCtrl.setTarget(xTarget);
+            xError = xPidCtrl.getError();
+        }
+
+        if (yPidCtrl != null)
+        {
+            yPidCtrl.setTarget(yTarget);
+            yError = yPidCtrl.getError();
+        }
+
+        if (turnPidCtrl != null)
+        {
+            turnPidCtrl.setTarget(turnTarget, warpSpaceEnabled? warpSpace: null);
+            turnError = turnPidCtrl.getError();
+        }
+
+        if (event != null)
+        {
+            event.clear();
+        }
+        this.notifyEvent = event;
+
+        this.expiredTime = timeout;
+        if (timeout != 0)
+        {
+            this.expiredTime += TrcUtil.getCurrentTime();
+        }
+
+        this.holdTarget = holdTarget;
+        this.turnOnly = xError == 0.0 && yError == 0.0 && turnError != 0.0;
+        driveBase.resetStallTimer();
+
+        setTaskEnabled(true);
 
         if (debugEnabled)
         {
@@ -531,37 +525,43 @@ public class TrcPidDrive
             boolean holdTarget, TrcEvent event, double timeout)
     {
         final String funcName = "setRelativeTarget";
-        TrcPose2D newTargetPose = absTargetPose.translatePose(xDelta, yDelta);
-        newTargetPose.heading += turnDelta;
-        double xTarget, yTarget, turnTarget;
 
-        if (debugEnabled)
+        if (driveBase.validateOwnership(owner))
         {
-            dbgTrace.traceInfo(funcName, "xDelta=%.1f, yDelta=%.1f, turnDelta=%.1f, CurrPose:%s",
-                    xDelta, yDelta, turnDelta, absTargetPose);
-        }
+            this.owner = owner;
 
-        if (useAbsTarget)
-        {
-            TrcPose2D relativePose = newTargetPose.relativeTo(driveBase.getAbsolutePose());
-            xTarget = relativePose.x;
-            yTarget = relativePose.y;
-        }
-        else
-        {
-            xTarget = xDelta;
-            yTarget = yDelta;
-        }
-        turnTarget = turnPidCtrl.hasAbsoluteSetPoint()? newTargetPose.heading: turnDelta;
+            TrcPose2D newTargetPose = absTargetPose.translatePose(xDelta, yDelta);
+            newTargetPose.heading += turnDelta;
+            double xTarget, yTarget, turnTarget;
 
-        if (debugEnabled)
-        {
-            dbgTrace.traceInfo(funcName, "xTarget=%.1f, yTarget=%.1f, turnTarget=%.1f, NewPose:%s",
-                    xTarget, yTarget, turnTarget, newTargetPose);
-        }
+            if (debugEnabled)
+            {
+                dbgTrace.traceInfo(funcName, "xDelta=%.1f, yDelta=%.1f, turnDelta=%.1f, CurrPose:%s",
+                        xDelta, yDelta, turnDelta, absTargetPose);
+            }
 
-        absTargetPose = newTargetPose;
-        setTarget(owner, xTarget, yTarget, turnTarget, holdTarget, event, timeout);
+            if (useAbsTarget)
+            {
+                TrcPose2D relativePose = newTargetPose.relativeTo(driveBase.getAbsolutePose());
+                xTarget = relativePose.x;
+                yTarget = relativePose.y;
+            }
+            else
+            {
+                xTarget = xDelta;
+                yTarget = yDelta;
+            }
+            turnTarget = turnPidCtrl.hasAbsoluteSetPoint()? newTargetPose.heading: turnDelta;
+
+            if (debugEnabled)
+            {
+                dbgTrace.traceInfo(funcName, "xTarget=%.1f, yTarget=%.1f, turnTarget=%.1f, NewPose:%s",
+                        xTarget, yTarget, turnTarget, newTargetPose);
+            }
+
+            absTargetPose = newTargetPose;
+            setTarget(xTarget, yTarget, turnTarget, holdTarget, event, timeout);
+        }
     }   //setRelativeTarget
 
     /**
@@ -616,7 +616,7 @@ public class TrcPidDrive
      * @param yDelta specifies the Y target relative to the current Y position.
      * @param event specifies an event object to signal when done.
      */
-    public synchronized void setRelativeXYTarget(double xDelta, double yDelta, TrcEvent event)
+    public void setRelativeXYTarget(double xDelta, double yDelta, TrcEvent event)
     {
         setRelativeTarget(null, xDelta, yDelta, 0.0, false, event, 0.0);
     }   //setRelativeXYTarget
@@ -672,23 +672,27 @@ public class TrcPidDrive
             boolean holdTarget, TrcEvent event, double timeout)
     {
         final String funcName = "setAbsoluteTarget";
-        TrcPose2D newTargetPose = new TrcPose2D(absX, absY, absHeading);
-        TrcPose2D currRobotPose = driveBase.getAbsolutePose();
-        TrcPose2D  relativePose = newTargetPose.relativeTo(currRobotPose);
-        double turnTarget = turnPidCtrl.hasAbsoluteSetPoint()?
-                newTargetPose.heading: newTargetPose.heading - currRobotPose.heading;
 
-        if (debugEnabled)
+        if (driveBase.validateOwnership(owner))
         {
-            dbgTrace.traceInfo(funcName, "absX=%.1f, absY=%.1f, absHeading=%.1f, CurrPose:%s",
-                    absX, absY, absHeading, absTargetPose);
-            dbgTrace.traceInfo(funcName, "xTarget=%.1f, yTarget=%.1f, turnTarget=%.1f, NewPose:%s",
-                    relativePose.x, relativePose.y, turnTarget, newTargetPose);
+            this.owner = owner;
+
+            TrcPose2D newTargetPose = new TrcPose2D(absX, absY, absHeading);
+            TrcPose2D currRobotPose = driveBase.getAbsolutePose();
+            TrcPose2D  relativePose = newTargetPose.relativeTo(currRobotPose);
+            double turnTarget = turnPidCtrl.hasAbsoluteSetPoint()? newTargetPose.heading: relativePose.heading;
+
+            if (debugEnabled)
+            {
+                dbgTrace.traceInfo(funcName, "absX=%.1f, absY=%.1f, absHeading=%.1f, CurrPose:%s",
+                        absX, absY, absHeading, absTargetPose);
+                dbgTrace.traceInfo(funcName, "xTarget=%.1f, yTarget=%.1f, turnTarget=%.1f, NewPose:%s",
+                        relativePose.x, relativePose.y, turnTarget, newTargetPose);
+            }
+
+            absTargetPose = newTargetPose;
+            setTarget(relativePose.x, relativePose.y, turnTarget, holdTarget, event, timeout);
         }
-
-        setTarget(owner, relativePose.x, relativePose.y, turnTarget, holdTarget, event, timeout);
-
-        absTargetPose = newTargetPose;
     }   //setAbsoluteTarget
 
     /**

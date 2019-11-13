@@ -254,9 +254,10 @@ public class TrcPidController
         {
             String msg = timestamp != 0.0 ? String.format(Locale.US, "[%.3f] ", timestamp) : "";
 
-            msg += String.format(Locale.US, "%s: Target=%6.1f, Input=%6.1f, Error=%6.1f, "
-                    + "PIDTerms=%6.3f/%6.3f/%6.3f/%6.3f, Output=%6.3f(%6.3f/%5.3f)", instanceName, setPoint, input,
-                currError, pTerm, iTerm, dTerm, fTerm, output, minOutput, maxOutput);
+            msg += String.format(
+                    Locale.US, "%s: Target=%6.1f, Input=%6.1f, Error=%6.1f, "
+                    + "PIDTerms=%6.3f/%6.3f/%6.3f/%6.3f, Output=%6.3f(%6.3f/%5.3f)",
+                    instanceName, setPoint, input, currError, pTerm, iTerm, dTerm, fTerm, output, minOutput, maxOutput);
 
             if (battery != null)
             {
