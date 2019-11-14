@@ -45,12 +45,13 @@ class RobotInfo3543
     static final double MOTOR_KD                        = 0.0;
     //
     // 2019-10-28: Scale=0.0164402015697676, Kp=0.09, Ki=0.0, Kd=0.003
+    // 2019-11-13: Scale=0.0144873520175266, Kp=0.09, Ki=0.0, Kd=0.001
     //
     static final double ENCODER_X_KP                    = 0.09;
     static final double ENCODER_X_KI                    = 0.0;
-    static final double ENCODER_X_KD                    = 0.003;
+    static final double ENCODER_X_KD                    = 0.001;
     static final double ENCODER_X_TOLERANCE             = 2.0;
-    static final double ENCODER_X_INCHES_PER_COUNT      = 0.0164402015697676;
+    static final double ENCODER_X_INCHES_PER_COUNT      = 0.0144873520175266;
     //
     // 2019-10-28: Scale=0.0176214934808376, Kp=0.05, Ki=0.0, Kd=0.003
     // 2019-11-13: Scale=0.0166031473564429, Kp=0.06, Ki=0.0, Kd=0.002
@@ -62,10 +63,11 @@ class RobotInfo3543
     static final double ENCODER_Y_INCHES_PER_COUNT      = 0.0166031473564429;
     //
     // 2019-10-28: Kp=0.02, Ki=0.0, Kd=0.0015
+    // 2019-11-13: Kp=0.02, Ki=0.0, Kd=0.001
     //
     static final double GYRO_KP                         = 0.02;
     static final double GYRO_KI                         = 0.0;
-    static final double GYRO_KD                         = 0.0015;
+    static final double GYRO_KD                         = 0.001;
     static final double GYRO_TOLERANCE                  = 2.0;
 
     static final double PIDDRIVE_STALL_TIMEOUT          = 0.5;      //in seconds.
