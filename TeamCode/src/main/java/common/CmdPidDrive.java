@@ -40,9 +40,9 @@ import trclib.TrcTimer;
  */
 public class CmdPidDrive implements TrcRobot.RobotCommand
 {
-    private static final boolean debugXPid = false;
-    private static final boolean debugYPid = false;
-    private static final boolean debugTurnPid = false;
+    private static final boolean debugXPid = true;
+    private static final boolean debugYPid = true;
+    private static final boolean debugTurnPid = true;
 
     private enum State
     {

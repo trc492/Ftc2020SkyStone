@@ -154,7 +154,7 @@ public class TrcPidController
     private double settlingStartTime = 0.0;
     private double setPoint = 0.0;
     private double setPointSign = 1.0;
-    private double input = 0.0;
+    private double currInput = 0.0;
     private double output = 0.0;
     private double prevOutputTime = 0.0; // time that getOutput() was called last. Used for ramp rates.
 
@@ -228,7 +228,7 @@ public class TrcPidController
     public void displayPidInfo(int lineNum)
     {
         dashboard.displayPrintf(
-                lineNum, "%s:Target=%.1f,Input=%.1f,Error=%.1f", instanceName, setPoint, input, currError);
+                lineNum, "%s:Target=%.1f,Input=%.1f,Error=%.1f", instanceName, setPoint, currInput, currError);
         dashboard.displayPrintf(
                 lineNum + 1, "minOutput=%.1f,Output=%.1f,maxOutput=%.1f", minOutput, output, maxOutput);
     }   //displayPidInfo
@@ -257,7 +257,8 @@ public class TrcPidController
             msg += String.format(
                     Locale.US, "%s: Target=%6.1f, Input=%6.1f, Error=%6.1f, "
                     + "PIDTerms=%6.3f/%6.3f/%6.3f/%6.3f, Output=%6.3f(%6.3f/%5.3f)",
-                    instanceName, setPoint, input, currError, pTerm, iTerm, dTerm, fTerm, output, minOutput, maxOutput);
+                    instanceName, setPoint, currInput, currError, pTerm, iTerm, dTerm, fTerm, output, minOutput,
+                    maxOutput);
 
             if (battery != null)
             {
@@ -832,8 +833,8 @@ public class TrcPidController
             double currTime = TrcUtil.getCurrentTime();
             double deltaTime = currTime - prevTime;
             prevTime = currTime;
-            input = currentInputValue;
-            currError = setPoint - input;
+            currInput = currentInputValue;
+            currError = setPoint - currInput;
             if (inverted)
             {
                 currError = -currError;

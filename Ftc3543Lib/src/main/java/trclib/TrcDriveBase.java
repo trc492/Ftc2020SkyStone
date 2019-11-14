@@ -188,7 +188,7 @@ public abstract class TrcDriveBase implements TrcExclusiveSubsystem
         if (enabled)
         {
             resetOdometry(false, false);
-            odometryTaskObj.registerTask(TrcTaskMgr.TaskType.STANDALONE_TASK, 20);
+            odometryTaskObj.registerTask(TrcTaskMgr.TaskType.STANDALONE_TASK, TrcTaskMgr.INPUT_THREAD_INTERVAL);
         }
         else
         {

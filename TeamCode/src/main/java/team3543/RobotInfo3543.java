@@ -53,12 +53,13 @@ class RobotInfo3543
     static final double ENCODER_X_INCHES_PER_COUNT      = 0.0164402015697676;
     //
     // 2019-10-28: Scale=0.0176214934808376, Kp=0.05, Ki=0.0, Kd=0.003
+    // 2019-11-13: Scale=0.0166031473564429, Kp=0.06, Ki=0.0, Kd=0.002
     //
-    static final double ENCODER_Y_KP                    = 0.05;
+    static final double ENCODER_Y_KP                    = 0.06;
     static final double ENCODER_Y_KI                    = 0.0;
-    static final double ENCODER_Y_KD                    = 0.003;
+    static final double ENCODER_Y_KD                    = 0.002;
     static final double ENCODER_Y_TOLERANCE             = 1.0;
-    static final double ENCODER_Y_INCHES_PER_COUNT      = 0.0176214934808376;
+    static final double ENCODER_Y_INCHES_PER_COUNT      = 0.0166031473564429;
     //
     // 2019-10-28: Kp=0.02, Ki=0.0, Kd=0.0015
     //

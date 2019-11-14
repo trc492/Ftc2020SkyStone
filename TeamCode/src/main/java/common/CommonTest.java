@@ -331,13 +331,13 @@ public class CommonTest
         //
         FtcChoiceMenu<Test> testMenu = new FtcChoiceMenu<>("Tests:", null);
         FtcValueMenu xTargetMenu = new FtcValueMenu(
-                "xTarget:", testMenu, -10.0, 10.0, 0.5, 4.0,
+                "xTarget:", testMenu, -10.0, 10.0, 0.5, 0.0,
                 " %.1f ft");
         FtcValueMenu yTargetMenu = new FtcValueMenu(
-                "yTarget:", testMenu, -10.0, 10.0, 0.5, 4.0,
+                "yTarget:", testMenu, -10.0, 10.0, 0.5, 0.0,
                 " %.1f ft");
         FtcValueMenu turnTargetMenu = new FtcValueMenu(
-                "turnTarget:", testMenu, -180.0, 180.0, 5.0, 90.0,
+                "turnTarget:", testMenu, -180.0, 180.0, 5.0, 0.0,
                 " %.0f deg");
         FtcValueMenu driveTimeMenu = new FtcValueMenu(
                 "Drive time:", testMenu, 1.0, 10.0, 1.0, 4.0,
