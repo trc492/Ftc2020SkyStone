@@ -143,6 +143,8 @@ class RobotInfo6541
     static final double WRIST_MAX_STEPRATE              = 1.0 / 0.75;
     static final double WRIST_MIN_POS                   = 0.0;
     static final double WRIST_MAX_POS                   = 0.5;
+    static final double WRIST_RETRACT_POS               = 0.5;
+    static final double WRIST_EXTEND_POS                = 0.0;
     static final boolean WRIST_INVERTED                 = true;
 
     // Grabber subsystem.

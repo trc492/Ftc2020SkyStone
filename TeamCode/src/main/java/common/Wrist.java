@@ -31,12 +31,16 @@ public class Wrist
     private final FtcServo wrist = new FtcServo("wristServo");
     private final TrcEnhancedServo enhancedWrist = new TrcEnhancedServo("enhancedWristServo", wrist);
     private final double minPos, maxPos;
+    private final double retractPos, extendPos;
 
-    public Wrist(double maxStepRate, double minPos, double maxPos, boolean inverted)
+    public Wrist(double maxStepRate, double minPos, double maxPos, double retractPos, double extendPos,
+                 boolean inverted)
     {
         enhancedWrist.setStepMode(maxStepRate, minPos, maxPos);
         this.minPos = minPos;
         this.maxPos = maxPos;
+        this.retractPos = retractPos;
+        this.extendPos = extendPos;
         wrist.setInverted(inverted);
     }   //Wrist
 
@@ -62,12 +66,12 @@ public class Wrist
 
     public void retract()
     {
-        setPosition(maxPos);
+        setPosition(retractPos);
     }   //retract
 
     public void extend()
     {
-        setPosition(minPos);
+        setPosition(extendPos);
     }   //extend
 
 }   //class Wrist

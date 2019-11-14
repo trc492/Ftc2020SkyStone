@@ -54,7 +54,7 @@ public class ExtenderArm3543
 
     public void extendMax()
     {
-        enhancedExtender.setPosition(RobotInfo3543.EXTENDER_ARM_ALMOST_MAX_POS);
+        enhancedExtender.setPosition(RobotInfo3543.EXTENDER_ARM_DOWN_POS);
     }   //extendMax
 
     public void extend(TrcEvent event)
