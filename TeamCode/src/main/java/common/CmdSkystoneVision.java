@@ -59,7 +59,7 @@ public class CmdSkystoneVision implements TrcRobot.RobotCommand
     private TrcTrigger visionTrigger;
     private TrcPose2D skystonePose = null;
     private double visionTimeout = 0.0;
-    private int scootCount = 2;
+    private int scootCount;
     private boolean scanningForSkyStone = false;
 
     /**
@@ -73,6 +73,7 @@ public class CmdSkystoneVision implements TrcRobot.RobotCommand
         this.autoChoices = autoChoices;
         event = new TrcEvent(moduleName);
         sm = new TrcStateMachine<>(moduleName);
+        scootCount = autoChoices.strategy == CommonAuto.AutoStrategy.LOADING_ZONE_WALL? 1: 2;
 
         if (useVisionTrigger)
         {
@@ -222,7 +223,7 @@ public class CmdSkystoneVision implements TrcRobot.RobotCommand
                     {
                         scootCount--;
                         nextState = scootCount == 0? State.GOTO_SKYSTONE: State.SETUP_VISION;
-                        xTarget = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE? -8.5: 8.5;
+                        xTarget = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE? -9.0: 9.0;
                         robot.pidDrive.setRelativeXTarget(xTarget, event);
                         sm.waitForSingleEvent(event, nextState);
                     }
@@ -247,7 +248,7 @@ public class CmdSkystoneVision implements TrcRobot.RobotCommand
                     {
                         visionTrigger.setEnabled(false);
                     }
-                    xTarget = skystonePose.x;
+                    xTarget = skystonePose.x + (autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE? -2.0: 2.0);
                     robot.pidDrive.setRelativeXTarget(xTarget, event);
                     sm.waitForSingleEvent(event, State.GOTO_SKYSTONE);
                     break;
@@ -258,7 +259,7 @@ public class CmdSkystoneVision implements TrcRobot.RobotCommand
                         visionTrigger.setEnabled(false);
                     }
 
-                    yTarget = 8.0;
+                    yTarget = 9.0;
                     robot.pidDrive.setRelativeYTarget(yTarget, event);
                     sm.waitForSingleEvent(event, State.DONE);
                     break;

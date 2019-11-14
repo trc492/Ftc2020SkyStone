@@ -155,8 +155,8 @@ class RobotInfo3543
     static final double WRIST_MAX_STEPRATE              = (1.0/0.75);
     static final double WRIST_MIN_POS                   = 0.2;
     static final double WRIST_MAX_POS                   = 0.8;
-    static final double WRIST_RETRACT_POS               = 0.3;
-    static final double WRIST_EXTEND_POS                = 0.7;
+    static final double WRIST_RETRACT_POS               = 0.8;
+    static final double WRIST_EXTEND_POS                = 0.2;
     static final boolean WRIST_INVERTED                 = true;
 
     // Grabber subsystem.
@@ -170,5 +170,11 @@ class RobotInfo3543
     static final double FOUNDATION_LATCH_CLOSE_TIME     = 0.5;
     static final double FOUNDATION_LATCH_OPEN_POS       = 0.0;
     static final double FOUNDATION_LATCH_OPEN_TIME      = 0.5;
+
+    // Robot start positions.
+    static final double ROBOT_START_X_WALL              = 43.6;
+    static final double ROBOT_START_Y_WALL              = 9.0;
+    static final double ROBOT_START_X_FAR               = 43.6;
+    static final double ROBOT_START_Y_FAR               = 9.0;
 
 }   //class RobotInfo3543

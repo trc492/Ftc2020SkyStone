@@ -55,18 +55,18 @@ public class FtcAuto3543 extends CommonAuto
         switch (autoChoices.strategy)
         {
             case LOADING_ZONE_FAR:
-                if (hasRobot)
-                {
-                    autoCommand = new CmdAutoLoadingZoneFar3543(
-                            robot, autoChoices, autoChoices.alliance == Alliance.RED_ALLIANCE? 36.0: -36.0, 9.0);
-                }
-                break;
+//                if (hasRobot)
+//                {
+//                    autoCommand = new CmdAutoLoadingZoneFar3543(
+//                            robot, autoChoices, autoChoices.alliance == Alliance.RED_ALLIANCE? 36.0: -36.0, 9.0);
+//                }
+//                break;
 
             case LOADING_ZONE_WALL:
                 if (hasRobot)
                 {
-                    autoCommand = new CmdAutoLoadingZoneWall3543(
-                            robot, autoChoices, autoChoices.alliance == Alliance.RED_ALLIANCE? 36.0: -36.0, 9.0);
+                    autoCommand = new CmdAutoLoadingZoneFar3543(
+                            robot, autoChoices);
                 }
                 break;
 
