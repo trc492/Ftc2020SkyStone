@@ -53,7 +53,7 @@ public class VuforiaVision
     public static final double HALF_FIELD_INCHES = 72.0f;
     public static final double QUAD_FIELD_INCHES = 36.0f;
 
-    private static final int IMAGE_WIDTH = 1280;     //in pixels
+    private static final int IMAGE_WIDTH = 1280;    //in pixels
     private static final int IMAGE_HEIGHT = 720;    //in pixels
     private static final int FRAME_QUEUE_CAPACITY = 2;
     //
@@ -279,7 +279,7 @@ public class VuforiaVision
         //
         // The returned RobotPose have the X axis pointing from the audience side to the back of the field,
         // the Y axis pointing from the red alliance to the blue alliance and the direction of the Y axis
-        // is zero degree.
+        // is zero degree and increases in the clockwise direction.
         //
         TrcPose2D robotPose = (translation == null || orientation == null)? null:
                                 new TrcPose2D(translation.get(0)/TrcUtil.MM_PER_INCH,

@@ -41,10 +41,9 @@ public class CmdSkystoneVision implements TrcRobot.RobotCommand
 
     private enum State
     {
+        SCAN_FOR_SKYSTONE,
         SETUP_VISION,
         GET_TARGET_POSE,
-        SCAN_FOR_SKYSTONE,
-        NEXT_SKYSTONE_POSITION,
         ALIGN_SKYSTONE,
         GOTO_SKYSTONE,
         DONE
@@ -54,33 +53,34 @@ public class CmdSkystoneVision implements TrcRobot.RobotCommand
 
     private final Robot robot;
     private final CommonAuto.AutoChoices autoChoices;
+    private final double grabberOffset;
     private final TrcEvent event;
     private final TrcStateMachine<State> sm;
-    private TrcTrigger visionTrigger;
+    private final TrcTrigger visionTrigger;
+    private final double allianceDirection;
+    private int scootCount;
     private TrcPose2D skystonePose = null;
     private double visionTimeout = 0.0;
-    private int scootCount;
-    private boolean scanningForSkyStone = false;
 
     /**
      * Constructor: Create an instance of the object.
      *
      * @param robot specifies the robot object for providing access to various global objects.
      */
-    public CmdSkystoneVision(Robot robot, CommonAuto.AutoChoices autoChoices, boolean useVisionTrigger)
+    public CmdSkystoneVision(
+            Robot robot, CommonAuto.AutoChoices autoChoices, double grabberOffset, boolean useVisionTrigger)
     {
         this.robot = robot;
         this.autoChoices = autoChoices;
+        this.grabberOffset = grabberOffset;
         event = new TrcEvent(moduleName);
         sm = new TrcStateMachine<>(moduleName);
+        visionTrigger = useVisionTrigger?
+                new TrcTrigger("VisionTrigger", this::isTriggered, this::targetDetected): null;
+        allianceDirection = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE? 1.0: -1.0;
         scootCount = autoChoices.strategy == CommonAuto.AutoStrategy.LOADING_ZONE_WALL? 1: 2;
 
-        if (useVisionTrigger)
-        {
-            visionTrigger = new TrcTrigger("VisionTrigger", this::isTriggered, this::targetDetected);
-        }
-
-        sm.start(State.SETUP_VISION);
+        sm.start(useVisionTrigger? State.SCAN_FOR_SKYSTONE: State.SETUP_VISION);
     }   //CmdSkystoneVision
 
     private boolean isTriggered()
@@ -163,6 +163,20 @@ public class CmdSkystoneVision implements TrcRobot.RobotCommand
 
             switch (state)
             {
+                case SCAN_FOR_SKYSTONE:
+                    //
+                    // Strafe across all three stone to find the skystone. When a skystone is spotted, the strafe
+                    // will be interrupted by visionTrigger.
+                    //
+                    visionTrigger.setEnabled(true);
+
+                    xTarget = autoChoices.strategy == CommonAuto.AutoStrategy.LOADING_ZONE_FAR?
+                                RobotInfo.SKYSTONE_SCAN_DISTANCE_FAR: RobotInfo.SKYSTONE_SCAN_DISTANCE_WALL;
+                    xTarget *= allianceDirection;
+                    robot.pidDrive.setRelativeXTarget(xTarget, event);
+                    sm.waitForSingleEvent(event, State.ALIGN_SKYSTONE);
+                    break;
+
                 case SETUP_VISION:
                     //
                     // Vuforia may take time to detect target, set a timeout for detection.
@@ -181,14 +195,30 @@ public class CmdSkystoneVision implements TrcRobot.RobotCommand
                     skystonePose = robot.getSkyStonePose();
                     if (skystonePose == null)
                     {
-                        // Vuforia either did not detect the target or it's still busy processing the image.
-                        robot.globalTracer.traceInfo("getTargetPose", "Skystone not found.");
                         if (TrcUtil.getCurrentTime() > visionTimeout)
                         {
-                            // Can't find any skystone here, move on to the next position.
-                            sm.setState(visionTrigger == null? State.NEXT_SKYSTONE_POSITION:
-                                        scanningForSkyStone? State.GOTO_SKYSTONE: State.SCAN_FOR_SKYSTONE);
-                            robot.speak("Not found.");
+                            if (scootCount > 0)
+                            {
+                                robot.globalTracer.traceInfo(
+                                        "GetTargetPose", "Skystone not found, try next stone.");
+                                robot.speak("Not found, try next.");
+                                scootCount--;
+                                xTarget = -9.0*allianceDirection;
+                                // If this is the last stone, don't need to check it's a skystone, just grab and go.
+                                nextState = scootCount == 0? State.ALIGN_SKYSTONE: State.SETUP_VISION;
+                                robot.pidDrive.setRelativeXTarget(xTarget, event);
+                                sm.waitForSingleEvent(event, nextState);
+                            }
+                            else
+                            {
+                                //
+                                // Should never come here but handle it just in case.
+                                //
+                                robot.globalTracer.traceInfo(
+                                        "GetTargetPose", "Skystone not found, giving up.");
+                                robot.speak("Not found, give up.");
+                                sm.setState(State.ALIGN_SKYSTONE);
+                            }
                         }
                     }
                     else
@@ -202,63 +232,33 @@ public class CmdSkystoneVision implements TrcRobot.RobotCommand
                     }
                     break;
 
-                case SCAN_FOR_SKYSTONE:
+                case ALIGN_SKYSTONE:
                     //
-                    // Strafe across all three stone to find the skystone. When a skystone is spotted, the strafe
-                    // will be interrupted by visionTrigger.
+                    // Either we found the skystone or we pretend the one in front is the skystone.
+                    // If we did find the skystone, it may be mis-aligned, so let's align to it before we grab it.
                     //
-                    visionTrigger.setEnabled(true);
-                    scanningForSkyStone = true;
-
-                    xTarget = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE? -16.0: 16.0;
-                    robot.pidDrive.setRelativeXTarget(xTarget, event);
-                    sm.waitForSingleEvent(event, State.SETUP_VISION);
-                    break;
-
-                case NEXT_SKYSTONE_POSITION:
-                    //
-                    // We did not see the skystone, move one stone over and try again.
-                    //
-                    if (scootCount > 0)
+                    if (visionTrigger != null)
                     {
-                        scootCount--;
-                        nextState = scootCount == 0? State.GOTO_SKYSTONE: State.SETUP_VISION;
-                        xTarget = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE? -9.0: 9.0;
+                        visionTrigger.setEnabled(false);
+                    }
+
+                    if (skystonePose != null)
+                    {
+                        // Move slightly over to compensate the grabber offset.
+                        xTarget = skystonePose.x + grabberOffset*allianceDirection;
                         robot.pidDrive.setRelativeXTarget(xTarget, event);
-                        sm.waitForSingleEvent(event, nextState);
+                        sm.waitForSingleEvent(event, State.GOTO_SKYSTONE);
+                        break;
                     }
                     else
                     {
-                        //
-                        // This is the last stone and we still can't detect the target. Just assume the one in front
-                        // is a skystone. We will still get some points even if we are wrong, better than nothing!
-                        //
-                        robot.globalTracer.traceInfo(
-                                "NextSkyStonePos", "Skystone not found, giving up.");
                         sm.setState(State.GOTO_SKYSTONE);
+                        //
+                        // Intentionally falling through to the next state.
+                        //
                     }
-                    break;
-
-                case ALIGN_SKYSTONE:
-                    //
-                    // We found the skystone but the robot may be slightly mis-aligned. Align the robot before
-                    // grabbing the skystone.
-                    //
-                    if (visionTrigger != null)
-                    {
-                        visionTrigger.setEnabled(false);
-                    }
-                    xTarget = skystonePose.x + (autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE? -2.0: 2.0);
-                    robot.pidDrive.setRelativeXTarget(xTarget, event);
-                    sm.waitForSingleEvent(event, State.GOTO_SKYSTONE);
-                    break;
 
                 case GOTO_SKYSTONE:
-                    if (visionTrigger != null)
-                    {
-                        visionTrigger.setEnabled(false);
-                    }
-
                     yTarget = 9.0;
                     robot.pidDrive.setRelativeYTarget(yTarget, event);
                     sm.waitForSingleEvent(event, State.DONE);

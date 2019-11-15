@@ -44,8 +44,8 @@ public abstract class CommonAuto extends FtcOpMode
 
     public class MatchInfo
     {
-        public MatchType matchType;
-        public int matchNumber;
+        MatchType matchType;
+        int matchNumber;
 
         public String toString()
         {
@@ -102,20 +102,26 @@ public abstract class CommonAuto extends FtcOpMode
                     xTarget, yTarget, turnTarget, driveTime, drivePower);
         }   //toString
     }   //class AutoChoices
-
+    //
     // These field origin poses can be used to transform the Vuforia coordinate system to the alliance oriented
     // field coordinate system. Without this type of transform, the autonomous navigation will have to deal
     // with very different coordinates for different alliances. With this type of transform, the autonomous
     // for different alliances will only have to deal with changing the sign of one dimension.
-    public static final TrcPose2D RED_ALLIANCE_FIELD_ORIGIN =
+    //
+    private static final TrcPose2D RED_ALLIANCE_FIELD_ORIGIN =
             new TrcPose2D(-VuforiaVision.HALF_FIELD_INCHES, -VuforiaVision.HALF_FIELD_INCHES, 0.0);
-    public static final TrcPose2D BLUE_ALLIANCE_FIELD_ORIGIN =
+    private static final TrcPose2D BLUE_ALLIANCE_FIELD_ORIGIN =
             new TrcPose2D(-VuforiaVision.HALF_FIELD_INCHES, VuforiaVision.HALF_FIELD_INCHES, 180.0);
-    protected String moduleName = null;
-    protected Robot robot = null;
-    protected MatchInfo matchInfo = new MatchInfo();
+    private String moduleName = null;
+    private Robot robot = null;
+    private MatchInfo matchInfo = new MatchInfo();
     protected AutoChoices autoChoices = new AutoChoices();
     protected TrcRobot.RobotCommand autoCommand = null;
+
+    protected void initTeamSpecifics(Robot robot)
+    {
+        this.robot = robot;
+    }   //initTeamSpecifics
 
     //
     // Implements FtcOpMode abstract method.
@@ -128,7 +134,7 @@ public abstract class CommonAuto extends FtcOpMode
         // Choice menus.
         //
         doMatchInfoMenus();
-        if (robot.preferences.get("useTraceLog"))
+        if (robot.preferences.getBoolean("useTraceLog"))
         {
             createTraceLog();
         }
@@ -140,7 +146,7 @@ public abstract class CommonAuto extends FtcOpMode
     @Override
     public void startMode(TrcRobot.RunMode prevMode, TrcRobot.RunMode nextMode)
     {
-        if (robot.preferences.get("useTraceLog"))
+        if (robot.preferences.getBoolean("useTraceLog"))
         {
             robot.globalTracer.setTraceLogEnabled(true);
         }
@@ -185,7 +191,7 @@ public abstract class CommonAuto extends FtcOpMode
         }
     }   //runContinuous
 
-    protected void doMatchInfoMenus()
+    private void doMatchInfoMenus()
     {
         //
         // Construct menus.
@@ -212,7 +218,7 @@ public abstract class CommonAuto extends FtcOpMode
         matchInfo.matchNumber = (int)matchNumberMenu.getCurrentValue();
     }   //doMatchInfoMenus
 
-    protected void doAutoChoicesMenus()
+    private void doAutoChoicesMenus()
     {
         //
         // Construct menus.
@@ -312,7 +318,7 @@ public abstract class CommonAuto extends FtcOpMode
                 autoChoices.drivePower);
     }   //doAutoChoicesMenus
 
-    protected void createTraceLog()
+    private void createTraceLog()
     {
         String filePrefix = String.format(Locale.US, "%s%02d", matchInfo.matchType, matchInfo.matchNumber);
         robot.globalTracer.openTraceLog("/sdcard/FIRST/tracelog", filePrefix);

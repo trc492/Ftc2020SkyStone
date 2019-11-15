@@ -33,7 +33,6 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 import ftclib.FtcAndroidTone;
 import ftclib.FtcBNO055Imu;
@@ -42,7 +41,6 @@ import ftclib.FtcOpMode;
 import ftclib.FtcRobotBattery;
 import ftclib.FtcVuforia;
 import hallib.HalDashboard;
-import team3543.ExtenderArm3543;
 import trclib.TrcDbgTrace;
 import trclib.TrcDriveBase;
 import trclib.TrcGyro;
@@ -118,15 +116,13 @@ public class Robot
     // Other common subsystems.
     //
     @Nonnull public Elevator elevator = null;
-    @Nullable public ExtenderArm3543 extenderArm = null; // Not present on 6541
     @Nonnull public Wrist wrist = null;
     @Nonnull public GenericGrabber grabber = null;
     @Nonnull public FoundationLatch foundationLatch = null;
 
     public Robot(
-            TrcRobot.RunMode runMode, String robotName, TrcHashMap<String, Boolean> preferences,
-            VuforiaLocalizer.CameraDirection cameraDir,
-            VuforiaLocalizer.Parameters.CameraMonitorFeedback cameraMonitorFeedback)
+            TrcRobot.RunMode runMode, String robotName,
+            TrcHashMap<String, Boolean> preferences, TrcHashMap<String, Object> phoneParams)
     {
         //
         // Initialize global objects.
@@ -141,7 +137,13 @@ public class Robot
                 ((FtcRobotControllerActivity)opMode.hardwareMap.appContext).findViewById(R.id.textOpMode));
         androidTone = new FtcAndroidTone("AndroidTone");
 
-        if (preferences.get("useVuforia") || preferences.get("useTensorFlow"))
+        if (preferences.getBoolean("useSpeech"))
+        {
+            textToSpeech = FtcOpMode.getInstance().getTextToSpeech();
+            speak("Init starting");
+        }
+
+        if (preferences.getBoolean("useVuforia") || preferences.getBoolean("useTensorFlow"))
         {
             final String VUFORIA_LICENSE_KEY =
                     "ATu19Kj/////AAAAGcw4SDCVwEBSiKcUtdmQd2aOugrxo/OgeBJUt7XwMSi3e0KSZaylbsTnWp8EBxyA5o/00JFJVDY1OxJ" +
@@ -149,26 +151,23 @@ public class Robot
                     "XS4ZtEWLNeiSEMTCdO9bdeaxnSb2RfErcmjadAThDWf6PC9HrMRHLmgfcFaZlj5JN+figOjgKhyQZeYYrcDEm0lICN5kAr2" +
                     "pdfNKNOii3A80eXyTVDfPGfzTwVa4eNBY/SgmoIdBbMPb3hfZBOz7GVoVHHQWbCNbzm31p1OY+zqPPWMfzzpyiJ4mA9bLTQ";
 
-            int cameraViewId = !preferences.get("showVuforiaView") ? -1 :
+            int cameraViewId = !preferences.getBoolean("showVuforiaView") ? -1 :
                     opMode.hardwareMap.appContext.getResources().getIdentifier(
                             "cameraMonitorViewId", "id", opMode.hardwareMap.appContext.getPackageName());
-            vuforia = new FtcVuforia(VUFORIA_LICENSE_KEY, cameraViewId, cameraDir, cameraMonitorFeedback);
+            vuforia = new FtcVuforia(
+                    VUFORIA_LICENSE_KEY, cameraViewId,
+                    (VuforiaLocalizer.CameraDirection) phoneParams.get("cameraDir"),
+                    (VuforiaLocalizer.Parameters.CameraMonitorFeedback) phoneParams.get("cameraMonitorFeedback"));
         }
 
-        if (preferences.get("useSpeech"))
+        if (preferences.getBoolean("hasRobot"))
         {
-            textToSpeech = FtcOpMode.getInstance().getTextToSpeech();
-            speak("Init starting");
-        }
-
-        if (preferences.get("hasRobot"))
-        {
-            if (preferences.get("useBatteryMonitor"))
+            if (preferences.getBoolean("useBatteryMonitor"))
             {
                 battery = new FtcRobotBattery();
             }
 
-            if (preferences.get("useBlinkin"))
+            if (preferences.getBoolean("useBlinkin"))
             {
                 ledIndicator = new LEDIndicator();
             }
@@ -181,6 +180,7 @@ public class Robot
         }
     }   //Robot
 
+    @Override
     public String toString()
     {
         return robotName;
@@ -197,27 +197,43 @@ public class Robot
             gyro.setEnabled(true);
         }
         //
-        // Vision generally will impact performance, so we only enable it if it's needed such as in autonomous.
-        //
-        if (vuforiaVision != null && (runMode == TrcRobot.RunMode.AUTO_MODE || runMode == TrcRobot.RunMode.TEST_MODE))
-        {
-            globalTracer.traceInfo(funcName, "Enabling Vuforia.");
-            vuforiaVision.setEnabled(true, preferences.get("useFlashLight"));
-        }
-        //
         // Enable odometry only for autonomous or test modes.
         //
         if (driveBase != null && (runMode == TrcRobot.RunMode.AUTO_MODE || runMode == TrcRobot.RunMode.TEST_MODE))
         {
             driveBase.setOdometryEnabled(true);
         }
+        //
+        // Vision generally will impact performance, so we only enable it if it's needed such as in autonomous.
+        //
+        if (vuforiaVision != null && (runMode == TrcRobot.RunMode.AUTO_MODE || runMode == TrcRobot.RunMode.TEST_MODE))
+        {
+            globalTracer.traceInfo(funcName, "Enabling Vuforia.");
+            vuforiaVision.setEnabled(true, preferences.getBoolean("useFlashLight"));
+        }
     }   //startMode
 
     public void stopMode(TrcRobot.RunMode runMode)
     {
+        if (vuforiaVision != null)
+        {
+            vuforiaVision.setEnabled(false, preferences.getBoolean("useFlashLight"));
+        }
+
+        if (tensorFlowVision != null)
+        {
+            globalTracer.traceInfo("RobotStopMode", "Shutting down TensorFlow.");
+            tensorFlowVision.shutdown();
+            tensorFlowVision = null;
+        }
         //
         // Disable the gyro integrator.
         //
+        if (driveBase != null)
+        {
+            driveBase.setOdometryEnabled(false);
+        }
+
         if (gyro != null)
         {
             gyro.setEnabled(false);
@@ -227,23 +243,6 @@ public class Robot
         {
             textToSpeech.stop();
             textToSpeech.shutdown();
-        }
-
-        if (vuforiaVision != null)
-        {
-            vuforiaVision.setEnabled(false, preferences.get("useFlashLight"));
-        }
-
-        if (tensorFlowVision != null)
-        {
-            globalTracer.traceInfo("RobotStopMode", "Shutting down TensorFlow.");
-            tensorFlowVision.shutdown();
-            tensorFlowVision = null;
-        }
-
-        if (driveBase != null)
-        {
-            driveBase.setOdometryEnabled(false);
         }
     }   //stopMode
 
@@ -280,9 +279,7 @@ public class Robot
         }
     }   //speak
 
-    protected void initVuforia(
-            VuforiaLocalizer.CameraDirection cameraDir, boolean phoneIsPortrait, double robotLength, double robotWidth,
-            double phoneFrontOffset, double phoneLeftOffset, double phoneHeightOffset)
+    protected void initVuforia(TrcHashMap<String, Object> phoneParams, double robotLength, double robotWidth)
     {
         float phoneXRotate;
         float phoneYRotate;
@@ -311,9 +308,12 @@ public class Robot
          * In this example, it is centered (left to right), but 110 mm forward of the middle of the robot, and
          * 200 mm above ground level.
          */
-        final int CAMERA_FORWARD_DISPLACEMENT = (int)((robotLength/2.0 - phoneFrontOffset)* TrcUtil.MM_PER_INCH);
-        final int CAMERA_VERTICAL_DISPLACEMENT = (int)(phoneHeightOffset*TrcUtil.MM_PER_INCH);
-        final int CAMERA_LEFT_DISPLACEMENT = (int)((robotWidth/2.0 - phoneLeftOffset)*TrcUtil.MM_PER_INCH);
+        final int CAMERA_FORWARD_DISPLACEMENT =
+                (int)((robotLength/2.0 - phoneParams.getDouble("phoneFrontOffset"))*TrcUtil.MM_PER_INCH);
+        final int CAMERA_VERTICAL_DISPLACEMENT =
+                (int)(phoneParams.getDouble("phoneHeightOffset")*TrcUtil.MM_PER_INCH);
+        final int CAMERA_LEFT_DISPLACEMENT =
+                (int)((robotWidth/2.0 - phoneParams.getDouble("phoneLeftOffset"))*TrcUtil.MM_PER_INCH);
         //
         // Create a transformation matrix describing where the phone is on the robot.
         //
@@ -329,10 +329,10 @@ public class Robot
         // The two examples below assume that the camera is facing forward out the front of the robot.
 
         // We need to rotate the camera around it's long axis to bring the correct camera forward.
-        phoneYRotate = cameraDir == BACK ? -90.0f : 90.0f;
+        phoneYRotate = phoneParams.get("cameraDir") == BACK ? -90.0f : 90.0f;
 
         // Rotate the phone vertical about the X axis if it's in portrait mode
-        phoneXRotate = phoneIsPortrait ? 90.0f : 0.0f;
+        phoneXRotate = phoneParams.getBoolean("phoneIsPortrait") ? 90.0f : 0.0f;
 
         // Next, translate the camera lens to where it is on the robot.
         // In this example, it is centered (left to right), but forward of the middle of the robot, and above ground level.
@@ -356,7 +356,7 @@ public class Robot
                         "tfodMonitorViewId", "id", opMode.hardwareMap.appContext.getPackageName());
         tensorFlowVision = new TensorFlowVision(
                 vuforia, tfodMonitorViewId, cameraRect, worldRect, globalTracer);
-        tensorFlowVision.setEnabled(true, preferences.get("useFlashLight"));
+        tensorFlowVision.setEnabled(true, preferences.getBoolean("useFlashLight"));
         globalTracer.traceInfo(robotName, "Enabling TensorFlow.");
     } //initTensorFlow
 

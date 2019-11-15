@@ -24,15 +24,16 @@ package team6541;
 
 import common.CmdSkystoneVision;
 import common.CommonAuto;
+import common.RobotInfo;
 import common.SimplePidDrive;
-import common.Robot;
 import trclib.TrcEvent;
 import trclib.TrcPidController;
 import trclib.TrcRobot;
 import trclib.TrcStateMachine;
 import trclib.TrcTimer;
 
-public class CmdAutoLoadingZoneFar6541 implements TrcRobot.RobotCommand
+// CodeReview: This code need to be revised to be compatible with the new grabber.
+public class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
 {
     private static final boolean debugXPid = true;
     private static final boolean debugYPid = true;
@@ -62,14 +63,15 @@ public class CmdAutoLoadingZoneFar6541 implements TrcRobot.RobotCommand
         DONE
     }   //enum State
 
-    private static final String moduleName = "CmdAutoLoadingZoneFar6541";
+    private static final String moduleName = "CmdAutoLoadingZone6541";
 
-    private final Robot robot;
+    private final Robot6541 robot;
     private final CommonAuto.AutoChoices autoChoices;
-    private final TrcEvent event;
     private final TrcTimer timer;
+    private final TrcEvent event;
     private final TrcStateMachine<State> sm;
     private final SimplePidDrive<State> simplePidDrive;
+    private final double allianceDirection;
     private CmdSkystoneVision skystoneVisionCommand = null;
 
     /**
@@ -77,23 +79,29 @@ public class CmdAutoLoadingZoneFar6541 implements TrcRobot.RobotCommand
      *
      * @param robot specifies the robot object for providing access to various global objects.
      */
-    public CmdAutoLoadingZoneFar6541(Robot robot, CommonAuto.AutoChoices autoChoices, double startX, double startY)
+    public CmdAutoLoadingZone6541(Robot6541 robot, CommonAuto.AutoChoices autoChoices)
     {
         robot.globalTracer.traceInfo(moduleName, "robot=%s", robot);
 
         this.robot = robot;
         this.autoChoices = autoChoices;
-        event = new TrcEvent(moduleName);
         timer = new TrcTimer(moduleName);
+        event = new TrcEvent(moduleName);
         sm = new TrcStateMachine<>(moduleName);
+        allianceDirection = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE ? 1.0 : -1.0;
 
         robot.encoderXPidCtrl.setNoOscillation(true);
         robot.encoderYPidCtrl.setNoOscillation(true);
         robot.gyroPidCtrl.setNoOscillation(true);
+
+        double startX = (autoChoices.strategy == CommonAuto.AutoStrategy.LOADING_ZONE_WALL?
+                RobotInfo.ROBOT_START_X_WALL: RobotInfo.ROBOT_START_X_FAR)* allianceDirection;
+        double startY = (autoChoices.strategy == CommonAuto.AutoStrategy.LOADING_ZONE_WALL?
+                RobotInfo.ROBOT_START_Y_WALL: RobotInfo.ROBOT_START_Y_FAR)* allianceDirection;
         simplePidDrive = new SimplePidDrive<>(robot.pidDrive, event, sm, startX, startY);
 
         sm.start(State.DO_DELAY);
-    }   //CmdAutoLoadingZoneFar6541
+    }   //CmdAutoLoadingZone6541
 
     //
     // Implements the TrcRobot.RobotCommand interface.
@@ -192,7 +200,8 @@ public class CmdAutoLoadingZoneFar6541 implements TrcRobot.RobotCommand
                     break;
 
                 case START_VISION:
-                    skystoneVisionCommand = new CmdSkystoneVision(robot, autoChoices, useVisionTrigger);
+                    skystoneVisionCommand = new CmdSkystoneVision(
+                            robot, autoChoices, RobotInfo6541.GRABBER_OFFSET, useVisionTrigger);
                     sm.setState(State.DO_VISION);
                     //
                     // Intentionally falling through to the next state.
@@ -230,15 +239,9 @@ public class CmdAutoLoadingZoneFar6541 implements TrcRobot.RobotCommand
                     break;
 
                 case GOTO_FOUNDATION:
-                    if (robot.extenderArm != null)
-                    {
-                        robot.extenderArm.extendMax();
-                    }
-
                     robot.pidDrive.getXPidCtrl().setOutputLimit(1.0);
                     robot.pidDrive.getYPidCtrl().setOutputLimit(1.0);
-                    xTarget = (autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE ? 72.0 : -72.0)
-                            - robot.driveBase.getXPosition();
+                    xTarget = 72.0 * allianceDirection - robot.driveBase.getXPosition();
                     simplePidDrive.setRelativeXTarget(xTarget, State.APPROACH_FOUNDATION);
                     break;
 
@@ -264,11 +267,6 @@ public class CmdAutoLoadingZoneFar6541 implements TrcRobot.RobotCommand
                     break;
 
                 case BACKUP_TO_FOUNDATION:
-                    if (robot.extenderArm != null)
-                    {
-                        robot.extenderArm.retract();
-                    }
-
                     robot.wrist.retract();
                     yTarget = -10.0;
                     simplePidDrive.setRelativeYTarget(yTarget, State.HOOK_FOUNDATION);
@@ -290,7 +288,7 @@ public class CmdAutoLoadingZoneFar6541 implements TrcRobot.RobotCommand
                     break;
 
                 case PARK_UNDER_BRIDGE:
-                    xTarget = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE ? 50.0 : -50.0;
+                    xTarget = 50.0 * allianceDirection;
                     simplePidDrive.setRelativeXTarget(xTarget, State.DONE);
                     break;
 
@@ -339,4 +337,4 @@ public class CmdAutoLoadingZoneFar6541 implements TrcRobot.RobotCommand
         return !sm.isEnabled();
     }   //cmdPeriodic
 
-}   //CmdAutoLoadingZoneFar6541
+}   //CmdAutoLoadingZone6541

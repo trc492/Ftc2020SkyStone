@@ -26,67 +26,63 @@ import ftclib.FtcServo;
 import trclib.TrcEnhancedServo;
 import trclib.TrcEvent;
 
-public class ExtenderArm3543
+class ExtenderArm3543
 {
     private final FtcServo extender = new FtcServo("extenderArmServo");
     private final TrcEnhancedServo enhancedExtender = new TrcEnhancedServo("enhancedExtenderArm", extender);
 
-    public ExtenderArm3543()
+    ExtenderArm3543()
     {
-//        extender.setLogicalRange(
-//                RobotInfo3543.EXTENDER_ARM_LOGICAL_MIN_POS, RobotInfo3543.EXTENDER_ARM_LOGICAL_MAX_POS);
-//        extender.setPhysicalRange(
-//                RobotInfo3543.EXTENDER_ARM_PHYSICAL_MIN_POS, RobotInfo3543.EXTENDER_ARM_PHYSICAL_MAX_POS);
         enhancedExtender.setStepMode(
                 RobotInfo3543.EXTENDER_ARM_MAX_STEPRATE, RobotInfo3543.EXTENDER_ARM_LOGICAL_MIN_POS,
                 RobotInfo3543.EXTENDER_ARM_LOGICAL_MAX_POS);
     }   //ExtenderArm3543
 
-    public void setPower(double power)
+    void setPower(double power)
     {
         enhancedExtender.setPower(power);
     }   //setPower
 
-    public void extend()
+    void extend()
     {
         enhancedExtender.setPosition(RobotInfo3543.EXTENDER_ARM_PLACEMENT_POS);
     }   //extend
 
-    public void extendMax()
+    void extendMax()
     {
         enhancedExtender.setPosition(RobotInfo3543.EXTENDER_ARM_DOWN_POS);
     }   //extendMax
 
-    public void extend(TrcEvent event)
+    void extend(TrcEvent event)
     {
         enhancedExtender.setPosition(
                 RobotInfo3543.EXTENDER_ARM_PLACEMENT_POS, RobotInfo3543.EXTENDER_ARM_MOVE_TIME, event);
     }   //extend
 
-    public void extend(double time, TrcEvent event)
+    void extend(double time, TrcEvent event)
     {
         enhancedExtender.setPosition(
                 RobotInfo3543.EXTENDER_ARM_PLACEMENT_POS, time, event);
     }   //extend
 
-    public void retract()
+    void retract()
     {
         enhancedExtender.setPosition(RobotInfo3543.EXTENDER_ARM_RETRACTED_POS);
     }   //extend
 
-    public void retract(TrcEvent event)
+    void retract(TrcEvent event)
     {
         enhancedExtender.setPosition(
                 RobotInfo3543.EXTENDER_ARM_RETRACTED_POS, RobotInfo3543.EXTENDER_ARM_MOVE_TIME, event);
     }   //retract
 
-    public void retract(double time, TrcEvent event)
+    void retract(double time, TrcEvent event)
     {
         enhancedExtender.setPosition(
                 RobotInfo3543.EXTENDER_ARM_RETRACTED_POS, time, event);
     }   //retract
 
-    public double getPosition()
+    double getPosition()
     {
         return extender.getPosition();
     }

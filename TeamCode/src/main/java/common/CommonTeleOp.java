@@ -30,24 +30,25 @@ import trclib.TrcRobot;
 
 public abstract class CommonTeleOp extends FtcOpMode
 {
-    protected enum DriveMode
-    {
-        TANK_MODE,
-        HOLONOMIC_MODE,
-    }   //enum DriveMode
-
-    protected String moduleName = null;
-    protected Robot robot = null;
-
+    private static final double SLOW_DRIVE_POWER_SCALE = 0.5;
+    //
+    // Common objects.
+    //
     protected HalDashboard dashboard;
-
     protected FtcGamepad driverGamepad;
     protected FtcGamepad operatorGamepad;
+    //
+    // Team specific objects.
+    //
+    private Robot robot = null;
 
-    private static final double SLOW_DRIVE_POWER_SCALE = 0.5;
-    protected DriveMode driveMode = DriveMode.HOLONOMIC_MODE;
-    protected double drivePowerScale = SLOW_DRIVE_POWER_SCALE;
-    protected boolean invertedDrive = false;
+    private double drivePowerScale = SLOW_DRIVE_POWER_SCALE;
+    private boolean invertedDrive = false;
+
+    protected void initTeamSpecifics(Robot robot)
+    {
+        this.robot = robot;
+    }   //initTeamSpecifics
 
     //
     // Implements FtcOpMode abstract method.
@@ -95,7 +96,7 @@ public abstract class CommonTeleOp extends FtcOpMode
         //
         if (robot.driveBase != null)
         {
-            switch (driveMode)
+            switch (robot.driveMode)
             {
                 case TANK_MODE:
                     double leftPower = driverGamepad.getLeftStickY(true) * drivePowerScale;
@@ -137,14 +138,6 @@ public abstract class CommonTeleOp extends FtcOpMode
             elevatorUpSwitch = robot.elevator.isUpperLimitSwitchActive();
         }
 
-        double extenderArmPower = operatorGamepad.getLeftStickY(true);
-        double extenderArmPos = 0.0;
-        if (robot.extenderArm != null)
-        {
-            robot.extenderArm.setPower(extenderArmPower);
-            extenderArmPos = robot.extenderArm.getPosition();
-        }
-
         double wristPower = operatorGamepad.getLeftStickX(true) / 3.0;
         double wristPos = 0.0;
         if (robot.wrist != null)
@@ -155,9 +148,8 @@ public abstract class CommonTeleOp extends FtcOpMode
 
         dashboard.displayPrintf(
                 3, "ElevatorPower=%.1f, ElevatorPos=%.1f, ElevatorLimitSwitch=[%b, %b], " +
-                "ExtenderArmPower=%.1f, ExtenderArmPos=%.1f, WristPower=%.1f, WristPos=%.1f",
-                elevatorPower, elevatorPos, elevatorDownSwitch, elevatorUpSwitch, extenderArmPower, extenderArmPos,
-                wristPower, wristPos);
+                "WristPower=%.1f, WristPos =%.1f",
+                elevatorPower, elevatorPos, elevatorDownSwitch, elevatorUpSwitch, wristPower, wristPos);
 
         if (robot.grabber != null && robot.foundationLatch != null)
         {

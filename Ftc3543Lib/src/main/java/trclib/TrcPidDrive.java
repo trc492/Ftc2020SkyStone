@@ -82,12 +82,12 @@ public class TrcPidDrive
     private final TrcPidController xPidCtrl;
     private final TrcPidController yPidCtrl;
     private final TrcPidController turnPidCtrl;
-    private final boolean useAbsTarget;
     private final TrcTaskMgr.TaskObject driveTaskObj;
     private final TrcTaskMgr.TaskObject stopTaskObj;
     private boolean savedReferencePose = false;
     private TrcWarpSpace warpSpace = null;
     private boolean warpSpaceEnabled = true;
+    private boolean absTargetModeEnabled = false;
     private StuckWheelHandler stuckWheelHandler = null;
     private double stuckTimeout = 0.0;
     private TurnMode turnMode = TurnMode.IN_PLACE;
@@ -115,12 +115,10 @@ public class TrcPidDrive
      * @param xPidCtrl specifies the PID controller for the X direction.
      * @param yPidCtrl specifies the PID controller for the Y direction.
      * @param turnPidCtrl specifies the PID controller for turn.
-     * @param useAbsTarget specifies true to use absolute target (deltas added to absolute target) instead of deltas
-     *                    are relative to current pose.
      */
     public TrcPidDrive(
         String instanceName, TrcDriveBase driveBase,
-        TrcPidController xPidCtrl, TrcPidController yPidCtrl, TrcPidController turnPidCtrl, boolean useAbsTarget)
+        TrcPidController xPidCtrl, TrcPidController yPidCtrl, TrcPidController turnPidCtrl)
     {
         if (debugEnabled)
         {
@@ -134,7 +132,6 @@ public class TrcPidDrive
         this.xPidCtrl = xPidCtrl;
         this.yPidCtrl = yPidCtrl;
         this.turnPidCtrl = turnPidCtrl;
-        this.useAbsTarget = useAbsTarget;
         resetAbsTargetPose();
         TrcTaskMgr taskMgr = TrcTaskMgr.getInstance();
         driveTaskObj = taskMgr.createTask(instanceName + ".driveTask", this::driveTask);
@@ -147,22 +144,6 @@ public class TrcPidDrive
     }   //TrcPidDrive
 
     /**
-     * Constructor: Create an instance of the object.
-     *
-     * @param instanceName specifies the instance name.
-     * @param driveBase specifies the drive base object.
-     * @param xPidCtrl specifies the PID controller for the X direction.
-     * @param yPidCtrl specifies the PID controller for the Y direction.
-     * @param turnPidCtrl specifies the PID controller for turn.
-     */
-    public TrcPidDrive(
-            String instanceName, TrcDriveBase driveBase,
-            TrcPidController xPidCtrl, TrcPidController yPidCtrl, TrcPidController turnPidCtrl)
-    {
-        this(instanceName, driveBase, xPidCtrl, yPidCtrl, turnPidCtrl, false);
-    }   //TrcPidDrive
-
-    /**
      * This method returns the instance name.
      *
      * @return instance name.
@@ -172,6 +153,19 @@ public class TrcPidDrive
     {
         return instanceName;
     }   //toString
+
+    /**
+     * This method enables/disables absolute target mode. This class always keep track of the absolute position of
+     * the robot. When absolute target mode is enabled, all setRelativeTarget calls will adjust the relative targets
+     * by subtracting the current robot position from the absolute target position. This will essentially canceling
+     * out cumulative errors of multi-segment PID drive.
+     *
+     * @param enabled specifies true to enable absolute target mode, false to disable.
+     */
+    public synchronized void setAbsTargetModeEnabled(boolean enabled)
+    {
+        this.absTargetModeEnabled = enabled;
+    }   //setAbsTargetModeEnabled
 
     /**
      * This method sets the message tracer for logging trace messages.
@@ -529,8 +523,9 @@ public class TrcPidDrive
         if (driveBase.validateOwnership(owner))
         {
             this.owner = owner;
-
+            // adding relative X and Y targets to the absolute target pose.
             TrcPose2D newTargetPose = absTargetPose.translatePose(xDelta, yDelta);
+            // adding relative turn target to the absolute target heading.
             newTargetPose.heading += turnDelta;
             double xTarget, yTarget, turnTarget;
 
@@ -540,17 +535,25 @@ public class TrcPidDrive
                         xDelta, yDelta, turnDelta, absTargetPose);
             }
 
-            if (useAbsTarget)
+            if (absTargetModeEnabled)
             {
+                //
+                // Adjusting relative target by subtracting current robot pose from the absolute target pose.
+                // This will eliminate cumulative error.
+                //
                 TrcPose2D relativePose = newTargetPose.relativeTo(driveBase.getAbsolutePose());
                 xTarget = relativePose.x;
                 yTarget = relativePose.y;
             }
             else
             {
+                //
+                // Not using absolute target pose, so use the relative targets as-is.
+                //
                 xTarget = xDelta;
                 yTarget = yDelta;
             }
+            // Adjust the turn target.
             turnTarget = turnPidCtrl.hasAbsoluteSetPoint()? newTargetPose.heading: turnDelta;
 
             if (debugEnabled)
@@ -558,7 +561,7 @@ public class TrcPidDrive
                 dbgTrace.traceInfo(funcName, "xTarget=%.1f, yTarget=%.1f, turnTarget=%.1f, NewPose:%s",
                         xTarget, yTarget, turnTarget, newTargetPose);
             }
-
+            // The new target pose will become the updated absolute target pose.
             absTargetPose = newTargetPose;
             setTarget(xTarget, yTarget, turnTarget, holdTarget, event, timeout);
         }

@@ -24,6 +24,7 @@ package common;
 
 import ftclib.FtcServo;
 import trclib.TrcEvent;
+import trclib.TrcHashMap;
 
 public class FoundationLatch implements GenericGrabber
 {
@@ -31,12 +32,12 @@ public class FoundationLatch implements GenericGrabber
     private final double closePos, closeTime;
     private final double openPos, openTime;
 
-    public FoundationLatch(double closePos, double closeTime, double openPos, double openTime)
+    public FoundationLatch(TrcHashMap<String, Double> params)
     {
-        this.closePos = closePos;
-        this.closeTime = closeTime;
-        this.openPos = openPos;
-        this.openTime = openTime;
+        this.closePos = params.getDouble("closePos");
+        this.closeTime = params.getDouble("closeTime");
+        this.openPos = params.getDouble("openPos");
+        this.openTime = params.getDouble("openTime");
     }   //FoundationLatch
 
     @Override

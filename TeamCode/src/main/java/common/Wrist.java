@@ -25,23 +25,21 @@ package common;
 import ftclib.FtcServo;
 import trclib.TrcEnhancedServo;
 import trclib.TrcEvent;
+import trclib.TrcHashMap;
 
 public class Wrist
 {
     private final FtcServo wrist = new FtcServo("wristServo");
     private final TrcEnhancedServo enhancedWrist = new TrcEnhancedServo("enhancedWristServo", wrist);
-    private final double minPos, maxPos;
     private final double retractPos, extendPos;
 
-    public Wrist(double maxStepRate, double minPos, double maxPos, double retractPos, double extendPos,
-                 boolean inverted)
+    public Wrist(TrcHashMap<String, Object> params)
     {
-        enhancedWrist.setStepMode(maxStepRate, minPos, maxPos);
-        this.minPos = minPos;
-        this.maxPos = maxPos;
-        this.retractPos = retractPos;
-        this.extendPos = extendPos;
-        wrist.setInverted(inverted);
+        this.retractPos = params.getDouble("retractPos");
+        this.extendPos = params.getDouble("extendPos");
+        enhancedWrist.setStepMode(
+                params.getDouble("maxStepRate"), params.getDouble("minPos"), params.getDouble("maxPos"));
+        wrist.setInverted(params.getBoolean("inverted"));
     }   //Wrist
 
     public void setPower(double power)

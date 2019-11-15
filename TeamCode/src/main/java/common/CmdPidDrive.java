@@ -106,6 +106,7 @@ public class CmdPidDrive implements TrcRobot.RobotCommand
         event = new TrcEvent(moduleName);
         timer = new TrcTimer(moduleName);
         sm = new TrcStateMachine<>(moduleName);
+
         xPidCtrl = pidDrive.getXPidCtrl();
         yPidCtrl = pidDrive.getYPidCtrl();
         turnPidCtrl = pidDrive.getTurnPidCtrl();

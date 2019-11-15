@@ -32,7 +32,7 @@ import trclib.TrcRobot;
 @TeleOp(name="FtcTeleOp3543", group="FtcTeleOp")
 public class FtcTeleOp3543 extends CommonTeleOp
 {
-    private static final String MODULE_NAME = "FtcTeleOp3543";
+    protected Robot3543 robot3543;
 
     //
     // Implements FtcOpMode abstract method.
@@ -44,9 +44,9 @@ public class FtcTeleOp3543 extends CommonTeleOp
         //
         // Initializing robot objects.
         //
-        moduleName = MODULE_NAME;
-        robot = new Robot3543(TrcRobot.getRunMode());
+        robot3543 = new Robot3543(TrcRobot.getRunMode());
         super.initRobot();
+        super.initTeamSpecifics(robot3543);
     }   //initRobot
 
     //
@@ -58,8 +58,16 @@ public class FtcTeleOp3543 extends CommonTeleOp
     {
         super.runPeriodic(elapsedTime);
         //
-        // Operate other subsystems.
+        // Operate other team specific subsystems.
         //
+        double extenderArmPower = operatorGamepad.getLeftStickY(true);
+        double extenderArmPos;
+
+        robot3543.extenderArm.setPower(extenderArmPower);
+        extenderArmPos = robot3543.extenderArm.getPosition();
+
+        dashboard.displayPrintf(
+                5, "ExtenderArmPower=%.1f, ExtenderArmPos=%.1f", extenderArmPower, extenderArmPos);
     }   //runPeriodic
 
     //
@@ -122,7 +130,7 @@ public class FtcTeleOp3543 extends CommonTeleOp
                 case FtcGamepad.GAMEPAD_DPAD_UP:
                     if (pressed)
                     {
-                        robot.extenderArm.extend();
+                        robot3543.extenderArm.extend();
                     }
                     processed = true;
                     break;
@@ -130,7 +138,7 @@ public class FtcTeleOp3543 extends CommonTeleOp
                 case FtcGamepad.GAMEPAD_DPAD_DOWN:
                     if (pressed)
                     {
-                        robot.extenderArm.retract();
+                        robot3543.extenderArm.retract();
                     }
                     processed = true;
                     break;
@@ -138,7 +146,7 @@ public class FtcTeleOp3543 extends CommonTeleOp
                 case FtcGamepad.GAMEPAD_DPAD_LEFT:
                     if (pressed)
                     {
-                        robot.wrist.extend();
+                        robot3543.wrist.extend();
                     }
                     processed = true;
                     break;
@@ -146,7 +154,7 @@ public class FtcTeleOp3543 extends CommonTeleOp
                 case FtcGamepad.GAMEPAD_DPAD_RIGHT:
                     if (pressed)
                     {
-                        robot.wrist.retract();
+                        robot3543.wrist.retract();
                     }
                     processed = true;
                     break;

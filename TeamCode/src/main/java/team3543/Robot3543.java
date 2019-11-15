@@ -34,7 +34,7 @@ import trclib.TrcPidController;
 import trclib.TrcPidDrive;
 import trclib.TrcRobot;
 
-public class Robot3543 extends Robot
+class Robot3543 extends Robot
 {
     private static TrcHashMap<String, Boolean> preferences3543 = new TrcHashMap<String, Boolean>()
             .add("hasRobot", true)
@@ -52,6 +52,13 @@ public class Robot3543 extends Robot
             .add("showTensorFlowView", false)
             .add("initSubsystems", true)
             .add("team3543", true);
+    private static TrcHashMap<String, Object> phoneParams3543 = new TrcHashMap<String, Object>()
+            .add("cameraDir", RobotInfo3543.CAMERA_DIR)
+            .add("cameraMonitorFeedback", RobotInfo3543.CAMERA_MONITOR_FEEDBACK)
+            .add("phoneIsPortrait", RobotInfo3543.PHONE_IS_PORTRAIT)
+            .add("phoneFrontOffset", RobotInfo3543.PHONE_FRONT_OFFSET)
+            .add("phoneLeftOffset", RobotInfo3543.PHONE_LEFT_OFFSET)
+            .add("phoneHeightOffset", RobotInfo3543.PHONE_HEIGHT_OFFSET);
     private static TrcHashMap<String, Double> elevatorParams3543 = new TrcHashMap<String, Double>()
             .add("minHeight", RobotInfo3543.ELEVATOR_MIN_HEIGHT)
             .add("maxHeight", RobotInfo3543.ELEVATOR_MAX_HEIGHT)
@@ -62,24 +69,33 @@ public class Robot3543 extends Robot
             .add("Kd", RobotInfo3543.ELEVATOR_KD)
             .add("tolerance", RobotInfo3543.ELEVATOR_TOLERANCE)
             .add("calPower", RobotInfo3543.ELEVATOR_CAL_POWER);
+    private static TrcHashMap<String, Object> wristParams3543 = new TrcHashMap<String, Object>()
+            .add("maxStepRate", RobotInfo3543.WRIST_MAX_STEPRATE)
+            .add("minPos", RobotInfo3543.WRIST_MIN_POS)
+            .add("maxPos", RobotInfo3543.WRIST_MAX_POS)
+            .add("retractPos", RobotInfo3543.WRIST_RETRACT_POS)
+            .add("extendPos", RobotInfo3543.WRIST_EXTEND_POS)
+            .add("inverted", RobotInfo3543.WRIST_INVERTED);
+    private static TrcHashMap<String, Double> foundationLatchParams3543 = new TrcHashMap<String, Double>()
+            .add("closePos", RobotInfo3543.FOUNDATION_LATCH_CLOSE_POS)
+            .add("closeTime", RobotInfo3543.FOUNDATION_LATCH_CLOSE_TIME)
+            .add("openPos", RobotInfo3543.FOUNDATION_LATCH_OPEN_POS)
+            .add("openTime", RobotInfo3543.FOUNDATION_LATCH_OPEN_TIME);
+    ExtenderArm3543 extenderArm = null;
 
-    public Robot3543(TrcRobot.RunMode runMode)
+    Robot3543(TrcRobot.RunMode runMode)
     {
-        super(runMode, RobotInfo3543.ROBOT_NAME, preferences3543, RobotInfo3543.CAMERA_DIR,
-                RobotInfo3543.CAMERA_MONITOR_FEEDBACK);
+        super(runMode, RobotInfo3543.ROBOT_NAME, preferences3543, phoneParams3543);
         //
         // Initialize vision subsystems.
         //
-        if (preferences.get("useVuforia") && vuforia != null &&
+        if (preferences.getBoolean("useVuforia") && vuforia != null &&
             (runMode == TrcRobot.RunMode.AUTO_MODE || runMode == TrcRobot.RunMode.TEST_MODE))
         {
-            initVuforia(
-                    RobotInfo3543.CAMERA_DIR, RobotInfo3543.PHONE_IS_PORTRAIT, RobotInfo3543.ROBOT_LENGTH,
-                    RobotInfo3543.ROBOT_WIDTH, RobotInfo3543.PHONE_FRONT_OFFSET, RobotInfo3543.PHONE_LEFT_OFFSET,
-                    RobotInfo3543.PHONE_HEIGHT_OFFSET);
+            initVuforia(phoneParams3543, RobotInfo3543.ROBOT_LENGTH, RobotInfo3543.ROBOT_WIDTH);
         }
 
-        if (preferences.get("useTensorFlow") && vuforia != null &&
+        if (preferences.getBoolean("useTensorFlow") && vuforia != null &&
             (runMode == TrcRobot.RunMode.AUTO_MODE || runMode == TrcRobot.RunMode.TEST_MODE))
         {
             TrcHomographyMapper.Rectangle cameraRect = new TrcHomographyMapper.Rectangle(
@@ -94,10 +110,10 @@ public class Robot3543 extends Robot
                     RobotInfo3543.HOMOGRAPHY_WORLD_BOTTOMLEFT_X, RobotInfo3543.HOMOGRAPHY_WORLD_BOTTOMLEFT_Y,
                     RobotInfo3543.HOMOGRAPHY_WORLD_BOTTOMRIGHT_X, RobotInfo3543.HOMOGRAPHY_WORLD_BOTTOMRIGHT_Y);
 
-            initTensorFlow(preferences.get("showTensorFlowView"), cameraRect, worldRect);
+            initTensorFlow(preferences.getBoolean("showTensorFlowView"), cameraRect, worldRect);
         }
 
-        if (preferences.get("hasRobot"))
+        if (preferences.getBoolean("hasRobot"))
         {
             //
             // Initialize DriveBase.
@@ -106,9 +122,9 @@ public class Robot3543 extends Robot
             //
             // Initialize other subsystems.
             //
-            if (preferences.get("initSubsystems"))
+            if (preferences.getBoolean("initSubsystems"))
             {
-                if (preferences.get("hasElevator"))
+                if (preferences.getBoolean("hasElevator"))
                 {
                     elevator = new Elevator(preferences3543, elevatorParams3543, null);
                     elevator.zeroCalibrate();
@@ -117,15 +133,13 @@ public class Robot3543 extends Robot
                 extenderArm = new ExtenderArm3543();
                 extenderArm.retract();
 
-                wrist = new Wrist(RobotInfo3543.WRIST_MAX_STEPRATE, RobotInfo3543.WRIST_MIN_POS,
-                        RobotInfo3543.WRIST_MAX_POS, RobotInfo3543.WRIST_RETRACT_POS, RobotInfo3543.WRIST_EXTEND_POS,
-                        RobotInfo3543.WRIST_INVERTED);
+                wrist = new Wrist(wristParams3543);
                 wrist.retract();
+
                 grabber = new Grabber3543();
                 grabber.release();
-                foundationLatch = new FoundationLatch(
-                        RobotInfo3543.FOUNDATION_LATCH_CLOSE_POS, RobotInfo3543.FOUNDATION_LATCH_CLOSE_TIME,
-                        RobotInfo3543.FOUNDATION_LATCH_OPEN_POS, RobotInfo3543.FOUNDATION_LATCH_OPEN_TIME);
+
+                foundationLatch = new FoundationLatch(foundationLatchParams3543);
                 foundationLatch.release();
             }
         }
@@ -152,7 +166,7 @@ public class Robot3543 extends Robot
         leftRearWheel.setOdometryEnabled(true);
         rightRearWheel.setOdometryEnabled(true);
 
-        if (preferences.get("useVelocityControl"))
+        if (preferences.getBoolean("useVelocityControl"))
         {
             TrcPidController.PidCoefficients motorPidCoef = new TrcPidController.PidCoefficients(
                     RobotInfo3543.MOTOR_KP, RobotInfo3543.MOTOR_KI, RobotInfo3543.MOTOR_KD);
@@ -197,7 +211,8 @@ public class Robot3543 extends Robot
         gyroPidCtrl.setOutputRange(-RobotInfo3543.TURN_POWER_LIMIT, RobotInfo3543.TURN_POWER_LIMIT);
 
         pidDrive = new TrcPidDrive(
-                "pidDrive", driveBase, encoderXPidCtrl, encoderYPidCtrl, gyroPidCtrl, true);
+                "pidDrive", driveBase, encoderXPidCtrl, encoderYPidCtrl, gyroPidCtrl);
+        pidDrive.setAbsTargetModeEnabled(true);
         pidDrive.setStallTimeout(RobotInfo3543.PIDDRIVE_STALL_TIMEOUT);
         pidDrive.setBeep(androidTone);
     }   //initDriveBase

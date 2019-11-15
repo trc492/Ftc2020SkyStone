@@ -34,7 +34,7 @@ import trclib.TrcPidController;
 import trclib.TrcPidDrive;
 import trclib.TrcRobot;
 
-public class Robot6541 extends Robot
+class Robot6541 extends Robot
 {
     private static TrcHashMap<String, Boolean> preferences6541 = new TrcHashMap<String, Boolean>()
             .add("hasRobot", true)
@@ -52,6 +52,13 @@ public class Robot6541 extends Robot
             .add("showTensorFlowView", false)
             .add("initSubsystems", true)
             .add("team3543", false);
+    private static TrcHashMap<String, Object> phoneParams6541 = new TrcHashMap<String, Object>()
+            .add("cameraDir", RobotInfo6541.CAMERA_DIR)
+            .add("cameraMonitorFeedback", RobotInfo6541.CAMERA_MONITOR_FEEDBACK)
+            .add("phoneIsPortrait", RobotInfo6541.PHONE_IS_PORTRAIT)
+            .add("phoneFrontOffset", RobotInfo6541.PHONE_FRONT_OFFSET)
+            .add("phoneLeftOffset", RobotInfo6541.PHONE_LEFT_OFFSET)
+            .add("phoneHeightOffset", RobotInfo6541.PHONE_HEIGHT_OFFSET);
     private static TrcHashMap<String, Double> elevatorParams6541 = new TrcHashMap<String, Double>()
             .add("minHeight", RobotInfo6541.ELEVATOR_MIN_HEIGHT)
             .add("maxHeight", RobotInfo6541.ELEVATOR_MAX_HEIGHT)
@@ -62,24 +69,32 @@ public class Robot6541 extends Robot
             .add("Kd", RobotInfo6541.ELEVATOR_KD)
             .add("tolerance", RobotInfo6541.ELEVATOR_TOLERANCE)
             .add("calPower", RobotInfo6541.ELEVATOR_CAL_POWER);
+    private static TrcHashMap<String, Object> wristParams6541 = new TrcHashMap<String, Object>()
+            .add("maxStepRate", RobotInfo6541.WRIST_MAX_STEPRATE)
+            .add("minPos", RobotInfo6541.WRIST_MIN_POS)
+            .add("maxPos", RobotInfo6541.WRIST_MAX_POS)
+            .add("retractPos", RobotInfo6541.WRIST_RETRACT_POS)
+            .add("extendPos", RobotInfo6541.WRIST_EXTEND_POS)
+            .add("inverted", RobotInfo6541.WRIST_INVERTED);
+    private static TrcHashMap<String, Double> foundationLatchParams6541 = new TrcHashMap<String, Double>()
+            .add("closePos", RobotInfo6541.FOUNDATION_LATCH_CLOSE_POS)
+            .add("closeTime", RobotInfo6541.FOUNDATION_LATCH_CLOSE_TIME)
+            .add("openPos", RobotInfo6541.FOUNDATION_LATCH_OPEN_POS)
+            .add("openTime", RobotInfo6541.FOUNDATION_LATCH_OPEN_TIME);
 
-    public Robot6541(TrcRobot.RunMode runMode)
+    Robot6541(TrcRobot.RunMode runMode)
     {
-        super(runMode, RobotInfo6541.ROBOT_NAME, preferences6541, RobotInfo6541.CAMERA_DIR,
-                RobotInfo6541.CAMERA_MONITOR_FEEDBACK);
+        super(runMode, RobotInfo6541.ROBOT_NAME, preferences6541, phoneParams6541);
         //
         // Initialize vision subsystems.
         //
-        if (preferences.get("useVuforia") && vuforia != null &&
+        if (preferences.getBoolean("useVuforia") && vuforia != null &&
             (runMode == TrcRobot.RunMode.AUTO_MODE || runMode == TrcRobot.RunMode.TEST_MODE))
         {
-            initVuforia(
-                    RobotInfo6541.CAMERA_DIR, RobotInfo6541.PHONE_IS_PORTRAIT, RobotInfo6541.ROBOT_LENGTH,
-                    RobotInfo6541.ROBOT_WIDTH, RobotInfo6541.PHONE_FRONT_OFFSET, RobotInfo6541.PHONE_LEFT_OFFSET,
-                    RobotInfo6541.PHONE_HEIGHT_OFFSET);
+            initVuforia(phoneParams6541, RobotInfo6541.ROBOT_LENGTH, RobotInfo6541.ROBOT_WIDTH);
         }
 
-        if (preferences.get("useTensorFlow") && vuforia != null &&
+        if (preferences.getBoolean("useTensorFlow") && vuforia != null &&
             (runMode == TrcRobot.RunMode.AUTO_MODE || runMode == TrcRobot.RunMode.TEST_MODE))
         {
             TrcHomographyMapper.Rectangle cameraRect = new TrcHomographyMapper.Rectangle(
@@ -94,10 +109,10 @@ public class Robot6541 extends Robot
                     RobotInfo6541.HOMOGRAPHY_WORLD_BOTTOMLEFT_X, RobotInfo6541.HOMOGRAPHY_WORLD_BOTTOMLEFT_Y,
                     RobotInfo6541.HOMOGRAPHY_WORLD_BOTTOMRIGHT_X, RobotInfo6541.HOMOGRAPHY_WORLD_BOTTOMRIGHT_Y);
 
-            initTensorFlow(preferences.get("showTensorFlowView"), cameraRect, worldRect);
+            initTensorFlow(preferences.getBoolean("showTensorFlowView"), cameraRect, worldRect);
         }
 
-        if (preferences.get("hasRobot"))
+        if (preferences.getBoolean("hasRobot"))
         {
             //
             // Initialize DriveBase.
@@ -106,22 +121,20 @@ public class Robot6541 extends Robot
             //
             // Initialize other subsystems.
             //
-            if (preferences.get("initSubsystems"))
+            if (preferences.getBoolean("initSubsystems"))
             {
-                if (preferences.get("hasElevator"))
+                if (preferences.getBoolean("hasElevator"))
                 {
                     elevator = new Elevator(preferences6541, elevatorParams6541, RobotInfo6541.ELEVATOR_HEIGHT_PRESETS);
                     elevator.zeroCalibrate();
                 }
 
-                wrist = new Wrist(RobotInfo6541.WRIST_MAX_STEPRATE, RobotInfo6541.WRIST_MIN_POS,
-                        RobotInfo6541.WRIST_MAX_POS, RobotInfo6541.WRIST_RETRACT_POS, RobotInfo6541.WRIST_EXTEND_POS,
-                        RobotInfo6541.WRIST_INVERTED);
+                wrist = new Wrist(wristParams6541);
                 wrist.setPosition(RobotInfo6541.WRIST_MIN_POS);
+
                 grabber = new Grabber6541();
-                foundationLatch = new FoundationLatch(
-                        RobotInfo6541.FOUNDATION_LATCH_CLOSE_POS, RobotInfo6541.FOUNDATION_LATCH_CLOSE_TIME,
-                        RobotInfo6541.FOUNDATION_LATCH_OPEN_POS, RobotInfo6541.FOUNDATION_LATCH_OPEN_TIME);
+
+                foundationLatch = new FoundationLatch(foundationLatchParams6541);
                 foundationLatch.release();
             }
         }
@@ -148,7 +161,7 @@ public class Robot6541 extends Robot
         leftRearWheel.setOdometryEnabled(true);
         rightRearWheel.setOdometryEnabled(true);
 
-        if (preferences.get("useVelocityControl"))
+        if (preferences.getBoolean("useVelocityControl"))
         {
             TrcPidController.PidCoefficients motorPidCoef = new TrcPidController.PidCoefficients(
                     RobotInfo6541.MOTOR_KP, RobotInfo6541.MOTOR_KI, RobotInfo6541.MOTOR_KD);
@@ -193,7 +206,9 @@ public class Robot6541 extends Robot
         gyroPidCtrl.setOutputRange(-RobotInfo6541.TURN_POWER_LIMIT, RobotInfo6541.TURN_POWER_LIMIT);
 
         pidDrive = new TrcPidDrive(
-                "pidDrive", driveBase, encoderXPidCtrl, encoderYPidCtrl, gyroPidCtrl, true);
+                "pidDrive", driveBase, encoderXPidCtrl, encoderYPidCtrl, gyroPidCtrl);
+        //CodeReview: you should really turn on Absolute Target Mode and adjust your autonomous to work in this mode.
+        pidDrive.setAbsTargetModeEnabled(false);
         pidDrive.setStallTimeout(RobotInfo6541.PIDDRIVE_STALL_TIMEOUT);
         pidDrive.setBeep(androidTone);
     }   //initDriveBase

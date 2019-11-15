@@ -32,7 +32,7 @@ import trclib.TrcRobot;
 @TeleOp(name="FtcTeleOp6541", group="FtcTeleOp")
 public class FtcTeleOp6541 extends CommonTeleOp
 {
-    private static final String MODULE_NAME = "FtcTeleOp6541";
+    protected Robot6541 robot6541;
 
     //
     // Implements FtcOpMode abstract method.
@@ -44,9 +44,9 @@ public class FtcTeleOp6541 extends CommonTeleOp
         //
         // Initializing robot objects.
         //
-        moduleName = MODULE_NAME;
-        robot = new Robot6541(TrcRobot.getRunMode());
+        robot6541 = new Robot6541(TrcRobot.getRunMode());
         super.initRobot();
+        super.initTeamSpecifics(robot6541);
     }   //initRobot
 
     //
@@ -58,7 +58,7 @@ public class FtcTeleOp6541 extends CommonTeleOp
     {
         super.runPeriodic(elapsedTime);
         //
-        // Operate other subsystems.
+        // Operate other team specific subsystems.
         //
     }   //runPeriodic
 
@@ -122,33 +122,33 @@ public class FtcTeleOp6541 extends CommonTeleOp
                 case FtcGamepad.GAMEPAD_DPAD_UP:
                     if (pressed)
                     {
-                        processed = true;
-                        robot.elevator.levelUp();
+                        robot6541.elevator.levelUp();
                     }
+                    processed = true;
                     break;
 
                 case FtcGamepad.GAMEPAD_DPAD_DOWN:
                     if (pressed)
                     {
-                        processed = true;
-                        robot.elevator.levelDown();
+                        robot6541.elevator.levelDown();
                     }
+                    processed = true;
                     break;
 
                 case FtcGamepad.GAMEPAD_DPAD_LEFT:
                     if (pressed)
                     {
-                        processed = true;
-                        robot.elevator.setLevel(0); // set elevator to base level.
+                        robot6541.elevator.setLevel(0); // set elevator to base level.
                     }
+                    processed = true;
                     break;
 
                 case FtcGamepad.GAMEPAD_DPAD_RIGHT:
                     if (pressed)
                     {
-                        processed = true;
-                        robot.elevator.setLevel(1); // set elevator to first level.
+                        robot6541.elevator.setLevel(1); // set elevator to first level.
                     }
+                    processed = true;
                     break;
 
                 case FtcGamepad.GAMEPAD_BACK:

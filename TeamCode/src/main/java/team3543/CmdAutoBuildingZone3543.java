@@ -58,16 +58,20 @@ public class CmdAutoBuildingZone3543 implements TrcRobot.RobotCommand
     private final TrcEvent event;
     private final TrcTimer timer;
     private final TrcStateMachine<State> sm;
+    private final double allianceDirection;
     private final SimplePidDrive<State> simplePidDrive;
 
-    public CmdAutoBuildingZone3543(Robot robot, CommonAuto.AutoChoices autoChoices, double startX, double startY)
+    CmdAutoBuildingZone3543(Robot robot, CommonAuto.AutoChoices autoChoices)
     {
         this.robot = robot;
         this.autoChoices = autoChoices;
         event = new TrcEvent(moduleName);
         timer = new TrcTimer(moduleName);
         sm = new TrcStateMachine<>(moduleName);
-        simplePidDrive = new SimplePidDrive<>(robot.pidDrive, event, sm, startX, startY);
+        allianceDirection = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE? 1.0: -1.0;
+        simplePidDrive = new SimplePidDrive<>(
+                robot.pidDrive, event, sm, RobotInfo3543.BUILDING_ZONE_ROBOT_START_X * allianceDirection,
+                RobotInfo3543.BUILDING_ZONE_ROBOT_START_Y);
         sm.start(State.DO_DELAY);
     }   //CmdAutoBuildingZone3543
 
@@ -102,7 +106,7 @@ public class CmdAutoBuildingZone3543 implements TrcRobot.RobotCommand
         else
         {
             double xTarget = 0.0, yTarget = 0.0, turnTarget = 0.0;
-            State nextState = null;
+            State nextState;
 
             robot.dashboard.displayPrintf(1, "State: %s", state);
             switch (state)
@@ -162,12 +166,12 @@ public class CmdAutoBuildingZone3543 implements TrcRobot.RobotCommand
                     break;
 
                 case SCOOT_TO_LINE:
-                    xTarget = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE ? 48.0 : -48.0;
+                    xTarget = 48.0 * allianceDirection;
                     simplePidDrive.setRelativeXTarget(xTarget, State.DONE);
                     break;
 
                 case SCOOT_CLOSER_TO_LINE:
-                    xTarget = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE ? 28.0 : -28.0;
+                    xTarget = 28.0 * allianceDirection;
                     simplePidDrive.setRelativeXTarget(xTarget, State.MOVE_CLOSER_TO_CENTER);
                     break;
 
@@ -177,7 +181,7 @@ public class CmdAutoBuildingZone3543 implements TrcRobot.RobotCommand
                     break;
 
                 case SCOOT_TO_LINE_SHORT:
-                    xTarget = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE ? 20.0 : -20.0;
+                    xTarget = 20.0 * allianceDirection;
                     simplePidDrive.setRelativeXTarget(xTarget, State.DONE);
                     break;
 

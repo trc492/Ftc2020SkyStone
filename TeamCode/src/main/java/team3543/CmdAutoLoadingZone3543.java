@@ -24,15 +24,15 @@ package team3543;
 
 import common.CmdSkystoneVision;
 import common.CommonAuto;
+import common.RobotInfo;
 import common.SimplePidDrive;
-import common.Robot;
 import trclib.TrcEvent;
 import trclib.TrcPidController;
 import trclib.TrcRobot;
 import trclib.TrcStateMachine;
 import trclib.TrcTimer;
 
-public class CmdAutoLoadingZoneFar3543 implements TrcRobot.RobotCommand
+public class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
 {
     private static final boolean debugXPid = true;
     private static final boolean debugYPid = true;
@@ -49,8 +49,9 @@ public class CmdAutoLoadingZoneFar3543 implements TrcRobot.RobotCommand
     private enum State
     {
         DO_DELAY,
+        SETUP_VISION,
         MOVE_CLOSER,
-        START_VISION,
+        MOVE_TO_FIRST_STONE,
         DO_VISION,
         GO_DOWN_ON_SKYSTONE,
         GRAB_SKYSTONE,
@@ -75,13 +76,14 @@ public class CmdAutoLoadingZoneFar3543 implements TrcRobot.RobotCommand
         DONE
     }   //enum State
 
-    private static final String moduleName = "CmdAutoLoadingZoneFar3543";
+    private static final String moduleName = "CmdAutoLoadingZone3543";
 
-    private final Robot robot;
+    private final Robot3543 robot;
     private final CommonAuto.AutoChoices autoChoices;
     private final TrcTimer timer;
     private final TrcEvent event;
     private final TrcStateMachine<State> sm;
+    private final double allianceDirection;
     private final SimplePidDrive<State> simplePidDrive;
     private CmdSkystoneVision skystoneVisionCommand = null;
 
@@ -90,7 +92,7 @@ public class CmdAutoLoadingZoneFar3543 implements TrcRobot.RobotCommand
      *
      * @param robot specifies the robot object for providing access to various global objects.
      */
-    public CmdAutoLoadingZoneFar3543(Robot robot, CommonAuto.AutoChoices autoChoices)
+    CmdAutoLoadingZone3543(Robot3543 robot, CommonAuto.AutoChoices autoChoices)
     {
         robot.globalTracer.traceInfo(moduleName, "robot=%s", robot);
 
@@ -99,22 +101,20 @@ public class CmdAutoLoadingZoneFar3543 implements TrcRobot.RobotCommand
         timer = new TrcTimer(moduleName);
         event = new TrcEvent(moduleName);
         sm = new TrcStateMachine<>(moduleName);
+        allianceDirection = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE ? 1.0 : -1.0;
 
         robot.encoderXPidCtrl.setNoOscillation(true);
         robot.encoderYPidCtrl.setNoOscillation(true);
         robot.gyroPidCtrl.setNoOscillation(true);
 
-        double startX;
-        double startY;
-        double allianceInversion = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE ? 1.0 : -1.0;
-        startX = (autoChoices.strategy == CommonAuto.AutoStrategy.LOADING_ZONE_WALL?
-                RobotInfo3543.ROBOT_START_X_WALL: RobotInfo3543.ROBOT_START_X_FAR) * allianceInversion;
-        startY = (autoChoices.strategy == CommonAuto.AutoStrategy.LOADING_ZONE_WALL?
-                RobotInfo3543.ROBOT_START_Y_WALL: RobotInfo3543.ROBOT_START_Y_FAR) * allianceInversion;
-        simplePidDrive = new SimplePidDrive<State>(robot.pidDrive, event, sm, startX, startY);
+        double startX = (autoChoices.strategy == CommonAuto.AutoStrategy.LOADING_ZONE_WALL?
+                         RobotInfo.ROBOT_START_X_WALL: RobotInfo.ROBOT_START_X_FAR)* allianceDirection;
+        double startY = (autoChoices.strategy == CommonAuto.AutoStrategy.LOADING_ZONE_WALL?
+                         RobotInfo.ROBOT_START_Y_WALL: RobotInfo.ROBOT_START_Y_FAR)* allianceDirection;
+        simplePidDrive = new SimplePidDrive<>(robot.pidDrive, event, sm, startX, startY);
 
         sm.start(State.DO_DELAY);
-    }   //CmdAutoLoadingZoneFar3543
+    }   //CmdAutoLoadingZone3543
 
     //
     // Implements the TrcRobot.RobotCommand interface.
@@ -168,7 +168,7 @@ public class CmdAutoLoadingZoneFar3543 implements TrcRobot.RobotCommand
             double xTarget = 0.0;
             double yTarget = 0.0;
             double turnTarget = 0.0;
-            State nextState = null;
+            State nextState;
 
             robot.dashboard.displayPrintf(1, "State: %s", state);
 
@@ -180,7 +180,7 @@ public class CmdAutoLoadingZoneFar3543 implements TrcRobot.RobotCommand
                     //
                     if (autoChoices.delay == 0.0)
                     {
-                        sm.setState(State.MOVE_CLOSER);
+                        sm.setState(State.SETUP_VISION);
                         //
                         // Intentionally falling through to the next state.
                         //
@@ -188,10 +188,17 @@ public class CmdAutoLoadingZoneFar3543 implements TrcRobot.RobotCommand
                     else
                     {
                         timer.set(autoChoices.delay, event);
-                        sm.waitForSingleEvent(event, State.MOVE_CLOSER);
+                        sm.waitForSingleEvent(event, State.SETUP_VISION);
                         break;
                     }
 
+                case SETUP_VISION:
+                    skystoneVisionCommand = new CmdSkystoneVision(
+                            robot, autoChoices, RobotInfo3543.GRABBER_OFFSET, useVisionTrigger);
+                    sm.setState(State.MOVE_CLOSER);
+                    //
+                    // Intentionally falling through to the next state.
+                    //
                 case MOVE_CLOSER:
                     //
                     // Move closer slowly to a distance so Vuforia can detect the target.
@@ -202,15 +209,17 @@ public class CmdAutoLoadingZoneFar3543 implements TrcRobot.RobotCommand
                     robot.pidDrive.getXPidCtrl().setOutputLimit(0.5);
                     robot.pidDrive.getYPidCtrl().setOutputLimit(0.5);
                     yTarget = 23.5;
-                    simplePidDrive.setRelativeYTarget(yTarget, State.START_VISION);
+                    nextState = useVisionTrigger? State.DO_VISION: State.MOVE_TO_FIRST_STONE;
+                    simplePidDrive.setRelativeYTarget(yTarget, nextState);
                     break;
 
-                case START_VISION:
-                    skystoneVisionCommand = new CmdSkystoneVision(robot, autoChoices, useVisionTrigger);
-                    sm.setState(State.DO_VISION);
-                    //
-                    // Intentionally falling through to the next state.
-                    //
+                case MOVE_TO_FIRST_STONE:
+                    xTarget = autoChoices.strategy == CommonAuto.AutoStrategy.LOADING_ZONE_FAR?
+                                RobotInfo.LEFT_STONE_FAR_X: RobotInfo.LEFT_STONE_WALL_X;
+                    xTarget *= allianceDirection;
+                    simplePidDrive.setRelativeXTarget(xTarget, State.DO_VISION);
+                    break;
+
                 case DO_VISION:
                     //
                     // Do vision to detect and go to the skystone. If vision did not detect skystone, it will stop
@@ -233,10 +242,15 @@ public class CmdAutoLoadingZoneFar3543 implements TrcRobot.RobotCommand
                     }
 
                 case GO_DOWN_ON_SKYSTONE:
-                    robot.extenderArm.extend(2.5, event);
-                    sm.waitForSingleEvent(event, State.GRAB_SKYSTONE);
-                    break;
-
+                    if (robot.extenderArm != null)
+                    {
+                        robot.extenderArm.extend(2.5, event);
+                        sm.waitForSingleEvent(event, State.GRAB_SKYSTONE);
+                        break;
+                    }
+                    //
+                    // Intentionally falling through to the next state.
+                    //
                 case GRAB_SKYSTONE:
                     robot.grabber.grab(2.0, event);
                     sm.waitForSingleEvent(event, State.PULL_SKYSTONE);
@@ -248,45 +262,58 @@ public class CmdAutoLoadingZoneFar3543 implements TrcRobot.RobotCommand
                     break;
 
                 case START_EXTENDER_ARM_RETRACTION:
-                    robot.extenderArm.retract(1.0, event);
-                    sm.waitForSingleEvent(event, State.GOTO_FOUNDATION);
-                    break;
-
+                    if (robot.extenderArm != null)
+                    {
+                        robot.extenderArm.retract(1.0, event);
+                        sm.waitForSingleEvent(event, State.GOTO_FOUNDATION);
+                        break;
+                    }
+                    //
+                    // Intentionally falling through to the next state.
+                    //
                 case GOTO_FOUNDATION:
+                    // Need to go full speed to save time.
                     robot.pidDrive.getXPidCtrl().setOutputLimit(1.0);
                     robot.pidDrive.getYPidCtrl().setOutputLimit(1.0);
-                    //xTarget = (autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE? 72.0: -72.0)
-                    //          - robot.driveBase.getXPosition();
-                    //simplePidDrive.setRelativeXTarget(xTarget, State.APPROACH_FOUNDATION);
-                    xTarget = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE?
-                            FOUNDATION_DROP_ABS_POS_X_INCHES : -FOUNDATION_DROP_ABS_POS_X_INCHES;
+//                    xTarget = 72.0*allianceDirection - robot.driveBase.getXPosition();
+//                    simplePidDrive.setRelativeXTarget(xTarget, State.APPROACH_FOUNDATION);
+                    xTarget = FOUNDATION_DROP_ABS_POS_X_INCHES * allianceDirection;
                     simplePidDrive.setAbsoluteXTarget(xTarget, State.APPROACH_FOUNDATION);
                     break;
 
                 case APPROACH_FOUNDATION:
-                    yTarget = 12.0;
+                    robot.elevator.setPosition(6.0);
+                    if (robot.extenderArm != null) robot.extenderArm.extend(); //start extending early
+                    yTarget = 10.0;
                     simplePidDrive.setRelativeYTarget(yTarget, State.EXTEND_ARM_OVER_FOUNDATION);
                     break;
 
                 case EXTEND_ARM_OVER_FOUNDATION:
-                    robot.elevator.setPosition(6.0);
-                    robot.extenderArm.extend(3.0, event);
-                    sm.waitForSingleEvent(event, State.DROP_SKYSTONE);
-                    break;
-
+                    if (robot.extenderArm != null)
+                    {
+                        robot.extenderArm.extend(2.0, event);
+                        sm.waitForSingleEvent(event, State.DROP_SKYSTONE);
+                        break;
+                    }
+                    //
+                    // Intentionally falling through to the next state.
+                    //
                 case DROP_SKYSTONE:
                     robot.grabber.release(1.5, event);
                     sm.waitForSingleEvent(event, State.BACK_OFF_FOUNDATION);
                     break;
 
                 case BACK_OFF_FOUNDATION:
-                    robot.elevator.setPosition(0.0);
-                    robot.extenderArm.retract();
-                    nextState = autoChoices.moveFoundation? State.TURN_AROUND:
+//                    robot.elevator.setPosition(0.0);//CodeReview: should not go down or we won't clear the skystone.
+                    if (robot.extenderArm != null) robot.extenderArm.retract();
+                    robot.wrist.retract();
+                    yTarget = -6.0;
+                    nextState = autoChoices.moveFoundation?
+                                    State.TURN_AROUND:
                                 autoChoices.parkUnderBridge == CommonAuto.ParkPosition.PARK_CLOSE_TO_CENTER?
+                                        //CodeReview: may have to move back more before strafing to clear the bridge.
                                         State.STRAFE_TO_PARK:
                                         State.SKIP_MOVE_FOUNDATION_PARK_WALL;
-                    yTarget = -6.0;
                     simplePidDrive.setRelativeYTarget(yTarget, nextState);
                     break;
 
@@ -296,9 +323,7 @@ public class CmdAutoLoadingZoneFar3543 implements TrcRobot.RobotCommand
                     break;
 
                 case BACKUP_TO_FOUNDATION:
-                    robot.extenderArm.retract();
-                    robot.wrist.retract();
-                    yTarget = -10.0;
+                    yTarget = -8.0;
                     simplePidDrive.setRelativeYTarget(yTarget, State.HOOK_FOUNDATION);
                     break;
 
@@ -310,65 +335,60 @@ public class CmdAutoLoadingZoneFar3543 implements TrcRobot.RobotCommand
                 case PULL_FOUNDATION_TO_WALL:
                     yTarget = 46.0;
                     simplePidDrive.setRelativeYTarget(yTarget, State.UNHOOK_FOUNDATION);
-                    //yTarget = WALL_ABS_POS_Y_INCHES;
-                    //simplePidDrive.setAbsoluteYTarget(yTarget, State.UNHOOK_FOUNDATION);
                     break;
 
                 case UNHOOK_FOUNDATION:
+                    robot.foundationLatch.release(event);
                     nextState = autoChoices.parkUnderBridge == CommonAuto.ParkPosition.PARK_CLOSE_TO_WALL?
                                     State.STRAFE_TO_PARK:
                                 autoChoices.parkUnderBridge == CommonAuto.ParkPosition.PARK_CLOSE_TO_CENTER?
                                     State.MOVE_CLOSER_TO_BRIDGE: State.DONE;
-                    robot.foundationLatch.release(event);
                     sm.waitForSingleEvent(event, nextState);
                     break;
 
                 case MOVE_CLOSER_TO_BRIDGE:
-                    //xTarget = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE? 30.0: -30.0;
-                    //simplePidDrive.setRelativeXTarget(xTarget, State.MOVE_BACK_TO_CENTER);
-                    xTarget = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE?
-                            AVOID_PARTNER_ABS_POS_X_INCHES : -AVOID_PARTNER_ABS_POS_X_INCHES;
+//                    xTarget = 30.0 * allianceDirection;
+//                    simplePidDrive.setRelativeXTarget(xTarget, State.MOVE_BACK_TO_CENTER);
+                    xTarget = AVOID_PARTNER_ABS_POS_X_INCHES * allianceDirection;
                     simplePidDrive.setAbsoluteXTarget(xTarget,State.MOVE_BACK_TO_CENTER);
                     break;
 
                 case MOVE_BACK_TO_CENTER:
-                    //yTarget = -20.0;
-                    //simplePidDrive.setRelativeYTarget(yTarget, State.MOVE_UNDER_BRIDGE);
+//                    yTarget = -20.0;
+//                    simplePidDrive.setRelativeYTarget(yTarget, State.MOVE_UNDER_BRIDGE);
                     yTarget = CENTER_FIELD_ABS_POS_Y_INCHES;
                     simplePidDrive.setAbsoluteYTarget(yTarget, State.MOVE_UNDER_BRIDGE);
                     break;
 
                 case MOVE_UNDER_BRIDGE:
-                    //xTarget = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE? 20.0: -20.0;
-                    //simplePidDrive.setRelativeXTarget(xTarget, State.DONE);
-                    xTarget = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE?
-                            ON_LINE_ABS_POS_X_INCHES : -ON_LINE_ABS_POS_X_INCHES;
+//                    xTarget = 20.0 * allianceDirection;
+//                    simplePidDrive.setRelativeXTarget(xTarget, State.DONE);
+                    xTarget = ON_LINE_ABS_POS_X_INCHES * allianceDirection;
                     simplePidDrive.setAbsoluteXTarget(xTarget, State.DONE);
                     break;
 
                 case SKIP_MOVE_FOUNDATION_PARK_WALL:
+//                    yTarget = -44.0;
+//                    simplePidDrive.setRelativeYTarget(yTarget, nextState);
+                    yTarget = WALL_ABS_POS_Y_INCHES;
                     nextState = autoChoices.parkUnderBridge == CommonAuto.ParkPosition.PARK_CLOSE_TO_WALL?
                                     State.STRAFE_TO_PARK: State.DONE;
-                    //yTarget = -44.0;
-                    //simplePidDrive.setRelativeYTarget(yTarget, nextState);
-                    yTarget = WALL_ABS_POS_Y_INCHES;
                     simplePidDrive.setAbsoluteYTarget(yTarget, nextState);
                     break;
 
                 case STRAFE_TO_PARK:
+//                    xTarget = -50.0 * allianceDirection;
+//                    if (autoChoices.moveFoundation) xTarget = -xTarget;
+//                    simplePidDrive.setRelativeXTarget(xTarget, nextState);
+                    xTarget = ON_LINE_ABS_POS_X_INCHES * allianceDirection;
                     nextState = autoChoices.parkUnderBridge == CommonAuto.ParkPosition.PARK_CLOSE_TO_CENTER?
                                     State.MOVE_TOWARDS_CENTER: State.DONE;
-                    //xTarget = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE? -50.0: 50.0;
-                    //if (autoChoices.moveFoundation) xTarget = -xTarget;
-                    //simplePidDrive.setRelativeXTarget(xTarget, nextState);
-                    xTarget = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE?
-                            ON_LINE_ABS_POS_X_INCHES : -ON_LINE_ABS_POS_X_INCHES;
                     simplePidDrive.setAbsoluteXTarget(xTarget, nextState);
                     break;
 
                 case MOVE_TOWARDS_CENTER:
-                    //yTarget = 8.0;
-                    //simplePidDrive.setRelativeYTarget(yTarget, State.DONE);
+//                    yTarget = 8.0;
+//                    simplePidDrive.setRelativeYTarget(yTarget, State.DONE);
                     yTarget = CENTER_FIELD_ABS_POS_Y_INCHES;
                     simplePidDrive.setAbsoluteYTarget(yTarget, State.DONE);
                     break;
@@ -418,4 +438,4 @@ public class CmdAutoLoadingZoneFar3543 implements TrcRobot.RobotCommand
         return !sm.isEnabled();
     }   //cmdPeriodic
 
-}   //class CmdAutoLoadingZoneFar3543
+}   //class CmdAutoLoadingZone3543

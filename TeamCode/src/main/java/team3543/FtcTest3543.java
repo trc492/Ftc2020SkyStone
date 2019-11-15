@@ -48,8 +48,7 @@ public class FtcTest3543 extends FtcTeleOp3543
         //
         super.initRobot();
 
-        moduleName = MODULE_NAME;
-        commonTest.init(MODULE_NAME, robot,
+        commonTest.init(MODULE_NAME, robot3543,
                 new TrcPidController.PidCoefficients(
                         RobotInfo3543.PURE_PURSUIT_POS_KP, RobotInfo3543.PURE_PURSUIT_POS_KI,
                         RobotInfo3543.PURE_PURSUIT_POS_KD),

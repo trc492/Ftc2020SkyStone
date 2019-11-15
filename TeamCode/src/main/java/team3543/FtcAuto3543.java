@@ -32,8 +32,6 @@ import trclib.TrcRobot;
 @Autonomous(name="FtcAuto3543", group="FtcAuto")
 public class FtcAuto3543 extends CommonAuto
 {
-    private static final String MODULE_NAME = "FtcAuto3543";
-
     //
     // Implements FtcOpMode abstract method.
     //
@@ -44,53 +42,44 @@ public class FtcAuto3543 extends CommonAuto
         //
         // Initializing robot objects.
         //
-        moduleName = MODULE_NAME;
-        robot = new Robot3543(TrcRobot.getRunMode());
+        Robot3543 robot3543 = new Robot3543(TrcRobot.getRunMode());
         super.initRobot();
+        super.initTeamSpecifics(robot3543);
         //
         // Strategies.
         //
-        boolean hasRobot = robot.preferences.get("hasRobot");
+        boolean hasRobot = robot3543.preferences.getBoolean("hasRobot");
 
         switch (autoChoices.strategy)
         {
             case LOADING_ZONE_FAR:
-//                if (hasRobot)
-//                {
-//                    autoCommand = new CmdAutoLoadingZoneFar3543(
-//                            robot, autoChoices, autoChoices.alliance == Alliance.RED_ALLIANCE? 36.0: -36.0, 9.0);
-//                }
-//                break;
-
             case LOADING_ZONE_WALL:
                 if (hasRobot)
                 {
-                    autoCommand = new CmdAutoLoadingZoneFar3543(
-                            robot, autoChoices);
+                    autoCommand = new CmdAutoLoadingZone3543(robot3543, autoChoices);
                 }
                 break;
 
             case BUILDING_ZONE:
                 if (hasRobot)
                 {
-                    autoCommand = new CmdAutoBuildingZone3543(
-                            robot, autoChoices, autoChoices.alliance == Alliance.RED_ALLIANCE? 36.0: -36.0, 9.0);
+                    autoCommand = new CmdAutoBuildingZone3543(robot3543, autoChoices);
                 }
                 break;
 
             case PURE_PURSUIT_DRIVE:
-                if (hasRobot)
-                {
+//                if (hasRobot)
+//                {
 //                    autoCommand = new CmdPurePursuitDrive(
-//                            robot.driveBase, posPidCoeff, turnPidCoeff, velPidCoeff);
-                }
+//                            robot3543.driveBase, posPidCoeff, turnPidCoeff, velPidCoeff);
+//                }
                 break;
 
             case PID_DRIVE:
                 if (hasRobot)
                 {
                     autoCommand = new CmdPidDrive(
-                            robot, robot.pidDrive, autoChoices.delay,
+                            robot3543, robot3543.pidDrive, autoChoices.delay,
                             autoChoices.xTarget*12.0, autoChoices.yTarget*12.0, autoChoices.turnTarget,
                             autoChoices.drivePower, false);
                 }
@@ -100,7 +89,7 @@ public class FtcAuto3543 extends CommonAuto
                 if (hasRobot)
                 {
                     autoCommand = new CmdTimedDrive(
-                            robot, autoChoices.delay, autoChoices.driveTime,
+                            robot3543, autoChoices.delay, autoChoices.driveTime,
                             0.0, autoChoices.drivePower, 0.0);
                 }
                 break;

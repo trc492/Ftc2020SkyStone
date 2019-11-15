@@ -57,9 +57,14 @@ public class CommonTest
         DONE
     }   //enum State
 
-    protected String moduleName = null;
-    protected Robot robot = null;
+    private Robot robot = null;
     private TrcLoopPerformanceMonitor loopPerformanceMonitor = null;
+    //
+    // State machine.
+    //
+    private TrcEvent event;
+    private TrcTimer timer;
+    private TrcStateMachine<State> sm;
     //
     // Made the following menus static so their values will persist across different runs of PID tuning.
     //
@@ -67,13 +72,6 @@ public class CommonTest
     private static FtcValueMenu tuneKiMenu = null;
     private static FtcValueMenu tuneKdMenu = null;
     private static FtcValueMenu tuneKfMenu = null;
-
-    //
-    // State machine.
-    //
-    private TrcEvent event;
-    private TrcTimer timer;
-    private TrcStateMachine<State> sm;
     //
     // Menu choices.
     //
@@ -84,6 +82,7 @@ public class CommonTest
     private double driveTime = 0.0;
     private double drivePower = 0.0;
 
+    private boolean hasRobot = true;
     private TrcRobot.RobotCommand testCommand = null;
     private int motorIndex = 0;
 
@@ -95,9 +94,8 @@ public class CommonTest
             String moduleName, Robot robot, TrcPidController.PidCoefficients posPidCoeff,
             TrcPidController.PidCoefficients turnPidCoeff, TrcPidController.PidCoefficients velPidCoeff)
     {
-        this.moduleName = moduleName;
         this.robot = robot;
-        if (robot.preferences.get("useLoopPerformanceMonitor"))
+        if (robot.preferences.getBoolean("useLoopPerformanceMonitor"))
         {
             loopPerformanceMonitor = new TrcLoopPerformanceMonitor("TestLoopMonitor", 1.0);
         }
@@ -112,7 +110,7 @@ public class CommonTest
         //
         doTestMenus();
 
-        boolean hasRobot = robot.preferences.get("hasRobot");
+        hasRobot = robot.preferences.getBoolean("hasRobot");
 
         switch (test)
         {
@@ -233,12 +231,11 @@ public class CommonTest
 
     public boolean shouldRunTeleOpPeriodic()
     {
-        return robot.preferences.get("hasRobot") && test == Test.SENSORS_TEST;
+        return hasRobot && test == Test.SENSORS_TEST;
     }   //shouldRunTeleOpPeriodic
 
     public void runPeriodic(double elapsedTime)
     {
-        boolean hasRobot = robot.preferences.get("hasRobot");
         //
         // Must override TeleOp so it doesn't fight with us.
         //
@@ -266,8 +263,6 @@ public class CommonTest
         State state = sm.getState();
         robot.dashboard.displayPrintf(
                 8, "%s: %s", test.toString(), state != null? state.toString(): "STOPPED!");
-
-        boolean hasRobot = robot.preferences.get("hasRobot");
 
         if (testCommand != null)
         {
@@ -426,7 +421,7 @@ public class CommonTest
         // Read all sensors and display on the dashboard.
         // Drive the robot around to sample different locations of the field.
         //
-        if (robot.preferences.get("hasRobot"))
+        if (hasRobot)
         {
             robot.dashboard.displayPrintf(
                     9, LABEL_WIDTH, "Enc: ", "lf=%.0f,rf=%.0f,lr=%.0f,rr=%.0f",

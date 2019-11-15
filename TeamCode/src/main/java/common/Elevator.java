@@ -33,19 +33,19 @@ public class Elevator
 {
     private FtcDigitalInput lowerLimitSwitch;
     private FtcDigitalInput upperLimitSwitch;
-    private FtcDcMotor elevatorMotor;
-    private TrcPidController pidController;
     private TrcPidActuator pidElevator;
 
     private double[] elevatorHeightPresets;
     private int elevatorLevel;
 
     public Elevator(
-            TrcHashMap<String, Boolean> preferences, TrcHashMap<String, Double> elevatorParams,
+            TrcHashMap<String, Boolean> preferences, TrcHashMap<String, Double> params,
             double[] elevatorHeightPresets)
     {
+        boolean isTeam3543 = preferences.getBoolean("team3543");
+
         lowerLimitSwitch = new FtcDigitalInput("elevatorLowerLimit");
-        if (!preferences.get("team3543"))
+        if (!isTeam3543)
         {
             upperLimitSwitch = new FtcDigitalInput("elevatorUpperLimit");
         }
@@ -56,24 +56,23 @@ public class Elevator
             upperLimitSwitch.setInverted(false);
         }
 
-        elevatorMotor = new FtcDcMotor("elevatorMotor", lowerLimitSwitch, upperLimitSwitch);
+        FtcDcMotor elevatorMotor = new FtcDcMotor("elevatorMotor", lowerLimitSwitch, upperLimitSwitch);
         elevatorMotor.setBrakeModeEnabled(true);
         elevatorMotor.setOdometryEnabled(true);
-        if (preferences.get("team3543"))
+        if (isTeam3543)
         {
             elevatorMotor.setInverted(true);
         }
 
-        pidController = new TrcPidController(
+        TrcPidController pidController = new TrcPidController(
                 "elevatorPidController",
-                new TrcPidController.PidCoefficients(
-                        elevatorParams.get("Kp"), elevatorParams.get("Ki"), elevatorParams.get("Kd")),
-                elevatorParams.get("tolerance"), this::getPosition);
+                new TrcPidController.PidCoefficients(params.get("Kp"), params.get("Ki"), params.get("Kd")),
+                params.get("tolerance"), this::getPosition);
 
         pidElevator = new TrcPidActuator(
                 "pidElevator", elevatorMotor, lowerLimitSwitch, pidController,
-                elevatorParams.get("calPower"), elevatorParams.get("minHeight"), elevatorParams.get("maxHeight"));
-        pidElevator.setPositionScale(elevatorParams.get("scale"), elevatorParams.get("offset"));
+                params.get("calPower"), params.get("minHeight"), params.get("maxHeight"));
+        pidElevator.setPositionScale(params.get("scale"), params.get("offset"));
 
         this.elevatorHeightPresets = elevatorHeightPresets;
         this.elevatorLevel = 0;

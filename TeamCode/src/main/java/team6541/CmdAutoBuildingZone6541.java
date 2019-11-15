@@ -31,6 +31,7 @@ import trclib.TrcRobot;
 import trclib.TrcStateMachine;
 import trclib.TrcTimer;
 
+// CodeReview: This code need to be revised to be compatible with the new grabber.
 public class CmdAutoBuildingZone6541 implements TrcRobot.RobotCommand
 {
     private static final boolean debugXPid = true;
@@ -66,16 +67,20 @@ public class CmdAutoBuildingZone6541 implements TrcRobot.RobotCommand
     private final TrcEvent event;
     private final TrcTimer timer;
     private final TrcStateMachine<State> sm;
+    private final double allianceDirection;
     private final SimplePidDrive<State> simplePidDrive;
 
-    public CmdAutoBuildingZone6541(Robot robot, CommonAuto.AutoChoices autoChoices, double startX, double startY)
+    public CmdAutoBuildingZone6541(Robot robot, CommonAuto.AutoChoices autoChoices)
     {
         this.robot = robot;
         this.autoChoices = autoChoices;
         event = new TrcEvent(moduleName);
         timer = new TrcTimer(moduleName);
         sm = new TrcStateMachine<>(moduleName);
-        simplePidDrive = new SimplePidDrive<>(robot.pidDrive, event, sm, startX, startY);
+        allianceDirection = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE? 1.0: -1.0;
+        simplePidDrive = new SimplePidDrive<>(
+                robot.pidDrive, event, sm, RobotInfo6541.BUILDING_ZONE_ROBOT_START_X * allianceDirection,
+                RobotInfo6541.BUILDING_ZONE_ROBOT_START_Y);
         sm.start(State.DO_DELAY);
     }   //CmdAutoBuildingZone3543
 

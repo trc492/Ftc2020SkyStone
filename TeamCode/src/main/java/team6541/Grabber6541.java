@@ -27,6 +27,7 @@ import ftclib.FtcDcMotor;
 import trclib.TrcEvent;
 import trclib.TrcTimer;
 
+// CodeReview: this code needs to be rewritten because the grabber design has changed.
 /**
  * This class implements the grabber for team 6541. It has a motor wheel that sucks up the yellow block, holds it,
  * and then releases by turning the motor the other way.
