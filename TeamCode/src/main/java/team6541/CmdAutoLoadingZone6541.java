@@ -269,7 +269,6 @@ public class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
                     break;
 
                 case BACKUP_TO_FOUNDATION:
-                    robot.wrist.retract();
                     yTarget = -10.0;
                     simplePidDrive.setRelativeYTarget(yTarget, State.HOOK_FOUNDATION);
                     break;

@@ -138,18 +138,9 @@ public abstract class CommonTeleOp extends FtcOpMode
             elevatorUpSwitch = robot.elevator.isUpperLimitSwitchActive();
         }
 
-        double wristPower = operatorGamepad.getLeftStickX(true) / 3.0;
-        double wristPos = 0.0;
-        if (robot.wrist != null)
-        {
-            robot.wrist.setPower(wristPower);
-            wristPos = robot.wrist.getPosition();
-        }
-
         dashboard.displayPrintf(
-                3, "ElevatorPower=%.1f, ElevatorPos=%.1f, ElevatorLimitSwitch=[%b, %b], " +
-                "WristPower=%.1f, WristPos =%.1f",
-                elevatorPower, elevatorPos, elevatorDownSwitch, elevatorUpSwitch, wristPower, wristPos);
+                3, "ElevatorPower=%.1f, ElevatorPos=%.1f, ElevatorLimitSwitch=[%b, %b]",
+                elevatorPower, elevatorPos, elevatorDownSwitch, elevatorUpSwitch);
 
         if (robot.grabber != null && robot.foundationLatch != null)
         {

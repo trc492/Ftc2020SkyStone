@@ -59,6 +59,54 @@ import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocaliz
 
 public class Robot
 {
+    public static class PhoneParameters
+    {
+        VuforiaLocalizer.CameraDirection cameraDir;
+        VuforiaLocalizer.Parameters.CameraMonitorFeedback cameraMonitorFeedback;
+        boolean phoneIsPortrait;
+        double phoneFrontOffset;
+        double phoneLeftOffset;
+        double phoneHeightOffset;
+
+        public PhoneParameters setCameraDir(VuforiaLocalizer.CameraDirection cameraDir)
+        {
+            this.cameraDir = cameraDir;
+            return this;
+        }
+
+        public PhoneParameters setCameraMonitorFeedback(
+                VuforiaLocalizer.Parameters.CameraMonitorFeedback cameraMonitorFeedback)
+        {
+            this.cameraMonitorFeedback = cameraMonitorFeedback;
+            return this;
+        }
+
+        public PhoneParameters setPhoneIsPortrait(boolean phoneIsPortrait)
+        {
+            this.phoneIsPortrait = phoneIsPortrait;
+            return this;
+        }
+
+        public PhoneParameters setPhoneFrontOffset(double phoneFrontOffset)
+        {
+            this.phoneFrontOffset = phoneFrontOffset;
+            return this;
+        }
+
+        public PhoneParameters setPhoneLeftOffset(double phoneLeftOffset)
+        {
+            this.phoneLeftOffset = phoneLeftOffset;
+            return this;
+        }
+
+        public PhoneParameters setPhoneHeightOffset(double phoneHeightOffset)
+        {
+            this.phoneHeightOffset = phoneHeightOffset;
+            return this;
+        }
+
+    }   //class PhoneParameters
+
     protected enum DriveMode
     {
         TANK_MODE,
@@ -116,13 +164,12 @@ public class Robot
     // Other common subsystems.
     //
     @Nonnull public Elevator elevator = null;
-    @Nonnull public Wrist wrist = null;
     @Nonnull public Grabber grabber = null;
-    @Nonnull public FoundationLatch foundationLatch = null;
+    @Nonnull public Grabber foundationLatch = null;
 
     public Robot(
             TrcRobot.RunMode runMode, String robotName,
-            TrcHashMap<String, Boolean> preferences, TrcHashMap<String, Object> phoneParams)
+            TrcHashMap<String, Boolean> preferences, PhoneParameters phoneParams)
     {
         //
         // Initialize global objects.
@@ -155,9 +202,7 @@ public class Robot
                     opMode.hardwareMap.appContext.getResources().getIdentifier(
                             "cameraMonitorViewId", "id", opMode.hardwareMap.appContext.getPackageName());
             vuforia = new FtcVuforia(
-                    VUFORIA_LICENSE_KEY, cameraViewId,
-                    (VuforiaLocalizer.CameraDirection) phoneParams.get("cameraDir"),
-                    (VuforiaLocalizer.Parameters.CameraMonitorFeedback) phoneParams.get("cameraMonitorFeedback"));
+                    VUFORIA_LICENSE_KEY, cameraViewId, phoneParams.cameraDir, phoneParams.cameraMonitorFeedback);
         }
 
         if (preferences.getBoolean("hasRobot"))
@@ -279,7 +324,7 @@ public class Robot
         }
     }   //speak
 
-    protected void initVuforia(TrcHashMap<String, Object> phoneParams, double robotLength, double robotWidth)
+    protected void initVuforia(PhoneParameters phoneParams, double robotLength, double robotWidth)
     {
         float phoneXRotate;
         float phoneYRotate;
@@ -309,11 +354,11 @@ public class Robot
          * 200 mm above ground level.
          */
         final int CAMERA_FORWARD_DISPLACEMENT =
-                (int)((robotLength/2.0 - phoneParams.getDouble("phoneFrontOffset"))*TrcUtil.MM_PER_INCH);
+                (int)((robotLength/2.0 - phoneParams.phoneFrontOffset)*TrcUtil.MM_PER_INCH);
         final int CAMERA_VERTICAL_DISPLACEMENT =
-                (int)(phoneParams.getDouble("phoneHeightOffset")*TrcUtil.MM_PER_INCH);
+                (int)(phoneParams.phoneHeightOffset*TrcUtil.MM_PER_INCH);
         final int CAMERA_LEFT_DISPLACEMENT =
-                (int)((robotWidth/2.0 - phoneParams.getDouble("phoneLeftOffset"))*TrcUtil.MM_PER_INCH);
+                (int)((robotWidth/2.0 - phoneParams.phoneLeftOffset)*TrcUtil.MM_PER_INCH);
         //
         // Create a transformation matrix describing where the phone is on the robot.
         //
@@ -329,10 +374,10 @@ public class Robot
         // The two examples below assume that the camera is facing forward out the front of the robot.
 
         // We need to rotate the camera around it's long axis to bring the correct camera forward.
-        phoneYRotate = phoneParams.get("cameraDir") == BACK ? -90.0f : 90.0f;
+        phoneYRotate = phoneParams.cameraDir == BACK ? -90.0f : 90.0f;
 
         // Rotate the phone vertical about the X axis if it's in portrait mode
-        phoneXRotate = phoneParams.getBoolean("phoneIsPortrait") ? 90.0f : 0.0f;
+        phoneXRotate = phoneParams.phoneIsPortrait ? 90.0f : 0.0f;
 
         // Next, translate the camera lens to where it is on the robot.
         // In this example, it is centered (left to right), but forward of the middle of the robot, and above ground level.

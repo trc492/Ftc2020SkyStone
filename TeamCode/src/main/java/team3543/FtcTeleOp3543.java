@@ -66,8 +66,17 @@ public class FtcTeleOp3543 extends CommonTeleOp
         robot3543.extenderArm.setPower(extenderArmPower);
         extenderArmPos = robot3543.extenderArm.getPosition();
 
+        double wristPower = operatorGamepad.getLeftStickX(true) / 3.0;
+        double wristPos = 0.0;
+        if (robot3543.wrist != null)
+        {
+            robot3543.wrist.setPower(wristPower);
+            wristPos = robot3543.wrist.getPosition();
+        }
+
         dashboard.displayPrintf(
-                5, "ExtenderArmPower=%.1f, ExtenderArmPos=%.1f", extenderArmPower, extenderArmPos);
+                5, "ArmPower=%.1f, ArmPos=%.1f, WristPower=%.1f, WristPos =%.1f",
+                extenderArmPower, extenderArmPos, wristPower, wristPos);
     }   //runPeriodic
 
     //

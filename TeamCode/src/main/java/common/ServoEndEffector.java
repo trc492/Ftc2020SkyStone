@@ -27,8 +27,41 @@ import trclib.TrcEvent;
 
 public class ServoEndEffector
 {
-    private FtcServo endEffector;
+    public static class Parameters
+    {
+        double retractPos;
+        double retractTime;
+        double extendPos;
+        double extendTime;
+
+        public Parameters setRetractPos(double retractPos)
+        {
+            this.retractPos = retractPos;
+            return this;
+        }
+
+        public Parameters setRetractTime(double retractTime)
+        {
+            this.retractTime = retractTime;
+            return this;
+        }
+
+        public Parameters setExtendPos(double extendPos)
+        {
+            this.extendPos = extendPos;
+            return this;
+        }
+
+        public Parameters setExtendTime(double extendTime)
+        {
+            this.extendTime = extendTime;
+            return this;
+        }
+
+    }   //class Parameters
+
     private Parameters params;
+    private FtcServo endEffector;
 
     public ServoEndEffector(String instanceName, Parameters params)
     {
@@ -70,38 +103,6 @@ public class ServoEndEffector
     public double getPosition()
     {
         return endEffector.getPosition();
-    }
-
-    public static class Parameters
-    {
-        double retractPos;
-        double retractTime;
-        double extendPos;
-        double extendTime;
-
-        public Parameters setRetractPos(double retractPos)
-        {
-            this.retractPos = retractPos;
-            return this;
-        }
-
-        public Parameters setRetractTime(double retractTime)
-        {
-            this.retractTime = retractTime;
-            return this;
-        }
-
-        public Parameters setExtendPos(double extendPos)
-        {
-            this.extendPos = extendPos;
-            return this;
-        }
-
-        public Parameters setExtendTime(double extendTime)
-        {
-            this.extendTime = extendTime;
-            return this;
-        }
     }
 
 }   //class ServoEndEffector

@@ -20,27 +20,72 @@
  * SOFTWARE.
  */
 
-package common;
+package team3543;
 
 import ftclib.FtcServo;
 import trclib.TrcEnhancedServo;
 import trclib.TrcEvent;
-import trclib.TrcHashMap;
 
-public class Wrist
+public class Wrist3543
 {
+    public static class Parameters
+    {
+        double maxStepRate;
+        double minPos;
+        double maxPos;
+        double retractPos;
+        double extendPos;
+        boolean inverted;
+
+        public Parameters setMaxStepRate(double maxStepRate)
+        {
+            this.maxStepRate = maxStepRate;
+            return this;
+        }
+
+        public Parameters setMinPos(double minPos)
+        {
+            this.minPos = minPos;
+            return this;
+        }
+
+        public Parameters setMaxPos(double maxPos)
+        {
+            this.maxPos = maxPos;
+            return this;
+        }
+
+        public Parameters setRetractPos(double retractPos)
+        {
+            this.retractPos = retractPos;
+            return this;
+        }
+
+        public Parameters setExtendPos(double extendPos)
+        {
+            this.extendPos = extendPos;
+            return this;
+        }
+
+        public Parameters setInverted(boolean inverted)
+        {
+            this.inverted = inverted;
+            return this;
+        }
+
+    }   //class Parameters
+
     private final FtcServo wrist = new FtcServo("wristServo");
     private final TrcEnhancedServo enhancedWrist = new TrcEnhancedServo("enhancedWristServo", wrist);
     private final double retractPos, extendPos;
 
-    public Wrist(TrcHashMap<String, Object> params)
+    public Wrist3543(Parameters params)
     {
-        this.retractPos = params.getDouble("retractPos");
-        this.extendPos = params.getDouble("extendPos");
-        enhancedWrist.setStepMode(
-                params.getDouble("maxStepRate"), params.getDouble("minPos"), params.getDouble("maxPos"));
-        wrist.setInverted(params.getBoolean("inverted"));
-    }   //Wrist
+        this.retractPos = params.retractPos;
+        this.extendPos = params.extendPos;
+        enhancedWrist.setStepMode(params.maxStepRate, params.minPos, params.maxPos);
+        wrist.setInverted(params.inverted);
+    }   //Wrist3543
 
     public void setPower(double power)
     {
@@ -72,4 +117,4 @@ public class Wrist
         setPosition(extendPos);
     }   //extend
 
-}   //class Wrist
+}   //class Wrist3543

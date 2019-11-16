@@ -140,14 +140,12 @@ class RobotInfo6541
 
     static final double[] ELEVATOR_HEIGHT_PRESETS       = {2.5, 6.5, 10.5, 14.5, 18.5};
     //
-    // Wrist subsystem.
+    // elbow subsystem.
     //
-    static final double WRIST_MAX_STEPRATE              = 1.0 / 0.75;
-    static final double WRIST_MIN_POS                   = 0.0;
-    static final double WRIST_MAX_POS                   = 0.5;
-    static final double WRIST_RETRACT_POS               = 0.5;
-    static final double WRIST_EXTEND_POS                = 0.0;
-    static final boolean WRIST_INVERTED                 = true;
+    static final double ELBOW_EXTEND_POS                = 0.0;
+    static final double ELBOW_EXTEND_TIME               = 1;
+    static final double ELBOW_RETRACT_POS               = 1;
+    static final double ELBOW_RETRACT_TIME              = 1;
     //
     // Grabber subsystem.
     //
@@ -161,17 +159,10 @@ class RobotInfo6541
     //
     // FoundationLatch subsystem.
     //
-    static final double FOUNDATION_LATCH_CLOSE_POS      = 65.0 / 255.0;
-    static final double FOUNDATION_LATCH_CLOSE_TIME     = 0.5;
-    static final double FOUNDATION_LATCH_OPEN_POS       = 170.0 / 255.0;
-    static final double FOUNDATION_LATCH_OPEN_TIME      = 0.5;
-    //
-    // elbow subsystem.
-    //
-    static final double ELBOW_EXTEND_POS                = 0.0;
-    static final double ELBOW_EXTEND_TIME               = 1;
-    static final double ELBOW_RETRACT_POS               = 1;
-    static final double ELBOW_RETRACT_TIME              = 1;
+    static final double FOUNDATION_LATCH_RELEASE_POS    = 170.0 / 255.0;
+    static final double FOUNDATION_LATCH_RELEASE_TIME   = 0.5;
+    static final double FOUNDATION_LATCH_GRAB_POS       = 65.0 / 255.0;
+    static final double FOUNDATION_LATCH_GRAB_TIME      = 0.5;
 
     static final double BUILDING_ZONE_ROBOT_START_X     = 36.0;
     static final double BUILDING_ZONE_ROBOT_START_Y     = 9.0;

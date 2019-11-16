@@ -23,11 +23,9 @@
 package team6541;
 
 import common.Elevator;
-import common.FoundationLatch;
 import common.Grabber;
 import common.Robot;
 import common.ServoEndEffector;
-import common.Wrist;
 import ftclib.FtcDcMotor;
 import trclib.TrcHashMap;
 import trclib.TrcHomographyMapper;
@@ -38,7 +36,7 @@ import trclib.TrcRobot;
 
 class Robot6541 extends Robot
 {
-    private static TrcHashMap<String, Boolean> preferences6541 = new TrcHashMap<String, Boolean>()
+    private static final TrcHashMap<String, Boolean> preferences6541 = new TrcHashMap<String, Boolean>()
             .add("hasRobot", true)
             .add("hasElevator", true)
             .add("useTraceLog", true)
@@ -55,47 +53,40 @@ class Robot6541 extends Robot
             .add("initSubsystems", true)
             .add("useVisionTrigger", false)
             .add("team3543", false);
-    private static TrcHashMap<String, Object> phoneParams6541 = new TrcHashMap<String, Object>()
-            .add("cameraDir", RobotInfo6541.CAMERA_DIR)
-            .add("cameraMonitorFeedback", RobotInfo6541.CAMERA_MONITOR_FEEDBACK)
-            .add("phoneIsPortrait", RobotInfo6541.PHONE_IS_PORTRAIT)
-            .add("phoneFrontOffset", RobotInfo6541.PHONE_FRONT_OFFSET)
-            .add("phoneLeftOffset", RobotInfo6541.PHONE_LEFT_OFFSET)
-            .add("phoneHeightOffset", RobotInfo6541.PHONE_HEIGHT_OFFSET);
-    private static TrcHashMap<String, Double> elevatorParams6541 = new TrcHashMap<String, Double>()
-            .add("minHeight", RobotInfo6541.ELEVATOR_MIN_HEIGHT)
-            .add("maxHeight", RobotInfo6541.ELEVATOR_MAX_HEIGHT)
-            .add("scale", RobotInfo6541.ELEVATOR_SCALE)
-            .add("offset", RobotInfo6541.ELEVATOR_OFFSET)
-            .add("Kp", RobotInfo6541.ELEVATOR_KP)
-            .add("Ki", RobotInfo6541.ELEVATOR_KI)
-            .add("Kd", RobotInfo6541.ELEVATOR_KD)
-            .add("tolerance", RobotInfo6541.ELEVATOR_TOLERANCE)
-            .add("calPower", RobotInfo6541.ELEVATOR_CAL_POWER);
-    private static TrcHashMap<String, Object> wristParams6541 = new TrcHashMap<String, Object>()
-            .add("maxStepRate", RobotInfo6541.WRIST_MAX_STEPRATE)
-            .add("minPos", RobotInfo6541.WRIST_MIN_POS)
-            .add("maxPos", RobotInfo6541.WRIST_MAX_POS)
-            .add("retractPos", RobotInfo6541.WRIST_RETRACT_POS)
-            .add("extendPos", RobotInfo6541.WRIST_EXTEND_POS)
-            .add("inverted", RobotInfo6541.WRIST_INVERTED);
-    private static TrcHashMap<String, Double> foundationLatchParams6541 = new TrcHashMap<String, Double>()
-            .add("closePos", RobotInfo6541.FOUNDATION_LATCH_CLOSE_POS)
-            .add("closeTime", RobotInfo6541.FOUNDATION_LATCH_CLOSE_TIME)
-            .add("openPos", RobotInfo6541.FOUNDATION_LATCH_OPEN_POS)
-            .add("openTime", RobotInfo6541.FOUNDATION_LATCH_OPEN_TIME);
-    private static ServoEndEffector.Parameters grabberParams6541 = new ServoEndEffector.Parameters()
+    private static final PhoneParameters phoneParams6541 = new PhoneParameters()
+            .setCameraDir(RobotInfo6541.CAMERA_DIR)
+            .setCameraMonitorFeedback(RobotInfo6541.CAMERA_MONITOR_FEEDBACK)
+            .setPhoneIsPortrait(RobotInfo6541.PHONE_IS_PORTRAIT)
+            .setPhoneFrontOffset(RobotInfo6541.PHONE_FRONT_OFFSET)
+            .setPhoneLeftOffset(RobotInfo6541.PHONE_LEFT_OFFSET)
+            .setPhoneHeightOffset(RobotInfo6541.PHONE_HEIGHT_OFFSET);
+    private static final Elevator.Parameters elevatorParams6541 = new Elevator.Parameters()
+            .setMinHeight(RobotInfo6541.ELEVATOR_MIN_HEIGHT)
+            .setMaxHeight(RobotInfo6541.ELEVATOR_MAX_HEIGHT)
+            .setScale(RobotInfo6541.ELEVATOR_SCALE)
+            .setOffset(RobotInfo6541.ELEVATOR_OFFSET)
+            .setKp(RobotInfo6541.ELEVATOR_KP)
+            .setKi(RobotInfo6541.ELEVATOR_KI)
+            .setKd(RobotInfo6541.ELEVATOR_KD)
+            .setTolerance(RobotInfo6541.ELEVATOR_TOLERANCE)
+            .setCalPower(RobotInfo6541.ELEVATOR_CAL_POWER);
+    private static final ServoEndEffector.Parameters elbowParams6541 = new ServoEndEffector.Parameters()
+            .setRetractPos(RobotInfo6541.ELBOW_RETRACT_POS)
+            .setRetractTime(RobotInfo6541.ELBOW_RETRACT_TIME)
+            .setExtendPos(RobotInfo6541.ELBOW_EXTEND_POS)
+            .setExtendTime(RobotInfo6541.ELBOW_EXTEND_TIME);
+    private static final ServoEndEffector.Parameters grabberParams6541 = new ServoEndEffector.Parameters()
             .setExtendPos(RobotInfo6541.GRABBER_RELEASE_POS)
             .setExtendTime(RobotInfo6541.GRABBER_RELEASE_TIME)
             .setRetractPos(RobotInfo6541.GRABBER_GRAB_POS)
             .setRetractTime(RobotInfo6541.GRABBER_GRAB_TIME);
-    private final ServoEndEffector.Parameters elbowParams6541 = new ServoEndEffector.Parameters()
-            .setExtendPos(RobotInfo6541.ELBOW_EXTEND_POS)
-            .setExtendTime(RobotInfo6541.ELBOW_EXTEND_TIME)
-            .setRetractPos(RobotInfo6541.ELBOW_RETRACT_POS)
-            .setRetractTime(RobotInfo6541.ELBOW_RETRACT_TIME);
+    private static final ServoEndEffector.Parameters foundationLatchParams6541 = new ServoEndEffector.Parameters()
+            .setRetractPos(RobotInfo6541.FOUNDATION_LATCH_RELEASE_POS)
+            .setRetractTime(RobotInfo6541.FOUNDATION_LATCH_RELEASE_TIME)
+            .setExtendPos(RobotInfo6541.FOUNDATION_LATCH_GRAB_POS)
+            .setExtendTime(RobotInfo6541.FOUNDATION_LATCH_GRAB_TIME);
 
-    public ServoEndEffector elbow = null;
+    ServoEndEffector elbow = null;
 
     Robot6541(TrcRobot.RunMode runMode)
     {
@@ -144,16 +135,13 @@ class Robot6541 extends Robot
                     elevator.zeroCalibrate();
                 }
 
-                wrist = new Wrist(wristParams6541);
-                wrist.setPosition(RobotInfo6541.WRIST_MIN_POS);
+                elbow = new ServoEndEffector("elbowServo", elbowParams6541);
+                elbow.retract();
 
                 grabber = new Grabber("grabberServo", grabberParams6541);
 
-                foundationLatch = new FoundationLatch(foundationLatchParams6541);
+                foundationLatch = new Grabber("foundatonLatchServo", foundationLatchParams6541);
                 foundationLatch.release();
-
-                elbow = new ServoEndEffector("elbowServo", elbowParams6541);
-                elbow.retract();
             }
         }
         //

@@ -151,7 +151,7 @@ class RobotInfo3543
     static final double EXTENDER_ARM_PLACEMENT_POS      = 0.6;
     static final double EXTENDER_ARM_MOVE_TIME          = 3.0;
     //
-    // Wrist subsystem.
+    // Wrist3543 subsystem.
     //
     static final double WRIST_MAX_STEPRATE              = (1.0/0.75);
     static final double WRIST_MIN_POS                   = 0.2;
@@ -170,10 +170,10 @@ class RobotInfo3543
     //
     // FoundationLatch subsystem.
     //
-    static final double FOUNDATION_LATCH_CLOSE_POS      = (100.0/255.0);
-    static final double FOUNDATION_LATCH_CLOSE_TIME     = 0.5;
-    static final double FOUNDATION_LATCH_OPEN_POS       = 0.0;
-    static final double FOUNDATION_LATCH_OPEN_TIME      = 0.5;
+    static final double FOUNDATION_LATCH_RELEASE_POS    = 0.0;
+    static final double FOUNDATION_LATCH_RELEASE_TIME   = 0.5;
+    static final double FOUNDATION_LATCH_GRAB_POS       = (100.0/255.0);
+    static final double FOUNDATION_LATCH_GRAB_TIME      = 0.5;
 
     static final double BUILDING_ZONE_ROBOT_START_X     = 36.0;
     static final double BUILDING_ZONE_ROBOT_START_Y     = 9.0;

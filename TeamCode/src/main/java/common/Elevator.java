@@ -31,6 +31,69 @@ import trclib.TrcPidController;
 
 public class Elevator
 {
+    public static class Parameters
+    {
+        double minHeight, maxHeight;
+        double scale, offset;
+        double kP, kI, kD, tolerance;
+        double calPower;
+
+        public Parameters setMinHeight(double minHeight)
+        {
+            this.minHeight = minHeight;
+            return this;
+        }
+
+        public Parameters setMaxHeight(double maxHeight)
+        {
+            this.maxHeight = maxHeight;
+            return this;
+        }
+
+        public Parameters setScale(double scale)
+        {
+            this.scale = scale;
+            return this;
+        }
+
+        public Parameters setOffset(double offset)
+        {
+            this.offset = offset;
+            return this;
+        }
+
+        public Parameters setKp(double kP)
+        {
+            this.kP = kP;
+            return this;
+        }
+
+        public Parameters setKi(double kI)
+        {
+            this.kI = kI;
+            return this;
+        }
+
+        public Parameters setKd(double kD)
+        {
+            this.kD = kD;
+            return this;
+        }
+
+        public Parameters setTolerance(double tolerance)
+        {
+            this.tolerance = tolerance;
+            return this;
+        }
+
+        public Parameters setCalPower(double calPower)
+        {
+            this.calPower = calPower;
+            return this;
+        }
+
+    }   //class Parameters
+
     private FtcDigitalInput lowerLimitSwitch;
     private FtcDigitalInput upperLimitSwitch;
     private TrcPidActuator pidElevator;
@@ -39,8 +102,7 @@ public class Elevator
     private int elevatorLevel;
 
     public Elevator(
-            TrcHashMap<String, Boolean> preferences, TrcHashMap<String, Double> params,
-            double[] elevatorHeightPresets)
+            TrcHashMap<String, Boolean> preferences, Parameters params, double[] elevatorHeightPresets)
     {
         boolean isTeam3543 = preferences.getBoolean("team3543");
 
@@ -66,13 +128,13 @@ public class Elevator
 
         TrcPidController pidController = new TrcPidController(
                 "elevatorPidController",
-                new TrcPidController.PidCoefficients(params.get("Kp"), params.get("Ki"), params.get("Kd")),
-                params.get("tolerance"), this::getPosition);
+                new TrcPidController.PidCoefficients(params.kP, params.kI, params.kD),
+                params.tolerance, this::getPosition);
 
         pidElevator = new TrcPidActuator(
                 "pidElevator", elevatorMotor, lowerLimitSwitch, pidController,
-                params.get("calPower"), params.get("minHeight"), params.get("maxHeight"));
-        pidElevator.setPositionScale(params.get("scale"), params.get("offset"));
+                params.calPower, params.minHeight, params.maxHeight);
+        pidElevator.setPositionScale(params.scale, params.offset);
 
         this.elevatorHeightPresets = elevatorHeightPresets;
         this.elevatorLevel = 0;
