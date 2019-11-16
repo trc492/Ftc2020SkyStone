@@ -69,7 +69,8 @@ class Robot6541 extends Robot
             .setKi(RobotInfo6541.ELEVATOR_KI)
             .setKd(RobotInfo6541.ELEVATOR_KD)
             .setTolerance(RobotInfo6541.ELEVATOR_TOLERANCE)
-            .setCalPower(RobotInfo6541.ELEVATOR_CAL_POWER);
+            .setCalPower(RobotInfo6541.ELEVATOR_CAL_POWER)
+            .setHeightPresets(RobotInfo6541.ELEVATOR_HEIGHT_PRESETS);
     private static final ServoEndEffector.Parameters elbowParams6541 = new ServoEndEffector.Parameters()
             .setRetractPos(RobotInfo6541.ELBOW_RETRACT_POS)
             .setRetractTime(RobotInfo6541.ELBOW_RETRACT_TIME)
@@ -131,7 +132,7 @@ class Robot6541 extends Robot
             {
                 if (preferences.getBoolean("hasElevator"))
                 {
-                    elevator = new Elevator(preferences6541, elevatorParams6541, RobotInfo6541.ELEVATOR_HEIGHT_PRESETS);
+                    elevator = new Elevator(false, elevatorParams6541);
                     elevator.zeroCalibrate();
                 }
 

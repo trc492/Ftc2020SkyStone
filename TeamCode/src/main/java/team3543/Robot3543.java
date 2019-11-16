@@ -22,6 +22,8 @@
 
 package team3543;
 
+import com.qualcomm.robotcore.hardware.Servo;
+
 import common.Elevator;
 import common.Grabber;
 import common.Robot;
@@ -70,6 +72,11 @@ class Robot3543 extends Robot
             .setKd(RobotInfo3543.ELEVATOR_KD)
             .setTolerance(RobotInfo3543.ELEVATOR_TOLERANCE)
             .setCalPower(RobotInfo3543.ELEVATOR_CAL_POWER);
+    private static final ServoEndEffector.Parameters extenderArmParams3543 = new ServoEndEffector.Parameters()
+            .setRetractPos(RobotInfo3543.EXTENDER_ARM_RETRACTED_POS)
+            .setRetractTime(RobotInfo3543.EXTENDER_ARM_MOVE_TIME)
+            .setExtendPos(RobotInfo3543.EXTENDER_ARM_PLACEMENT_POS)
+            .setExtendTime(RobotInfo3543.EXTENDER_ARM_MOVE_TIME);
     private static final Wrist3543.Parameters wristParams3543 = new Wrist3543.Parameters()
             .setMaxStepRate(RobotInfo3543.WRIST_MAX_STEPRATE)
             .setMinPos(RobotInfo3543.WRIST_MIN_POS)
@@ -134,11 +141,11 @@ class Robot3543 extends Robot
             {
                 if (preferences.getBoolean("hasElevator"))
                 {
-                    elevator = new Elevator(preferences3543, elevatorParams3543, null);
+                    elevator = new Elevator(true, elevatorParams3543);
                     elevator.zeroCalibrate();
                 }
 
-                extenderArm = new ExtenderArm3543();
+                extenderArm = new ExtenderArm3543(extenderArmParams3543);
                 extenderArm.retract();
 
                 wrist = new Wrist3543(wristParams3543);

@@ -37,6 +37,7 @@ public class Elevator
         double scale, offset;
         double kP, kI, kD, tolerance;
         double calPower;
+        double[] heightPresets;
 
         public Parameters setMinHeight(double minHeight)
         {
@@ -92,6 +93,12 @@ public class Elevator
             return this;
         }
 
+        public Parameters setHeightPresets(double... heightPresets)
+        {
+            this.heightPresets = heightPresets;
+            return this;
+        }
+
     }   //class Parameters
 
     private FtcDigitalInput lowerLimitSwitch;
@@ -101,11 +108,8 @@ public class Elevator
     private double[] elevatorHeightPresets;
     private int elevatorLevel;
 
-    public Elevator(
-            TrcHashMap<String, Boolean> preferences, Parameters params, double[] elevatorHeightPresets)
+    public Elevator(boolean isTeam3543, Parameters params)
     {
-        boolean isTeam3543 = preferences.getBoolean("team3543");
-
         lowerLimitSwitch = new FtcDigitalInput("elevatorLowerLimit");
         if (!isTeam3543)
         {
@@ -136,7 +140,7 @@ public class Elevator
                 params.calPower, params.minHeight, params.maxHeight);
         pidElevator.setPositionScale(params.scale, params.offset);
 
-        this.elevatorHeightPresets = elevatorHeightPresets;
+        this.elevatorHeightPresets = params.heightPresets;
         this.elevatorLevel = 0;
     }   //Elevator
 

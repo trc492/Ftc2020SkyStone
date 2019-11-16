@@ -61,7 +61,7 @@ public class ServoEndEffector
     }   //class Parameters
 
     private Parameters params;
-    private FtcServo endEffector;
+    protected FtcServo endEffector;
 
     public ServoEndEffector(String instanceName, Parameters params)
     {

@@ -22,17 +22,17 @@
 
 package team3543;
 
-import ftclib.FtcServo;
+import common.ServoEndEffector;
 import trclib.TrcEnhancedServo;
-import trclib.TrcEvent;
 
-class ExtenderArm3543
+class ExtenderArm3543 extends ServoEndEffector
 {
-    private final FtcServo extender = new FtcServo("extenderArmServo");
-    private final TrcEnhancedServo enhancedExtender = new TrcEnhancedServo("enhancedExtenderArm", extender);
+    private final TrcEnhancedServo enhancedExtender;
 
-    ExtenderArm3543()
+    ExtenderArm3543(ServoEndEffector.Parameters params)
     {
+        super("extenderArmServo", params);
+        enhancedExtender = new TrcEnhancedServo("enhancedExtenderArm", this.endEffector);
         enhancedExtender.setStepMode(
                 RobotInfo3543.EXTENDER_ARM_MAX_STEPRATE, RobotInfo3543.EXTENDER_ARM_LOGICAL_MIN_POS,
                 RobotInfo3543.EXTENDER_ARM_LOGICAL_MAX_POS);
@@ -43,48 +43,9 @@ class ExtenderArm3543
         enhancedExtender.setPower(power);
     }   //setPower
 
-    void extend()
-    {
-        enhancedExtender.setPosition(RobotInfo3543.EXTENDER_ARM_PLACEMENT_POS);
-    }   //extend
-
     void extendMax()
     {
         enhancedExtender.setPosition(RobotInfo3543.EXTENDER_ARM_DOWN_POS);
     }   //extendMax
-
-    void extend(TrcEvent event)
-    {
-        enhancedExtender.setPosition(
-                RobotInfo3543.EXTENDER_ARM_PLACEMENT_POS, RobotInfo3543.EXTENDER_ARM_MOVE_TIME, event);
-    }   //extend
-
-    void extend(double time, TrcEvent event)
-    {
-        enhancedExtender.setPosition(
-                RobotInfo3543.EXTENDER_ARM_PLACEMENT_POS, time, event);
-    }   //extend
-
-    void retract()
-    {
-        enhancedExtender.setPosition(RobotInfo3543.EXTENDER_ARM_RETRACTED_POS);
-    }   //extend
-
-    void retract(TrcEvent event)
-    {
-        enhancedExtender.setPosition(
-                RobotInfo3543.EXTENDER_ARM_RETRACTED_POS, RobotInfo3543.EXTENDER_ARM_MOVE_TIME, event);
-    }   //retract
-
-    void retract(double time, TrcEvent event)
-    {
-        enhancedExtender.setPosition(
-                RobotInfo3543.EXTENDER_ARM_RETRACTED_POS, time, event);
-    }   //retract
-
-    double getPosition()
-    {
-        return extender.getPosition();
-    }
 
 }   //class ExtenderArm3543

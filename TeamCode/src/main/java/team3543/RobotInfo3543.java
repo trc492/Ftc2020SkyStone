@@ -151,7 +151,7 @@ class RobotInfo3543
     static final double EXTENDER_ARM_PLACEMENT_POS      = 0.6;
     static final double EXTENDER_ARM_MOVE_TIME          = 3.0;
     //
-    // Wrist3543 subsystem.
+    // Wrist subsystem.
     //
     static final double WRIST_MAX_STEPRATE              = (1.0/0.75);
     static final double WRIST_MIN_POS                   = 0.2;
