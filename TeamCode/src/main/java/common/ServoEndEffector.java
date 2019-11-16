@@ -28,13 +28,15 @@ import trclib.TrcHashMap;
 
 public class ServoEndEffector
 {
-    private double retractPos, extendPos;
+    private double retractPos, extendPos, retractTime, extendTime;
     private FtcServo endEffector;
 
     public ServoEndEffector(String instanceName, TrcHashMap<String, Double> params)
     {
         this.retractPos = params.getDouble("retractPos");
         this.extendPos = params.getDouble("extendPos");
+        this.retractTime = params.getDouble("retractTime");
+        this.extendTime = params.getDouble("extendTime");
         endEffector = new FtcServo(instanceName);
     }   //ServoEndEffector
 
@@ -42,6 +44,12 @@ public class ServoEndEffector
     {
         endEffector.setPosition(retractPos);
     }   //retract
+
+    public void retract(TrcEvent event)
+    {
+        endEffector.setPosition(retractPos, retractTime, event);
+    }   //grab
+
 
     public void retract(double time, TrcEvent event)
     {
@@ -53,9 +61,19 @@ public class ServoEndEffector
         endEffector.setPosition(extendPos);
     }   //extend
 
+    public void extend(TrcEvent event)
+    {
+        endEffector.setPosition(extendPos, extendTime, event);
+    }   //grab
+
     public void extend(double time, TrcEvent event)
     {
         endEffector.setPosition(extendPos, time, event);
     }   //extend
+
+    public double getPosition()
+    {
+        return endEffector.getPosition();
+    }
 
 }   //class ServoEndEffector
