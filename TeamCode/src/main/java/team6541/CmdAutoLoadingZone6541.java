@@ -89,7 +89,7 @@ public class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
         event = new TrcEvent(moduleName);
         sm = new TrcStateMachine<>(moduleName);
         allianceDirection = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE ? 1.0 : -1.0;
-        useVisionTrigger = robot.preferences.getBoolean("useVisionTrigger");
+        useVisionTrigger = robot.preferences.useVisionTrigger;
 
         robot.encoderXPidCtrl.setNoOscillation(true);
         robot.encoderYPidCtrl.setNoOscillation(true);

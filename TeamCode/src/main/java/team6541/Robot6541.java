@@ -27,7 +27,6 @@ import common.Grabber;
 import common.Robot;
 import common.ServoEndEffector;
 import ftclib.FtcDcMotor;
-import trclib.TrcHashMap;
 import trclib.TrcHomographyMapper;
 import trclib.TrcMecanumDriveBase;
 import trclib.TrcPidController;
@@ -36,23 +35,23 @@ import trclib.TrcRobot;
 
 class Robot6541 extends Robot
 {
-    private static final TrcHashMap<String, Boolean> preferences6541 = new TrcHashMap<String, Boolean>()
-            .add("hasRobot", true)
-            .add("hasElevator", true)
-            .add("useTraceLog", true)
-            .add("useSpeech", true)
-            .add("useBatteryMonitor", false)
-            .add("useLoopPerformanceMonitor", true)
-            .add("useBlinkin", true)
-            .add("useVelocityControl", false)
-            .add("useVuforia", false)
-            .add("useTensorFlow", false)
-            .add("useFlashLight", false)
-            .add("showVuforiaView", false)
-            .add("showTensorFlowView", false)
-            .add("initSubsystems", true)
-            .add("useVisionTrigger", false)
-            .add("team3543", false);
+    private static final Preferences preferences6541 = new Preferences()
+            .setTeam3543(false)
+            .setHasRobot(true)
+            .setInitSubsystems(true)
+            .setHasElevator(true)
+            .setHasBlinkin(true)
+            .setUseVuforia(true)
+            .setUseTensorFlow(false)
+            .setShowVuforiaView(false)
+            .setShowTensorFlowView(false)
+            .setUseFlashLight(true)
+            .setUseVisionTrigger(false)
+            .setUseTraceLog(true)
+            .setUseSpeech(true)
+            .setUseBatteryMonitor(false)
+            .setUseLoopPerformanceMonitor(true)
+            .setUseVelocityControl(false);
     private static final PhoneParameters phoneParams6541 = new PhoneParameters()
             .setCameraDir(RobotInfo6541.CAMERA_DIR)
             .setCameraMonitorFeedback(RobotInfo6541.CAMERA_MONITOR_FEEDBACK)
@@ -86,7 +85,9 @@ class Robot6541 extends Robot
             .setRetractTime(RobotInfo6541.FOUNDATION_LATCH_RELEASE_TIME)
             .setExtendPos(RobotInfo6541.FOUNDATION_LATCH_GRAB_POS)
             .setExtendTime(RobotInfo6541.FOUNDATION_LATCH_GRAB_TIME);
-
+    //
+    // Team specific subsystems.
+    //
     ServoEndEffector elbow = null;
 
     Robot6541(TrcRobot.RunMode runMode)
@@ -95,13 +96,13 @@ class Robot6541 extends Robot
         //
         // Initialize vision subsystems.
         //
-        if (preferences.getBoolean("useVuforia") && vuforia != null &&
+        if (preferences.useVuforia && vuforia != null &&
             (runMode == TrcRobot.RunMode.AUTO_MODE || runMode == TrcRobot.RunMode.TEST_MODE))
         {
             initVuforia(phoneParams6541, RobotInfo6541.ROBOT_LENGTH, RobotInfo6541.ROBOT_WIDTH);
         }
 
-        if (preferences.getBoolean("useTensorFlow") && vuforia != null &&
+        if (preferences.useTensorFlow && vuforia != null &&
             (runMode == TrcRobot.RunMode.AUTO_MODE || runMode == TrcRobot.RunMode.TEST_MODE))
         {
             TrcHomographyMapper.Rectangle cameraRect = new TrcHomographyMapper.Rectangle(
@@ -116,10 +117,10 @@ class Robot6541 extends Robot
                     RobotInfo6541.HOMOGRAPHY_WORLD_BOTTOMLEFT_X, RobotInfo6541.HOMOGRAPHY_WORLD_BOTTOMLEFT_Y,
                     RobotInfo6541.HOMOGRAPHY_WORLD_BOTTOMRIGHT_X, RobotInfo6541.HOMOGRAPHY_WORLD_BOTTOMRIGHT_Y);
 
-            initTensorFlow(preferences.getBoolean("showTensorFlowView"), cameraRect, worldRect);
+            initTensorFlow(preferences.showTensorFlowView, cameraRect, worldRect);
         }
 
-        if (preferences.getBoolean("hasRobot"))
+        if (preferences.hasRobot)
         {
             //
             // Initialize DriveBase.
@@ -128,14 +129,14 @@ class Robot6541 extends Robot
             //
             // Initialize other subsystems.
             //
-            if (preferences.getBoolean("initSubsystems"))
+            if (preferences.initSubsystems)
             {
-                if (preferences.getBoolean("hasElevator"))
+                if (preferences.hasElevator)
                 {
                     elevator = new Elevator(false, elevatorParams6541);
                     elevator.zeroCalibrate();
                 }
-
+                // Elbow is 6541 only.
                 elbow = new ServoEndEffector("elbowServo", elbowParams6541);
                 elbow.retract();
 
@@ -168,7 +169,7 @@ class Robot6541 extends Robot
         leftRearWheel.setOdometryEnabled(true);
         rightRearWheel.setOdometryEnabled(true);
 
-        if (preferences.getBoolean("useVelocityControl"))
+        if (preferences.useVelocityControl)
         {
             TrcPidController.PidCoefficients motorPidCoef = new TrcPidController.PidCoefficients(
                     RobotInfo6541.MOTOR_KP, RobotInfo6541.MOTOR_KI, RobotInfo6541.MOTOR_KD);

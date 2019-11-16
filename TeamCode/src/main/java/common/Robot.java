@@ -44,7 +44,6 @@ import hallib.HalDashboard;
 import trclib.TrcDbgTrace;
 import trclib.TrcDriveBase;
 import trclib.TrcGyro;
-import trclib.TrcHashMap;
 import trclib.TrcHomographyMapper;
 import trclib.TrcPidController;
 import trclib.TrcPidDrive;
@@ -59,6 +58,123 @@ import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocaliz
 
 public class Robot
 {
+    public static class Preferences
+    {
+        public boolean team3543 = true;
+        public boolean hasRobot = true;
+        public boolean initSubsystems = true;
+        public boolean hasElevator = true;
+        public boolean hasBlinkin = true;
+        public boolean useVuforia = true;
+        public boolean useTensorFlow = false;
+        public boolean showVuforiaView = false;
+        public boolean showTensorFlowView = false;
+        public boolean useFlashLight = true;
+        public boolean useVisionTrigger = false;
+        public boolean useTraceLog = true;
+        public boolean useSpeech = true;
+        public boolean useBatteryMonitor = false;
+        public boolean useLoopPerformanceMonitor = true;
+        public boolean useVelocityControl = false;
+
+        public Preferences setTeam3543(boolean team3543)
+        {
+            this.team3543 = team3543;
+            return this;
+        }
+
+        public Preferences setHasRobot(boolean hasRobot)
+        {
+            this.hasRobot = hasRobot;
+            return this;
+        }
+
+        public Preferences setInitSubsystems(boolean initSubsystems)
+        {
+            this.initSubsystems = initSubsystems;
+            return this;
+        }
+
+        public Preferences setHasElevator(boolean hasElevator)
+        {
+            this.hasElevator = hasElevator;
+            return this;
+        }
+
+        public Preferences setHasBlinkin(boolean hasBlinkin)
+        {
+            this.hasBlinkin = hasBlinkin;
+            return this;
+        }
+
+        public Preferences setUseVuforia(boolean useVuforia)
+        {
+            this.useVuforia = useVuforia;
+            return this;
+        }
+
+        public Preferences setUseTensorFlow(boolean useTensorFlow)
+        {
+            this.useTensorFlow = useTensorFlow;
+            return this;
+        }
+
+        public Preferences setShowVuforiaView(boolean showVuforiaView)
+        {
+            this.showVuforiaView = showVuforiaView;
+            return this;
+        }
+
+        public Preferences setShowTensorFlowView(boolean showTensorFlowView)
+        {
+            this.showTensorFlowView = showTensorFlowView;
+            return this;
+        }
+
+        public Preferences setUseFlashLight(boolean useFlashLight)
+        {
+            this.useFlashLight = useFlashLight;
+            return this;
+        }
+
+        public Preferences setUseVisionTrigger(boolean useVisionTrigger)
+        {
+            this.useVisionTrigger = useVisionTrigger;
+            return this;
+        }
+
+        public Preferences setUseTraceLog(boolean useTraceLog)
+        {
+            this.useTraceLog = useTraceLog;
+            return this;
+        }
+
+        public Preferences setUseSpeech(boolean useSpeech)
+        {
+            this.useSpeech = useSpeech;
+            return this;
+        }
+
+        public Preferences setUseBatteryMonitor(boolean useBatteryMonitor)
+        {
+            this.useBatteryMonitor = useBatteryMonitor;
+            return this;
+        }
+
+        public Preferences setUseLoopPerformanceMonitor(boolean useLoopPerformanceMonitor)
+        {
+            this.useLoopPerformanceMonitor = useLoopPerformanceMonitor;
+            return this;
+        }
+
+        public Preferences setUseVelocityControl(boolean useVelocityControl)
+        {
+            this.useVelocityControl = useVelocityControl;
+            return this;
+        }
+
+    }   //class Preferences
+
     public static class PhoneParameters
     {
         VuforiaLocalizer.CameraDirection cameraDir;
@@ -118,7 +234,7 @@ public class Robot
     // Global objects.
     //
     public String robotName;
-    public TrcHashMap<String, Boolean> preferences;
+    public Preferences preferences;
     public FtcOpMode opMode;
     public HalDashboard dashboard;
     public TrcDbgTrace globalTracer;
@@ -167,9 +283,7 @@ public class Robot
     @Nonnull public Grabber grabber = null;
     @Nonnull public Grabber foundationLatch = null;
 
-    public Robot(
-            TrcRobot.RunMode runMode, String robotName,
-            TrcHashMap<String, Boolean> preferences, PhoneParameters phoneParams)
+    public Robot(TrcRobot.RunMode runMode, String robotName, Preferences preferences, PhoneParameters phoneParams)
     {
         //
         // Initialize global objects.
@@ -184,13 +298,13 @@ public class Robot
                 ((FtcRobotControllerActivity)opMode.hardwareMap.appContext).findViewById(R.id.textOpMode));
         androidTone = new FtcAndroidTone("AndroidTone");
 
-        if (preferences.getBoolean("useSpeech"))
+        if (preferences.useSpeech)
         {
             textToSpeech = FtcOpMode.getInstance().getTextToSpeech();
             speak("Init starting");
         }
 
-        if (preferences.getBoolean("useVuforia") || preferences.getBoolean("useTensorFlow"))
+        if (preferences.useVuforia || preferences.useTensorFlow)
         {
             final String VUFORIA_LICENSE_KEY =
                     "ATu19Kj/////AAAAGcw4SDCVwEBSiKcUtdmQd2aOugrxo/OgeBJUt7XwMSi3e0KSZaylbsTnWp8EBxyA5o/00JFJVDY1OxJ" +
@@ -198,21 +312,21 @@ public class Robot
                     "XS4ZtEWLNeiSEMTCdO9bdeaxnSb2RfErcmjadAThDWf6PC9HrMRHLmgfcFaZlj5JN+figOjgKhyQZeYYrcDEm0lICN5kAr2" +
                     "pdfNKNOii3A80eXyTVDfPGfzTwVa4eNBY/SgmoIdBbMPb3hfZBOz7GVoVHHQWbCNbzm31p1OY+zqPPWMfzzpyiJ4mA9bLTQ";
 
-            int cameraViewId = !preferences.getBoolean("showVuforiaView") ? -1 :
+            int cameraViewId = !preferences.showVuforiaView ? -1 :
                     opMode.hardwareMap.appContext.getResources().getIdentifier(
                             "cameraMonitorViewId", "id", opMode.hardwareMap.appContext.getPackageName());
             vuforia = new FtcVuforia(
                     VUFORIA_LICENSE_KEY, cameraViewId, phoneParams.cameraDir, phoneParams.cameraMonitorFeedback);
         }
 
-        if (preferences.getBoolean("hasRobot"))
+        if (preferences.hasRobot)
         {
-            if (preferences.getBoolean("useBatteryMonitor"))
+            if (preferences.useBatteryMonitor)
             {
                 battery = new FtcRobotBattery();
             }
 
-            if (preferences.getBoolean("useBlinkin"))
+            if (preferences.hasBlinkin)
             {
                 ledIndicator = new LEDIndicator();
             }
@@ -254,7 +368,7 @@ public class Robot
         if (vuforiaVision != null && (runMode == TrcRobot.RunMode.AUTO_MODE || runMode == TrcRobot.RunMode.TEST_MODE))
         {
             globalTracer.traceInfo(funcName, "Enabling Vuforia.");
-            vuforiaVision.setEnabled(true, preferences.getBoolean("useFlashLight"));
+            vuforiaVision.setEnabled(true, preferences.useFlashLight);
         }
     }   //startMode
 
@@ -262,7 +376,7 @@ public class Robot
     {
         if (vuforiaVision != null)
         {
-            vuforiaVision.setEnabled(false, preferences.getBoolean("useFlashLight"));
+            vuforiaVision.setEnabled(false, preferences.useFlashLight);
         }
 
         if (tensorFlowVision != null)
@@ -401,7 +515,7 @@ public class Robot
                         "tfodMonitorViewId", "id", opMode.hardwareMap.appContext.getPackageName());
         tensorFlowVision = new TensorFlowVision(
                 vuforia, tfodMonitorViewId, cameraRect, worldRect, globalTracer);
-        tensorFlowVision.setEnabled(true, preferences.getBoolean("useFlashLight"));
+        tensorFlowVision.setEnabled(true, preferences.useFlashLight);
         globalTracer.traceInfo(robotName, "Enabling TensorFlow.");
     } //initTensorFlow
 

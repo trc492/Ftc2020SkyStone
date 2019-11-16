@@ -48,28 +48,26 @@ public class FtcAuto3543 extends CommonAuto
         //
         // Strategies.
         //
-        boolean hasRobot = robot3543.preferences.getBoolean("hasRobot");
-
         switch (autoChoices.strategy)
         {
             case LOADING_ZONE_MID:
             case LOADING_ZONE_FAR:
             case LOADING_ZONE_WALL:
-                if (hasRobot)
+                if (robot3543.preferences.hasRobot)
                 {
                     autoCommand = new CmdAutoLoadingZone3543(robot3543, autoChoices);
                 }
                 break;
 
             case BUILDING_ZONE:
-                if (hasRobot)
+                if (robot3543.preferences.hasRobot)
                 {
                     autoCommand = new CmdAutoBuildingZone3543(robot3543, autoChoices);
                 }
                 break;
 
             case PURE_PURSUIT_DRIVE:
-//                if (hasRobot)
+//                if (robot3543.preferences.hasRobot)
 //                {
 //                    autoCommand = new CmdPurePursuitDrive(
 //                            robot3543.driveBase, posPidCoeff, turnPidCoeff, velPidCoeff);
@@ -77,7 +75,7 @@ public class FtcAuto3543 extends CommonAuto
                 break;
 
             case PID_DRIVE:
-                if (hasRobot)
+                if (robot3543.preferences.hasRobot)
                 {
                     autoCommand = new CmdPidDrive(
                             robot3543, robot3543.pidDrive, autoChoices.delay,
@@ -87,7 +85,7 @@ public class FtcAuto3543 extends CommonAuto
                 break;
 
             case TIMED_DRIVE:
-                if (hasRobot)
+                if (robot3543.preferences.hasRobot)
                 {
                     autoCommand = new CmdTimedDrive(
                             robot3543, autoChoices.delay, autoChoices.driveTime,

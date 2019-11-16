@@ -135,7 +135,7 @@ public abstract class CommonAuto extends FtcOpMode
         // Choice menus.
         //
         doMatchInfoMenus();
-        if (robot.preferences.getBoolean("useTraceLog"))
+        if (robot.preferences.useTraceLog)
         {
             createTraceLog();
         }
@@ -147,7 +147,7 @@ public abstract class CommonAuto extends FtcOpMode
     @Override
     public void startMode(TrcRobot.RunMode prevMode, TrcRobot.RunMode nextMode)
     {
-        if (robot.preferences.getBoolean("useTraceLog"))
+        if (robot.preferences.useTraceLog)
         {
             robot.globalTracer.setTraceLogEnabled(true);
         }
