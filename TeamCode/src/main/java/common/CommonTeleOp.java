@@ -45,10 +45,10 @@ public abstract class CommonTeleOp extends FtcOpMode
     private double drivePowerScale = SLOW_DRIVE_POWER_SCALE;
     private boolean invertedDrive = false;
 
-    protected void initTeamSpecifics(Robot robot)
+    protected void setRobot(Robot robot)
     {
         this.robot = robot;
-    }   //initTeamSpecifics
+    }   //setRobot
 
     //
     // Implements FtcOpMode abstract method.

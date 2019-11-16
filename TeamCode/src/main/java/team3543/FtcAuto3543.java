@@ -43,8 +43,8 @@ public class FtcAuto3543 extends CommonAuto
         // Initializing robot objects.
         //
         Robot3543 robot3543 = new Robot3543(TrcRobot.getRunMode());
+        super.setRobot(robot3543);
         super.initRobot();
-        super.initTeamSpecifics(robot3543);
         //
         // Strategies.
         //

@@ -45,8 +45,8 @@ public class FtcTeleOp3543 extends CommonTeleOp
         // Initializing robot objects.
         //
         robot3543 = new Robot3543(TrcRobot.getRunMode());
+        super.setRobot(robot3543);
         super.initRobot();
-        super.initTeamSpecifics(robot3543);
     }   //initRobot
 
     //

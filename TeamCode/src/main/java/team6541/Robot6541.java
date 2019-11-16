@@ -51,6 +51,7 @@ class Robot6541 extends Robot
             .add("showVuforiaView", false)
             .add("showTensorFlowView", false)
             .add("initSubsystems", true)
+            .add("useVisionTrigger", false)
             .add("team3543", false);
     private static TrcHashMap<String, Object> phoneParams6541 = new TrcHashMap<String, Object>()
             .add("cameraDir", RobotInfo6541.CAMERA_DIR)

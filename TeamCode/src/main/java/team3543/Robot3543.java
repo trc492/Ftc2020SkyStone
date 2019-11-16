@@ -51,6 +51,7 @@ class Robot3543 extends Robot
             .add("showVuforiaView", false)
             .add("showTensorFlowView", false)
             .add("initSubsystems", true)
+            .add("useVisionTrigger", false)
             .add("team3543", true);
     private static TrcHashMap<String, Object> phoneParams3543 = new TrcHashMap<String, Object>()
             .add("cameraDir", RobotInfo3543.CAMERA_DIR)

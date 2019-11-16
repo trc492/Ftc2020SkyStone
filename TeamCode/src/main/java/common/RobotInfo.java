@@ -27,13 +27,13 @@ public class RobotInfo
     //
     // Game element distances: all referenced as red alliance.
     //
-    public static final double ROBOT_START_X_WALL               = 43.6;
+    public static final double ROBOT_START_X_WALL               = 32.0;
     public static final double ROBOT_START_Y_WALL               = 9.0;
-    public static final double ROBOT_START_X_FAR                = 43.6;
+    public static final double ROBOT_START_X_FAR                = 52.0;
     public static final double ROBOT_START_Y_FAR                = 9.0;
-    public static final double LEFT_STONE_FAR_X                 = -6.0;
-    public static final double LEFT_STONE_WALL_X                = -8.0;
-    public static final double SKYSTONE_SCAN_DISTANCE_FAR       = -16.0;
-    public static final double SKYSTONE_SCAN_DISTANCE_WALL      = -12.0;
+    public static final double LEFT_STONE_WALL_X                = -(ROBOT_START_X_WALL - 20.5);
+    public static final double LEFT_STONE_FAR_X                 = -(ROBOT_START_X_FAR - 44.5);
+    public static final double SKYSTONE_SCAN_DISTANCE_WALL      = -9.0;
+    public static final double SKYSTONE_SCAN_DISTANCE_FAR       = -18.0;
 
 }   //class RobotInfo

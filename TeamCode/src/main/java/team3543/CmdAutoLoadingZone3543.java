@@ -37,7 +37,6 @@ public class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
     private static final boolean debugXPid = true;
     private static final boolean debugYPid = true;
     private static final boolean debugTurnPid = true;
-    private static final boolean useVisionTrigger = false;
 
     // Absolute position waypoint coordinates
     private static final double FOUNDATION_DROP_ABS_POS_X_INCHES = 120.0;
@@ -84,6 +83,7 @@ public class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
     private final TrcEvent event;
     private final TrcStateMachine<State> sm;
     private final double allianceDirection;
+    private final boolean useVisionTrigger;
     private final SimplePidDrive<State> simplePidDrive;
     private CmdSkystoneVision skystoneVisionCommand = null;
 
@@ -102,6 +102,7 @@ public class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
         event = new TrcEvent(moduleName);
         sm = new TrcStateMachine<>(moduleName);
         allianceDirection = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE ? 1.0 : -1.0;
+        useVisionTrigger = robot.preferences.getBoolean("useVisionTrigger");
 
         robot.encoderXPidCtrl.setNoOscillation(true);
         robot.encoderYPidCtrl.setNoOscillation(true);
@@ -304,7 +305,6 @@ public class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                     break;
 
                 case BACK_OFF_FOUNDATION:
-//                    robot.elevator.setPosition(0.0);//CodeReview: should not go down or we won't clear the skystone.
                     if (robot.extenderArm != null) robot.extenderArm.retract();
                     robot.wrist.retract();
                     yTarget = -6.0;
@@ -318,6 +318,7 @@ public class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                     break;
 
                 case TURN_AROUND:
+                    robot.elevator.setPosition(0.0);
                     turnTarget = 180.0;
                     simplePidDrive.setRelativeTurnTarget(turnTarget, State.BACKUP_TO_FOUNDATION);
                     break;
@@ -333,7 +334,7 @@ public class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                     break;
 
                 case PULL_FOUNDATION_TO_WALL:
-                    yTarget = 46.0;
+                    yTarget = 50.0;
                     simplePidDrive.setRelativeYTarget(yTarget, State.UNHOOK_FOUNDATION);
                     break;
 
@@ -370,6 +371,7 @@ public class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                 case SKIP_MOVE_FOUNDATION_PARK_WALL:
 //                    yTarget = -44.0;
 //                    simplePidDrive.setRelativeYTarget(yTarget, nextState);
+                    robot.elevator.setPosition(0.0);
                     yTarget = WALL_ABS_POS_Y_INCHES;
                     nextState = autoChoices.parkUnderBridge == CommonAuto.ParkPosition.PARK_CLOSE_TO_WALL?
                                     State.STRAFE_TO_PARK: State.DONE;
@@ -377,6 +379,7 @@ public class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                     break;
 
                 case STRAFE_TO_PARK:
+                    robot.elevator.setPosition(0.0);
 //                    xTarget = -50.0 * allianceDirection;
 //                    if (autoChoices.moveFoundation) xTarget = -xTarget;
 //                    simplePidDrive.setRelativeXTarget(xTarget, nextState);

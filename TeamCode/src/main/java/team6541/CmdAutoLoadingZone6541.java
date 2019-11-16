@@ -38,7 +38,6 @@ public class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
     private static final boolean debugXPid = true;
     private static final boolean debugYPid = true;
     private static final boolean debugTurnPid = true;
-    private static final boolean useVisionTrigger = false;
 
     private enum State
     {
@@ -72,6 +71,7 @@ public class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
     private final TrcStateMachine<State> sm;
     private final SimplePidDrive<State> simplePidDrive;
     private final double allianceDirection;
+    private final boolean useVisionTrigger;
     private CmdSkystoneVision skystoneVisionCommand = null;
 
     /**
@@ -89,6 +89,7 @@ public class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
         event = new TrcEvent(moduleName);
         sm = new TrcStateMachine<>(moduleName);
         allianceDirection = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE ? 1.0 : -1.0;
+        useVisionTrigger = robot.preferences.getBoolean("useVisionTrigger");
 
         robot.encoderXPidCtrl.setNoOscillation(true);
         robot.encoderYPidCtrl.setNoOscillation(true);

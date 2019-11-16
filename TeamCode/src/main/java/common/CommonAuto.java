@@ -118,10 +118,10 @@ public abstract class CommonAuto extends FtcOpMode
     protected AutoChoices autoChoices = new AutoChoices();
     protected TrcRobot.RobotCommand autoCommand = null;
 
-    protected void initTeamSpecifics(Robot robot)
+    protected void setRobot(Robot robot)
     {
         this.robot = robot;
-    }   //initTeamSpecifics
+    }   //setRobot
 
     //
     // Implements FtcOpMode abstract method.
