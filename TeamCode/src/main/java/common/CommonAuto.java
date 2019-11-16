@@ -61,6 +61,7 @@ public abstract class CommonAuto extends FtcOpMode
 
     public enum AutoStrategy
     {
+        LOADING_ZONE_MID,
         LOADING_ZONE_FAR,
         LOADING_ZONE_WALL,
         BUILDING_ZONE,
@@ -271,7 +272,9 @@ public abstract class CommonAuto extends FtcOpMode
         allianceMenu.addChoice("Blue", Alliance.BLUE_ALLIANCE, false, delayMenu);
 
         strategyMenu.addChoice(
-                "Loading Zone Far Side", AutoStrategy.LOADING_ZONE_FAR, true, foundationXMenu);
+                "Loading Zone Middle", AutoStrategy.LOADING_ZONE_MID, true, foundationXMenu);
+        strategyMenu.addChoice(
+                "Loading Zone Far Side", AutoStrategy.LOADING_ZONE_FAR, false, foundationXMenu);
         strategyMenu.addChoice(
                 "Loading Zone Wall Side", AutoStrategy.LOADING_ZONE_WALL, false, foundationXMenu);
         strategyMenu.addChoice(
@@ -285,8 +288,8 @@ public abstract class CommonAuto extends FtcOpMode
         moveFoundationMenu.addChoice("Yes", true, true, parkMenu);
         moveFoundationMenu.addChoice("No", false, false, parkMenu);
 
-        parkMenu.addChoice("No Parking", ParkPosition.NO_PARK, true);
-        parkMenu.addChoice("Close to wall", ParkPosition.PARK_CLOSE_TO_WALL, false);
+        parkMenu.addChoice("No Parking", ParkPosition.NO_PARK, false);
+        parkMenu.addChoice("Close to wall", ParkPosition.PARK_CLOSE_TO_WALL, true);
         parkMenu.addChoice("Close to center bridge", ParkPosition.PARK_CLOSE_TO_CENTER, false);
         //
         // Traverse menus.

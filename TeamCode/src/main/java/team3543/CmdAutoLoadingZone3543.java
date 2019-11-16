@@ -215,11 +215,23 @@ public class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                     break;
 
                 case MOVE_TO_FIRST_STONE:
-                    xTarget = autoChoices.strategy == CommonAuto.AutoStrategy.LOADING_ZONE_FAR?
+                    xTarget = autoChoices.strategy == CommonAuto.AutoStrategy.LOADING_ZONE_MID?
+                                0.0:
+                              autoChoices.strategy == CommonAuto.AutoStrategy.LOADING_ZONE_FAR?
                                 RobotInfo.LEFT_STONE_FAR_X: RobotInfo.LEFT_STONE_WALL_X;
-                    xTarget *= allianceDirection;
-                    simplePidDrive.setRelativeXTarget(xTarget, State.DO_VISION);
-                    break;
+                    if (xTarget == 0.0)
+                    {
+                        sm.setState(State.DO_VISION);
+                        //
+                        // Intentionally falling through to the next state.
+                        //
+                    }
+                    else
+                    {
+                        xTarget *= allianceDirection;
+                        simplePidDrive.setRelativeXTarget(xTarget, State.DO_VISION);
+                        break;
+                    }
 
                 case DO_VISION:
                     //

@@ -52,6 +52,7 @@ public class FtcAuto3543 extends CommonAuto
 
         switch (autoChoices.strategy)
         {
+            case LOADING_ZONE_MID:
             case LOADING_ZONE_FAR:
             case LOADING_ZONE_WALL:
                 if (hasRobot)
