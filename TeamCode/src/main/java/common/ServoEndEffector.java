@@ -40,22 +40,22 @@ public class ServoEndEffector
 
     public void retract()
     {
-
+        endEffector.setPosition(retractPos);
     }   //retract
 
     public void retract(double time, TrcEvent event)
     {
-
+        endEffector.setPosition(retractPos, time, event);
     }   //retract
 
     public void extend()
     {
-
+        endEffector.setPosition(extendPos);
     }   //extend
 
     public void extend(double time, TrcEvent event)
     {
-
+        endEffector.setPosition(extendPos, time, event);
     }   //extend
 
 }   //class ServoEndEffector
