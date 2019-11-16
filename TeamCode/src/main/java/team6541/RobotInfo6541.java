@@ -165,6 +165,13 @@ class RobotInfo6541
     static final double FOUNDATION_LATCH_CLOSE_TIME     = 0.5;
     static final double FOUNDATION_LATCH_OPEN_POS       = 170.0 / 255.0;
     static final double FOUNDATION_LATCH_OPEN_TIME      = 0.5;
+    //
+    // elbow subsystem.
+    //
+    static final double ELBOW_EXTEND_POS                = 0.0;
+    static final double ELBOW_EXTEND_TIME               = 1;
+    static final double ELBOW_RETRACT_POS               = 1;
+    static final double ELBOW_RETRACT_TIME              = 1;
 
     static final double BUILDING_ZONE_ROBOT_START_X     = 36.0;
     static final double BUILDING_ZONE_ROBOT_START_Y     = 9.0;

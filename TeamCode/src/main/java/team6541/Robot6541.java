@@ -89,6 +89,13 @@ class Robot6541 extends Robot
             .setExtendTime(RobotInfo6541.GRABBER_RELEASE_TIME)
             .setRetractPos(RobotInfo6541.GRABBER_GRAB_POS)
             .setRetractTime(RobotInfo6541.GRABBER_GRAB_TIME);
+    private final ServoEndEffector.Parameters elbowParams6541 = new ServoEndEffector.Parameters()
+            .setExtendPos(RobotInfo6541.ELBOW_EXTEND_POS)
+            .setExtendTime(RobotInfo6541.ELBOW_EXTEND_TIME)
+            .setRetractPos(RobotInfo6541.ELBOW_RETRACT_POS)
+            .setRetractTime(RobotInfo6541.ELBOW_RETRACT_TIME);
+
+    public ServoEndEffector elbow = null;
 
     Robot6541(TrcRobot.RunMode runMode)
     {
@@ -144,6 +151,9 @@ class Robot6541 extends Robot
 
                 foundationLatch = new FoundationLatch(foundationLatchParams6541);
                 foundationLatch.release();
+
+                elbow = new ServoEndEffector("elbowServo", elbowParams6541);
+                elbow.retract();
             }
         }
         //

@@ -163,6 +163,7 @@ public class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
             {
                 case DO_DELAY:
                     robot.elevator.setPosition(RobotInfo6541.ELEVATOR_RELEASE_HEIGHT);
+                    robot.elbow.extend();
                     //
                     // Do delay if any.
                     //
