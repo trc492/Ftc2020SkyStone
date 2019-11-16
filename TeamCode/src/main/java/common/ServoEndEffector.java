@@ -24,56 +24,84 @@ package common;
 
 import ftclib.FtcServo;
 import trclib.TrcEvent;
-import trclib.TrcHashMap;
 
 public class ServoEndEffector
 {
-    private double retractPos, extendPos, retractTime, extendTime;
     private FtcServo endEffector;
+    private Parameters params;
 
-    public ServoEndEffector(String instanceName, TrcHashMap<String, Double> params)
+    public ServoEndEffector(String instanceName, Parameters params)
     {
-        this.retractPos = params.getDouble("retractPos");
-        this.extendPos = params.getDouble("extendPos");
-        this.retractTime = params.getDouble("retractTime");
-        this.extendTime = params.getDouble("extendTime");
+        this.params = params;
         endEffector = new FtcServo(instanceName);
     }   //ServoEndEffector
 
     public void retract()
     {
-        endEffector.setPosition(retractPos);
+        endEffector.setPosition(params.retractPos);
     }   //retract
 
     public void retract(TrcEvent event)
     {
-        endEffector.setPosition(retractPos, retractTime, event);
+        endEffector.setPosition(params.retractPos, params.retractTime, event);
     }   //grab
 
 
     public void retract(double time, TrcEvent event)
     {
-        endEffector.setPosition(retractPos, time, event);
+        endEffector.setPosition(params.retractPos, time, event);
     }   //retract
 
     public void extend()
     {
-        endEffector.setPosition(extendPos);
+        endEffector.setPosition(params.extendPos);
     }   //extend
 
     public void extend(TrcEvent event)
     {
-        endEffector.setPosition(extendPos, extendTime, event);
+        endEffector.setPosition(params.extendPos, params.extendTime, event);
     }   //grab
 
     public void extend(double time, TrcEvent event)
     {
-        endEffector.setPosition(extendPos, time, event);
+        endEffector.setPosition(params.extendPos, time, event);
     }   //extend
 
     public double getPosition()
     {
         return endEffector.getPosition();
+    }
+
+    public static class Parameters
+    {
+        double retractPos;
+        double retractTime;
+        double extendPos;
+        double extendTime;
+
+        public Parameters setRetractPos(double retractPos)
+        {
+            this.retractPos = retractPos;
+            return this;
+        }
+
+        public Parameters setRetractTime(double retractTime)
+        {
+            this.retractTime = retractTime;
+            return this;
+        }
+
+        public Parameters setExtendPos(double extendPos)
+        {
+            this.extendPos = extendPos;
+            return this;
+        }
+
+        public Parameters setExtendTime(double extendTime)
+        {
+            this.extendTime = extendTime;
+            return this;
+        }
     }
 
 }   //class ServoEndEffector

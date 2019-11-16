@@ -24,7 +24,9 @@ package team6541;
 
 import common.Elevator;
 import common.FoundationLatch;
+import common.Grabber;
 import common.Robot;
+import common.ServoEndEffector;
 import common.Wrist;
 import ftclib.FtcDcMotor;
 import trclib.TrcHashMap;
@@ -82,6 +84,11 @@ class Robot6541 extends Robot
             .add("closeTime", RobotInfo6541.FOUNDATION_LATCH_CLOSE_TIME)
             .add("openPos", RobotInfo6541.FOUNDATION_LATCH_OPEN_POS)
             .add("openTime", RobotInfo6541.FOUNDATION_LATCH_OPEN_TIME);
+    private static ServoEndEffector.Parameters grabberParams6541 = new ServoEndEffector.Parameters()
+            .setExtendPos(RobotInfo6541.GRABBER_RELEASE_POS)
+            .setExtendTime(RobotInfo6541.GRABBER_RELEASE_TIME)
+            .setRetractPos(RobotInfo6541.GRABBER_GRAB_POS)
+            .setRetractTime(RobotInfo6541.GRABBER_GRAB_TIME);
 
     Robot6541(TrcRobot.RunMode runMode)
     {
@@ -133,7 +140,7 @@ class Robot6541 extends Robot
                 wrist = new Wrist(wristParams6541);
                 wrist.setPosition(RobotInfo6541.WRIST_MIN_POS);
 
-                grabber = new Grabber6541();
+                grabber = new Grabber("grabberServo", grabberParams6541);
 
                 foundationLatch = new FoundationLatch(foundationLatchParams6541);
                 foundationLatch.release();

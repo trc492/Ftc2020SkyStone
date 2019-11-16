@@ -24,7 +24,9 @@ package team3543;
 
 import common.Elevator;
 import common.FoundationLatch;
+import common.Grabber;
 import common.Robot;
+import common.ServoEndEffector;
 import common.Wrist;
 import ftclib.FtcDcMotor;
 import trclib.TrcHashMap;
@@ -82,6 +84,11 @@ class Robot3543 extends Robot
             .add("closeTime", RobotInfo3543.FOUNDATION_LATCH_CLOSE_TIME)
             .add("openPos", RobotInfo3543.FOUNDATION_LATCH_OPEN_POS)
             .add("openTime", RobotInfo3543.FOUNDATION_LATCH_OPEN_TIME);
+    private static ServoEndEffector.Parameters grabberParams3543 = new ServoEndEffector.Parameters()
+            .setRetractPos(RobotInfo3543.GRABBER_CLOSE_POS)
+            .setRetractTime(RobotInfo3543.GRABBER_GRAB_TIME)
+            .setExtendPos(RobotInfo3543.GRABBER_OPEN_POS)
+            .setExtendTime(RobotInfo3543.GRABBER_RELEASE_TIME);
     ExtenderArm3543 extenderArm = null;
 
     Robot3543(TrcRobot.RunMode runMode)
@@ -137,7 +144,7 @@ class Robot3543 extends Robot
                 wrist = new Wrist(wristParams3543);
                 wrist.retract();
 
-                grabber = new Grabber3543();
+                grabber = new Grabber("grabberServo", grabberParams3543);
                 grabber.release();
 
                 foundationLatch = new FoundationLatch(foundationLatchParams3543);
