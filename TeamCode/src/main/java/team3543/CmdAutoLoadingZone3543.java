@@ -338,8 +338,13 @@ public class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                     break;
 
                 case PULL_FOUNDATION_TO_WALL:
+                    //
+                    // Pulling the foundation added a lot of friction that causes the wheels to slip.
+                    // This screwed up DriveBase odometry. So we need to slow it down to prevent wheels slipping.
+                    //
                     robot.pidDrive.getXPidCtrl().setOutputLimit(0.5);
                     robot.pidDrive.getYPidCtrl().setOutputLimit(0.5);
+                    //robot.pidDrive.getYPidCtrl().setRampRate(2.0);
                     yTarget = RobotInfo.ROBOT_START_Y_WALL;
                     simplePidDrive.setAbsoluteYTarget(yTarget, State.UNHOOK_FOUNDATION);
                     break;
@@ -347,6 +352,7 @@ public class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                 case UNHOOK_FOUNDATION:
                     robot.pidDrive.getXPidCtrl().setOutputLimit(1.0);
                     robot.pidDrive.getYPidCtrl().setOutputLimit(1.0);
+                    //robot.pidDrive.getYPidCtrl().setRampRate(null);
                     robot.foundationLatch.release(event);
                     nextState = autoChoices.parkUnderBridge == CommonAuto.ParkPosition.PARK_CLOSE_TO_WALL?
                                     State.STRAFE_TO_PARK:
