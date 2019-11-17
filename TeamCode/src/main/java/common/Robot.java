@@ -508,7 +508,7 @@ public class Robot
             boolean showTensorFlowView, TrcHomographyMapper.Rectangle cameraRect,
             TrcHomographyMapper.Rectangle worldRect)
     {
-        System.loadLibrary(OPENCV_NATIVE_LIBRARY_NAME);//CodeReview: Is this the right place to load OpenCV?!
+        System.loadLibrary(OPENCV_NATIVE_LIBRARY_NAME);
 
         int tfodMonitorViewId = !showTensorFlowView ? -1 :
                 opMode.hardwareMap.appContext.getResources().getIdentifier(

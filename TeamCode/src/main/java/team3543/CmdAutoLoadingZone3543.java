@@ -316,7 +316,6 @@ public class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                     nextState = autoChoices.moveFoundation?
                                     State.TURN_AROUND:
                                 autoChoices.parkUnderBridge == CommonAuto.ParkPosition.PARK_CLOSE_TO_CENTER?
-                                        //CodeReview: may have to move back more before strafing to clear the bridge.
                                         State.STRAFE_TO_PARK:
                                         State.SKIP_MOVE_FOUNDATION_PARK_WALL;
                     simplePidDrive.setRelativeYTarget(yTarget, nextState);
