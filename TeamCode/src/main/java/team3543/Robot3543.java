@@ -87,10 +87,10 @@ class Robot3543 extends Robot
             .setExtendPos(RobotInfo3543.GRABBER_OPEN_POS)
             .setExtendTime(RobotInfo3543.GRABBER_RELEASE_TIME);
     private static final ServoEndEffector.Parameters foundationLatchParams3543 = new ServoEndEffector.Parameters()
-            .setRetractPos(RobotInfo3543.FOUNDATION_LATCH_RELEASE_POS)
-            .setRetractTime(RobotInfo3543.FOUNDATION_LATCH_RELEASE_TIME)
-            .setExtendPos(RobotInfo3543.FOUNDATION_LATCH_GRAB_POS)
-            .setExtendTime(RobotInfo3543.FOUNDATION_LATCH_GRAB_TIME);
+            .setRetractPos(RobotInfo3543.FOUNDATION_LATCH_GRAB_POS)
+            .setRetractTime(RobotInfo3543.FOUNDATION_LATCH_GRAB_TIME)
+            .setExtendPos(RobotInfo3543.FOUNDATION_LATCH_RELEASE_POS)
+            .setExtendTime(RobotInfo3543.FOUNDATION_LATCH_RELEASE_TIME);
     //
     // Team specific subsystems.
     //
