@@ -104,7 +104,7 @@ public class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
         double startX = (autoChoices.strategy == CommonAuto.AutoStrategy.LOADING_ZONE_WALL?
                          RobotInfo.ROBOT_START_X_WALL: RobotInfo.ROBOT_START_X_FAR)* allianceDirection;
         double startY = (autoChoices.strategy == CommonAuto.AutoStrategy.LOADING_ZONE_WALL?
-                         RobotInfo.ROBOT_START_Y_WALL: RobotInfo.ROBOT_START_Y_FAR)* allianceDirection;
+                         RobotInfo.ROBOT_START_Y_WALL: RobotInfo.ROBOT_START_Y_FAR);
         simplePidDrive = new SimplePidDrive<>(robot.pidDrive, event, sm, startX, startY);
 
         sm.start(State.DO_DELAY);
@@ -339,11 +339,15 @@ public class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                     break;
 
                 case PULL_FOUNDATION_TO_WALL:
-                    yTarget = 50.0;
-                    simplePidDrive.setRelativeYTarget(yTarget, State.UNHOOK_FOUNDATION);
+                    robot.pidDrive.getXPidCtrl().setOutputLimit(0.5);
+                    robot.pidDrive.getYPidCtrl().setOutputLimit(0.5);
+                    yTarget = RobotInfo.ROBOT_START_Y_WALL;
+                    simplePidDrive.setAbsoluteYTarget(yTarget, State.UNHOOK_FOUNDATION);
                     break;
 
                 case UNHOOK_FOUNDATION:
+                    robot.pidDrive.getXPidCtrl().setOutputLimit(1.0);
+                    robot.pidDrive.getYPidCtrl().setOutputLimit(1.0);
                     robot.foundationLatch.release(event);
                     nextState = autoChoices.parkUnderBridge == CommonAuto.ParkPosition.PARK_CLOSE_TO_WALL?
                                     State.STRAFE_TO_PARK:

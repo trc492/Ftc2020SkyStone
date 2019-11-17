@@ -259,7 +259,7 @@ public class CmdSkystoneVision implements TrcRobot.RobotCommand
                     }
 
                 case GOTO_SKYSTONE:
-                    yTarget = 9.0;
+                    yTarget = 8.5;
                     robot.pidDrive.setRelativeYTarget(yTarget, event);
                     sm.waitForSingleEvent(event, State.DONE);
                     break;
