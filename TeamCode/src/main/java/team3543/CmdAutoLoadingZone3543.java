@@ -38,13 +38,6 @@ public class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
     private static final boolean debugYPid = true;
     private static final boolean debugTurnPid = true;
 
-    // Absolute position waypoint coordinates
-    private static final double FOUNDATION_DROP_ABS_POS_X_INCHES = 120.0;
-    private static final double WALL_ABS_POS_Y_INCHES = 9.0;
-    private static final double ON_LINE_ABS_POS_X_INCHES = 69.0;
-    private static final double CENTER_FIELD_ABS_POS_Y_INCHES = 35.0;
-    private static final double AVOID_PARTNER_ABS_POS_X_INCHES = 89.0;
-
     private enum State
     {
         DO_DELAY,
@@ -290,7 +283,7 @@ public class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                     robot.pidDrive.getYPidCtrl().setOutputLimit(1.0);
 //                    xTarget = 72.0*allianceDirection - robot.driveBase.getXPosition();
 //                    simplePidDrive.setRelativeXTarget(xTarget, State.APPROACH_FOUNDATION);
-                    xTarget = FOUNDATION_DROP_ABS_POS_X_INCHES * allianceDirection;
+                    xTarget = RobotInfo.FOUNDATION_DROP_ABS_POS_X_INCHES * allianceDirection;
                     simplePidDrive.setAbsoluteXTarget(xTarget, State.APPROACH_FOUNDATION);
                     break;
 
@@ -362,21 +355,21 @@ public class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                 case MOVE_CLOSER_TO_BRIDGE:
 //                    xTarget = 30.0 * allianceDirection;
 //                    simplePidDrive.setRelativeXTarget(xTarget, State.MOVE_BACK_TO_CENTER);
-                    xTarget = AVOID_PARTNER_ABS_POS_X_INCHES * allianceDirection;
+                    xTarget = RobotInfo.AVOID_PARTNER_ABS_POS_X_INCHES * allianceDirection;
                     simplePidDrive.setAbsoluteXTarget(xTarget,State.MOVE_BACK_TO_CENTER);
                     break;
 
                 case MOVE_BACK_TO_CENTER:
 //                    yTarget = -20.0;
 //                    simplePidDrive.setRelativeYTarget(yTarget, State.MOVE_UNDER_BRIDGE);
-                    yTarget = CENTER_FIELD_ABS_POS_Y_INCHES;
+                    yTarget = RobotInfo.CENTER_FIELD_ABS_POS_Y_INCHES;
                     simplePidDrive.setAbsoluteYTarget(yTarget, State.MOVE_UNDER_BRIDGE);
                     break;
 
                 case MOVE_UNDER_BRIDGE:
 //                    xTarget = 20.0 * allianceDirection;
 //                    simplePidDrive.setRelativeXTarget(xTarget, State.DONE);
-                    xTarget = ON_LINE_ABS_POS_X_INCHES * allianceDirection;
+                    xTarget = RobotInfo.ON_LINE_ABS_POS_X_INCHES * allianceDirection;
                     simplePidDrive.setAbsoluteXTarget(xTarget, State.DONE);
                     break;
 
@@ -384,7 +377,7 @@ public class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
 //                    yTarget = -44.0;
 //                    simplePidDrive.setRelativeYTarget(yTarget, nextState);
                     robot.elevator.setPosition(0.0);
-                    yTarget = WALL_ABS_POS_Y_INCHES;
+                    yTarget = RobotInfo.WALL_ABS_POS_Y_INCHES;
                     nextState = autoChoices.parkUnderBridge == CommonAuto.ParkPosition.PARK_CLOSE_TO_WALL?
                                     State.STRAFE_TO_PARK: State.DONE;
                     simplePidDrive.setAbsoluteYTarget(yTarget, nextState);
@@ -395,7 +388,7 @@ public class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
 //                    xTarget = -50.0 * allianceDirection;
 //                    if (autoChoices.moveFoundation) xTarget = -xTarget;
 //                    simplePidDrive.setRelativeXTarget(xTarget, nextState);
-                    xTarget = ON_LINE_ABS_POS_X_INCHES * allianceDirection;
+                    xTarget = RobotInfo.ON_LINE_ABS_POS_X_INCHES * allianceDirection;
                     nextState = autoChoices.parkUnderBridge == CommonAuto.ParkPosition.PARK_CLOSE_TO_CENTER?
                                     State.MOVE_TOWARDS_CENTER: State.DONE;
                     simplePidDrive.setAbsoluteXTarget(xTarget, nextState);
@@ -404,7 +397,7 @@ public class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                 case MOVE_TOWARDS_CENTER:
 //                    yTarget = 8.0;
 //                    simplePidDrive.setRelativeYTarget(yTarget, State.DONE);
-                    yTarget = CENTER_FIELD_ABS_POS_Y_INCHES;
+                    yTarget = RobotInfo.CENTER_FIELD_ABS_POS_Y_INCHES;
                     simplePidDrive.setAbsoluteYTarget(yTarget, State.DONE);
                     break;
 

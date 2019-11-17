@@ -36,4 +36,11 @@ public class RobotInfo
     public static final double SKYSTONE_SCAN_DISTANCE_WALL      = -9.0;
     public static final double SKYSTONE_SCAN_DISTANCE_FAR       = -18.0;
 
+    // Absolute position waypoint coordinates
+    public static final double FOUNDATION_DROP_ABS_POS_X_INCHES = 120.0;
+    public static final double WALL_ABS_POS_Y_INCHES            = 9.0;
+    public static final double ON_LINE_ABS_POS_X_INCHES         = 69.0;
+    public static final double CENTER_FIELD_ABS_POS_Y_INCHES    = 35.0;
+    public static final double AVOID_PARTNER_ABS_POS_X_INCHES   = 89.0;
+
 }   //class RobotInfo
