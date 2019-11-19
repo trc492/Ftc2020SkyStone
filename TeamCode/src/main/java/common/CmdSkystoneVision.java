@@ -150,7 +150,7 @@ public class CmdSkystoneVision implements TrcRobot.RobotCommand
 
         if (state == null)
         {
-            robot.dashboard.displayPrintf(1, "State: Disabled or waiting...");
+            robot.dashboard.displayPrintf(1, "State: disabled or waiting...");
         }
         else
         {
