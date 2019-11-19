@@ -68,6 +68,8 @@ class Robot6541 extends Robot
             .setKi(RobotInfo6541.ELEVATOR_KI)
             .setKd(RobotInfo6541.ELEVATOR_KD)
             .setTolerance(RobotInfo6541.ELEVATOR_TOLERANCE)
+            .setInverted(RobotInfo6541.ELEVATOR_INVERTED)
+            .setHasUpperLimitSwitch(RobotInfo6541.ELEVATOR_HAS_UPPER_LIMIT_SWITCH)
             .setCalPower(RobotInfo6541.ELEVATOR_CAL_POWER)
             .setHeightPresets(RobotInfo6541.ELEVATOR_HEIGHT_PRESETS);
     private static final ServoEndEffector.Parameters elbowParams6541 = new ServoEndEffector.Parameters()
@@ -133,7 +135,7 @@ class Robot6541 extends Robot
             {
                 if (preferences.hasElevator)
                 {
-                    elevator = new Elevator(false, elevatorParams6541);
+                    elevator = new Elevator(elevatorParams6541);
                     elevator.zeroCalibrate();
                 }
                 // Elbow is 6541 only.

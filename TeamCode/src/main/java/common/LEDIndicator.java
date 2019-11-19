@@ -49,19 +49,17 @@ public class LEDIndicator
     public LEDIndicator()
     {
         blinkin = new FtcRevBlinkin("blinkin");
-        blinkin.setPatternState(normalPattern, true);
+        reset();
     }   //LEDIndicator
 
     public void reset()
     {
-        blinkin.resetAllPatternStates();
-        blinkin.setPatternState(normalPattern, true);
+        blinkin.setPattern(normalPattern);
     }   //reset
 
     public void setDetectedTarget(String targetName)
     {
-        reset();
-        blinkin.setPatternState(visionPatternMap.get(targetName), true);
+        blinkin.setPattern(visionPatternMap.get(targetName));
     }   //setDetectedTarget
 
 }   //class LEDIndicator

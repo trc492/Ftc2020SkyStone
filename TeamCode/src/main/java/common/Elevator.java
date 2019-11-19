@@ -25,7 +25,6 @@ package common;
 import ftclib.FtcDcMotor;
 import ftclib.FtcDigitalInput;
 import trclib.TrcEvent;
-import trclib.TrcHashMap;
 import trclib.TrcPidActuator;
 import trclib.TrcPidController;
 
@@ -36,6 +35,8 @@ public class Elevator
         double minHeight, maxHeight;
         double scale, offset;
         double kP, kI, kD, tolerance;
+        boolean inverted;
+        boolean hasUpperLimitSwitch;
         double calPower;
         double[] heightPresets;
 
@@ -87,6 +88,18 @@ public class Elevator
             return this;
         }
 
+        public Parameters setInverted(boolean inverted)
+        {
+            this.inverted = inverted;
+            return this;
+        }
+
+        public Parameters setHasUpperLimitSwitch(boolean hasUpperLimitSwitch)
+        {
+            this.hasUpperLimitSwitch = hasUpperLimitSwitch;
+            return this;
+        }
+
         public Parameters setCalPower(double calPower)
         {
             this.calPower = calPower;
@@ -108,27 +121,18 @@ public class Elevator
     private double[] elevatorHeightPresets;
     private int elevatorLevel;
 
-    public Elevator(boolean isTeam3543, Parameters params)
+    public Elevator(Parameters params)
     {
         lowerLimitSwitch = new FtcDigitalInput("elevatorLowerLimit");
-        if (!isTeam3543)
+        if (params.hasUpperLimitSwitch)
         {
             upperLimitSwitch = new FtcDigitalInput("elevatorUpperLimit");
-        }
-
-        lowerLimitSwitch.setInverted(false);
-        if (upperLimitSwitch != null)
-        {
-            upperLimitSwitch.setInverted(false);
         }
 
         FtcDcMotor elevatorMotor = new FtcDcMotor("elevatorMotor", lowerLimitSwitch, upperLimitSwitch);
         elevatorMotor.setBrakeModeEnabled(true);
         elevatorMotor.setOdometryEnabled(true);
-        if (isTeam3543)
-        {
-            elevatorMotor.setInverted(true);
-        }
+        elevatorMotor.setInverted(params.inverted);
 
         TrcPidController pidController = new TrcPidController(
                 "elevatorPidController",

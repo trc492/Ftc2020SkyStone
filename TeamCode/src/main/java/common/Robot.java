@@ -570,9 +570,9 @@ public class Robot
         fieldOrigin = pose;
     }   //setFieldOrigin
 
-    public TrcPose2D getRobotPose()
+    public TrcPose2D getRobotPose(String targetName, boolean exclude)
     {
-        TrcPose2D robotPose = vuforiaVision.getRobotPose("Stone Target", true);
+        TrcPose2D robotPose = vuforiaVision.getRobotPose(targetName, exclude);
         if (robotPose != null && fieldOrigin != null)
         {
             // There is a field origin, make the robot pose relative to it.

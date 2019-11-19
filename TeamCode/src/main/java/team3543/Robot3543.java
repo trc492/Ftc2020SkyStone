@@ -25,6 +25,7 @@ package team3543;
 import common.Elevator;
 import common.Grabber;
 import common.Robot;
+import common.RobotInfo;
 import common.ServoEndEffector;
 import ftclib.FtcDcMotor;
 import trclib.TrcHomographyMapper;
@@ -68,6 +69,8 @@ class Robot3543 extends Robot
             .setKi(RobotInfo3543.ELEVATOR_KI)
             .setKd(RobotInfo3543.ELEVATOR_KD)
             .setTolerance(RobotInfo3543.ELEVATOR_TOLERANCE)
+            .setInverted(RobotInfo3543.ELEVATOR_INVERTED)
+            .setHasUpperLimitSwitch(RobotInfo3543.ELEVATOR_HAS_UPPER_LIMIT_SWITCH)
             .setCalPower(RobotInfo3543.ELEVATOR_CAL_POWER);
     private static final ServoEndEffector.Parameters extenderArmParams3543 = new ServoEndEffector.Parameters()
             .setRetractPos(RobotInfo3543.EXTENDER_ARM_RETRACTED_POS)
@@ -140,7 +143,7 @@ class Robot3543 extends Robot
             {
                 if (preferences.hasElevator)
                 {
-                    elevator = new Elevator(true, elevatorParams3543);
+                    elevator = new Elevator(elevatorParams3543);
                     elevator.zeroCalibrate();
                 }
                 // ExtenderArm is 3543 only.

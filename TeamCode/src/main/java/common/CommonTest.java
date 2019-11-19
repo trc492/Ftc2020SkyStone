@@ -449,7 +449,7 @@ public class CommonTest
 
         if (robot.vuforiaVision != null)
         {
-            TrcPose2D robotPose = robot.getRobotPose();
+            TrcPose2D robotPose = robot.getRobotPose(null, false);
             robot.dashboard.displayPrintf(13, "RobotLocation %s: %s",
                     robot.vuforiaVision.getLastSeenImageName(), robotPose);
         }
