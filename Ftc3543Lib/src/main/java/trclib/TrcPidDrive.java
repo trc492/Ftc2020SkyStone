@@ -41,6 +41,7 @@ public class TrcPidDrive
     private static final boolean useGlobalTracer = false;
     private static final TrcDbgTrace.TraceLevel traceLevel = TrcDbgTrace.TraceLevel.API;
     private static final TrcDbgTrace.MsgLevel msgLevel = TrcDbgTrace.MsgLevel.INFO;
+    private static final boolean verbosePidInfo = false;
     private TrcDbgTrace dbgTrace = null;
     private TrcDbgTrace msgTracer = null;
     private TrcRobotBattery battery = null;
@@ -572,6 +573,22 @@ public class TrcPidDrive
      *
      * @param xDelta specifies the X target relative to the current X position.
      * @param yDelta specifies the Y target relative to the current Y position.
+     * @param absHeading specifies the absolute heading to turn to.
+     * @param event specifies an event object to signal when done.
+     */
+    public void setRelativeTargetWithAbsHeading(double xDelta,double yDelta, double absHeading, TrcEvent event)
+    {
+        // TODO: Need to put more thought on this.
+        throw new UnsupportedOperationException("To be written!");
+//        double turnDelta = absHeading - turnPidCtrl.getCurrentInput();
+//        setRelativeTarget(null, 0.0, yDelta, turnDelta, false, event, 0.0);
+    }   //setRelativeYTargetWithAbsHeading
+
+    /**
+     * This method sets the PID controlled relative drive targets.
+     *
+     * @param xDelta specifies the X target relative to the current X position.
+     * @param yDelta specifies the Y target relative to the current Y position.
      * @param turnDelta specifies the turn target relative to the current heading.
      * @param holdTarget specifies true for holding the target position at the end, false otherwise.
      * @param event specifies an event object to signal when done.
@@ -1090,9 +1107,9 @@ public class TrcPidDrive
         if (msgTracer != null && tracePidInfo)
         {
             double currTime = TrcUtil.getCurrentTime();
-            if (xPidCtrl != null) xPidCtrl.printPidInfo(msgTracer, currTime, battery);
-            if (yPidCtrl != null) yPidCtrl.printPidInfo(msgTracer, currTime, battery);
-            if (turnPidCtrl != null) turnPidCtrl.printPidInfo(msgTracer, currTime, battery);
+            if (xPidCtrl != null) xPidCtrl.printPidInfo(msgTracer, currTime, verbosePidInfo, battery);
+            if (yPidCtrl != null) yPidCtrl.printPidInfo(msgTracer, currTime, verbosePidInfo, battery);
+            if (turnPidCtrl != null) turnPidCtrl.printPidInfo(msgTracer, currTime, verbosePidInfo, battery);
         }
 
         if (debugEnabled)
