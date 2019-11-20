@@ -46,21 +46,23 @@ class RobotInfo3543
     //
     // 2019-10-28: Scale=0.0164402015697676, Kp=0.09, Ki=0.0, Kd=0.003
     // 2019-11-13: Scale=0.0144873520175266, Kp=0.09, Ki=0.0, Kd=0.001
+    // 2019-11-19: Scale=0.0163125145666872, Kp=0.095, Ki=0.0, Kd=0.001
     //
-    static final double ENCODER_X_KP                    = 0.09;
+    static final double ENCODER_X_KP                    = 0.095;
     static final double ENCODER_X_KI                    = 0.0;
     static final double ENCODER_X_KD                    = 0.001;
     static final double ENCODER_X_TOLERANCE             = 2.0;
-    static final double ENCODER_X_INCHES_PER_COUNT      = 0.0144873520175266;
+    static final double ENCODER_X_INCHES_PER_COUNT      = 0.0163125145666872;
     //
     // 2019-10-28: Scale=0.0176214934808376, Kp=0.05, Ki=0.0, Kd=0.003
     // 2019-11-13: Scale=0.0166031473564429, Kp=0.06, Ki=0.0, Kd=0.002
+    // 2019-11-19: Scale=0.0174484434975099, Kp=0.06, Ki=0.0, Kd=0.002
     //
     static final double ENCODER_Y_KP                    = 0.06;
     static final double ENCODER_Y_KI                    = 0.0;
     static final double ENCODER_Y_KD                    = 0.002;
     static final double ENCODER_Y_TOLERANCE             = 1.0;
-    static final double ENCODER_Y_INCHES_PER_COUNT      = 0.0166031473564429;
+    static final double ENCODER_Y_INCHES_PER_COUNT      = 0.0174484434975099;
     //
     // 2019-10-28: Kp=0.02, Ki=0.0, Kd=0.0015
     // 2019-11-13: Kp=0.02, Ki=0.0, Kd=0.001
@@ -130,7 +132,9 @@ class RobotInfo3543
     //
     // Elevator subsystem.
     //
-    // 2019-10-28: Elevator Scale = 18.622/17897.0 = 0.0010405095826116, Kp = 1.0, Ki = 0.0, Kd = 0.0
+    // 2019-10-28: Scale=18.622/17897.0 = 0.0010405095826116, Kp=1.0, Ki=0.0, Kd=0.0
+    // 2019-11-19: Scale=17.0/4718.0=0.00360322, Kp=1.0, Ki=0.0, Kd=0.0 (Replaced with faster motor)
+    //
     static final double ELEVATOR_KP                     = 1.0;
     static final double ELEVATOR_KI                     = 0.0;
     static final double ELEVATOR_KD                     = 0.0;
@@ -140,7 +144,7 @@ class RobotInfo3543
     static final double ELEVATOR_CAL_POWER              = 0.5;
     static final double ELEVATOR_MIN_HEIGHT             = 0.0;
     static final double ELEVATOR_MAX_HEIGHT             = 18.5;
-    static final double ELEVATOR_SCALE                  = (18.622 / 17897.0);
+    static final double ELEVATOR_SCALE                  = 17.0/4718.0;
     static final double ELEVATOR_OFFSET                 = 0.0;
     //
     // ExtenderArm subsystem.
@@ -174,7 +178,7 @@ class RobotInfo3543
     //
     static final double FOUNDATION_LATCH_RELEASE_POS    = 0.0;
     static final double FOUNDATION_LATCH_RELEASE_TIME   = 0.5;
-    static final double FOUNDATION_LATCH_GRAB_POS       = (100.0/255.0);
+    static final double FOUNDATION_LATCH_GRAB_POS       = 0.4;
     static final double FOUNDATION_LATCH_GRAB_TIME      = 0.5;
 
     static final double BUILDING_ZONE_ROBOT_START_X     = 36.0;
