@@ -96,9 +96,10 @@ public class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
         robot.gyroPidCtrl.setNoOscillation(true);
 
         double startX = (autoChoices.strategy == CommonAuto.AutoStrategy.LOADING_ZONE_WALL?
-                RobotInfo.ROBOT_START_X_WALL: RobotInfo.ROBOT_START_X_FAR) * allianceDirection;
-        double startY = autoChoices.strategy == CommonAuto.AutoStrategy.LOADING_ZONE_WALL?
-                RobotInfo.ROBOT_START_Y_WALL: RobotInfo.ROBOT_START_Y_FAR;
+                                RobotInfo.ROBOT_START_X_WALL:
+                         autoChoices.strategy == CommonAuto.AutoStrategy.LOADING_ZONE_MID?
+                                RobotInfo.ROBOT_START_X_MID: RobotInfo.ROBOT_START_X_FAR) * allianceDirection;
+        double startY = RobotInfo.ROBOT_START_Y;
         simplePidDrive = new SimplePidDrive<>(robot.pidDrive, event, sm, startX, startY);
 
         sm.start(State.DO_DELAY);

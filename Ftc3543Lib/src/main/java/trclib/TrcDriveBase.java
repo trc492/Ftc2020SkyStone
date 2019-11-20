@@ -216,9 +216,11 @@ public abstract class TrcDriveBase implements TrcExclusiveSubsystem
     }   //getAbsolutePose
 
     /**
-     * This method sets the given pose as the current pose.
+     * This method sets the absolute robot pose to the given pose. This is useful if for some reason the odometry
+     * tracking is no longer accurate such as in the case when the wheels slip. This method allows the caller to
+     * correct the absolute robot pose by some other means such as from other sensors or vision.
      *
-     * @param pose specifies the pose to be set as the current pose.
+     * @param pose specifies the pose to be set as the absolute robot pose.
      */
     public void setAbsolutePose(TrcPose2D pose)
     {
@@ -584,21 +586,6 @@ public abstract class TrcDriveBase implements TrcExclusiveSubsystem
     {
         resetOdometry(false, true);
     }   //resetOdometry
-
-    /**
-     * This method sets the absolute robot pose to the given pose. This is useful if for some reason the odometry
-     * tracking is no longer accurate such as in the case when the wheels slip. This method allows the caller to
-     * correct the absolute robot pose by some other means such as from other sensors or vision.
-     *
-     * @param pose specifies the pose to be set as the absolute robot pose.
-     */
-    public void setOdometryAs(TrcPose2D pose)
-    {
-        synchronized (odometry)
-        {
-            odometry.setAs(pose);
-        }
-    }   //setOdometryAs
 
     /**
      * This method sets a motor power mapper. If null, it unsets the previously set mapper.
