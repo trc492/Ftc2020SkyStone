@@ -100,6 +100,16 @@ public class ServoEndEffector
         endEffector.setPosition(params.extendPos, time, event);
     }   //extend
 
+    public void setPosition(double position)
+    {
+        endEffector.setPosition(position);
+    }
+
+    public void setPosition(double position, double time, TrcEvent event)
+    {
+        endEffector.setPosition(position, time, event);
+    }
+
     public double getPosition()
     {
         return endEffector.getPosition();

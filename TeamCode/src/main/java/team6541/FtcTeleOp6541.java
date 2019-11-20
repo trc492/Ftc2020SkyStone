@@ -65,6 +65,7 @@ public class FtcTeleOp6541 extends CommonTeleOp
     //
     // Implements TrcGameController.ButtonHandler interface.
     //
+    //private double elbowPos = 0.5;
 
     @Override
     public void buttonEvent(TrcGameController gamepad, int button, boolean pressed)
@@ -79,9 +80,33 @@ public class FtcTeleOp6541 extends CommonTeleOp
             switch (button)
             {
                 case FtcGamepad.GAMEPAD_A:
+                    /*
+                    if (pressed)
+                    {
+                        if (elbowPos < 1.0)
+                        {
+                            elbowPos += 0.05;
+                        }
+                        robot6541.elbow.setPosition(elbowPos);
+                        robot6541.speak("Elbow position " + elbowPos + "");
+                        processed = true;
+                    }
+                     */
                     break;
 
                 case FtcGamepad.GAMEPAD_B:
+                    /*
+                    if (pressed)
+                    {
+                        if (elbowPos > 0.0)
+                        {
+                            elbowPos -= 0.05;
+                        }
+                        robot6541.elbow.setPosition(elbowPos);
+                        robot6541.speak("Elbow position " + elbowPos + "");
+                        processed = true;
+                    }
+                     */
                     break;
 
                 case FtcGamepad.GAMEPAD_X:

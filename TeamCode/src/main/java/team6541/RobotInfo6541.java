@@ -146,7 +146,7 @@ class RobotInfo6541
     //
     static final double ELBOW_EXTEND_POS                = 0.0;
     static final double ELBOW_EXTEND_TIME               = 1;
-    static final double ELBOW_RETRACT_POS               = 1;
+    static final double ELBOW_RETRACT_POS               = 0.5;
     static final double ELBOW_RETRACT_TIME              = 1;
     //
     // Grabber subsystem.
@@ -161,9 +161,9 @@ class RobotInfo6541
     //
     // FoundationLatch subsystem.
     //
-    static final double FOUNDATION_LATCH_RELEASE_POS    = 170.0 / 255.0;
+    static final double FOUNDATION_LATCH_RELEASE_POS    = 65.0 / 255.0;
     static final double FOUNDATION_LATCH_RELEASE_TIME   = 0.5;
-    static final double FOUNDATION_LATCH_GRAB_POS       = 65.0 / 255.0;
+    static final double FOUNDATION_LATCH_GRAB_POS       = 170.0 / 255.0;
     static final double FOUNDATION_LATCH_GRAB_TIME      = 0.5;
 
     static final double BUILDING_ZONE_ROBOT_START_X     = 36.0;
