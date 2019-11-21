@@ -252,15 +252,10 @@ public class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                     }
 
                 case GO_DOWN_ON_SKYSTONE:
-                    if (robot.extenderArm != null)
-                    {
-                        robot.extenderArm.extend(2.5, event);
-                        sm.waitForSingleEvent(event, State.GRAB_SKYSTONE);
-                        break;
-                    }
-                    //
-                    // Intentionally falling through to the next state.
-                    //
+                    robot.extenderArm.extend(2.5, event);
+                    sm.waitForSingleEvent(event, State.GRAB_SKYSTONE);
+                    break;
+
                 case GRAB_SKYSTONE:
                     robot.grabber.grab(2.0, event);
                     sm.waitForSingleEvent(event, State.PULL_SKYSTONE);
@@ -272,15 +267,10 @@ public class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                     break;
 
                 case START_EXTENDER_ARM_RETRACTION:
-                    if (robot.extenderArm != null)
-                    {
-                        robot.extenderArm.retract(1.0, event);
-                        sm.waitForSingleEvent(event, State.GOTO_FOUNDATION);
-                        break;
-                    }
-                    //
-                    // Intentionally falling through to the next state.
-                    //
+                    robot.extenderArm.retract(1.0, event);
+                    sm.waitForSingleEvent(event, State.GOTO_FOUNDATION);
+                    break;
+
                 case GOTO_FOUNDATION:
                     // Need to go full speed to save time.
                     robot.pidDrive.getXPidCtrl().setOutputLimit(1.0);
@@ -295,28 +285,23 @@ public class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
 
                 case APPROACH_FOUNDATION:
                     robot.elevator.setPosition(6.0);
-                    if (robot.extenderArm != null) robot.extenderArm.extend(); //start extending early
+                    robot.extenderArm.extend(); //start extending early
                     yTarget = 10.0;
                     simplePidDrive.setRelativeYTarget(yTarget, State.EXTEND_ARM_OVER_FOUNDATION);
                     break;
 
                 case EXTEND_ARM_OVER_FOUNDATION:
-                    if (robot.extenderArm != null)
-                    {
-                        robot.extenderArm.extend(1.5, event);
-                        sm.waitForSingleEvent(event, State.DROP_SKYSTONE);
-                        break;
-                    }
-                    //
-                    // Intentionally falling through to the next state.
-                    //
+                    robot.extenderArm.extend(1.5, event);
+                    sm.waitForSingleEvent(event, State.DROP_SKYSTONE);
+                    break;
+
                 case DROP_SKYSTONE:
                     robot.grabber.release(1.0, event);
                     sm.waitForSingleEvent(event, State.BACK_OFF_FOUNDATION);
                     break;
 
                 case BACK_OFF_FOUNDATION:
-                    if (robot.extenderArm != null) robot.extenderArm.retract();
+                    robot.extenderArm.retract();
                     robot.wrist.retract();
                     yTarget = -6.0;
                     nextState = autoChoices.moveFoundation?

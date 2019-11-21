@@ -25,7 +25,6 @@ package team3543;
 import common.Elevator;
 import common.Grabber;
 import common.Robot;
-import common.RobotInfo;
 import common.ServoEndEffector;
 import ftclib.FtcDcMotor;
 import trclib.TrcHomographyMapper;
