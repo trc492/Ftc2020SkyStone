@@ -61,7 +61,7 @@ class RobotInfo3543
     static final double ENCODER_Y_KP                    = 0.06;
     static final double ENCODER_Y_KI                    = 0.0;
     static final double ENCODER_Y_KD                    = 0.002;
-    static final double ENCODER_Y_TOLERANCE             = 1.0;
+    static final double ENCODER_Y_TOLERANCE             = 2.0;
     static final double ENCODER_Y_INCHES_PER_COUNT      = 0.0174484434975099;
     //
     // 2019-10-28: Kp=0.02, Ki=0.0, Kd=0.0015
@@ -170,7 +170,7 @@ class RobotInfo3543
     //
     static final double GRABBER_OFFSET                  = 0.0;
     static final double GRABBER_OPEN_POS                = 0.8;
-    static final double GRABBER_CLOSE_POS               = 0.3;
+    static final double GRABBER_CLOSE_POS               = 0.2;
     static final double GRABBER_GRAB_TIME               = 3.0;
     static final double GRABBER_RELEASE_TIME            = 3.0;
     //
