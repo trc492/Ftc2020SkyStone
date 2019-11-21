@@ -256,10 +256,13 @@ public class VuforiaVision
         else
         {
             robotLocation = getRobotLocation(targetName);
-            lastImageName = targetName;
+            if (robotLocation != null)
+            {
+                lastImageName = targetName;
+            }
         }
 
-        if (robotLocation != null)
+        if (robotLocation != null && robot.ledIndicator != null)
         {
             robot.ledIndicator.setDetectedTarget(lastImageName);
         }
