@@ -280,6 +280,8 @@ public class CmdPidDrive implements TrcRobot.RobotCommand
                         robot.battery.getVoltage(), robot.battery.getLowestVoltage());
             }
 
+            robot.globalTracer.traceInfo(moduleName, "RobotPose: %s", robot.driveBase.getAbsolutePose());
+
             if (debugXPid && xPidCtrl != null)
             {
                 xPidCtrl.printPidInfo(robot.globalTracer, elapsedTime);

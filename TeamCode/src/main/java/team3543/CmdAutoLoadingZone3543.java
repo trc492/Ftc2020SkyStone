@@ -443,7 +443,7 @@ public class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                         robot.battery.getVoltage(), robot.battery.getLowestVoltage());
             }
 
-            robot.globalTracer.traceInfo(moduleName, "%s", robot.driveBase.getAbsolutePose());
+            robot.globalTracer.traceInfo(moduleName, "RobotPose: %s", robot.driveBase.getAbsolutePose());
 
             TrcPidController pidCtrl = robot.pidDrive.getXPidCtrl();
             if (debugXPid && pidCtrl != null)
