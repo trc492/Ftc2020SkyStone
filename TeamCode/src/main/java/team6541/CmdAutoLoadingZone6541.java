@@ -34,7 +34,7 @@ import trclib.TrcStateMachine;
 import trclib.TrcTimer;
 
 // CodeReview: This code need to be revised to be compatible with the new grabber.
-public class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
+class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
 {
     private static final boolean debugXPid = true;
     private static final boolean debugYPid = true;
@@ -72,7 +72,6 @@ public class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
     private final TrcStateMachine<State> sm;
     private final SimplePidDrive<State> simplePidDrive;
     private final double allianceDirection;
-    private final boolean useVisionTrigger;
     private CmdSkystoneVision skystoneVisionCommand = null;
 
     /**
@@ -80,7 +79,7 @@ public class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
      *
      * @param robot specifies the robot object for providing access to various global objects.
      */
-    public CmdAutoLoadingZone6541(Robot6541 robot, CommonAuto.AutoChoices autoChoices)
+    CmdAutoLoadingZone6541(Robot6541 robot, CommonAuto.AutoChoices autoChoices)
     {
         robot.globalTracer.traceInfo(moduleName, "robot=%s", robot);
 
@@ -90,7 +89,6 @@ public class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
         event = new TrcEvent(moduleName);
         sm = new TrcStateMachine<>(moduleName);
         allianceDirection = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE ? 1.0 : -1.0;
-        useVisionTrigger = robot.preferences.useVisionTrigger;
 
         robot.encoderXPidCtrl.setNoOscillation(true);
         robot.encoderYPidCtrl.setNoOscillation(true);
@@ -206,7 +204,7 @@ public class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
 
                 case START_VISION:
                     skystoneVisionCommand = new CmdSkystoneVision(
-                            robot, autoChoices, RobotInfo6541.GRABBER_OFFSET, useVisionTrigger);
+                            robot, autoChoices, RobotInfo6541.GRABBER_OFFSET, robot.preferences.useVisionTrigger);
                     sm.setState(State.DO_VISION);
                     //
                     // Intentionally falling through to the next state.

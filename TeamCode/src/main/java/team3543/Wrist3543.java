@@ -22,99 +22,26 @@
 
 package team3543;
 
-import ftclib.FtcServo;
+import common.ServoEndEffector;
 import trclib.TrcEnhancedServo;
-import trclib.TrcEvent;
 
-public class Wrist3543
+class Wrist3543 extends ServoEndEffector
 {
-    public static class Parameters
+    private final TrcEnhancedServo enhancedWrist;
+
+    Wrist3543(ServoEndEffector.Parameters params)
     {
-        double maxStepRate;
-        double minPos;
-        double maxPos;
-        double retractPos;
-        double extendPos;
-        boolean inverted;
+        super("wristServo", params);
+        enhancedWrist = new TrcEnhancedServo("enhancedWrist", this.endEffector);
+        enhancedWrist.setStepMode(
+                RobotInfo3543.WRIST_MAX_STEPRATE, RobotInfo3543.WRIST_MIN_POS, RobotInfo3543.WRIST_MAX_POS);
 
-        public Parameters setMaxStepRate(double maxStepRate)
-        {
-            this.maxStepRate = maxStepRate;
-            return this;
-        }
-
-        public Parameters setMinPos(double minPos)
-        {
-            this.minPos = minPos;
-            return this;
-        }
-
-        public Parameters setMaxPos(double maxPos)
-        {
-            this.maxPos = maxPos;
-            return this;
-        }
-
-        public Parameters setRetractPos(double retractPos)
-        {
-            this.retractPos = retractPos;
-            return this;
-        }
-
-        public Parameters setExtendPos(double extendPos)
-        {
-            this.extendPos = extendPos;
-            return this;
-        }
-
-        public Parameters setInverted(boolean inverted)
-        {
-            this.inverted = inverted;
-            return this;
-        }
-
-    }   //class Parameters
-
-    private final FtcServo wrist = new FtcServo("wristServo");
-    private final TrcEnhancedServo enhancedWrist = new TrcEnhancedServo("enhancedWristServo", wrist);
-    private final double retractPos, extendPos;
-
-    public Wrist3543(Parameters params)
-    {
-        this.retractPos = params.retractPos;
-        this.extendPos = params.extendPos;
-        enhancedWrist.setStepMode(params.maxStepRate, params.minPos, params.maxPos);
-        wrist.setInverted(params.inverted);
+        endEffector.setInverted(RobotInfo3543.WRIST_INVERTED);
     }   //Wrist3543
 
-    public void setPower(double power)
+    void setPower(double power)
     {
         enhancedWrist.setPower(power);
     }   //setPower
-
-    public double getPosition()
-    {
-        return wrist.getPosition();
-    }   //getPosition
-
-    public void setPosition(double position, double timeout, TrcEvent event)
-    {
-        enhancedWrist.setPosition(position, timeout, event);
-    }   //setPosition
-
-    public void setPosition(double position)
-    {
-        enhancedWrist.setPosition(position);
-    }   //setPosition
-
-    public void retract()
-    {
-        setPosition(retractPos);
-    }   //retract
-
-    public void extend()
-    {
-        setPosition(extendPos);
-    }   //extend
 
 }   //class Wrist3543

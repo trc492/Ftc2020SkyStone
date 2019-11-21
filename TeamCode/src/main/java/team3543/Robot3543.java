@@ -76,13 +76,11 @@ class Robot3543 extends Robot
             .setRetractTime(RobotInfo3543.EXTENDER_ARM_MOVE_TIME)
             .setExtendPos(RobotInfo3543.EXTENDER_ARM_PLACEMENT_POS)
             .setExtendTime(RobotInfo3543.EXTENDER_ARM_MOVE_TIME);
-    private static final Wrist3543.Parameters wristParams3543 = new Wrist3543.Parameters()
-            .setMaxStepRate(RobotInfo3543.WRIST_MAX_STEPRATE)
-            .setMinPos(RobotInfo3543.WRIST_MIN_POS)
-            .setMaxPos(RobotInfo3543.WRIST_MAX_POS)
+    private static final ServoEndEffector.Parameters wristParams3543 = new ServoEndEffector.Parameters()
             .setRetractPos(RobotInfo3543.WRIST_RETRACT_POS)
+            .setRetractTime(RobotInfo3543.WRIST_ROTATE_TIME)
             .setExtendPos(RobotInfo3543.WRIST_EXTEND_POS)
-            .setInverted(RobotInfo3543.WRIST_INVERTED);
+            .setExtendTime(RobotInfo3543.WRIST_ROTATE_TIME);
     private static final ServoEndEffector.Parameters grabberParams3543 = new ServoEndEffector.Parameters()
             .setRetractPos(RobotInfo3543.GRABBER_CLOSE_POS)
             .setRetractTime(RobotInfo3543.GRABBER_GRAB_TIME)

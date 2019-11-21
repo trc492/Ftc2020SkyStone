@@ -33,7 +33,7 @@ import trclib.TrcRobot;
 import trclib.TrcStateMachine;
 import trclib.TrcTimer;
 
-public class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
+class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
 {
     private static final boolean debugXPid = true;
     private static final boolean debugYPid = true;
@@ -79,7 +79,6 @@ public class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
     private final TrcEvent event;
     private final TrcStateMachine<State> sm;
     private final double allianceDirection;
-    private final boolean useVisionTrigger;
     private final SimplePidDrive<State> simplePidDrive;
     private CmdSkystoneVision skystoneVisionCommand = null;
 
@@ -98,7 +97,6 @@ public class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
         event = new TrcEvent(moduleName);
         sm = new TrcStateMachine<>(moduleName);
         allianceDirection = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE ? 1.0 : -1.0;
-        useVisionTrigger = robot.preferences.useVisionTrigger;
 
         robot.encoderXPidCtrl.setNoOscillation(true);
         robot.encoderYPidCtrl.setNoOscillation(true);
@@ -193,7 +191,7 @@ public class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
 
                 case SETUP_VISION:
                     skystoneVisionCommand = new CmdSkystoneVision(
-                            robot, autoChoices, RobotInfo3543.GRABBER_OFFSET, useVisionTrigger);
+                            robot, autoChoices, RobotInfo3543.GRABBER_OFFSET, robot.preferences.useVisionTrigger);
                     sm.setState(State.MOVE_CLOSER);
                     //
                     // Intentionally falling through to the next state.

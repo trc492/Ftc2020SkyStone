@@ -33,7 +33,7 @@ import trclib.TrcRobot;
 import trclib.TrcStateMachine;
 import trclib.TrcTimer;
 
-public class CmdAutoBuildingZone3543 implements TrcRobot.RobotCommand
+class CmdAutoBuildingZone3543 implements TrcRobot.RobotCommand
 {
     private static final boolean debugXPid = true;
     private static final boolean debugYPid = true;
