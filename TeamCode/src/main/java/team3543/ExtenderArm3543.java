@@ -34,18 +34,13 @@ class ExtenderArm3543 extends ServoEndEffector
         super("extenderArmServo", params);
         enhancedExtender = new TrcEnhancedServo("enhancedExtenderArm", this.endEffector);
         enhancedExtender.setStepMode(
-                RobotInfo3543.EXTENDER_ARM_MAX_STEPRATE, RobotInfo3543.EXTENDER_ARM_LOGICAL_MIN_POS,
-                RobotInfo3543.EXTENDER_ARM_LOGICAL_MAX_POS);
+                RobotInfo3543.EXTENDER_ARM_MAX_STEPRATE, RobotInfo3543.EXTENDER_ARM_MIN_POS,
+                RobotInfo3543.EXTENDER_ARM_MAX_POS);
     }   //ExtenderArm3543
 
     void setPower(double power)
     {
         enhancedExtender.setPower(power);
     }   //setPower
-
-    void extendMax()
-    {
-        enhancedExtender.setPosition(RobotInfo3543.EXTENDER_ARM_DOWN_POS);
-    }   //extendMax
 
 }   //class ExtenderArm3543

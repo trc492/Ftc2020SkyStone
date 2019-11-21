@@ -74,7 +74,7 @@ class Robot3543 extends Robot
     private static final ServoEndEffector.Parameters extenderArmParams3543 = new ServoEndEffector.Parameters()
             .setRetractPos(RobotInfo3543.EXTENDER_ARM_RETRACTED_POS)
             .setRetractTime(RobotInfo3543.EXTENDER_ARM_MOVE_TIME)
-            .setExtendPos(RobotInfo3543.EXTENDER_ARM_PLACEMENT_POS)
+            .setExtendPos(RobotInfo3543.EXTENDER_ARM_EXTEND_POS)
             .setExtendTime(RobotInfo3543.EXTENDER_ARM_MOVE_TIME);
     private static final ServoEndEffector.Parameters wristParams3543 = new ServoEndEffector.Parameters()
             .setRetractPos(RobotInfo3543.WRIST_RETRACT_POS)
