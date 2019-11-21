@@ -249,8 +249,30 @@ public class TrcPidDrive
      */
     public synchronized void resetAbsTargetPose()
     {
-        absTargetPose = driveBase.getAbsolutePose();
+        setAbsTargetPose(driveBase.getAbsolutePose());
     }   //resetAbsTargetPose
+
+    /**
+     * This method sets the robot's current absolute pose to the given pose. This can be used to set the robot's
+     * absolute starting position relative to the origin of the coordinate system.
+     *
+     * @param pose specifies the absolute pose of the robot relative to the origin of the coordinate system.
+     */
+    public synchronized void setAbsolutePose(TrcPose2D pose)
+    {
+        driveBase.setAbsolutePose(pose);
+        setAbsTargetPose(pose);
+    }   //setAbsolutePose
+
+    /**
+     * This method returns the robot's current absolute pose relative to the origin of the coordinate system.
+     *
+     * @return robot's current absolute pose.
+     */
+    public synchronized TrcPose2D getAbsolutePose()
+    {
+        return driveBase.getAbsolutePose();
+    }   //getAbsolutePose
 
     /**
      * This method returns the X PID controller if any.

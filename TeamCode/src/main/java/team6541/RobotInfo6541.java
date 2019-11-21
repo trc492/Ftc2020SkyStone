@@ -166,7 +166,6 @@ class RobotInfo6541
     static final double FOUNDATION_LATCH_GRAB_POS       = 170.0 / 255.0;
     static final double FOUNDATION_LATCH_GRAB_TIME      = 0.5;
 
-    static final double BUILDING_ZONE_ROBOT_START_X     = 36.0;
-    static final double BUILDING_ZONE_ROBOT_START_Y     = 9.0;
+    static final double BUILDING_ZONE_ROBOT_START_X     = 120.0;
 
 }   //class RobotInfo6541

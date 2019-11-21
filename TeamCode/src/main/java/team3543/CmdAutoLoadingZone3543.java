@@ -109,7 +109,8 @@ public class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                          autoChoices.strategy == CommonAuto.AutoStrategy.LOADING_ZONE_MID?
                                 RobotInfo.ROBOT_START_X_MID: RobotInfo.ROBOT_START_X_FAR) * allianceDirection;
         double startY = RobotInfo.ROBOT_START_Y;
-        simplePidDrive = new SimplePidDrive<>(robot.pidDrive, event, sm, startX, startY);
+        robot.pidDrive.setAbsolutePose(new TrcPose2D(startX, startY));
+        simplePidDrive = new SimplePidDrive<>(robot.pidDrive, event, sm);
 
         sm.start(State.DO_DELAY);
     }   //CmdAutoLoadingZone3543
@@ -357,10 +358,10 @@ public class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                 case UNHOOK_FOUNDATION:
                     // Correct odometry and absTargetPose after wheel slippage.
                     TrcPose2D pose = robot.driveBase.getAbsolutePose();
-                    pose.y = 0.0;
+                    pose.y = RobotInfo.ROBOT_START_Y;
                     robot.driveBase.setAbsolutePose(pose);
                     pose = robot.pidDrive.getAbsTargetPose();
-                    pose.y = 0.0;
+                    pose.y = RobotInfo.ROBOT_START_Y;
                     robot.pidDrive.setAbsTargetPose(pose);
                     // Release the foundation and continue.
                     robot.foundationLatch.release(event);

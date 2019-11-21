@@ -31,7 +31,6 @@ public class SimplePidDrive<StateType>
     private final TrcPidDrive pidDrive;
     private final TrcEvent event;
     private final TrcStateMachine<StateType> sm;
-    private final double startX, startY;
 
     /**
      * Constructor: Creates an instance of the object.
@@ -39,17 +38,12 @@ public class SimplePidDrive<StateType>
      * @param pidDrive specifies the PidDrive object to use for PID controlled drive.
      * @param event specifies the event to signal at the end of the drive.
      * @param sm specifies the state machine to advance to the next state at the end of the drive.
-     * @param startX specifies the robot's starting X position in the field.
-     * @param startY specifies the robot's starting Y position in the field.
      */
-    public SimplePidDrive(
-            TrcPidDrive pidDrive, TrcEvent event, TrcStateMachine<StateType> sm, double startX, double startY)
+    public SimplePidDrive(TrcPidDrive pidDrive, TrcEvent event, TrcStateMachine<StateType> sm)
     {
         this.pidDrive = pidDrive;
         this.event = event;
         this.sm = sm;
-        this.startX = startX;
-        this.startY = startY;
     }   //SimplePidDrive
 
     /**
@@ -62,7 +56,7 @@ public class SimplePidDrive<StateType>
      */
     public void setAbsoluteTarget(double absX, double absY, double absHeading, StateType nextState)
     {
-        pidDrive.setAbsoluteTarget(absX - startX, absY - startY, absHeading, event);
+        pidDrive.setAbsoluteTarget(absX, absY, absHeading, event);
         sm.waitForSingleEvent(event, nextState);
     }   //setAbsoluteTarget
 
@@ -75,7 +69,7 @@ public class SimplePidDrive<StateType>
      */
     public void setAbsoluteXYTarget(double absX, double absY, StateType nextState)
     {
-        pidDrive.setAbsoluteXYTarget(absX - startX, absY - startY, event);
+        pidDrive.setAbsoluteXYTarget(absX, absY, event);
         sm.waitForSingleEvent(event, nextState);
     }   //setAbsoluteXYTarget
 
@@ -87,7 +81,7 @@ public class SimplePidDrive<StateType>
      */
     public void setAbsoluteXTarget(double absX, StateType nextState)
     {
-        pidDrive.setAbsoluteXTarget(absX - startX, event);
+        pidDrive.setAbsoluteXTarget(absX, event);
         sm.waitForSingleEvent(event, nextState);
     }   //setAbsoluteXTarget
 
@@ -99,7 +93,7 @@ public class SimplePidDrive<StateType>
      */
     public void setAbsoluteYTarget(double absY, StateType nextState)
     {
-        pidDrive.setAbsoluteYTarget(absY - startY, event);
+        pidDrive.setAbsoluteYTarget(absY, event);
         sm.waitForSingleEvent(event, nextState);
     }   //setAbsoluteYTarget
 

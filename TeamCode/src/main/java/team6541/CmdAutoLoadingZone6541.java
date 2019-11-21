@@ -28,6 +28,7 @@ import common.RobotInfo;
 import common.SimplePidDrive;
 import trclib.TrcEvent;
 import trclib.TrcPidController;
+import trclib.TrcPose2D;
 import trclib.TrcRobot;
 import trclib.TrcStateMachine;
 import trclib.TrcTimer;
@@ -100,7 +101,8 @@ public class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
                          autoChoices.strategy == CommonAuto.AutoStrategy.LOADING_ZONE_MID?
                                 RobotInfo.ROBOT_START_X_MID: RobotInfo.ROBOT_START_X_FAR) * allianceDirection;
         double startY = RobotInfo.ROBOT_START_Y;
-        simplePidDrive = new SimplePidDrive<>(robot.pidDrive, event, sm, startX, startY);
+        robot.pidDrive.setAbsolutePose(new TrcPose2D(startX, startY));
+        simplePidDrive = new SimplePidDrive<>(robot.pidDrive, event, sm);
 
         sm.start(State.DO_DELAY);
     }   //CmdAutoLoadingZone6541

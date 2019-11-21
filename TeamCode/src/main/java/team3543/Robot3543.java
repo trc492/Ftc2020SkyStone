@@ -51,7 +51,7 @@ class Robot3543 extends Robot
             .setUseTraceLog(true)
             .setUseSpeech(true)
             .setUseBatteryMonitor(false)
-            .setUseLoopPerformanceMonitor(true)
+            .setUseLoopPerformanceMonitor(false)
             .setUseVelocityControl(false);
     private static final PhoneParameters phoneParams3543 = new PhoneParameters()
             .setCameraDir(RobotInfo3543.CAMERA_DIR)

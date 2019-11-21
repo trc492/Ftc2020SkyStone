@@ -23,10 +23,12 @@
 package team3543;
 
 import common.CommonAuto;
+import common.RobotInfo;
 import common.SimplePidDrive;
 import common.Robot;
 import trclib.TrcEvent;
 import trclib.TrcPidController;
+import trclib.TrcPose2D;
 import trclib.TrcRobot;
 import trclib.TrcStateMachine;
 import trclib.TrcTimer;
@@ -69,9 +71,9 @@ public class CmdAutoBuildingZone3543 implements TrcRobot.RobotCommand
         timer = new TrcTimer(moduleName);
         sm = new TrcStateMachine<>(moduleName);
         allianceDirection = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE? 1.0: -1.0;
-        simplePidDrive = new SimplePidDrive<>(
-                robot.pidDrive, event, sm, RobotInfo3543.BUILDING_ZONE_ROBOT_START_X * allianceDirection,
-                RobotInfo3543.BUILDING_ZONE_ROBOT_START_Y);
+        robot.pidDrive.setAbsolutePose(new TrcPose2D(
+                RobotInfo3543.BUILDING_ZONE_ROBOT_START_X * allianceDirection, RobotInfo.ROBOT_START_Y));
+        simplePidDrive = new SimplePidDrive<>(robot.pidDrive, event, sm);
         sm.start(State.DO_DELAY);
     }   //CmdAutoBuildingZone3543
 
