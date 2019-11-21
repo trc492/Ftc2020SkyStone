@@ -24,6 +24,10 @@ package common;
 
 import trclib.TrcEvent;
 
+/**
+ * This class really serves very little purpose. It is basically a ServoEndEffector renaming methods retract to grab
+ * and extend to release. That's it, nothing more!
+ */
 public class Grabber extends ServoEndEffector
 {
     public Grabber(String instanceName, Parameters params)
