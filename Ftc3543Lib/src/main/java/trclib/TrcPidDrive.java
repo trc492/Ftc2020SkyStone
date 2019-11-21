@@ -253,8 +253,9 @@ public class TrcPidDrive
     }   //resetAbsTargetPose
 
     /**
-     * This method sets the robot's current absolute pose to the given pose. This can be used to set the robot's
-     * absolute starting position relative to the origin of the coordinate system.
+     * This method sets the robot's current absolute pose to the given pose. It also updates the absolute target pose
+     * to the same pose. This can be used to set the robot's absolute starting position relative to the origin of the
+     * coordinate system.
      *
      * @param pose specifies the absolute pose of the robot relative to the origin of the coordinate system.
      */

@@ -216,11 +216,10 @@ public abstract class TrcDriveBase implements TrcExclusiveSubsystem
     }   //getAbsolutePose
 
     /**
-     * This method sets the absolute robot pose to the given pose. This is useful if for some reason the odometry
-     * tracking is no longer accurate such as in the case when the wheels slip. This method allows the caller to
-     * correct the absolute robot pose by some other means such as from other sensors or vision.
+     * This method sets the robot's current absolute pose to the given pose. This can be used to set the robot's
+     * absolute starting position relative to the origin of the coordinate system.
      *
-     * @param pose specifies the pose to be set as the absolute robot pose.
+     * @param pose specifies the absolute pose of the robot relative to the origin of the coordinate system.
      */
     public void setAbsolutePose(TrcPose2D pose)
     {
