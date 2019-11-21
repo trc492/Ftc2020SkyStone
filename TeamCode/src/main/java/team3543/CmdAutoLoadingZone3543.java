@@ -208,15 +208,14 @@ public class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                     robot.pidDrive.getXPidCtrl().setOutputLimit(0.5);
                     robot.pidDrive.getYPidCtrl().setOutputLimit(0.5);
                     yTarget = 23.5;
-                    nextState = useVisionTrigger? State.DO_VISION: State.MOVE_TO_FIRST_STONE;
-                    simplePidDrive.setRelativeYTarget(yTarget, nextState);
+                    simplePidDrive.setRelativeYTarget(yTarget, State.MOVE_TO_FIRST_STONE);
                     break;
 
                 case MOVE_TO_FIRST_STONE:
                     xTarget = autoChoices.strategy == CommonAuto.AutoStrategy.LOADING_ZONE_MID?
                                 0.0:
                               autoChoices.strategy == CommonAuto.AutoStrategy.LOADING_ZONE_FAR?
-                                RobotInfo.LEFT_STONE_FAR_X: RobotInfo.LEFT_STONE_WALL_X;
+                                RobotInfo.ABS_LEFT_STONE_FAR_X : RobotInfo.ABS_LEFT_STONE_WALL_X;
                     if (xTarget == 0.0)
                     {
                         sm.setState(State.DO_VISION);
@@ -227,7 +226,7 @@ public class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                     else
                     {
                         xTarget *= allianceDirection;
-                        simplePidDrive.setRelativeXTarget(xTarget, State.DO_VISION);
+                        simplePidDrive.setAbsoluteXTarget(xTarget, State.DO_VISION);
                         break;
                     }
 
@@ -407,9 +406,6 @@ public class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
 
                 case STRAFE_TO_PARK:
                     robot.elevator.setPosition(0.0);
-//                    xTarget = -50.0 * allianceDirection;
-//                    if (autoChoices.moveFoundation) xTarget = -xTarget;
-//                    simplePidDrive.setRelativeXTarget(xTarget, nextState);
                     xTarget = RobotInfo.ABS_UNDER_BRIDGE_PARK_X * allianceDirection;
                     nextState = autoChoices.parkUnderBridge == CommonAuto.ParkPosition.PARK_CLOSE_TO_CENTER?
                                     State.MOVE_TOWARDS_CENTER: State.DONE;
