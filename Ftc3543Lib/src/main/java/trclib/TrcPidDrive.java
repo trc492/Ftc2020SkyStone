@@ -704,8 +704,9 @@ public class TrcPidDrive
 
             if (debugEnabled)
             {
-                dbgTrace.traceInfo(funcName, "absX=%.1f, absY=%.1f, absHeading=%.1f, CurrPose:%s",
-                        absX, absY, absHeading, absTargetPose);
+                dbgTrace.traceInfo(
+                        funcName, "absX=%.1f, absY=%.1f, absHeading=%.1f, CurrPose:%s, absTargetPose=%s",
+                        absX, absY, absHeading, currRobotPose, absTargetPose);
                 dbgTrace.traceInfo(funcName, "xTarget=%.1f, yTarget=%.1f, turnTarget=%.1f, NewPose:%s",
                         relativePose.x, relativePose.y, turnTarget, newTargetPose);
             }

@@ -168,7 +168,7 @@ class RobotInfo3543
     //
     // Grabber subsystem.
     //
-    static final double GRABBER_OFFSET                  = -2.0;
+    static final double GRABBER_OFFSET                  = 0.0;
     static final double GRABBER_OPEN_POS                = 0.8;
     static final double GRABBER_CLOSE_POS               = 0.3;
     static final double GRABBER_GRAB_TIME               = 3.0;

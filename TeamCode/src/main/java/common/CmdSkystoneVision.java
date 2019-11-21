@@ -203,7 +203,7 @@ public class CmdSkystoneVision implements TrcRobot.RobotCommand
                                         "GetTargetPose", "Skystone not found, try next stone.");
                                 robot.speak("Not found, try next.");
                                 scootCount--;
-                                xTarget = -9.0*allianceDirection;
+                                xTarget = -8.0*allianceDirection;
                                 // If this is the last stone, don't need to check it's a skystone, just grab and go.
                                 nextState = scootCount == 0? State.ALIGN_SKYSTONE: State.SETUP_VISION;
                                 robot.pidDrive.setRelativeXTarget(xTarget, event);
@@ -259,7 +259,7 @@ public class CmdSkystoneVision implements TrcRobot.RobotCommand
                     }
 
                 case GOTO_SKYSTONE:
-                    yTarget = 8.5;
+                    yTarget = 8.0;
                     robot.pidDrive.setRelativeYTarget(yTarget, event);
                     sm.waitForSingleEvent(event, State.DONE);
                     break;

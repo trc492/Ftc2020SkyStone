@@ -28,19 +28,20 @@ public class RobotInfo
     // Game element distances: all referenced as red alliance.
     //
     public static final double ROBOT_START_X_WALL               = 32.0;
-    public static final double ROBOT_START_X_MID                = 36.0;
+    public static final double ROBOT_START_X_MID                = 45.0;
     public static final double ROBOT_START_X_FAR                = 52.0;
     public static final double ROBOT_START_Y                    = 9.0;
-    public static final double LEFT_STONE_WALL_X                = -(ROBOT_START_X_WALL - 20.5);
-    public static final double LEFT_STONE_FAR_X                 = -(ROBOT_START_X_FAR - 44.5);
+    public static final double LEFT_STONE_WALL_X                = -(ROBOT_START_X_WALL - 12.0);
+    public static final double LEFT_STONE_FAR_X                 = -(ROBOT_START_X_FAR - 7.0);
     public static final double SKYSTONE_SCAN_DISTANCE_WALL      = -9.0;
     public static final double SKYSTONE_SCAN_DISTANCE_FAR       = -18.0;
 
     // Absolute position waypoint coordinates
-    public static final double FOUNDATION_DROP_ABS_POS_X_INCHES = 130.0;
-    public static final double WALL_ABS_POS_Y_INCHES            = 9.0;
-    public static final double ON_LINE_ABS_POS_X_INCHES         = 69.0;
-    public static final double CENTER_FIELD_ABS_POS_Y_INCHES    = 35.0;
-    public static final double AVOID_PARTNER_ABS_POS_X_INCHES   = 89.0; //need to add 10 to compensate +10 on FOUNDATION_DROP_ABS_POS_X_INCHES
+    public static final double ABS_FOUNDATION_DROP_FAR_X        = 128.0;
+    public static final double ABS_FOUNDATION_DROP_MID_X        = 120.0;
+    public static final double ABS_FOUNDATION_DROP_NEAR_X       = 112.0;
+    public static final double ABS_NEXT_TO_PARTNER_PARK_X       = 92.0;
+    public static final double ABS_CENTER_BRIDGE_PARK_Y         = 32.0;
+    public static final double ABS_UNDER_BRIDGE_PARK_X          = 70.0;
 
 }   //class RobotInfo
