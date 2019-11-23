@@ -42,6 +42,7 @@ class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
 
     private enum State
     {
+        BEGIN,
         DO_DELAY,
         MOVE_CLOSER,
         ELEVATOR_TO_RELEASE_HEIGHT,
@@ -89,20 +90,8 @@ class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
         event = new TrcEvent(moduleName);
         sm = new TrcStateMachine<>(moduleName);
         allianceDirection = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE ? 1.0 : -1.0;
-
-        robot.encoderXPidCtrl.setNoOscillation(true);
-        robot.encoderYPidCtrl.setNoOscillation(true);
-        robot.gyroPidCtrl.setNoOscillation(true);
-
-        double startX = (autoChoices.strategy == CommonAuto.AutoStrategy.LOADING_ZONE_WALL?
-                                RobotInfo.ROBOT_START_X_WALL:
-                         autoChoices.strategy == CommonAuto.AutoStrategy.LOADING_ZONE_MID?
-                                RobotInfo.ROBOT_START_X_MID: RobotInfo.ROBOT_START_X_FAR) * allianceDirection;
-        double startY = RobotInfo.ROBOT_START_Y;
-        robot.pidDrive.setAbsolutePose(new TrcPose2D(startX, startY));
         simplePidDrive = new SimplePidDrive<>(robot.pidDrive, event, sm);
-
-        sm.start(State.DO_DELAY);
+        sm.start(State.BEGIN);
     }   //CmdAutoLoadingZone6541
 
     //
@@ -162,9 +151,25 @@ class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
 
             switch (state)
             {
-                case DO_DELAY:
+                case BEGIN:
+                    double startX = (autoChoices.strategy == CommonAuto.AutoStrategy.LOADING_ZONE_WALL?
+                            RobotInfo.ROBOT_START_X_WALL:
+                            autoChoices.strategy == CommonAuto.AutoStrategy.LOADING_ZONE_MID?
+                                    RobotInfo.ROBOT_START_X_MID: RobotInfo.ROBOT_START_X_FAR) * allianceDirection;
+                    double startY = RobotInfo.ROBOT_START_Y;
+                    robot.pidDrive.setAbsolutePose(new TrcPose2D(startX, startY));
+
+                    robot.encoderXPidCtrl.setNoOscillation(true);
+                    robot.encoderYPidCtrl.setNoOscillation(true);
+                    robot.gyroPidCtrl.setNoOscillation(true);
+
                     robot.elevator.setPosition(RobotInfo6541.ELEVATOR_RELEASE_HEIGHT);
                     robot.elbow.extend();
+                    sm.setState(State.DO_DELAY);
+                    //
+                    // Intentionally falling through to the next state.
+                    //
+                case DO_DELAY:
                     //
                     // Do delay if any.
                     //

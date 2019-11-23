@@ -41,6 +41,7 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
 
     private enum State
     {
+        BEGIN,
         DO_DELAY,
         SETUP_VISION,
         MOVE_CLOSER,
@@ -97,20 +98,8 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
         event = new TrcEvent(moduleName);
         sm = new TrcStateMachine<>(moduleName);
         allianceDirection = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE ? 1.0 : -1.0;
-
-        robot.encoderXPidCtrl.setNoOscillation(true);
-        robot.encoderYPidCtrl.setNoOscillation(true);
-        robot.gyroPidCtrl.setNoOscillation(true);
-
-        double startX = (autoChoices.strategy == CommonAuto.AutoStrategy.LOADING_ZONE_WALL?
-                                RobotInfo.ROBOT_START_X_WALL:
-                         autoChoices.strategy == CommonAuto.AutoStrategy.LOADING_ZONE_MID?
-                                RobotInfo.ROBOT_START_X_MID: RobotInfo.ROBOT_START_X_FAR) * allianceDirection;
-        double startY = RobotInfo.ROBOT_START_Y;
-        robot.pidDrive.setAbsolutePose(new TrcPose2D(startX, startY));
         simplePidDrive = new SimplePidDrive<>(robot.pidDrive, event, sm);
-
-        sm.start(State.DO_DELAY);
+        sm.start(State.BEGIN);
     }   //CmdAutoLoadingZone3543
 
     //
@@ -171,6 +160,22 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
 
             switch (state)
             {
+                case BEGIN:
+                    double startX = (autoChoices.strategy == CommonAuto.AutoStrategy.LOADING_ZONE_WALL?
+                            RobotInfo.ROBOT_START_X_WALL:
+                            autoChoices.strategy == CommonAuto.AutoStrategy.LOADING_ZONE_MID?
+                                    RobotInfo.ROBOT_START_X_MID: RobotInfo.ROBOT_START_X_FAR) * allianceDirection;
+                    double startY = RobotInfo.ROBOT_START_Y;
+                    robot.pidDrive.setAbsolutePose(new TrcPose2D(startX, startY));
+
+                    robot.encoderXPidCtrl.setNoOscillation(true);
+                    robot.encoderYPidCtrl.setNoOscillation(true);
+                    robot.gyroPidCtrl.setNoOscillation(true);
+
+                    sm.setState(State.DO_DELAY);
+                    //
+                    // Intentionally falling through to the next state.
+                    //
                 case DO_DELAY:
                     //
                     // Do delay if any.
@@ -301,6 +306,7 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                 case BACK_OFF_FOUNDATION:
                     robot.extenderArm.retract();
                     robot.wrist.retract();
+                    robot.elevator.zeroCalibrate();
                     yTarget = -6.0;
                     nextState = autoChoices.moveFoundation?
                                     State.TURN_AROUND:
@@ -311,7 +317,6 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                     break;
 
                 case TURN_AROUND:
-                    robot.elevator.setPosition(0.0);
                     turnTarget = 180.0;
                     simplePidDrive.setRelativeTurnTarget(turnTarget, State.BACKUP_TO_FOUNDATION);
                     break;
@@ -347,9 +352,7 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                     robot.pidDrive.setAbsTargetPose(pose);
                     // Release the foundation and continue.
                     robot.foundationLatch.release(event);
-                    nextState = autoChoices.parkUnderBridge == CommonAuto.ParkPosition.NO_PARK?
-                            State.DONE: State.MOVE_CLOSER_TO_BRIDGE;
-                    sm.waitForSingleEvent(event, nextState);
+                    sm.waitForSingleEvent(event, State.MOVE_CLOSER_TO_BRIDGE);
                     break;
 
                 case MOVE_CLOSER_TO_BRIDGE:
@@ -370,8 +373,10 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                     break;
 
                 case MOVE_BACK_TO_WALL:
+                    nextState = autoChoices.parkUnderBridge == CommonAuto.ParkPosition.NO_PARK?
+                                    State.DONE: State.MOVE_UNDER_BRIDGE;
                     yTarget = 22.0;
-                    simplePidDrive.setRelativeYTarget(yTarget, State.MOVE_UNDER_BRIDGE);
+                    simplePidDrive.setRelativeYTarget(yTarget, nextState);
                     break;
 
                 case MOVE_UNDER_BRIDGE:
@@ -380,7 +385,6 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                     break;
 
                 case SKIP_MOVE_FOUNDATION_PARK_WALL:
-                    robot.elevator.zeroCalibrate();
                     yTarget = RobotInfo.ROBOT_START_Y;
                     nextState = autoChoices.parkUnderBridge == CommonAuto.ParkPosition.PARK_CLOSE_TO_WALL?
                                     State.STRAFE_TO_PARK: State.DONE;
@@ -388,7 +392,6 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                     break;
 
                 case STRAFE_TO_PARK:
-                    robot.elevator.setPosition(0.0);
                     xTarget = RobotInfo.ABS_UNDER_BRIDGE_PARK_X * allianceDirection;
                     nextState = autoChoices.parkUnderBridge == CommonAuto.ParkPosition.PARK_CLOSE_TO_CENTER?
                                     State.MOVE_TOWARDS_CENTER: State.DONE;

@@ -42,6 +42,7 @@ class CmdAutoBuildingZone6541 implements TrcRobot.RobotCommand
 
     private enum State
     {
+        BEGIN,
         DO_DELAY,
         DRIVE_DIRECTLY_UNDER_BRIDGE_IF_NOT_MOVING_FOUNDATION,
         CRAB_TO_CENTER_IF_NOT_MOVING_FOUNDATION,
@@ -80,10 +81,8 @@ class CmdAutoBuildingZone6541 implements TrcRobot.RobotCommand
         timer = new TrcTimer(moduleName);
         sm = new TrcStateMachine<>(moduleName);
         allianceDirection = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE? 1.0: -1.0;
-        robot.pidDrive.setAbsolutePose(new TrcPose2D(
-                RobotInfo6541.BUILDING_ZONE_ROBOT_START_X * allianceDirection, RobotInfo.ROBOT_START_Y));
         simplePidDrive = new SimplePidDrive<>(robot.pidDrive, event, sm);
-        sm.start(State.DO_DELAY);
+        sm.start(State.BEGIN);
     }   //CmdAutoBuildingZone3543
 
     @Override
@@ -122,9 +121,19 @@ class CmdAutoBuildingZone6541 implements TrcRobot.RobotCommand
             robot.dashboard.displayPrintf(1, "State: %s", state);
             switch (state)
             {
-                case DO_DELAY:
+                case BEGIN:
+                    robot.pidDrive.setAbsolutePose(new TrcPose2D(
+                            RobotInfo6541.BUILDING_ZONE_ROBOT_START_X * allianceDirection, RobotInfo.ROBOT_START_Y));
                     robot.pidDrive.getXPidCtrl().saveAndSetOutputLimit(0.5);
                     robot.pidDrive.getYPidCtrl().saveAndSetOutputLimit(0.5);
+                    robot.encoderXPidCtrl.setNoOscillation(true);
+                    robot.encoderYPidCtrl.setNoOscillation(true);
+                    robot.gyroPidCtrl.setNoOscillation(true);
+                    sm.setState(State.DO_DELAY);
+                    //
+                    // Intentionally falling through to the next state.
+                    //
+                case DO_DELAY:
                     //
                     // are we going to move the foundation?
                     // if so, we will set the next state to raising the elevator and moving the foundation.
