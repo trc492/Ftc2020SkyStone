@@ -57,10 +57,10 @@ public class FtcTeleOp6541 extends CommonTeleOp
     public void runPeriodic(double elapsedTime)
     {
         super.runPeriodic(elapsedTime);
-        dashboard.displayPrintf(5, "ElbowPos=%.1f", robot6541.elbow.getPosition());
         //
         // Operate other team specific subsystems.
         //
+        dashboard.displayPrintf(5, "ElbowPos=%.1f", robot6541.elbow.getPosition());
     }   //runPeriodic
 
     //
@@ -118,8 +118,8 @@ public class FtcTeleOp6541 extends CommonTeleOp
                     if (pressed)
                     {
                         robot6541.elbow.extend();
-                        processed = true;
                     }
+                    processed = true;
                     break;
 
                 case FtcGamepad.GAMEPAD_RBUMPER:
