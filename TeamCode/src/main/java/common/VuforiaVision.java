@@ -230,6 +230,10 @@ public class VuforiaVision
                 {
                     robot.ledIndicator.setDetectedTarget(targetName);
                 }
+                else
+                {
+                    robot.ledIndicator.reset();
+                }
             }
         }
 
