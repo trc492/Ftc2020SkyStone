@@ -140,9 +140,10 @@ class Robot6541 extends Robot
                 }
                 // Elbow is 6541 only.
                 elbow = new ServoEndEffector("elbowServo", elbowParams6541);
-                elbow.retract(); //elbow.setPosition(0.5);
+                elbow.extend();
 
                 grabber = new Grabber("grabberServo", grabberParams6541);
+                grabber.release();
 
                 foundationLatch = new Grabber("foundationLatchServo", foundationLatchParams6541);
                 foundationLatch.release();
