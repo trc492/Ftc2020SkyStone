@@ -219,7 +219,7 @@ class Robot6541 extends Robot
         pidDrive = new TrcPidDrive(
                 "pidDrive", driveBase, encoderXPidCtrl, encoderYPidCtrl, gyroPidCtrl);
         //CodeReview: you should really turn on Absolute Target Mode and adjust your autonomous to work in this mode.
-        pidDrive.setAbsTargetModeEnabled(false);
+        pidDrive.setAbsoluteTargetModeEnabled(false);
         pidDrive.setStallTimeout(RobotInfo6541.PIDDRIVE_STALL_TIMEOUT);
         pidDrive.setBeep(androidTone);
     }   //initDriveBase

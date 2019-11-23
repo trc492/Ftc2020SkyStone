@@ -347,9 +347,9 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                     TrcPose2D pose = robot.driveBase.getAbsolutePose();
                     pose.y = RobotInfo.ROBOT_START_Y;
                     robot.driveBase.setAbsolutePose(pose);
-                    pose = robot.pidDrive.getAbsTargetPose();
+                    pose = robot.pidDrive.getAbsoluteTargetPose();
                     pose.y = RobotInfo.ROBOT_START_Y;
-                    robot.pidDrive.setAbsTargetPose(pose);
+                    robot.pidDrive.setAbsoluteTargetPose(pose);
                     // Release the foundation and continue.
                     robot.foundationLatch.release(event);
                     sm.waitForSingleEvent(event, State.MOVE_CLOSER_TO_BRIDGE);
