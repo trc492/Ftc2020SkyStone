@@ -106,6 +106,7 @@ public class TrcPidDrive
     private boolean maintainHeading = false;
     private boolean canceled = false;
     private String owner = null;
+    private TrcPose2D savedPoseForTurnOnly = null;
     private TrcPose2D absTargetPose;
 
     /**
@@ -561,13 +562,27 @@ public class TrcPidDrive
 
             if (absTargetModeEnabled)
             {
-                //
-                // Adjusting relative target by subtracting current robot pose from the absolute target pose.
-                // This will eliminate cumulative error.
-                //
-                TrcPose2D relativePose = newTargetPose.relativeTo(driveBase.getAbsolutePose());
-                xTarget = relativePose.x;
-                yTarget = relativePose.y;
+                if (xDelta == 0.0 && yDelta == 0.0 && turnDelta != 0.0)
+                {
+                    //
+                    // setTarget disables X and Y PID controllers while doing a turn-only movement but absolute target
+                    // mode may calculate non-zero X and Y to compensate for previous errors. This hides the fact that
+                    // it's a turn-only movement and causes the robot to do a combo movement that causes more odometry
+                    // error. So we need to preserve the X and Y odometry before the turn and restore them afterwards.
+                    //
+                    xTarget = yTarget = 0.0;
+                    savedPoseForTurnOnly = driveBase.getAbsolutePose();
+                }
+                else
+                {
+                    //
+                    // Adjusting relative target by subtracting current robot pose from the absolute target pose.
+                    // This will eliminate cumulative error.
+                    //
+                    TrcPose2D relativePose = newTargetPose.relativeTo(driveBase.getAbsolutePose());
+                    xTarget = relativePose.x;
+                    yTarget = relativePose.y;
+                }
             }
             else
             {
@@ -1068,6 +1083,19 @@ public class TrcPidDrive
             if (expired || stalled || !holdTarget)
             {
                 stopPid();
+
+                if (savedPoseForTurnOnly != null)
+                {
+                    //
+                    // We are done with a turn-only operation. Let's restore the X and Y odometry we saved earlier.
+                    //
+                    TrcPose2D pose = driveBase.getAbsolutePose();
+                    pose.x = savedPoseForTurnOnly.x;
+                    pose.y = savedPoseForTurnOnly.y;
+                    driveBase.setAbsolutePose(pose);
+                    savedPoseForTurnOnly = null;
+                }
+
                 if (notifyEvent != null)
                 {
                     notifyEvent.set(true);

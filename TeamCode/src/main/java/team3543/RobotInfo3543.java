@@ -162,7 +162,7 @@ class RobotInfo3543
     static final double WRIST_MIN_POS                   = 0.2;
     static final double WRIST_MAX_POS                   = 0.8;
     static final double WRIST_RETRACT_POS               = 0.8;
-    static final double WRIST_EXTEND_POS                = 0.2;
+    static final double WRIST_EXTEND_POS                = 0.4;
     static final double WRIST_ROTATE_TIME               = 0.3;
     static final boolean WRIST_INVERTED                 = true;
     //
