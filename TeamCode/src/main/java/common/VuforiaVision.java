@@ -223,6 +223,14 @@ public class VuforiaVision
         if (target != null)
         {
             robotLocation = vuforia.getRobotLocation(target);
+
+            if (robot.ledIndicator != null)
+            {
+                if (robotLocation != null)
+                {
+                    robot.ledIndicator.setDetectedTarget(targetName);
+                }
+            }
         }
 
         return robotLocation;
@@ -262,13 +270,16 @@ public class VuforiaVision
             }
         }
 
-        if (robotLocation != null && robot.ledIndicator != null)
+        if (robot.ledIndicator != null)
         {
-            robot.ledIndicator.setDetectedTarget(lastImageName);
-        }
-        else
-        {
-            robot.ledIndicator.reset();
+            if (robotLocation != null)
+            {
+                robot.ledIndicator.setDetectedTarget(lastImageName);
+            }
+            else
+            {
+                robot.ledIndicator.reset();
+            }
         }
 
         return robotLocation;
