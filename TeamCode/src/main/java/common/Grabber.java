@@ -30,9 +30,14 @@ import trclib.TrcEvent;
  */
 public class Grabber extends ServoEndEffector
 {
-    public Grabber(String instanceName, Parameters params)
+    public Grabber(String servo1Name, String servo2Name, Parameters params)
     {
-        super(instanceName, params);
+        super(servo1Name, servo2Name, params);
+    }
+
+    public Grabber(String servoName, Parameters params)
+    {
+        super(servoName, params);
     }
 
     public void grab()
@@ -65,4 +70,4 @@ public class Grabber extends ServoEndEffector
         super.extend(time, event);
     }
 
-}   //class grabber
+}   //class Grabber

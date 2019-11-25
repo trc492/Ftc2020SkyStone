@@ -23,16 +23,38 @@
 package common;
 
 import ftclib.FtcServo;
+import trclib.TrcEnhancedServo;
 import trclib.TrcEvent;
 
 public class ServoEndEffector
 {
     public static class Parameters
     {
+        double maxStepRate;
+        double minPos;
+        double maxPos;
         double retractPos;
         double retractTime;
         double extendPos;
         double extendTime;
+
+        public Parameters setMaxStepRate(double maxStepRate)
+        {
+            this.maxStepRate = maxStepRate;
+            return this;
+        }
+
+        public Parameters setMinPos(double minPos)
+        {
+            this.minPos = minPos;
+            return this;
+        }
+
+        public Parameters setMaxPos(double maxPos)
+        {
+            this.maxPos = maxPos;
+            return this;
+        }
 
         public Parameters setRetractPos(double retractPos)
         {
@@ -61,12 +83,29 @@ public class ServoEndEffector
     }   //class Parameters
 
     private Parameters params;
-    protected FtcServo endEffector;
+    protected FtcServo servo1, servo2;
+    protected TrcEnhancedServo endEffector;
 
-    public ServoEndEffector(String instanceName, Parameters params)
+    public ServoEndEffector(String servo1Name, String servo2Name, Parameters params)
     {
+        if (servo1Name == null)
+        {
+            throw new IllegalArgumentException("Servo1 must not be null.");
+        }
+
         this.params = params;
-        endEffector = new FtcServo(instanceName);
+        servo1 = new FtcServo(servo1Name);
+        servo2 = servo2Name == null? null: new FtcServo(servo2Name);
+        endEffector = new TrcEnhancedServo("endEffector." + servo1Name, servo1, servo2);
+        if (params.maxStepRate != 0.0)
+        {
+            endEffector.setStepMode(params.maxStepRate, params.minPos, params.maxPos);
+        }
+    }   //ServoEndEffector
+
+    public ServoEndEffector(String servoName, Parameters params)
+    {
+        this(servoName, null, params);
     }   //ServoEndEffector
 
     public void retract()
@@ -99,6 +138,11 @@ public class ServoEndEffector
     {
         endEffector.setPosition(params.extendPos, time, event);
     }   //extend
+
+    public void setPower(double power)
+    {
+        endEffector.setPower(power);
+    }   //setPower
 
     public double getPosition()
     {

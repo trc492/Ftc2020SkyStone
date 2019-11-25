@@ -72,31 +72,51 @@ class Robot3543 extends Robot
             .setHasUpperLimitSwitch(RobotInfo3543.ELEVATOR_HAS_UPPER_LIMIT_SWITCH)
             .setCalPower(RobotInfo3543.ELEVATOR_CAL_POWER);
     private static final ServoEndEffector.Parameters extenderArmParams3543 = new ServoEndEffector.Parameters()
+            .setMaxStepRate(RobotInfo3543.EXTENDER_ARM_MAX_STEPRATE)
+            .setMinPos(RobotInfo3543.EXTENDER_ARM_MIN_POS)
+            .setMaxPos(RobotInfo3543.EXTENDER_ARM_MAX_POS)
             .setRetractPos(RobotInfo3543.EXTENDER_ARM_RETRACTED_POS)
             .setRetractTime(RobotInfo3543.EXTENDER_ARM_MOVE_TIME)
             .setExtendPos(RobotInfo3543.EXTENDER_ARM_EXTEND_POS)
             .setExtendTime(RobotInfo3543.EXTENDER_ARM_MOVE_TIME);
     private static final ServoEndEffector.Parameters wristParams3543 = new ServoEndEffector.Parameters()
+            .setMaxStepRate(RobotInfo3543.WRIST_MAX_STEPRATE)
+            .setMinPos(RobotInfo3543.WRIST_MIN_POS)
+            .setMaxPos(RobotInfo3543.WRIST_MAX_POS)
             .setRetractPos(RobotInfo3543.WRIST_RETRACT_POS)
             .setRetractTime(RobotInfo3543.WRIST_ROTATE_TIME)
             .setExtendPos(RobotInfo3543.WRIST_EXTEND_POS)
             .setExtendTime(RobotInfo3543.WRIST_ROTATE_TIME);
     private static final ServoEndEffector.Parameters grabberParams3543 = new ServoEndEffector.Parameters()
+            .setMaxStepRate(RobotInfo3543.GRABBER_MAX_STEPRATE)
+            .setMinPos(RobotInfo3543.GRABBER_MIN_POS)
+            .setMaxPos(RobotInfo3543.GRABBER_MAX_POS)
             .setRetractPos(RobotInfo3543.GRABBER_CLOSE_POS)
             .setRetractTime(RobotInfo3543.GRABBER_GRAB_TIME)
             .setExtendPos(RobotInfo3543.GRABBER_OPEN_POS)
             .setExtendTime(RobotInfo3543.GRABBER_RELEASE_TIME);
-    private static final ServoEndEffector.Parameters foundationLatchParams3543 = new ServoEndEffector.Parameters()
-            .setRetractPos(RobotInfo3543.FOUNDATION_LATCH_GRAB_POS)
-            .setRetractTime(RobotInfo3543.FOUNDATION_LATCH_GRAB_TIME)
-            .setExtendPos(RobotInfo3543.FOUNDATION_LATCH_RELEASE_POS)
-            .setExtendTime(RobotInfo3543.FOUNDATION_LATCH_RELEASE_TIME);
+    private static final ServoEndEffector.Parameters backFoundationLatchParams3543 = new ServoEndEffector.Parameters()
+            .setMaxStepRate(RobotInfo3543.BACK_FOUNDATION_LATCH_MAX_STEPRATE)
+            .setMinPos(RobotInfo3543.BACK_FOUNDATION_LATCH_MIN_POS)
+            .setMaxPos(RobotInfo3543.BACK_FOUNDATION_LATCH_MAX_POS)
+            .setRetractPos(RobotInfo3543.BACK_FOUNDATION_LATCH_GRAB_POS)
+            .setRetractTime(RobotInfo3543.BACK_FOUNDATION_LATCH_GRAB_TIME)
+            .setExtendPos(RobotInfo3543.BACK_FOUNDATION_LATCH_RELEASE_POS)
+            .setExtendTime(RobotInfo3543.BACK_FOUNDATION_LATCH_RELEASE_TIME);
+    private static final ServoEndEffector.Parameters frontFoundationLatchParams3543 = new ServoEndEffector.Parameters()
+            .setMaxStepRate(RobotInfo3543.FRONT_FOUNDATION_LATCH_MAX_STEPRATE)
+            .setMinPos(RobotInfo3543.FRONT_FOUNDATION_LATCH_MIN_POS)
+            .setMaxPos(RobotInfo3543.FRONT_FOUNDATION_LATCH_MAX_POS)
+            .setRetractPos(RobotInfo3543.FRONT_FOUNDATION_LATCH_GRAB_POS)
+            .setRetractTime(RobotInfo3543.FRONT_FOUNDATION_LATCH_GRAB_TIME)
+            .setExtendPos(RobotInfo3543.FRONT_FOUNDATION_LATCH_RELEASE_POS)
+            .setExtendTime(RobotInfo3543.FRONT_FOUNDATION_LATCH_RELEASE_TIME);
     //
     // Team specific subsystems.
     //
-    ExtenderArm3543 extenderArm = null;
-    Wrist3543 wrist = null;
-//    FrontFoundationLatch frontFoundationLatch = null;
+    ServoEndEffector extenderArm = null;
+    ServoEndEffector wrist = null;
+    Grabber frontFoundationLatch = null;
 
     Robot3543(TrcRobot.RunMode runMode)
     {
@@ -145,17 +165,22 @@ class Robot3543 extends Robot
                     elevator.zeroCalibrate();
                 }
                 // ExtenderArm is 3543 only.
-                extenderArm = new ExtenderArm3543(extenderArmParams3543);
+                extenderArm = new ServoEndEffector("externderArmServo", extenderArmParams3543);
                 extenderArm.retract();
                 // Wrist is 3543 only.
-                wrist = new Wrist3543(wristParams3543);
+                wrist = new ServoEndEffector("wristServo", wristParams3543);
                 wrist.retract();
 
                 grabber = new Grabber("grabberServo", grabberParams3543);
                 grabber.release();
 
-                backFoundationLatch = new Grabber("backFoundationLatchServo", foundationLatchParams3543);
+                backFoundationLatch = new Grabber("backFoundationLatchServo", backFoundationLatchParams3543);
                 backFoundationLatch.release();
+                // FrontFoundationLatch is 3543-only
+                frontFoundationLatch = new Grabber(
+                        "leftFoundationLatchServo", "rightFoundationLatchServo",
+                        frontFoundationLatchParams3543);
+                frontFoundationLatch.release();
             }
         }
         //

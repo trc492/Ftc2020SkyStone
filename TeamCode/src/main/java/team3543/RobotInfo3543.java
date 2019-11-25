@@ -147,7 +147,7 @@ class RobotInfo3543
     static final double ELEVATOR_SCALE                  = 17.0/4718.0;
     static final double ELEVATOR_OFFSET                 = 0.0;
     //
-    // ExtenderArm subsystem.
+    // ExtenderArm subsystem (3543-only).
     //
     static final double EXTENDER_ARM_MAX_STEPRATE       = (1.0/3.0);
     static final double EXTENDER_ARM_MIN_POS            = 0.2;
@@ -156,7 +156,7 @@ class RobotInfo3543
     static final double EXTENDER_ARM_EXTEND_POS         = 0.6;
     static final double EXTENDER_ARM_MOVE_TIME          = 3.0;
     //
-    // Wrist subsystem.
+    // Wrist subsystem (3543-only).
     //
     static final double WRIST_MAX_STEPRATE              = (1.0/0.75);
     static final double WRIST_MIN_POS                   = 0.2;
@@ -164,22 +164,38 @@ class RobotInfo3543
     static final double WRIST_RETRACT_POS               = 0.8;
     static final double WRIST_EXTEND_POS                = 0.45;
     static final double WRIST_ROTATE_TIME               = 0.3;
-    static final boolean WRIST_INVERTED                 = true;
+//    static final boolean WRIST_INVERTED                 = true;
     //
     // Grabber subsystem.
     //
-    static final double GRABBER_OFFSET                  = 0.0;
+    static final double GRABBER_MAX_STEPRATE            = 0.0;
+    static final double GRABBER_MIN_POS                 = 0.2;
+    static final double GRABBER_MAX_POS                 = 0.8;
     static final double GRABBER_OPEN_POS                = 0.8;
     static final double GRABBER_CLOSE_POS               = 0.2;
     static final double GRABBER_GRAB_TIME               = 3.0;
     static final double GRABBER_RELEASE_TIME            = 3.0;
+    static final double GRABBER_OFFSET                  = 0.0;
     //
     // BackFoundationLatch subsystem.
     //
-    static final double FOUNDATION_LATCH_RELEASE_POS    = 0.0;
-    static final double FOUNDATION_LATCH_RELEASE_TIME   = 0.5;
-    static final double FOUNDATION_LATCH_GRAB_POS       = 0.4;
-    static final double FOUNDATION_LATCH_GRAB_TIME      = 0.5;
+    static final double BACK_FOUNDATION_LATCH_MAX_STEPRATE  = 0.0;
+    static final double BACK_FOUNDATION_LATCH_MIN_POS       = 0.2;
+    static final double BACK_FOUNDATION_LATCH_MAX_POS       = 0.8;
+    static final double BACK_FOUNDATION_LATCH_RELEASE_POS   = 0.0;
+    static final double BACK_FOUNDATION_LATCH_RELEASE_TIME  = 0.5;
+    static final double BACK_FOUNDATION_LATCH_GRAB_POS      = 0.4;
+    static final double BACK_FOUNDATION_LATCH_GRAB_TIME     = 0.5;
+    //
+    // FrontFoundationLatch subsystem.
+    //
+    static final double FRONT_FOUNDATION_LATCH_MAX_STEPRATE = 0.0;
+    static final double FRONT_FOUNDATION_LATCH_MIN_POS      = 0.2;
+    static final double FRONT_FOUNDATION_LATCH_MAX_POS      = 0.8;
+    static final double FRONT_FOUNDATION_LATCH_RELEASE_POS  = 0.0;
+    static final double FRONT_FOUNDATION_LATCH_RELEASE_TIME = 0.5;
+    static final double FRONT_FOUNDATION_LATCH_GRAB_POS     = 0.4;
+    static final double FRONT_FOUNDATION_LATCH_GRAB_TIME    = 0.5;
 
     static final double BUILDING_ZONE_ROBOT_START_X     = 120.0;
 
