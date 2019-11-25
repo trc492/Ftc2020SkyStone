@@ -38,44 +38,24 @@ public class ServoActuator
         double extendPos;
         double extendTime;
 
-        public Parameters setMaxStepRate(double maxStepRate)
+        public Parameters setStepParams(double maxStepRate, double minPos, double maxPos)
         {
             this.maxStepRate = maxStepRate;
-            return this;
-        }
-
-        public Parameters setMinPos(double minPos)
-        {
             this.minPos = minPos;
-            return this;
-        }
-
-        public Parameters setMaxPos(double maxPos)
-        {
             this.maxPos = maxPos;
             return this;
         }
 
-        public Parameters setRetractPos(double retractPos)
+        public Parameters setRetractParams(double retractPos, double retractTime)
         {
             this.retractPos = retractPos;
-            return this;
-        }
-
-        public Parameters setRetractTime(double retractTime)
-        {
             this.retractTime = retractTime;
             return this;
         }
 
-        public Parameters setExtendPos(double extendPos)
+        public Parameters setExtendParams(double extendPos, double extendTime)
         {
             this.extendPos = extendPos;
-            return this;
-        }
-
-        public Parameters setExtendTime(double extendTime)
-        {
             this.extendTime = extendTime;
             return this;
         }
@@ -96,7 +76,7 @@ public class ServoActuator
         this.params = params;
         servo1 = new FtcServo(servo1Name);
         servo2 = servo2Name == null? null: new FtcServo(servo2Name);
-        enhancedServo = new TrcEnhancedServo("endEffector." + servo1Name, servo1, servo2);
+        enhancedServo = new TrcEnhancedServo("servoActuator." + servo1Name, servo1, servo2);
         if (params.maxStepRate != 0.0)
         {
             enhancedServo.setStepMode(params.maxStepRate, params.minPos, params.maxPos);

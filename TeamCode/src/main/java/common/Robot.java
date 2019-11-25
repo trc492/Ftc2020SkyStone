@@ -203,21 +203,11 @@ public class Robot
             return this;
         }
 
-        public PhoneParameters setPhoneFrontOffset(double phoneFrontOffset)
+        public PhoneParameters setPhoneOffsets(double frontOffset, double leftOffset, double heightOffset)
         {
-            this.phoneFrontOffset = phoneFrontOffset;
-            return this;
-        }
-
-        public PhoneParameters setPhoneLeftOffset(double phoneLeftOffset)
-        {
-            this.phoneLeftOffset = phoneLeftOffset;
-            return this;
-        }
-
-        public PhoneParameters setPhoneHeightOffset(double phoneHeightOffset)
-        {
-            this.phoneHeightOffset = phoneHeightOffset;
+            this.phoneFrontOffset = frontOffset;
+            this.phoneLeftOffset = leftOffset;
+            this.phoneHeightOffset = heightOffset;
             return this;
         }
 

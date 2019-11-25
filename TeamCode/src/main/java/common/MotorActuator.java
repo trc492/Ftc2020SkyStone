@@ -40,68 +40,33 @@ public class MotorActuator
         double calPower;
         double[] posPresets;
 
-        public Parameters setMinPos(double minPos)
+        public Parameters setPosRange(double minPos, double maxPos)
         {
             this.minPos = minPos;
-            return this;
-        }
-
-        public Parameters setMaxPos(double maxPos)
-        {
             this.maxPos = maxPos;
             return this;
         }
 
-        public Parameters setScale(double scale)
+        public Parameters setScaleOffset(double scale, double offset)
         {
             this.scale = scale;
-            return this;
-        }
-
-        public Parameters setOffset(double offset)
-        {
             this.offset = offset;
             return this;
         }
 
-        public Parameters setKp(double kP)
+        public Parameters setPidParams(double kP, double kI, double kD, double tolerance)
         {
             this.kP = kP;
-            return this;
-        }
-
-        public Parameters setKi(double kI)
-        {
             this.kI = kI;
-            return this;
-        }
-
-        public Parameters setKd(double kD)
-        {
             this.kD = kD;
-            return this;
-        }
-
-        public Parameters setTolerance(double tolerance)
-        {
             this.tolerance = tolerance;
             return this;
         }
 
-        public Parameters setInverted(boolean inverted)
+        public Parameters setMotorParams(boolean inverted, boolean hasUpperLimitSwitch, double calPower)
         {
             this.inverted = inverted;
-            return this;
-        }
-
-        public Parameters setHasUpperLimitSwitch(boolean hasUpperLimitSwitch)
-        {
             this.hasUpperLimitSwitch = hasUpperLimitSwitch;
-            return this;
-        }
-
-        public Parameters setCalPower(double calPower)
-        {
             this.calPower = calPower;
             return this;
         }

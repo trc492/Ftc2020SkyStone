@@ -56,73 +56,59 @@ class Robot3543 extends Robot
             .setCameraDir(RobotInfo3543.CAMERA_DIR)
             .setCameraMonitorFeedback(RobotInfo3543.CAMERA_MONITOR_FEEDBACK)
             .setPhoneIsPortrait(RobotInfo3543.PHONE_IS_PORTRAIT)
-            .setPhoneFrontOffset(RobotInfo3543.PHONE_FRONT_OFFSET)
-            .setPhoneLeftOffset(RobotInfo3543.PHONE_LEFT_OFFSET)
-            .setPhoneHeightOffset(RobotInfo3543.PHONE_HEIGHT_OFFSET);
+            .setPhoneOffsets(
+                    RobotInfo3543.PHONE_FRONT_OFFSET, RobotInfo3543.PHONE_LEFT_OFFSET,
+                    RobotInfo3543.PHONE_HEIGHT_OFFSET);
     private static final MotorActuator.Parameters elevatorParams3543 = new MotorActuator.Parameters()
-            .setMinPos(RobotInfo3543.ELEVATOR_MIN_HEIGHT)
-            .setMaxPos(RobotInfo3543.ELEVATOR_MAX_HEIGHT)
-            .setScale(RobotInfo3543.ELEVATOR_SCALE)
-            .setOffset(RobotInfo3543.ELEVATOR_OFFSET)
-            .setKp(RobotInfo3543.ELEVATOR_KP)
-            .setKi(RobotInfo3543.ELEVATOR_KI)
-            .setKd(RobotInfo3543.ELEVATOR_KD)
-            .setTolerance(RobotInfo3543.ELEVATOR_TOLERANCE)
-            .setInverted(RobotInfo3543.ELEVATOR_INVERTED)
-            .setHasUpperLimitSwitch(RobotInfo3543.ELEVATOR_HAS_UPPER_LIMIT_SWITCH)
-            .setCalPower(RobotInfo3543.ELEVATOR_CAL_POWER);
+            .setPosRange(RobotInfo3543.ELEVATOR_MIN_HEIGHT, RobotInfo3543.ELEVATOR_MAX_HEIGHT)
+            .setScaleOffset(RobotInfo3543.ELEVATOR_SCALE, RobotInfo3543.ELEVATOR_OFFSET)
+            .setPidParams(
+                    RobotInfo3543.ELEVATOR_KP, RobotInfo3543.ELEVATOR_KI, RobotInfo3543.ELEVATOR_KD,
+                    RobotInfo3543.ELEVATOR_TOLERANCE)
+            .setMotorParams(
+                    RobotInfo3543.ELEVATOR_INVERTED, RobotInfo3543.ELEVATOR_HAS_UPPER_LIMIT_SWITCH,
+                    RobotInfo3543.ELEVATOR_CAL_POWER);
 //    private static final MotorActuator.Parameters extenderArmParams3543 = new MotorActuator.Parameters()
-//            .setMinPos(RobotInfo3543.EXTENDER_ARM_MIN_POS)
-//            .setMaxPos(RobotInfo3543.EXTENDER_ARM_MAX_POS)
-//            .setScale(RobotInfo3543.EXTENDER_ARM_SCALE)
-//            .setOffset(RobotInfo3543.EXTENDER_ARM_OFFSET)
-//            .setKp(RobotInfo3543.EXTENDER_ARM_KP)
-//            .setKi(RobotInfo3543.EXTENDER_ARM_KI)
-//            .setKd(RobotInfo3543.EXTENDER_ARM_KD)
-//            .setTolerance(RobotInfo3543.EXTENDER_ARM_TOLERANCE)
-//            .setInverted(RobotInfo3543.EXTENDER_ARM_INVERTED)
-//            .setHasUpperLimitSwitch(RobotInfo3543.EXTENDER_ARM_HAS_UPPER_LIMIT_SWITCH)
-//            .setCalPower(RobotInfo3543.EXTENDER_ARM_CAL_POWER);
+//            .setPosRange(RobotInfo3543.EXTENDER_ARM_MIN_POS, RobotInfo3543.EXTENDER_ARM_MAX_POS)
+//            .setScaleOffset(RobotInfo3543.EXTENDER_ARM_SCALE, RobotInfo3543.EXTENDER_ARM_OFFSET)
+//            .setPidParams(
+//                    RobotInfo3543.EXTENDER_ARM_KP, RobotInfo3543.EXTENDER_ARM_KI, RobotInfo3543.EXTENDER_ARM_KD,
+//                    RobotInfo3543.EXTENDER_ARM_TOLERANCE)
+//            .setMotorParams(
+//                    RobotInfo3543.EXTENDER_ARM_INVERTED, RobotInfo3543.EXTENDER_ARM_HAS_UPPER_LIMIT_SWITCH,
+//                    RobotInfo3543.EXTENDER_ARM_CAL_POWER);
     private static final ServoActuator.Parameters extenderArmParams3543 = new ServoActuator.Parameters()
-            .setMaxStepRate(RobotInfo3543.EXTENDER_ARM_MAX_STEPRATE)
-            .setMinPos(RobotInfo3543.EXTENDER_ARM_MIN_POS)
-            .setMaxPos(RobotInfo3543.EXTENDER_ARM_MAX_POS)
-            .setRetractPos(RobotInfo3543.EXTENDER_ARM_RETRACTED_POS)
-            .setRetractTime(RobotInfo3543.EXTENDER_ARM_MOVE_TIME)
-            .setExtendPos(RobotInfo3543.EXTENDER_ARM_EXTEND_POS)
-            .setExtendTime(RobotInfo3543.EXTENDER_ARM_MOVE_TIME);
+            .setStepParams(
+                    RobotInfo3543.EXTENDER_ARM_MAX_STEPRATE, RobotInfo3543.EXTENDER_ARM_MIN_POS,
+                    RobotInfo3543.EXTENDER_ARM_MAX_POS)
+            .setRetractParams(RobotInfo3543.EXTENDER_ARM_RETRACTED_POS, RobotInfo3543.EXTENDER_ARM_MOVE_TIME)
+            .setExtendParams(RobotInfo3543.EXTENDER_ARM_EXTEND_POS, RobotInfo3543.EXTENDER_ARM_MOVE_TIME);
     private static final ServoActuator.Parameters wristParams3543 = new ServoActuator.Parameters()
-            .setMaxStepRate(RobotInfo3543.WRIST_MAX_STEPRATE)
-            .setMinPos(RobotInfo3543.WRIST_MIN_POS)
-            .setMaxPos(RobotInfo3543.WRIST_MAX_POS)
-            .setRetractPos(RobotInfo3543.WRIST_RETRACT_POS)
-            .setRetractTime(RobotInfo3543.WRIST_ROTATE_TIME)
-            .setExtendPos(RobotInfo3543.WRIST_EXTEND_POS)
-            .setExtendTime(RobotInfo3543.WRIST_ROTATE_TIME);
+            .setStepParams(RobotInfo3543.WRIST_MAX_STEPRATE, RobotInfo3543.WRIST_MIN_POS, RobotInfo3543.WRIST_MAX_POS)
+            .setRetractParams(RobotInfo3543.WRIST_RETRACT_POS, RobotInfo3543.WRIST_ROTATE_TIME)
+            .setExtendParams(RobotInfo3543.WRIST_EXTEND_POS, RobotInfo3543.WRIST_ROTATE_TIME);
     private static final ServoActuator.Parameters grabberParams3543 = new ServoActuator.Parameters()
-            .setMaxStepRate(RobotInfo3543.GRABBER_MAX_STEPRATE)
-            .setMinPos(RobotInfo3543.GRABBER_MIN_POS)
-            .setMaxPos(RobotInfo3543.GRABBER_MAX_POS)
-            .setRetractPos(RobotInfo3543.GRABBER_CLOSE_POS)
-            .setRetractTime(RobotInfo3543.GRABBER_GRAB_TIME)
-            .setExtendPos(RobotInfo3543.GRABBER_OPEN_POS)
-            .setExtendTime(RobotInfo3543.GRABBER_RELEASE_TIME);
+            .setStepParams(
+                    RobotInfo3543.GRABBER_MAX_STEPRATE, RobotInfo3543.GRABBER_MIN_POS, RobotInfo3543.GRABBER_MAX_POS)
+            .setRetractParams(RobotInfo3543.GRABBER_CLOSE_POS, RobotInfo3543.GRABBER_GRAB_TIME)
+            .setExtendParams(RobotInfo3543.GRABBER_OPEN_POS, RobotInfo3543.GRABBER_RELEASE_TIME);
     private static final ServoActuator.Parameters backFoundationLatchParams3543 = new ServoActuator.Parameters()
-            .setMaxStepRate(RobotInfo3543.BACK_FOUNDATION_LATCH_MAX_STEPRATE)
-            .setMinPos(RobotInfo3543.BACK_FOUNDATION_LATCH_MIN_POS)
-            .setMaxPos(RobotInfo3543.BACK_FOUNDATION_LATCH_MAX_POS)
-            .setRetractPos(RobotInfo3543.BACK_FOUNDATION_LATCH_GRAB_POS)
-            .setRetractTime(RobotInfo3543.BACK_FOUNDATION_LATCH_GRAB_TIME)
-            .setExtendPos(RobotInfo3543.BACK_FOUNDATION_LATCH_RELEASE_POS)
-            .setExtendTime(RobotInfo3543.BACK_FOUNDATION_LATCH_RELEASE_TIME);
+            .setStepParams(
+                    RobotInfo3543.BACK_FOUNDATION_LATCH_MAX_STEPRATE, RobotInfo3543.BACK_FOUNDATION_LATCH_MIN_POS,
+                    RobotInfo3543.BACK_FOUNDATION_LATCH_MAX_POS)
+            .setRetractParams(
+                    RobotInfo3543.BACK_FOUNDATION_LATCH_GRAB_POS, RobotInfo3543.BACK_FOUNDATION_LATCH_GRAB_TIME)
+            .setExtendParams(
+                    RobotInfo3543.BACK_FOUNDATION_LATCH_RELEASE_POS, RobotInfo3543.BACK_FOUNDATION_LATCH_RELEASE_TIME);
     private static final ServoActuator.Parameters frontFoundationLatchParams3543 = new ServoActuator.Parameters()
-            .setMaxStepRate(RobotInfo3543.FRONT_FOUNDATION_LATCH_MAX_STEPRATE)
-            .setMinPos(RobotInfo3543.FRONT_FOUNDATION_LATCH_MIN_POS)
-            .setMaxPos(RobotInfo3543.FRONT_FOUNDATION_LATCH_MAX_POS)
-            .setRetractPos(RobotInfo3543.FRONT_FOUNDATION_LATCH_GRAB_POS)
-            .setRetractTime(RobotInfo3543.FRONT_FOUNDATION_LATCH_GRAB_TIME)
-            .setExtendPos(RobotInfo3543.FRONT_FOUNDATION_LATCH_RELEASE_POS)
-            .setExtendTime(RobotInfo3543.FRONT_FOUNDATION_LATCH_RELEASE_TIME);
+            .setStepParams(
+                    RobotInfo3543.FRONT_FOUNDATION_LATCH_MAX_STEPRATE, RobotInfo3543.FRONT_FOUNDATION_LATCH_MIN_POS,
+                    RobotInfo3543.FRONT_FOUNDATION_LATCH_MAX_POS)
+            .setRetractParams(
+                    RobotInfo3543.FRONT_FOUNDATION_LATCH_GRAB_POS, RobotInfo3543.FRONT_FOUNDATION_LATCH_GRAB_TIME)
+            .setExtendParams(
+                    RobotInfo3543.FRONT_FOUNDATION_LATCH_RELEASE_POS,
+                    RobotInfo3543.FRONT_FOUNDATION_LATCH_RELEASE_TIME);
     //
     // Team specific subsystems.
     //

@@ -56,46 +56,36 @@ class Robot6541 extends Robot
             .setCameraDir(RobotInfo6541.CAMERA_DIR)
             .setCameraMonitorFeedback(RobotInfo6541.CAMERA_MONITOR_FEEDBACK)
             .setPhoneIsPortrait(RobotInfo6541.PHONE_IS_PORTRAIT)
-            .setPhoneFrontOffset(RobotInfo6541.PHONE_FRONT_OFFSET)
-            .setPhoneLeftOffset(RobotInfo6541.PHONE_LEFT_OFFSET)
-            .setPhoneHeightOffset(RobotInfo6541.PHONE_HEIGHT_OFFSET);
+            .setPhoneOffsets(
+                    RobotInfo6541.PHONE_FRONT_OFFSET, RobotInfo6541.PHONE_LEFT_OFFSET,
+                    RobotInfo6541.PHONE_HEIGHT_OFFSET);
     private static final MotorActuator.Parameters elevatorParams6541 = new MotorActuator.Parameters()
-            .setMinPos(RobotInfo6541.ELEVATOR_MIN_HEIGHT)
-            .setMaxPos(RobotInfo6541.ELEVATOR_MAX_HEIGHT)
-            .setScale(RobotInfo6541.ELEVATOR_SCALE)
-            .setOffset(RobotInfo6541.ELEVATOR_OFFSET)
-            .setKp(RobotInfo6541.ELEVATOR_KP)
-            .setKi(RobotInfo6541.ELEVATOR_KI)
-            .setKd(RobotInfo6541.ELEVATOR_KD)
-            .setTolerance(RobotInfo6541.ELEVATOR_TOLERANCE)
-            .setInverted(RobotInfo6541.ELEVATOR_INVERTED)
-            .setHasUpperLimitSwitch(RobotInfo6541.ELEVATOR_HAS_UPPER_LIMIT_SWITCH)
-            .setCalPower(RobotInfo6541.ELEVATOR_CAL_POWER)
+            .setPosRange(RobotInfo6541.ELEVATOR_MIN_HEIGHT, RobotInfo6541.ELEVATOR_MAX_HEIGHT)
+            .setScaleOffset(RobotInfo6541.ELEVATOR_SCALE, RobotInfo6541.ELEVATOR_OFFSET)
+            .setPidParams(
+                    RobotInfo6541.ELEVATOR_KP, RobotInfo6541.ELEVATOR_KI, RobotInfo6541.ELEVATOR_KD,
+                    RobotInfo6541.ELEVATOR_TOLERANCE)
+            .setMotorParams(
+                    RobotInfo6541.ELEVATOR_INVERTED, RobotInfo6541.ELEVATOR_HAS_UPPER_LIMIT_SWITCH,
+                    RobotInfo6541.ELEVATOR_CAL_POWER)
             .setPosPresets(RobotInfo6541.ELEVATOR_HEIGHT_PRESETS);
     private static final ServoActuator.Parameters elbowParams6541 = new ServoActuator.Parameters()
-            .setMaxStepRate(RobotInfo6541.ELBOW_MAX_STEPRATE)
-            .setMinPos(RobotInfo6541.ELBOW_MIN_POS)
-            .setMaxPos(RobotInfo6541.ELBOW_MAX_POS)
-            .setRetractPos(RobotInfo6541.ELBOW_RETRACT_POS)
-            .setRetractTime(RobotInfo6541.ELBOW_RETRACT_TIME)
-            .setExtendPos(RobotInfo6541.ELBOW_EXTEND_POS)
-            .setExtendTime(RobotInfo6541.ELBOW_EXTEND_TIME);
+            .setStepParams(RobotInfo6541.ELBOW_MAX_STEPRATE, RobotInfo6541.ELBOW_MIN_POS, RobotInfo6541.ELBOW_MAX_POS)
+            .setRetractParams(RobotInfo6541.ELBOW_RETRACT_POS, RobotInfo6541.ELBOW_RETRACT_TIME)
+            .setExtendParams(RobotInfo6541.ELBOW_EXTEND_POS, RobotInfo6541.ELBOW_EXTEND_TIME);
     private static final ServoActuator.Parameters grabberParams6541 = new ServoActuator.Parameters()
-            .setMaxStepRate(RobotInfo6541.GRABBER_MAX_STEPRATE)
-            .setMinPos(RobotInfo6541.GRABBER_MIN_POS)
-            .setMaxPos(RobotInfo6541.GRABBER_MAX_POS)
-            .setExtendPos(RobotInfo6541.GRABBER_RELEASE_POS)
-            .setExtendTime(RobotInfo6541.GRABBER_RELEASE_TIME)
-            .setRetractPos(RobotInfo6541.GRABBER_GRAB_POS)
-            .setRetractTime(RobotInfo6541.GRABBER_GRAB_TIME);
+            .setStepParams(
+                    RobotInfo6541.GRABBER_MAX_STEPRATE, RobotInfo6541.GRABBER_MIN_POS, RobotInfo6541.GRABBER_MAX_POS)
+            .setExtendParams(RobotInfo6541.GRABBER_RELEASE_POS, RobotInfo6541.GRABBER_RELEASE_TIME)
+            .setRetractParams(RobotInfo6541.GRABBER_GRAB_POS, RobotInfo6541.GRABBER_GRAB_TIME);
     private static final ServoActuator.Parameters backFoundationLatchParams6541 = new ServoActuator.Parameters()
-            .setMaxStepRate(RobotInfo6541.BACK_FOUNDATION_LATCH_MAX_STEPRATE)
-            .setMinPos(RobotInfo6541.BACK_FOUNDATION_LATCH_MIN_POS)
-            .setMaxPos(RobotInfo6541.BACK_FOUNDATION_LATCH_MAX_POS)
-            .setRetractPos(RobotInfo6541.BACK_FOUNDATION_LATCH_RELEASE_POS)
-            .setRetractTime(RobotInfo6541.BACK_FOUNDATION_LATCH_RELEASE_TIME)
-            .setExtendPos(RobotInfo6541.BACK_FOUNDATION_LATCH_GRAB_POS)
-            .setExtendTime(RobotInfo6541.BACK_FOUNDATION_LATCH_GRAB_TIME);
+            .setStepParams(
+                    RobotInfo6541.BACK_FOUNDATION_LATCH_MAX_STEPRATE, RobotInfo6541.BACK_FOUNDATION_LATCH_MIN_POS,
+                    RobotInfo6541.BACK_FOUNDATION_LATCH_MAX_POS)
+            .setRetractParams(
+                    RobotInfo6541.BACK_FOUNDATION_LATCH_RELEASE_POS, RobotInfo6541.BACK_FOUNDATION_LATCH_RELEASE_TIME)
+            .setExtendParams(
+                    RobotInfo6541.BACK_FOUNDATION_LATCH_GRAB_POS, RobotInfo6541.BACK_FOUNDATION_LATCH_GRAB_TIME);
     //
     // Team specific subsystems.
     //
