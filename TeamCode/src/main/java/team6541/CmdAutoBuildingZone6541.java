@@ -25,7 +25,6 @@ package team6541;
 import common.CommonAuto;
 import common.RobotInfo;
 import common.SimplePidDrive;
-import common.Robot;
 import trclib.TrcEvent;
 import trclib.TrcPidController;
 import trclib.TrcPose2D;
@@ -43,6 +42,7 @@ class CmdAutoBuildingZone6541 implements TrcRobot.RobotCommand
     private enum State
     {
         BEGIN,
+        READY_GRABBER_SUBSYSTEM,
         DO_DELAY,
         DRIVE_DIRECTLY_UNDER_BRIDGE_IF_NOT_MOVING_FOUNDATION,
         CRAB_TO_CENTER_IF_NOT_MOVING_FOUNDATION,
@@ -56,6 +56,7 @@ class CmdAutoBuildingZone6541 implements TrcRobot.RobotCommand
         UNHOOK_FOUNDATION,
         BACK_OFF_FROM_FOUNDATION,
         LOWER_ELEVATOR_AFTER_BACKING_OFF,
+        RETRACT_GRABBER,
         CRAB_TOWARD_WALL,
         ALIGN_WITH_BRIDGE,
         PARK_UNDER_BRIDGE_TOUCHING_FENCE,
@@ -65,7 +66,7 @@ class CmdAutoBuildingZone6541 implements TrcRobot.RobotCommand
 
     private static final String moduleName = "CmdAutoBuildingZone6541";
 
-    private final Robot robot;
+    private final Robot6541 robot;
     private final CommonAuto.AutoChoices autoChoices;
     private final TrcEvent event;
     private final TrcTimer timer;
@@ -73,7 +74,7 @@ class CmdAutoBuildingZone6541 implements TrcRobot.RobotCommand
     private final double allianceDirection;
     private final SimplePidDrive<State> simplePidDrive;
 
-    CmdAutoBuildingZone6541(Robot robot, CommonAuto.AutoChoices autoChoices)
+    CmdAutoBuildingZone6541(Robot6541 robot, CommonAuto.AutoChoices autoChoices)
     {
         this.robot = robot;
         this.autoChoices = autoChoices;
@@ -129,10 +130,15 @@ class CmdAutoBuildingZone6541 implements TrcRobot.RobotCommand
                     robot.encoderXPidCtrl.setNoOscillation(true);
                     robot.encoderYPidCtrl.setNoOscillation(true);
                     robot.gyroPidCtrl.setNoOscillation(true);
-                    sm.setState(State.DO_DELAY);
-                    //
-                    // Intentionally falling through to the next state.
-                    //
+                    sm.setState(State.READY_GRABBER_SUBSYSTEM);
+                    break;
+
+                case READY_GRABBER_SUBSYSTEM:
+                    robot.grabber.setPosition(1.0);
+                    robot.elbow.extend(event);
+                    sm.waitForSingleEvent(event, State.DO_DELAY);
+                    break;
+
                 case DO_DELAY:
                     //
                     // are we going to move the foundation?
@@ -249,7 +255,13 @@ class CmdAutoBuildingZone6541 implements TrcRobot.RobotCommand
                 case LOWER_ELEVATOR_AFTER_BACKING_OFF:
                     // CodeReview: you are lowering the elevator. Do you really need to wait for it to finish?
                     robot.elevator.zeroCalibrate();
-                    timer.set(2.0, event);
+                    timer.set(5.0, event);
+                    //robot.elevator.setPosition(RobotInfo6541.ELEVATOR_MIN_HEIGHT, event, 3.0);
+                    sm.waitForSingleEvent(event, State.RETRACT_GRABBER);
+                    break;
+
+                case RETRACT_GRABBER:
+                    robot.elbow.retract(event);
                     sm.waitForSingleEvent(event, State.CRAB_TOWARD_WALL);
                     break;
 
