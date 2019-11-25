@@ -28,27 +28,27 @@ import trclib.TrcEvent;
 import trclib.TrcPidActuator;
 import trclib.TrcPidController;
 
-public class Elevator
+public class MotorActuator
 {
     public static class Parameters
     {
-        double minHeight, maxHeight;
+        double minPos, maxPos;
         double scale, offset;
         double kP, kI, kD, tolerance;
         boolean inverted;
         boolean hasUpperLimitSwitch;
         double calPower;
-        double[] heightPresets;
+        double[] posPresets;
 
-        public Parameters setMinHeight(double minHeight)
+        public Parameters setMinPos(double minPos)
         {
-            this.minHeight = minHeight;
+            this.minPos = minPos;
             return this;
         }
 
-        public Parameters setMaxHeight(double maxHeight)
+        public Parameters setMaxPos(double maxPos)
         {
-            this.maxHeight = maxHeight;
+            this.maxPos = maxPos;
             return this;
         }
 
@@ -106,9 +106,9 @@ public class Elevator
             return this;
         }
 
-        public Parameters setHeightPresets(double... heightPresets)
+        public Parameters setPosPresets(double... posPresets)
         {
-            this.heightPresets = heightPresets;
+            this.posPresets = posPresets;
             return this;
         }
 
@@ -116,102 +116,103 @@ public class Elevator
 
     private FtcDigitalInput lowerLimitSwitch;
     private FtcDigitalInput upperLimitSwitch;
-    private TrcPidActuator pidElevator;
+    private TrcPidActuator pidActuator;
 
-    private double[] elevatorHeightPresets;
-    private int elevatorLevel;
+    private double[] posPresets;
+    private int posLevel;
 
-    public Elevator(Parameters params)
+    public MotorActuator(String instanceName, Parameters params)
     {
-        lowerLimitSwitch = new FtcDigitalInput("elevatorLowerLimit");
+        lowerLimitSwitch = new FtcDigitalInput(instanceName + "LowerLimit");
         if (params.hasUpperLimitSwitch)
         {
-            upperLimitSwitch = new FtcDigitalInput("elevatorUpperLimit");
+            upperLimitSwitch = new FtcDigitalInput(instanceName + "UpperLimit");
         }
 
-        FtcDcMotor elevatorMotor = new FtcDcMotor("elevatorMotor", lowerLimitSwitch, upperLimitSwitch);
-        elevatorMotor.setBrakeModeEnabled(true);
-        elevatorMotor.setOdometryEnabled(true);
-        elevatorMotor.setInverted(params.inverted);
+        FtcDcMotor actuatorMotor = new FtcDcMotor(
+                instanceName + "Motor", lowerLimitSwitch, upperLimitSwitch);
+        actuatorMotor.setBrakeModeEnabled(true);
+        actuatorMotor.setOdometryEnabled(true);
+        actuatorMotor.setInverted(params.inverted);
 
         TrcPidController pidController = new TrcPidController(
-                "elevatorPidController",
+                instanceName + "PidController",
                 new TrcPidController.PidCoefficients(params.kP, params.kI, params.kD),
                 params.tolerance, this::getPosition);
 
-        pidElevator = new TrcPidActuator(
-                "pidElevator", elevatorMotor, lowerLimitSwitch, pidController,
-                params.calPower, params.minHeight, params.maxHeight);
-        pidElevator.setPositionScale(params.scale, params.offset);
+        pidActuator = new TrcPidActuator(
+                "pid" + instanceName, actuatorMotor, lowerLimitSwitch, pidController,
+                params.calPower, params.minPos, params.maxPos);
+        pidActuator.setPositionScale(params.scale, params.offset);
 
-        this.elevatorHeightPresets = params.heightPresets;
-        this.elevatorLevel = 0;
-    }   //Elevator
+        this.posPresets = params.posPresets;
+        this.posLevel = 0;
+    }   //MotorActuator
 
     public void zeroCalibrate()
     {
-        pidElevator.zeroCalibrate();
+        pidActuator.zeroCalibrate();
     }   //zeroCalibrate
 
     public void setManualOverride(boolean enabled)
     {
-        pidElevator.setManualOverride(enabled);
+        pidActuator.setManualOverride(enabled);
     }   //setManualOverride
 
     public void setPower(double power)
     {
-        pidElevator.setPower(power, true);
+        pidActuator.setPower(power, true);
     }   //setPower
 
     public void setPosition(double target, TrcEvent event, double timeout)
     {
-        pidElevator.setTarget(target, event, timeout);
+        pidActuator.setTarget(target, event, timeout);
     }   //setPosition
 
     public void setPosition(double target)
     {
-        pidElevator.setTarget(target, true);
+        pidActuator.setTarget(target, true);
     }   //setPosition
 
     public void setLevel(int level)
     {
-        if (elevatorHeightPresets != null)
+        if (posPresets != null)
         {
             if (level < 0)
             {
-                elevatorLevel = 0;
+                posLevel = 0;
             }
-            else if (level >= elevatorHeightPresets.length)
+            else if (level >= posPresets.length)
             {
-                elevatorLevel = elevatorHeightPresets.length - 1;
+                posLevel = posPresets.length - 1;
             }
             else
             {
-                elevatorLevel = level;
+                posLevel = level;
             }
 
-            setPosition(elevatorHeightPresets[elevatorLevel]);
+            setPosition(posPresets[posLevel]);
         }
-    } // setLevel
+    }   //setLevel
 
     public void levelUp()
     {
-        setLevel(elevatorLevel + 1);
-    } // levelUp
+        setLevel(posLevel + 1);
+    }   //levelUp
 
     public void levelDown()
     {
-        setLevel(elevatorLevel - 1);
-    } // levelDown
+        setLevel(posLevel - 1);
+    }   //levelDown
 
     public int getLevel()
     {
-        return elevatorLevel;
-    }
+        return posLevel;
+    }   //getLevel
 
     public double getPosition()
     {
-        return pidElevator.getPosition();
+        return pidActuator.getPosition();
     }   //getPosition
 
     public boolean isLowerLimitSwitchActive()
@@ -224,4 +225,4 @@ public class Elevator
         return upperLimitSwitch != null ? upperLimitSwitch.isActive() : false;
     }   //isUpperLimitSwitchActive
 
-}   //class Elevator
+}   //class MotorActuator

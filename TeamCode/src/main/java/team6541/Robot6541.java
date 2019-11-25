@@ -22,7 +22,7 @@
 
 package team6541;
 
-import common.Elevator;
+import common.MotorActuator;
 import common.Grabber;
 import common.Robot;
 import common.ServoEndEffector;
@@ -59,9 +59,9 @@ class Robot6541 extends Robot
             .setPhoneFrontOffset(RobotInfo6541.PHONE_FRONT_OFFSET)
             .setPhoneLeftOffset(RobotInfo6541.PHONE_LEFT_OFFSET)
             .setPhoneHeightOffset(RobotInfo6541.PHONE_HEIGHT_OFFSET);
-    private static final Elevator.Parameters elevatorParams6541 = new Elevator.Parameters()
-            .setMinHeight(RobotInfo6541.ELEVATOR_MIN_HEIGHT)
-            .setMaxHeight(RobotInfo6541.ELEVATOR_MAX_HEIGHT)
+    private static final MotorActuator.Parameters elevatorParams6541 = new MotorActuator.Parameters()
+            .setMinPos(RobotInfo6541.ELEVATOR_MIN_HEIGHT)
+            .setMaxPos(RobotInfo6541.ELEVATOR_MAX_HEIGHT)
             .setScale(RobotInfo6541.ELEVATOR_SCALE)
             .setOffset(RobotInfo6541.ELEVATOR_OFFSET)
             .setKp(RobotInfo6541.ELEVATOR_KP)
@@ -71,7 +71,7 @@ class Robot6541 extends Robot
             .setInverted(RobotInfo6541.ELEVATOR_INVERTED)
             .setHasUpperLimitSwitch(RobotInfo6541.ELEVATOR_HAS_UPPER_LIMIT_SWITCH)
             .setCalPower(RobotInfo6541.ELEVATOR_CAL_POWER)
-            .setHeightPresets(RobotInfo6541.ELEVATOR_HEIGHT_PRESETS);
+            .setPosPresets(RobotInfo6541.ELEVATOR_HEIGHT_PRESETS);
     private static final ServoEndEffector.Parameters elbowParams6541 = new ServoEndEffector.Parameters()
             .setMaxStepRate(RobotInfo6541.ELBOW_MAX_STEPRATE)
             .setMinPos(RobotInfo6541.ELBOW_MIN_POS)
@@ -144,7 +144,7 @@ class Robot6541 extends Robot
             {
                 if (preferences.hasElevator)
                 {
-                    elevator = new Elevator(elevatorParams6541);
+                    elevator = new MotorActuator("elevator", elevatorParams6541);
                     elevator.zeroCalibrate();
                 }
                 // Elbow is 6541 only.

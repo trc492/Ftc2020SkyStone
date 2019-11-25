@@ -22,7 +22,7 @@
 
 package team3543;
 
-import common.Elevator;
+import common.MotorActuator;
 import common.Grabber;
 import common.Robot;
 import common.ServoEndEffector;
@@ -59,9 +59,9 @@ class Robot3543 extends Robot
             .setPhoneFrontOffset(RobotInfo3543.PHONE_FRONT_OFFSET)
             .setPhoneLeftOffset(RobotInfo3543.PHONE_LEFT_OFFSET)
             .setPhoneHeightOffset(RobotInfo3543.PHONE_HEIGHT_OFFSET);
-    private static final Elevator.Parameters elevatorParams3543 = new Elevator.Parameters()
-            .setMinHeight(RobotInfo3543.ELEVATOR_MIN_HEIGHT)
-            .setMaxHeight(RobotInfo3543.ELEVATOR_MAX_HEIGHT)
+    private static final MotorActuator.Parameters elevatorParams3543 = new MotorActuator.Parameters()
+            .setMinPos(RobotInfo3543.ELEVATOR_MIN_HEIGHT)
+            .setMaxPos(RobotInfo3543.ELEVATOR_MAX_HEIGHT)
             .setScale(RobotInfo3543.ELEVATOR_SCALE)
             .setOffset(RobotInfo3543.ELEVATOR_OFFSET)
             .setKp(RobotInfo3543.ELEVATOR_KP)
@@ -71,6 +71,18 @@ class Robot3543 extends Robot
             .setInverted(RobotInfo3543.ELEVATOR_INVERTED)
             .setHasUpperLimitSwitch(RobotInfo3543.ELEVATOR_HAS_UPPER_LIMIT_SWITCH)
             .setCalPower(RobotInfo3543.ELEVATOR_CAL_POWER);
+//    private static final MotorActuator.Parameters extenderArmParams3543 = new MotorActuator.Parameters()
+//            .setMinPos(RobotInfo3543.EXTENDER_ARM_MIN_POS)
+//            .setMaxPos(RobotInfo3543.EXTENDER_ARM_MAX_POS)
+//            .setScale(RobotInfo3543.EXTENDER_ARM_SCALE)
+//            .setOffset(RobotInfo3543.EXTENDER_ARM_OFFSET)
+//            .setKp(RobotInfo3543.EXTENDER_ARM_KP)
+//            .setKi(RobotInfo3543.EXTENDER_ARM_KI)
+//            .setKd(RobotInfo3543.EXTENDER_ARM_KD)
+//            .setTolerance(RobotInfo3543.EXTENDER_ARM_TOLERANCE)
+//            .setInverted(RobotInfo3543.EXTENDER_ARM_INVERTED)
+//            .setHasUpperLimitSwitch(RobotInfo3543.EXTENDER_ARM_HAS_UPPER_LIMIT_SWITCH)
+//            .setCalPower(RobotInfo3543.EXTENDER_ARM_CAL_POWER);
     private static final ServoEndEffector.Parameters extenderArmParams3543 = new ServoEndEffector.Parameters()
             .setMaxStepRate(RobotInfo3543.EXTENDER_ARM_MAX_STEPRATE)
             .setMinPos(RobotInfo3543.EXTENDER_ARM_MIN_POS)
@@ -115,6 +127,7 @@ class Robot3543 extends Robot
     // Team specific subsystems.
     //
     ServoEndEffector extenderArm = null;
+//    MotorActuator extenderArm = null;
     ServoEndEffector wrist = null;
     Grabber frontFoundationLatch = null;
 
@@ -161,10 +174,12 @@ class Robot3543 extends Robot
             {
                 if (preferences.hasElevator)
                 {
-                    elevator = new Elevator(elevatorParams3543);
+                    elevator = new MotorActuator("elevator", elevatorParams3543);
                     elevator.zeroCalibrate();
                 }
                 // ExtenderArm is 3543 only.
+//                extenderArm = new MotorActuator("extenderArm", extenderArmParams3543);
+//                extenderArm.zeroCalibrate();
                 extenderArm = new ServoEndEffector("externderArmServo", extenderArmParams3543);
                 extenderArm.retract();
                 // Wrist is 3543 only.

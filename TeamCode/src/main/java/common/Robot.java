@@ -279,7 +279,7 @@ public class Robot
     //
     // Other common subsystems.
     //
-    @Nonnull public Elevator elevator = null;
+    @Nonnull public MotorActuator elevator = null;
     @Nonnull public Grabber grabber = null;
     @Nonnull public Grabber backFoundationLatch = null;
 
