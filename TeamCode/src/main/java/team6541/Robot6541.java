@@ -25,7 +25,7 @@ package team6541;
 import common.MotorActuator;
 import common.Grabber;
 import common.Robot;
-import common.ServoEndEffector;
+import common.ServoActuator;
 import ftclib.FtcDcMotor;
 import trclib.TrcHomographyMapper;
 import trclib.TrcMecanumDriveBase;
@@ -72,7 +72,7 @@ class Robot6541 extends Robot
             .setHasUpperLimitSwitch(RobotInfo6541.ELEVATOR_HAS_UPPER_LIMIT_SWITCH)
             .setCalPower(RobotInfo6541.ELEVATOR_CAL_POWER)
             .setPosPresets(RobotInfo6541.ELEVATOR_HEIGHT_PRESETS);
-    private static final ServoEndEffector.Parameters elbowParams6541 = new ServoEndEffector.Parameters()
+    private static final ServoActuator.Parameters elbowParams6541 = new ServoActuator.Parameters()
             .setMaxStepRate(RobotInfo6541.ELBOW_MAX_STEPRATE)
             .setMinPos(RobotInfo6541.ELBOW_MIN_POS)
             .setMaxPos(RobotInfo6541.ELBOW_MAX_POS)
@@ -80,7 +80,7 @@ class Robot6541 extends Robot
             .setRetractTime(RobotInfo6541.ELBOW_RETRACT_TIME)
             .setExtendPos(RobotInfo6541.ELBOW_EXTEND_POS)
             .setExtendTime(RobotInfo6541.ELBOW_EXTEND_TIME);
-    private static final ServoEndEffector.Parameters grabberParams6541 = new ServoEndEffector.Parameters()
+    private static final ServoActuator.Parameters grabberParams6541 = new ServoActuator.Parameters()
             .setMaxStepRate(RobotInfo6541.GRABBER_MAX_STEPRATE)
             .setMinPos(RobotInfo6541.GRABBER_MIN_POS)
             .setMaxPos(RobotInfo6541.GRABBER_MAX_POS)
@@ -88,7 +88,7 @@ class Robot6541 extends Robot
             .setExtendTime(RobotInfo6541.GRABBER_RELEASE_TIME)
             .setRetractPos(RobotInfo6541.GRABBER_GRAB_POS)
             .setRetractTime(RobotInfo6541.GRABBER_GRAB_TIME);
-    private static final ServoEndEffector.Parameters backFoundationLatchParams6541 = new ServoEndEffector.Parameters()
+    private static final ServoActuator.Parameters backFoundationLatchParams6541 = new ServoActuator.Parameters()
             .setMaxStepRate(RobotInfo6541.BACK_FOUNDATION_LATCH_MAX_STEPRATE)
             .setMinPos(RobotInfo6541.BACK_FOUNDATION_LATCH_MIN_POS)
             .setMaxPos(RobotInfo6541.BACK_FOUNDATION_LATCH_MAX_POS)
@@ -99,7 +99,7 @@ class Robot6541 extends Robot
     //
     // Team specific subsystems.
     //
-    ServoEndEffector elbow = null;
+    ServoActuator elbow = null;
 
     Robot6541(TrcRobot.RunMode runMode)
     {
@@ -148,7 +148,7 @@ class Robot6541 extends Robot
                     elevator.zeroCalibrate();
                 }
                 // Elbow is 6541 only.
-                elbow = new ServoEndEffector("elbowServo", elbowParams6541);
+                elbow = new ServoActuator("elbowServo", elbowParams6541);
                 elbow.retract();
 
                 grabber = new Grabber("grabberServo", grabberParams6541);

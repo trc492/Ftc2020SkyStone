@@ -26,7 +26,7 @@ import ftclib.FtcServo;
 import trclib.TrcEnhancedServo;
 import trclib.TrcEvent;
 
-public class ServoEndEffector
+public class ServoActuator
 {
     public static class Parameters
     {
@@ -84,9 +84,9 @@ public class ServoEndEffector
 
     private Parameters params;
     protected FtcServo servo1, servo2;
-    protected TrcEnhancedServo endEffector;
+    protected TrcEnhancedServo enhancedServo;
 
-    public ServoEndEffector(String servo1Name, String servo2Name, Parameters params)
+    public ServoActuator(String servo1Name, String servo2Name, Parameters params)
     {
         if (servo1Name == null)
         {
@@ -96,67 +96,67 @@ public class ServoEndEffector
         this.params = params;
         servo1 = new FtcServo(servo1Name);
         servo2 = servo2Name == null? null: new FtcServo(servo2Name);
-        endEffector = new TrcEnhancedServo("endEffector." + servo1Name, servo1, servo2);
+        enhancedServo = new TrcEnhancedServo("endEffector." + servo1Name, servo1, servo2);
         if (params.maxStepRate != 0.0)
         {
-            endEffector.setStepMode(params.maxStepRate, params.minPos, params.maxPos);
+            enhancedServo.setStepMode(params.maxStepRate, params.minPos, params.maxPos);
         }
-    }   //ServoEndEffector
+    }   //ServoActuator
 
-    public ServoEndEffector(String servoName, Parameters params)
+    public ServoActuator(String servoName, Parameters params)
     {
         this(servoName, null, params);
-    }   //ServoEndEffector
+    }   //ServoActuator
 
     public void retract()
     {
-        endEffector.setPosition(params.retractPos);
+        enhancedServo.setPosition(params.retractPos);
     }   //retract
 
     public void retract(TrcEvent event)
     {
-        endEffector.setPosition(params.retractPos, params.retractTime, event);
+        enhancedServo.setPosition(params.retractPos, params.retractTime, event);
     }   //retract
 
 
     public void retract(double time, TrcEvent event)
     {
-        endEffector.setPosition(params.retractPos, time, event);
+        enhancedServo.setPosition(params.retractPos, time, event);
     }   //retract
 
     public void extend()
     {
-        endEffector.setPosition(params.extendPos);
+        enhancedServo.setPosition(params.extendPos);
     }   //extend
 
     public void extend(TrcEvent event)
     {
-        endEffector.setPosition(params.extendPos, params.extendTime, event);
+        enhancedServo.setPosition(params.extendPos, params.extendTime, event);
     }   //extend
 
     public void extend(double time, TrcEvent event)
     {
-        endEffector.setPosition(params.extendPos, time, event);
+        enhancedServo.setPosition(params.extendPos, time, event);
     }   //extend
 
     public void setPower(double power)
     {
-        endEffector.setPower(power);
+        enhancedServo.setPower(power);
     }   //setPower
 
     public double getPosition()
     {
-        return endEffector.getPosition();
+        return enhancedServo.getPosition();
     }   //getPosition
 
     public void setPosition(double position)
     {
-        endEffector.setPosition(position);
+        enhancedServo.setPosition(position);
     }   //setPosition
 
     public void setPosition(double position, double time, TrcEvent event)
     {
-        endEffector.setPosition(position, time, event);
+        enhancedServo.setPosition(position, time, event);
     }   //setPosition
 
-}   //class ServoEndEffector
+}   //class ServoActuator

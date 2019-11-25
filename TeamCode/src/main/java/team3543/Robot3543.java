@@ -25,7 +25,7 @@ package team3543;
 import common.MotorActuator;
 import common.Grabber;
 import common.Robot;
-import common.ServoEndEffector;
+import common.ServoActuator;
 import ftclib.FtcDcMotor;
 import trclib.TrcHomographyMapper;
 import trclib.TrcMecanumDriveBase;
@@ -83,7 +83,7 @@ class Robot3543 extends Robot
 //            .setInverted(RobotInfo3543.EXTENDER_ARM_INVERTED)
 //            .setHasUpperLimitSwitch(RobotInfo3543.EXTENDER_ARM_HAS_UPPER_LIMIT_SWITCH)
 //            .setCalPower(RobotInfo3543.EXTENDER_ARM_CAL_POWER);
-    private static final ServoEndEffector.Parameters extenderArmParams3543 = new ServoEndEffector.Parameters()
+    private static final ServoActuator.Parameters extenderArmParams3543 = new ServoActuator.Parameters()
             .setMaxStepRate(RobotInfo3543.EXTENDER_ARM_MAX_STEPRATE)
             .setMinPos(RobotInfo3543.EXTENDER_ARM_MIN_POS)
             .setMaxPos(RobotInfo3543.EXTENDER_ARM_MAX_POS)
@@ -91,7 +91,7 @@ class Robot3543 extends Robot
             .setRetractTime(RobotInfo3543.EXTENDER_ARM_MOVE_TIME)
             .setExtendPos(RobotInfo3543.EXTENDER_ARM_EXTEND_POS)
             .setExtendTime(RobotInfo3543.EXTENDER_ARM_MOVE_TIME);
-    private static final ServoEndEffector.Parameters wristParams3543 = new ServoEndEffector.Parameters()
+    private static final ServoActuator.Parameters wristParams3543 = new ServoActuator.Parameters()
             .setMaxStepRate(RobotInfo3543.WRIST_MAX_STEPRATE)
             .setMinPos(RobotInfo3543.WRIST_MIN_POS)
             .setMaxPos(RobotInfo3543.WRIST_MAX_POS)
@@ -99,7 +99,7 @@ class Robot3543 extends Robot
             .setRetractTime(RobotInfo3543.WRIST_ROTATE_TIME)
             .setExtendPos(RobotInfo3543.WRIST_EXTEND_POS)
             .setExtendTime(RobotInfo3543.WRIST_ROTATE_TIME);
-    private static final ServoEndEffector.Parameters grabberParams3543 = new ServoEndEffector.Parameters()
+    private static final ServoActuator.Parameters grabberParams3543 = new ServoActuator.Parameters()
             .setMaxStepRate(RobotInfo3543.GRABBER_MAX_STEPRATE)
             .setMinPos(RobotInfo3543.GRABBER_MIN_POS)
             .setMaxPos(RobotInfo3543.GRABBER_MAX_POS)
@@ -107,7 +107,7 @@ class Robot3543 extends Robot
             .setRetractTime(RobotInfo3543.GRABBER_GRAB_TIME)
             .setExtendPos(RobotInfo3543.GRABBER_OPEN_POS)
             .setExtendTime(RobotInfo3543.GRABBER_RELEASE_TIME);
-    private static final ServoEndEffector.Parameters backFoundationLatchParams3543 = new ServoEndEffector.Parameters()
+    private static final ServoActuator.Parameters backFoundationLatchParams3543 = new ServoActuator.Parameters()
             .setMaxStepRate(RobotInfo3543.BACK_FOUNDATION_LATCH_MAX_STEPRATE)
             .setMinPos(RobotInfo3543.BACK_FOUNDATION_LATCH_MIN_POS)
             .setMaxPos(RobotInfo3543.BACK_FOUNDATION_LATCH_MAX_POS)
@@ -115,7 +115,7 @@ class Robot3543 extends Robot
             .setRetractTime(RobotInfo3543.BACK_FOUNDATION_LATCH_GRAB_TIME)
             .setExtendPos(RobotInfo3543.BACK_FOUNDATION_LATCH_RELEASE_POS)
             .setExtendTime(RobotInfo3543.BACK_FOUNDATION_LATCH_RELEASE_TIME);
-    private static final ServoEndEffector.Parameters frontFoundationLatchParams3543 = new ServoEndEffector.Parameters()
+    private static final ServoActuator.Parameters frontFoundationLatchParams3543 = new ServoActuator.Parameters()
             .setMaxStepRate(RobotInfo3543.FRONT_FOUNDATION_LATCH_MAX_STEPRATE)
             .setMinPos(RobotInfo3543.FRONT_FOUNDATION_LATCH_MIN_POS)
             .setMaxPos(RobotInfo3543.FRONT_FOUNDATION_LATCH_MAX_POS)
@@ -126,9 +126,9 @@ class Robot3543 extends Robot
     //
     // Team specific subsystems.
     //
-    ServoEndEffector extenderArm = null;
+    ServoActuator extenderArm = null;
 //    MotorActuator extenderArm = null;
-    ServoEndEffector wrist = null;
+    ServoActuator wrist = null;
     Grabber frontFoundationLatch = null;
 
     Robot3543(TrcRobot.RunMode runMode)
@@ -180,10 +180,10 @@ class Robot3543 extends Robot
                 // ExtenderArm is 3543 only.
 //                extenderArm = new MotorActuator("extenderArm", extenderArmParams3543);
 //                extenderArm.zeroCalibrate();
-                extenderArm = new ServoEndEffector("externderArmServo", extenderArmParams3543);
+                extenderArm = new ServoActuator("externderArmServo", extenderArmParams3543);
                 extenderArm.retract();
                 // Wrist is 3543 only.
-                wrist = new ServoEndEffector("wristServo", wristParams3543);
+                wrist = new ServoActuator("wristServo", wristParams3543);
                 wrist.retract();
 
                 grabber = new Grabber("grabberServo", grabberParams3543);
