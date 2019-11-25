@@ -42,7 +42,6 @@ class CmdAutoBuildingZone6541 implements TrcRobot.RobotCommand
     private enum State
     {
         BEGIN,
-        READY_GRABBER_SUBSYSTEM,
         DO_DELAY,
         DRIVE_DIRECTLY_UNDER_BRIDGE_IF_NOT_MOVING_FOUNDATION,
         CRAB_TO_CENTER_IF_NOT_MOVING_FOUNDATION,
@@ -130,10 +129,6 @@ class CmdAutoBuildingZone6541 implements TrcRobot.RobotCommand
                     robot.encoderXPidCtrl.setNoOscillation(true);
                     robot.encoderYPidCtrl.setNoOscillation(true);
                     robot.gyroPidCtrl.setNoOscillation(true);
-                    sm.setState(State.READY_GRABBER_SUBSYSTEM);
-                    break;
-
-                case READY_GRABBER_SUBSYSTEM:
                     robot.grabber.setPosition(1.0);
                     robot.elbow.extend(event);
                     sm.waitForSingleEvent(event, State.DO_DELAY);

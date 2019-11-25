@@ -24,6 +24,8 @@ package team6541;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import java.util.Locale;
+
 import common.CommonTeleOp;
 import ftclib.FtcGamepad;
 import trclib.TrcGameController;
@@ -38,7 +40,7 @@ public class FtcTeleOp6541 extends CommonTeleOp
     private boolean hasDeployedElbow = false;
 
     // elbow servo tuning variables.
-    private boolean DO_ELBOW_TUNING = false;
+    private static final boolean DO_ELBOW_TUNING = false;
     private double debugServoPos = 0.5;
 
     //
@@ -78,6 +80,7 @@ public class FtcTeleOp6541 extends CommonTeleOp
     //
     // Implements TrcGameController.ButtonHandler interface.
     //
+
     @Override
     public void buttonEvent(TrcGameController gamepad, int button, boolean pressed)
     {
@@ -91,27 +94,33 @@ public class FtcTeleOp6541 extends CommonTeleOp
             switch (button)
             {
                 case FtcGamepad.GAMEPAD_A:
-                    if (pressed && DO_ELBOW_TUNING)
+                    if (DO_ELBOW_TUNING)
                     {
-                        if (debugServoPos < 1.0)
+                        if (pressed)
                         {
-                            debugServoPos += 0.05;
+                            if (debugServoPos < 1.0)
+                            {
+                                debugServoPos += 0.05;
+                            }
+                            robot6541.speak(String.format(Locale.US, "Elbow position %.2f", debugServoPos));
+                            robot6541.elbow.setPosition(debugServoPos);
                         }
-                        robot6541.speak(String.format("Elbow position %.2f", debugServoPos));
-                        robot6541.elbow.setPosition(debugServoPos);
                         processed = true;
                     }
                     break;
 
                 case FtcGamepad.GAMEPAD_B:
-                    if (pressed && DO_ELBOW_TUNING)
+                    if (DO_ELBOW_TUNING)
                     {
-                        if (debugServoPos > 0.0)
+                        if (pressed)
                         {
-                            debugServoPos -= 0.05;
+                            if (debugServoPos > 0.0)
+                            {
+                                debugServoPos -= 0.05;
+                            }
+                            robot6541.speak(String.format(Locale.US, "Elbow position %.2f", debugServoPos));
+                            robot6541.elbow.setPosition(debugServoPos);
                         }
-                        robot6541.speak(String.format("Elbow position %.2f", debugServoPos));
-                        robot6541.elbow.setPosition(debugServoPos);
                         processed = true;
                     }
                     break;
