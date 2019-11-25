@@ -145,8 +145,8 @@ class Robot6541 extends Robot
                 grabber = new Grabber("grabberServo", grabberParams6541);
                 grabber.release();
 
-                foundationLatch = new Grabber("foundationLatchServo", foundationLatchParams6541);
-                foundationLatch.release();
+                backFoundationLatch = new Grabber("backFoundationLatchServo", foundationLatchParams6541);
+                backFoundationLatch.release();
             }
         }
         //

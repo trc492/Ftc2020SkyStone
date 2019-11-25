@@ -96,6 +96,7 @@ class Robot3543 extends Robot
     //
     ExtenderArm3543 extenderArm = null;
     Wrist3543 wrist = null;
+//    FrontFoundationLatch frontFoundationLatch = null;
 
     Robot3543(TrcRobot.RunMode runMode)
     {
@@ -153,8 +154,8 @@ class Robot3543 extends Robot
                 grabber = new Grabber("grabberServo", grabberParams3543);
                 grabber.release();
 
-                foundationLatch = new Grabber("foundationLatchServo", foundationLatchParams3543);
-                foundationLatch.release();
+                backFoundationLatch = new Grabber("backFoundationLatchServo", foundationLatchParams3543);
+                backFoundationLatch.release();
             }
         }
         //

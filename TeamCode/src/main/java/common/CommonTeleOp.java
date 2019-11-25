@@ -142,11 +142,11 @@ public abstract class CommonTeleOp extends FtcOpMode
                 3, "ElevatorPower=%.1f, ElevatorPos=%.1f, ElevatorLimitSwitch=[%b, %b]",
                 elevatorPower, elevatorPos, elevatorDownSwitch, elevatorUpSwitch);
 
-        if (robot.grabber != null && robot.foundationLatch != null)
+        if (robot.grabber != null && robot.backFoundationLatch != null)
         {
             dashboard.displayPrintf(
                     4, "GrabberPos=%.1f, FoundationLatchPos=%.1f",
-                    robot.grabber.getPosition(), robot.foundationLatch.getPosition());
+                    robot.grabber.getPosition(), robot.backFoundationLatch.getPosition());
         }
     }   //runPeriodic
 
@@ -196,16 +196,16 @@ public abstract class CommonTeleOp extends FtcOpMode
                     break;
 
                 case FtcGamepad.GAMEPAD_X:
-                    if (robot.foundationLatch != null && pressed)
+                    if (robot.backFoundationLatch != null && pressed)
                     {
-                        robot.foundationLatch.grab();
+                        robot.backFoundationLatch.grab();
                     }
                     break;
 
                 case FtcGamepad.GAMEPAD_Y:
-                    if (robot.foundationLatch != null && pressed)
+                    if (robot.backFoundationLatch != null && pressed)
                     {
-                        robot.foundationLatch.release();
+                        robot.backFoundationLatch.release();
                     }
                     break;
 

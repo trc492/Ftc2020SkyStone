@@ -162,9 +162,9 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
             {
                 case BEGIN:
                     double startX = (autoChoices.strategy == CommonAuto.AutoStrategy.LOADING_ZONE_WALL?
-                            RobotInfo.ROBOT_START_X_WALL:
-                            autoChoices.strategy == CommonAuto.AutoStrategy.LOADING_ZONE_MID?
-                                    RobotInfo.ROBOT_START_X_MID: RobotInfo.ROBOT_START_X_FAR) * allianceDirection;
+                                        RobotInfo.ROBOT_START_X_WALL:
+                                     autoChoices.strategy == CommonAuto.AutoStrategy.LOADING_ZONE_MID?
+                                        RobotInfo.ROBOT_START_X_MID: RobotInfo.ROBOT_START_X_FAR) * allianceDirection;
                     double startY = RobotInfo.ROBOT_START_Y;
                     robot.pidDrive.setAbsolutePose(new TrcPose2D(startX, startY));
 
@@ -327,7 +327,7 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                     break;
 
                 case HOOK_FOUNDATION:
-                    robot.foundationLatch.grab(event);
+                    robot.backFoundationLatch.grab(event);
                     sm.waitForSingleEvent(event, State.PULL_FOUNDATION_TO_WALL);
                     break;
 
@@ -351,7 +351,7 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                     pose.y = RobotInfo.ROBOT_START_Y;
                     robot.pidDrive.setAbsoluteTargetPose(pose);
                     // Release the foundation and continue.
-                    robot.foundationLatch.release(event);
+                    robot.backFoundationLatch.release(event);
                     sm.waitForSingleEvent(event, State.MOVE_CLOSER_TO_BRIDGE);
                     break;
 

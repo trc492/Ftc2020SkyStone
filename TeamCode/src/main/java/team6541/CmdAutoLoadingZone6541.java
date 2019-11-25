@@ -280,7 +280,7 @@ class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
                     break;
 
                 case HOOK_FOUNDATION:
-                    robot.foundationLatch.grab(event);
+                    robot.backFoundationLatch.grab(event);
                     sm.waitForSingleEvent(event, State.PULL_FOUNDATION_TO_WALL);
                     break;
 
@@ -290,7 +290,7 @@ class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
                     break;
 
                 case UNHOOK_FOUNDATION:
-                    robot.foundationLatch.release(event);
+                    robot.backFoundationLatch.release(event);
                     sm.waitForSingleEvent(event, State.PARK_UNDER_BRIDGE);
                     break;
 

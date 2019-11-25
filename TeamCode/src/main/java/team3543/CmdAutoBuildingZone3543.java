@@ -155,7 +155,7 @@ class CmdAutoBuildingZone3543 implements TrcRobot.RobotCommand
                     //
                     // The hook latches onto the foundation.
                     //
-                    robot.foundationLatch.grab(event);
+                    robot.backFoundationLatch.grab(event);
                     sm.waitForSingleEvent(event, State.MOVE_FOUNDATION_BACK);
                     break;
 
@@ -167,7 +167,7 @@ class CmdAutoBuildingZone3543 implements TrcRobot.RobotCommand
                 case LET_GO_FOUNDATION:
                     nextState = autoChoices.parkUnderBridge == CommonAuto.ParkPosition.PARK_CLOSE_TO_WALL?
                                         State.SCOOT_TO_LINE: State.SCOOT_CLOSER_TO_LINE;
-                    robot.foundationLatch.release(event);
+                    robot.backFoundationLatch.release(event);
                     sm.waitForSingleEvent(event, nextState);
                     break;
 

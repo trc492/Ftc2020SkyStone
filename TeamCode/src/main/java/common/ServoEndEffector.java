@@ -77,7 +77,7 @@ public class ServoEndEffector
     public void retract(TrcEvent event)
     {
         endEffector.setPosition(params.retractPos, params.retractTime, event);
-    }   //grab
+    }   //retract
 
 
     public void retract(double time, TrcEvent event)
@@ -93,7 +93,7 @@ public class ServoEndEffector
     public void extend(TrcEvent event)
     {
         endEffector.setPosition(params.extendPos, params.extendTime, event);
-    }   //grab
+    }   //extend
 
     public void extend(double time, TrcEvent event)
     {

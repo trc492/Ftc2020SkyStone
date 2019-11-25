@@ -281,7 +281,7 @@ public class Robot
     //
     @Nonnull public Elevator elevator = null;
     @Nonnull public Grabber grabber = null;
-    @Nonnull public Grabber foundationLatch = null;
+    @Nonnull public Grabber backFoundationLatch = null;
 
     public Robot(TrcRobot.RunMode runMode, String robotName, Preferences preferences, PhoneParameters phoneParams)
     {

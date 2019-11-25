@@ -203,7 +203,7 @@ class CmdAutoBuildingZone6541 implements TrcRobot.RobotCommand
                 case HOOK_FOUNDATION:
                     // hook the foundation.
                     // after that, rotate a magnitude of 60 degrees to face the corner.
-                    robot.foundationLatch.grab(event);
+                    robot.backFoundationLatch.grab(event);
                     sm.waitForSingleEvent(event, State.ROTATE_FOUNDATION_TO_CORNER);
                     break;
 
@@ -237,7 +237,7 @@ class CmdAutoBuildingZone6541 implements TrcRobot.RobotCommand
                     nextState = autoChoices.parkUnderBridge != CommonAuto.ParkPosition.NO_PARK ?
                             State.BACK_OFF_FROM_FOUNDATION :
                             State.DONE;
-                    robot.foundationLatch.release(event);
+                    robot.backFoundationLatch.release(event);
                     sm.waitForSingleEvent(event, nextState);
                     break;
 

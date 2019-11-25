@@ -162,7 +162,7 @@ class RobotInfo3543
     static final double WRIST_MIN_POS                   = 0.2;
     static final double WRIST_MAX_POS                   = 0.8;
     static final double WRIST_RETRACT_POS               = 0.8;
-    static final double WRIST_EXTEND_POS                = 0.4;
+    static final double WRIST_EXTEND_POS                = 0.45;
     static final double WRIST_ROTATE_TIME               = 0.3;
     static final boolean WRIST_INVERTED                 = true;
     //
@@ -174,7 +174,7 @@ class RobotInfo3543
     static final double GRABBER_GRAB_TIME               = 3.0;
     static final double GRABBER_RELEASE_TIME            = 3.0;
     //
-    // FoundationLatch subsystem.
+    // BackFoundationLatch subsystem.
     //
     static final double FOUNDATION_LATCH_RELEASE_POS    = 0.0;
     static final double FOUNDATION_LATCH_RELEASE_TIME   = 0.5;
