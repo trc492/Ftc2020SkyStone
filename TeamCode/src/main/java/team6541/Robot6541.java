@@ -73,20 +73,29 @@ class Robot6541 extends Robot
             .setCalPower(RobotInfo6541.ELEVATOR_CAL_POWER)
             .setHeightPresets(RobotInfo6541.ELEVATOR_HEIGHT_PRESETS);
     private static final ServoEndEffector.Parameters elbowParams6541 = new ServoEndEffector.Parameters()
+            .setMaxStepRate(RobotInfo6541.ELBOW_MAX_STEPRATE)
+            .setMinPos(RobotInfo6541.ELBOW_MIN_POS)
+            .setMaxPos(RobotInfo6541.ELBOW_MAX_POS)
             .setRetractPos(RobotInfo6541.ELBOW_RETRACT_POS)
             .setRetractTime(RobotInfo6541.ELBOW_RETRACT_TIME)
             .setExtendPos(RobotInfo6541.ELBOW_EXTEND_POS)
             .setExtendTime(RobotInfo6541.ELBOW_EXTEND_TIME);
     private static final ServoEndEffector.Parameters grabberParams6541 = new ServoEndEffector.Parameters()
+            .setMaxStepRate(RobotInfo6541.GRABBER_MAX_STEPRATE)
+            .setMinPos(RobotInfo6541.GRABBER_MIN_POS)
+            .setMaxPos(RobotInfo6541.GRABBER_MAX_POS)
             .setExtendPos(RobotInfo6541.GRABBER_RELEASE_POS)
             .setExtendTime(RobotInfo6541.GRABBER_RELEASE_TIME)
             .setRetractPos(RobotInfo6541.GRABBER_GRAB_POS)
             .setRetractTime(RobotInfo6541.GRABBER_GRAB_TIME);
-    private static final ServoEndEffector.Parameters foundationLatchParams6541 = new ServoEndEffector.Parameters()
-            .setRetractPos(RobotInfo6541.FOUNDATION_LATCH_RELEASE_POS)
-            .setRetractTime(RobotInfo6541.FOUNDATION_LATCH_RELEASE_TIME)
-            .setExtendPos(RobotInfo6541.FOUNDATION_LATCH_GRAB_POS)
-            .setExtendTime(RobotInfo6541.FOUNDATION_LATCH_GRAB_TIME);
+    private static final ServoEndEffector.Parameters backFoundationLatchParams6541 = new ServoEndEffector.Parameters()
+            .setMaxStepRate(RobotInfo6541.BACK_FOUNDATION_LATCH_MAX_STEPRATE)
+            .setMinPos(RobotInfo6541.BACK_FOUNDATION_LATCH_MIN_POS)
+            .setMaxPos(RobotInfo6541.BACK_FOUNDATION_LATCH_MAX_POS)
+            .setRetractPos(RobotInfo6541.BACK_FOUNDATION_LATCH_RELEASE_POS)
+            .setRetractTime(RobotInfo6541.BACK_FOUNDATION_LATCH_RELEASE_TIME)
+            .setExtendPos(RobotInfo6541.BACK_FOUNDATION_LATCH_GRAB_POS)
+            .setExtendTime(RobotInfo6541.BACK_FOUNDATION_LATCH_GRAB_TIME);
     //
     // Team specific subsystems.
     //
@@ -145,7 +154,7 @@ class Robot6541 extends Robot
                 grabber = new Grabber("grabberServo", grabberParams6541);
                 grabber.grab();
 
-                backFoundationLatch = new Grabber("backFoundationLatchServo", foundationLatchParams6541);
+                backFoundationLatch = new Grabber("backFoundationLatchServo", backFoundationLatchParams6541);
                 backFoundationLatch.release();
             }
         }

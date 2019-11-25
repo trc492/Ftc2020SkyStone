@@ -176,7 +176,7 @@ class Robot3543 extends Robot
 
                 backFoundationLatch = new Grabber("backFoundationLatchServo", backFoundationLatchParams3543);
                 backFoundationLatch.release();
-                // FrontFoundationLatch is 3543-only
+                // FrontFoundationLatch is 3543 only
                 frontFoundationLatch = new Grabber(
                         "leftFoundationLatchServo", "rightFoundationLatchServo",
                         frontFoundationLatchParams3543);
