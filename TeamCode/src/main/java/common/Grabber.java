@@ -22,13 +22,14 @@
 
 package common;
 
+import ftclib.FtcServoActuator;
 import trclib.TrcEvent;
 
 /**
- * This class really serves very little purpose. It is basically a ServoActuator renaming methods retract to grab
+ * This class really serves very little purpose. It is basically a FtcServoActuator renaming methods retract to grab
  * and extend to release. That's it, nothing more!
  */
-public class Grabber extends ServoActuator
+public class Grabber extends FtcServoActuator
 {
     public Grabber(String servo1Name, String servo2Name, Parameters params)
     {

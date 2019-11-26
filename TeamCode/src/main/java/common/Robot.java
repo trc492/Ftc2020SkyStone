@@ -37,6 +37,7 @@ import javax.annotation.Nonnull;
 import ftclib.FtcAndroidTone;
 import ftclib.FtcBNO055Imu;
 import ftclib.FtcDcMotor;
+import ftclib.FtcMotorActuator;
 import ftclib.FtcOpMode;
 import ftclib.FtcRobotBattery;
 import ftclib.FtcVuforia;
@@ -269,7 +270,7 @@ public class Robot
     //
     // Other common subsystems.
     //
-    @Nonnull public MotorActuator elevator = null;
+    @Nonnull public FtcMotorActuator elevator = null;
     @Nonnull public Grabber grabber = null;
     @Nonnull public Grabber backFoundationLatch = null;
 

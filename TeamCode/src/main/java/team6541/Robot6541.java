@@ -22,11 +22,11 @@
 
 package team6541;
 
-import common.MotorActuator;
 import common.Grabber;
 import common.Robot;
-import common.ServoActuator;
+import ftclib.FtcServoActuator;
 import ftclib.FtcDcMotor;
+import ftclib.FtcMotorActuator;
 import trclib.TrcHomographyMapper;
 import trclib.TrcMecanumDriveBase;
 import trclib.TrcPidController;
@@ -59,7 +59,7 @@ class Robot6541 extends Robot
             .setPhoneOffsets(
                     RobotInfo6541.PHONE_FRONT_OFFSET, RobotInfo6541.PHONE_LEFT_OFFSET,
                     RobotInfo6541.PHONE_HEIGHT_OFFSET);
-    private static final MotorActuator.Parameters elevatorParams6541 = new MotorActuator.Parameters()
+    private static final FtcMotorActuator.Parameters elevatorParams6541 = new FtcMotorActuator.Parameters()
             .setPosRange(RobotInfo6541.ELEVATOR_MIN_HEIGHT, RobotInfo6541.ELEVATOR_MAX_HEIGHT)
             .setScaleOffset(RobotInfo6541.ELEVATOR_SCALE, RobotInfo6541.ELEVATOR_OFFSET)
             .setPidParams(
@@ -69,16 +69,16 @@ class Robot6541 extends Robot
                     RobotInfo6541.ELEVATOR_INVERTED, RobotInfo6541.ELEVATOR_HAS_UPPER_LIMIT_SWITCH,
                     RobotInfo6541.ELEVATOR_CAL_POWER)
             .setPosPresets(RobotInfo6541.ELEVATOR_HEIGHT_PRESETS);
-    private static final ServoActuator.Parameters elbowParams6541 = new ServoActuator.Parameters()
+    private static final FtcServoActuator.Parameters elbowParams6541 = new FtcServoActuator.Parameters()
             .setStepParams(RobotInfo6541.ELBOW_MAX_STEPRATE, RobotInfo6541.ELBOW_MIN_POS, RobotInfo6541.ELBOW_MAX_POS)
             .setRetractParams(RobotInfo6541.ELBOW_RETRACT_POS, RobotInfo6541.ELBOW_RETRACT_TIME)
             .setExtendParams(RobotInfo6541.ELBOW_EXTEND_POS, RobotInfo6541.ELBOW_EXTEND_TIME);
-    private static final ServoActuator.Parameters grabberParams6541 = new ServoActuator.Parameters()
+    private static final FtcServoActuator.Parameters grabberParams6541 = new FtcServoActuator.Parameters()
             .setStepParams(
                     RobotInfo6541.GRABBER_MAX_STEPRATE, RobotInfo6541.GRABBER_MIN_POS, RobotInfo6541.GRABBER_MAX_POS)
             .setExtendParams(RobotInfo6541.GRABBER_RELEASE_POS, RobotInfo6541.GRABBER_RELEASE_TIME)
             .setRetractParams(RobotInfo6541.GRABBER_GRAB_POS, RobotInfo6541.GRABBER_GRAB_TIME);
-    private static final ServoActuator.Parameters backFoundationLatchParams6541 = new ServoActuator.Parameters()
+    private static final FtcServoActuator.Parameters backFoundationLatchParams6541 = new FtcServoActuator.Parameters()
             .setStepParams(
                     RobotInfo6541.BACK_FOUNDATION_LATCH_MAX_STEPRATE, RobotInfo6541.BACK_FOUNDATION_LATCH_MIN_POS,
                     RobotInfo6541.BACK_FOUNDATION_LATCH_MAX_POS)
@@ -89,7 +89,7 @@ class Robot6541 extends Robot
     //
     // Team specific subsystems.
     //
-    ServoActuator elbow = null;
+    FtcServoActuator elbow = null;
 
     Robot6541(TrcRobot.RunMode runMode)
     {
@@ -134,11 +134,11 @@ class Robot6541 extends Robot
             {
                 if (preferences.hasElevator)
                 {
-                    elevator = new MotorActuator("elevator", elevatorParams6541);
+                    elevator = new FtcMotorActuator("elevator", elevatorParams6541);
                     elevator.zeroCalibrate();
                 }
                 // Elbow is 6541 only.
-                elbow = new ServoActuator("elbowServo", elbowParams6541);
+                elbow = new FtcServoActuator("elbowServo", elbowParams6541);
                 elbow.retract();
 
                 grabber = new Grabber("grabberServo", grabberParams6541);
