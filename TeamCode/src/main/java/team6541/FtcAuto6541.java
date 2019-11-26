@@ -80,7 +80,7 @@ public class FtcAuto6541 extends CommonAuto
                     autoCommand = new CmdPidDrive(
                             robot6541, robot6541.pidDrive, autoChoices.delay,
                             autoChoices.xTarget*12.0, autoChoices.yTarget*12.0, autoChoices.turnTarget,
-                            autoChoices.drivePower, false);
+                            autoChoices.drivePower, false, false);
                 }
                 break;
 

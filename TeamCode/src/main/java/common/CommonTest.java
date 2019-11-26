@@ -136,7 +136,7 @@ public class CommonTest
                 {
                     testCommand = new CmdPidDrive(
                             robot, robot.pidDrive, 0.0, xTarget*12.0, yTarget*12.0, turnTarget,
-                            drivePower, false);
+                            drivePower, false, false);
                 }
                 break;
 
@@ -145,7 +145,7 @@ public class CommonTest
                 {
                     testCommand = new CmdPidDrive(
                             robot, robot.pidDrive, 0.0, xTarget*12.0, 0.0, 0.0, drivePower,
-                            true);
+                            false, true);
                 }
                 break;
 
@@ -154,7 +154,7 @@ public class CommonTest
                 {
                     testCommand = new CmdPidDrive(
                             robot, robot.pidDrive, 0.0, 0.0, yTarget*12.0, 0.0, drivePower,
-                            true);
+                            false, true);
                 }
                 break;
 
@@ -163,7 +163,7 @@ public class CommonTest
                 {
                     testCommand = new CmdPidDrive(
                             robot, robot.pidDrive, 0.0, 0.0, 0.0, turnTarget, drivePower,
-                            true);
+                            false, true);
                 }
                 break;
 

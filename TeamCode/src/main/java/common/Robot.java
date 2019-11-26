@@ -396,7 +396,7 @@ public class Robot
         }
     }   //stopMode
 
-    public void traceStateInfo(double elapsedTime, String stateName, double xDistance, double yDistance, double heading)
+    public void traceStateInfo(double elapsedTime, String stateName, double xTarget, double yTarget, double heading)
     {
         if (driveBase != null)
         {
@@ -406,7 +406,7 @@ public class Robot
                         robotName,
                         "[%5.3f] >>>>> %s: xPos=%6.2f/%6.2f,yPos=%6.2f/%6.2f,heading=%6.1f/%6.1f,volt=%5.2fV(%5.2fV)",
                         elapsedTime, stateName,
-                        driveBase.getXPosition(), xDistance, driveBase.getYPosition(), yDistance, driveBase.getHeading(),
+                        driveBase.getXPosition(), xTarget, driveBase.getYPosition(), yTarget, driveBase.getHeading(),
                         heading, battery.getVoltage(), battery.getLowestVoltage());
             }
             else
@@ -415,7 +415,7 @@ public class Robot
                         robotName,
                         "[%5.3f] >>>>> %s: xPos=%6.2f/%6.2f,yPos=%6.2f/%6.2f,heading=%6.1f/%6.1f",
                         elapsedTime, stateName,
-                        driveBase.getXPosition(), xDistance, driveBase.getYPosition(), yDistance, driveBase.getHeading(),
+                        driveBase.getXPosition(), xTarget, driveBase.getYPosition(), yTarget, driveBase.getHeading(),
                         heading);
             }
         }
@@ -428,6 +428,11 @@ public class Robot
             textToSpeech.speak(sentence, TextToSpeech.QUEUE_FLUSH, null);
         }
     }   //speak
+
+    public void setFieldOrigin(TrcPose2D pose)
+    {
+        fieldOrigin = pose;
+    }   //setFieldOrigin
 
     protected void initVuforia(PhoneParameters phoneParams, double robotLength, double robotWidth)
     {
@@ -555,11 +560,6 @@ public class Robot
 
         return pose;
     }   //getSkyStonePose
-
-    public void setFieldOrigin(TrcPose2D pose)
-    {
-        fieldOrigin = pose;
-    }   //setFieldOrigin
 
     public TrcPose2D getRobotPose(String targetName, boolean exclude)
     {
