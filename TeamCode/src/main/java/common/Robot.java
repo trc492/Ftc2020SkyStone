@@ -347,16 +347,15 @@ public class Robot
     public HalDashboard dashboard;
     public TrcDbgTrace globalTracer;
     public FtcAndroidTone androidTone;
-    public TextToSpeech textToSpeech = null;
-    public FtcRobotBattery battery = null;
-    public LEDIndicator ledIndicator = null;
-
     public TrcSong[] songCollection = null;
     public TrcSongPlayer songPlayer = null;
     public TrcSong lesMiserables = new TrcSong("LesMiserables", lesMiserablesSections, lesMiserablesSequence);
     public TrcSong starWars = new TrcSong("StarWars", starWarsSections, starWarsSequence);
     public boolean lesMiserablesPlaying = false;
     public boolean starWarsPlaying = false;
+    public TextToSpeech textToSpeech = null;
+    public FtcRobotBattery battery = null;
+    public LEDIndicator ledIndicator = null;
     //
     // Sensors.
     //
@@ -413,6 +412,29 @@ public class Robot
                 ((FtcRobotControllerActivity)opMode.hardwareMap.appContext).findViewById(R.id.textOpMode));
         androidTone = new FtcAndroidTone("AndroidTone");
 
+        if (preferences.playSongs)
+        {
+            androidTone.setSoundEnvelope(
+                    songParams.attack, songParams.decay, songParams.sustain, songParams.release);
+            androidTone.setSoundEnvelopeEnabled(true);
+            songPlayer = new TrcSongPlayer("SongPlayer", androidTone);
+
+            if (preferences.songsInResources)
+            {
+                FtcRobotControllerActivity activity = (FtcRobotControllerActivity) opMode.hardwareMap.appContext;
+                InputStream songStream = activity.getResources().openRawResource(team3543.R.raw.songcollection);
+                try
+                {
+                    FtcSongXml songXml = new FtcSongXml("Songs", songStream);
+                    songCollection = songXml.getCollection();
+                }
+                catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
+            }
+        }
+
         if (preferences.useSpeech)
         {
             textToSpeech = FtcOpMode.getInstance().getTextToSpeech();
@@ -445,30 +467,6 @@ public class Robot
             {
                 ledIndicator = new LEDIndicator();
             }
-
-            if (preferences.playSongs)
-            {
-                androidTone.setSoundEnvelope(
-                        songParams.attack, songParams.decay, songParams.sustain, songParams.release);
-                androidTone.setSoundEnvelopeEnabled(true);
-                songPlayer = new TrcSongPlayer("SongPlayer", androidTone);
-
-                if (preferences.songsInResources)
-                {
-                    FtcRobotControllerActivity activity = (FtcRobotControllerActivity) opMode.hardwareMap.appContext;
-                    InputStream songStream = activity.getResources().openRawResource(team3543.R.raw.songcollection);
-                    try
-                    {
-                        FtcSongXml songXml = new FtcSongXml("Songs", songStream);
-                        songCollection = songXml.getCollection();
-                    }
-                    catch (Exception e)
-                    {
-                        e.printStackTrace();
-                    }
-                }
-            }
-
             //
             // Initialize sensors.
             //
@@ -511,6 +509,9 @@ public class Robot
 
         if (songPlayer != null && runMode == TrcRobot.RunMode.AUTO_MODE)
         {
+            //
+            // Start playing song at startMode in autonomous. Playing song in teleop is controlled by gamepad buttons.
+            //
             startSong(1, true);
         }
     }   //startMode
@@ -533,9 +534,6 @@ public class Robot
             tensorFlowVision.shutdown();
             tensorFlowVision = null;
         }
-        //
-        // Disable the gyro integrator.
-        //
         if (driveBase != null)
         {
             driveBase.setOdometryEnabled(false);
