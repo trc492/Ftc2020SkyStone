@@ -32,6 +32,8 @@ import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 
+import java.io.InputStream;
+
 import javax.annotation.Nonnull;
 
 import ftclib.FtcAndroidTone;
@@ -40,6 +42,7 @@ import ftclib.FtcDcMotor;
 import ftclib.FtcMotorActuator;
 import ftclib.FtcOpMode;
 import ftclib.FtcRobotBattery;
+import ftclib.FtcSongXml;
 import ftclib.FtcVuforia;
 import hallib.HalDashboard;
 import trclib.TrcDbgTrace;
@@ -69,6 +72,7 @@ public class Robot
         public boolean hasElevator = true;
         public boolean hasBlinkin = true;
         public boolean playSongs = true;
+        public boolean songsInResources = true;
         public boolean useVuforia = true;
         public boolean useTensorFlow = false;
         public boolean showVuforiaView = false;
@@ -114,6 +118,12 @@ public class Robot
         public Preferences setPlaySongs(boolean playSongs)
         {
             this.playSongs = playSongs;
+            return this;
+        }
+
+        public Preferences setSongsInResources(boolean songsInResources)
+        {
+            this.songsInResources = songsInResources;
             return this;
         }
 
@@ -342,6 +352,7 @@ public class Robot
     public LEDIndicator ledIndicator = null;
     private TrcSong starWars = new TrcSong("StarWars", starWarsSections, starWarsSequence);
     private TrcSong lesMiserables = new TrcSong("LesMiserables", lesMiserablesSections, lesMiserablesSequence);
+    private TrcSong[] songCollection = null;
     private TrcSongPlayer songPlayer = null;
     //
     // Sensors.
@@ -438,6 +449,21 @@ public class Robot
                         songParams.attack, songParams.decay, songParams.sustain, songParams.release);
                 androidTone.setSoundEnvelopeEnabled(true);
                 songPlayer = new TrcSongPlayer("SongPlayer", androidTone);
+
+                if (preferences.songsInResources)
+                {
+                    FtcRobotControllerActivity activity = (FtcRobotControllerActivity) opMode.hardwareMap.appContext;
+                    InputStream songStream = activity.getResources().openRawResource(team3543.R.raw.songcollection);
+                    try
+                    {
+                        FtcSongXml songXml = new FtcSongXml("Songs", songStream);
+                        songCollection = songXml.getCollection();
+                    }
+                    catch (Exception e)
+                    {
+                        e.printStackTrace();
+                    }
+                }
             }
 
             //
@@ -482,7 +508,14 @@ public class Robot
 
         if (songPlayer != null)
         {
-            songPlayer.playSong(starWars, songParams.barDuration, true, false);
+            if (preferences.songsInResources)
+            {
+                songPlayer.playSong(songCollection[1], songParams.barDuration, true, false);
+            }
+            else
+            {
+                songPlayer.playSong(starWars, songParams.barDuration, true, false);
+            }
         }
     }   //startMode
 
