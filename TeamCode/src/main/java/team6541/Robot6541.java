@@ -41,6 +41,7 @@ class Robot6541 extends Robot
             .setInitSubsystems(true)
             .setHasElevator(true)
             .setHasBlinkin(true)
+            .setPlaySongs(false)
             .setUseVuforia(true)
             .setUseTensorFlow(false)
             .setShowVuforiaView(false)
@@ -71,17 +72,20 @@ class Robot6541 extends Robot
             .setPosPresets(RobotInfo6541.ELEVATOR_HEIGHT_PRESETS);
     private static final FtcServoActuator.Parameters elbowParams6541 = new FtcServoActuator.Parameters()
             .setStepParams(RobotInfo6541.ELBOW_MAX_STEPRATE, RobotInfo6541.ELBOW_MIN_POS, RobotInfo6541.ELBOW_MAX_POS)
+            .setInverted(false, false)
             .setRetractParams(RobotInfo6541.ELBOW_RETRACT_POS, RobotInfo6541.ELBOW_RETRACT_TIME)
             .setExtendParams(RobotInfo6541.ELBOW_EXTEND_POS, RobotInfo6541.ELBOW_EXTEND_TIME);
     private static final FtcServoActuator.Parameters grabberParams6541 = new FtcServoActuator.Parameters()
             .setStepParams(
                     RobotInfo6541.GRABBER_MAX_STEPRATE, RobotInfo6541.GRABBER_MIN_POS, RobotInfo6541.GRABBER_MAX_POS)
+            .setInverted(false, false)
             .setExtendParams(RobotInfo6541.GRABBER_RELEASE_POS, RobotInfo6541.GRABBER_RELEASE_TIME)
             .setRetractParams(RobotInfo6541.GRABBER_GRAB_POS, RobotInfo6541.GRABBER_GRAB_TIME);
     private static final FtcServoActuator.Parameters backFoundationLatchParams6541 = new FtcServoActuator.Parameters()
             .setStepParams(
                     RobotInfo6541.BACK_FOUNDATION_LATCH_MAX_STEPRATE, RobotInfo6541.BACK_FOUNDATION_LATCH_MIN_POS,
                     RobotInfo6541.BACK_FOUNDATION_LATCH_MAX_POS)
+            .setInverted(false, false)
             .setRetractParams(
                     RobotInfo6541.BACK_FOUNDATION_LATCH_RELEASE_POS, RobotInfo6541.BACK_FOUNDATION_LATCH_RELEASE_TIME)
             .setExtendParams(

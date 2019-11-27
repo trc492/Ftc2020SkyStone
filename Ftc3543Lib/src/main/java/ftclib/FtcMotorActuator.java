@@ -38,13 +38,13 @@ public class FtcMotorActuator
      */
     public static class Parameters
     {
-        double minPos, maxPos;
-        double scale, offset;
-        double kP, kI, kD, tolerance;
-        boolean inverted;
-        boolean hasUpperLimitSwitch;
-        double calPower;
-        double[] posPresets;
+        double minPos = 0.0, maxPos = 1.0;
+        double scale = 1.0, offset = 0.0;
+        double kP = 1.0, kI = 0.0, kD = 0.0, tolerance = 1.0;
+        boolean inverted = false;
+        boolean hasUpperLimitSwitch = false;
+        double calPower = 0.3;
+        double[] posPresets = null;
 
         /**
          * This method sets the position range limits of the motor actuator.

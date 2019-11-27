@@ -178,8 +178,8 @@ class RobotInfo3543
     static final double WRIST_MAX_STEPRATE                      = (1.0/0.75);
     static final double WRIST_MIN_POS                           = 0.2;
     static final double WRIST_MAX_POS                           = 0.8;
-    static final double WRIST_RETRACT_POS                       = 0.8;
-    static final double WRIST_EXTEND_POS                        = 0.45;
+    static final double WRIST_RETRACT_POS                       = 0.6;
+    static final double WRIST_EXTEND_POS                        = 0.2;
     static final double WRIST_ROTATE_TIME                       = 0.3;
 //    static final boolean WRIST_INVERTED                         = true;
     //
@@ -207,11 +207,11 @@ class RobotInfo3543
     // FrontFoundationLatch subsystem.
     //
     static final double FRONT_FOUNDATION_LATCH_MAX_STEPRATE     = 0.0;
-    static final double FRONT_FOUNDATION_LATCH_MIN_POS          = 0.2;
-    static final double FRONT_FOUNDATION_LATCH_MAX_POS          = 0.8;
+    static final double FRONT_FOUNDATION_LATCH_MIN_POS          = 0.0;
+    static final double FRONT_FOUNDATION_LATCH_MAX_POS          = 1.0;
     static final double FRONT_FOUNDATION_LATCH_RELEASE_POS      = 0.0;
     static final double FRONT_FOUNDATION_LATCH_RELEASE_TIME     = 0.5;
-    static final double FRONT_FOUNDATION_LATCH_GRAB_POS         = 0.4;
+    static final double FRONT_FOUNDATION_LATCH_GRAB_POS         = 1.0;
     static final double FRONT_FOUNDATION_LATCH_GRAB_TIME        = 0.5;
 
     static final double BUILDING_ZONE_ROBOT_START_X             = 120.0;

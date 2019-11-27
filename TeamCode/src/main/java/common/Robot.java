@@ -50,6 +50,8 @@ import trclib.TrcPidController;
 import trclib.TrcPidDrive;
 import trclib.TrcPose2D;
 import trclib.TrcRobot;
+import trclib.TrcSong;
+import trclib.TrcSongPlayer;
 import trclib.TrcUtil;
 
 import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.DEGREES;
@@ -66,6 +68,7 @@ public class Robot
         public boolean initSubsystems = true;
         public boolean hasElevator = true;
         public boolean hasBlinkin = true;
+        public boolean playSongs = true;
         public boolean useVuforia = true;
         public boolean useTensorFlow = false;
         public boolean showVuforiaView = false;
@@ -105,6 +108,12 @@ public class Robot
         public Preferences setHasBlinkin(boolean hasBlinkin)
         {
             this.hasBlinkin = hasBlinkin;
+            return this;
+        }
+
+        public Preferences setPlaySongs(boolean playSongs)
+        {
+            this.playSongs = playSongs;
             return this;
         }
 
@@ -214,6 +223,31 @@ public class Robot
 
     }   //class PhoneParameters
 
+    public static class SongParameters
+    {
+        double attack;          //in seconds
+        double decay;           //in seconds
+        double sustain;         //in proportion
+        double release;         //in seconds
+        double barDuration;     //in seconds
+
+        public SongParameters setEnvelope(double attack, double decay, double sustain, double release)
+        {
+            this.attack = attack;
+            this.decay = decay;
+            this.sustain = sustain;
+            this.release = release;
+            return this;
+        }
+
+        public SongParameters setBarDuration(double barDuration)
+        {
+            this.barDuration = barDuration;
+            return this;
+        }
+
+    }   //class SongParameters
+
     protected enum DriveMode
     {
         TANK_MODE,
@@ -221,6 +255,79 @@ public class Robot
     }   //enum DriveMode
 
     private static final String OPENCV_NATIVE_LIBRARY_NAME = "opencv_java3";
+    private static final SongParameters songParams = new SongParameters()
+            .setEnvelope(0.0, 0.0, 1.0, 0.02)
+            .setBarDuration(1.92);
+    //
+    // Note string syntax:
+    //  <note>[#|b]<octave>.<noteType>[+]{.<noteType>[+]}
+    //  where <note>     - 'A' through 'G'
+    //        #          - sharp
+    //        b          - flat
+    //        <octave>   - 1 through 8 (e.g. C4 is the middle C)
+    //        <noteType> - note type (1: whole, 2: half, 4: quarter, ...)
+    //                   - add half time
+    //
+    private static final String[] starWarsSections =
+    {
+            // section 1
+            "1:G4.12,G4.12,G4.12,"
+                    + "C5.2,G5.2,"
+                    + "F5.12,E5.12,D5.12,C6.2,G5.4,"
+                    + "F5.12,E5.12,D5.12,C6.2,G5.4,"
+                    + "F5.12,E5.12,F5.12,D5.2,G4.8,G4.8,"
+                    + "C5.2,G5.2",
+            // section 2
+            "2:F5.12,E5.12,D5.12,C6.2,G5.4,"
+                    + "F5.12,E5.12,D5.12,C6.2,G5.4,"
+                    + "F5.12,E5.12,F5.12,D5.2,G4.8,G4.8,"
+                    + "A4.4+,A4.8,F5.8,E5.8,D5.8,C5.8,"
+                    + "C5.12,D5.12,E5.12,D5.4,B4.4,G4.8,G4.8,"
+                    + "A4.4+,A4.8,F5.8,E5.8,D5.8,C5.8,"
+                    + "G5.4,D5.2,G4.8,G4.8",
+            // section 3
+            "3:A4.4+,A4.8,F5.8,E5.8,D5.8,C5.8,"
+                    + "C5.12,D5.12,E5.12,D5.4,B4.4,G5.8,G5.8,"
+                    + "C6.8,Bb5.8,Ab5.8,G5.8,F5.8,Eb5.8,D5.8,C5.8,"
+                    + "G5.2+"
+    };
+    private static final String starWarsSequence = "1,2,3";
+    private static final String[] lesMiserablesSections =
+    {
+            // section 1
+            "1:A4.8+,G4.16,"
+                    + "F4.8+,G4.16,A4.8+,Bb4.16,C5.4,A4.12,G4.12,F4.12,"
+                    + "E4.8+,D4.16,E4.8+,F4.16,C4.4,D4.12,C4.12,Bb3.12,"
+                    + "A3.8+,C4.16,F4.8+,A4.16,G4.8+,F#4.16,G4.8+,D4.16,"
+                    + "F4.8+,E4.16,E4.8+,F4.16,G4.4,A4.8+,G4.16",
+            // section 2
+            "2:F4.8+,G4.16,A4.8+,Bb4.16,C5.4,A4.12,G4.12,F4.12,"
+                    + "E4.8+,D4.16,E4.8+,F4.16,C4.4,D4.12,C4.12,Bb3.12,"
+                    + "A3.8+,C4.16,F4.8+,A4.16,G4.12,F#4.12,G4.12,Bb4.8+,E4.16,"
+                    + "F4.4,R.2,E4.8+,E4.16",
+            // section 3
+            "3:A4.8+,G#4.16,A4.8+,B4.16,C5.8+,B4.16,A4.8+,C5.16,"
+                    + "B4.8+,A4.16,G4.8+,A4.16,B4.4,R.12,B4.12,C5.12,"
+                    + "D5.8+,C5.16,B4.8+,C5.16,D5.8+,C5.16,B4.8+,D5.16,"
+                    + "C5.8+,B4.16,A4.8+,B4.16,C5.4,R.8+,A4.16",
+            // section 4
+            "4:C5.12,B4.12,A4.12,C5.12,B4.12,A4.12,C5.12,B4.12,A4.12,C5.12,B4.12,C5.12,"
+                    + "D5.2,R.4,E5.8+,D5.16,"
+                    + "C5.8+,D5.16,E5.8+,F5.16,G5.4,E5.12,D5.12,C5.12,"
+                    + "B4.8+,A4.16,B4.8+,C5.16,G4.4,A4.12,G4.12,F4.12",
+            // section 5
+            "5:E4.8+,G4.16,C5.8+,E5.16,D5.8+,C#5.16,D5.8+,A4.16,"
+                    + "C5.8+,B4.16,B4.8+,C5.16,D5.4,E5.8+,D5.16,"
+                    + "C5.8+,D5.16,E5.8+,F5.16,G5.4,E5.12,D5.12,C5.12,"
+                    + "B4.8+,A4.16,B4.8+,C5.16,G4.4,A4.12,G4.12,F4.12",
+            // section 6
+            "6:E4.8+,G4.16,C5.8+,E5.16,D5.12,C#5.12,D5.12,F5.8+,B4.16,"
+                    + "C5.4,R.2,E4.8+,E4.16",
+            // section 7
+            "7:E4.8+,G4.16,C5.8+,E5.16,D5.12,C#5.12,D5.12,F5.8+,B4.16,"
+                    + "C5.4,R.2.4"
+    };
+    private static final String lesMiserablesSequence = "1,2,3,4,5,6,3,4,5,7";
     //
     // Global objects.
     //
@@ -233,6 +340,9 @@ public class Robot
     public TextToSpeech textToSpeech = null;
     public FtcRobotBattery battery = null;
     public LEDIndicator ledIndicator = null;
+    private TrcSong starWars = new TrcSong("StarWars", starWarsSections, starWarsSequence);
+    private TrcSong lesMiserables = new TrcSong("LesMiserables", lesMiserablesSections, lesMiserablesSequence);
+    private TrcSongPlayer songPlayer = null;
     //
     // Sensors.
     //
@@ -322,6 +432,14 @@ public class Robot
                 ledIndicator = new LEDIndicator();
             }
 
+            if (preferences.playSongs)
+            {
+                androidTone.setSoundEnvelope(
+                        songParams.attack, songParams.decay, songParams.sustain, songParams.release);
+                androidTone.setSoundEnvelopeEnabled(true);
+                songPlayer = new TrcSongPlayer("SongPlayer", androidTone);
+            }
+
             //
             // Initialize sensors.
             //
@@ -361,10 +479,20 @@ public class Robot
             globalTracer.traceInfo(funcName, "Enabling Vuforia.");
             vuforiaVision.setEnabled(true, preferences.useFlashLight);
         }
+
+        if (songPlayer != null)
+        {
+            songPlayer.playSong(starWars, songParams.barDuration, true, false);
+        }
     }   //startMode
 
     public void stopMode(TrcRobot.RunMode runMode)
     {
+        if (songPlayer != null)
+        {
+            songPlayer.stop();
+        }
+
         if (vuforiaVision != null)
         {
             vuforiaVision.setEnabled(false, preferences.useFlashLight);

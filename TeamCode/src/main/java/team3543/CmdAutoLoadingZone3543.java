@@ -265,7 +265,7 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                     break;
 
                 case PULL_SKYSTONE:
-                    yTarget = -10.0;
+                    yTarget = -12.0;
                     simplePidDrive.setRelativeYTarget(yTarget, State.START_EXTENDER_ARM_RETRACTION);
                     break;
 
@@ -289,7 +289,7 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                 case APPROACH_FOUNDATION:
                     robot.elevator.setPosition(6.0);
                     robot.extenderArm.extend(); //start extending early
-                    yTarget = 10.0;
+                    yTarget = 12.0;
                     simplePidDrive.setRelativeYTarget(yTarget, State.EXTEND_ARM_OVER_FOUNDATION);
                     break;
 

@@ -41,6 +41,7 @@ class Robot3543 extends Robot
             .setInitSubsystems(true)
             .setHasElevator(true)
             .setHasBlinkin(true)
+            .setPlaySongs(false)
             .setUseVuforia(true)
             .setUseTensorFlow(false)
             .setShowVuforiaView(false)
@@ -81,21 +82,25 @@ class Robot3543 extends Robot
             .setStepParams(
                     RobotInfo3543.EXTENDER_ARM_MAX_STEPRATE, RobotInfo3543.EXTENDER_ARM_MIN_POS,
                     RobotInfo3543.EXTENDER_ARM_MAX_POS)
+            .setInverted(false, false)
             .setRetractParams(RobotInfo3543.EXTENDER_ARM_RETRACTED_POS, RobotInfo3543.EXTENDER_ARM_MOVE_TIME)
             .setExtendParams(RobotInfo3543.EXTENDER_ARM_EXTEND_POS, RobotInfo3543.EXTENDER_ARM_MOVE_TIME);
     private static final FtcServoActuator.Parameters wristParams3543 = new FtcServoActuator.Parameters()
             .setStepParams(RobotInfo3543.WRIST_MAX_STEPRATE, RobotInfo3543.WRIST_MIN_POS, RobotInfo3543.WRIST_MAX_POS)
+            .setInverted(false, false)
             .setRetractParams(RobotInfo3543.WRIST_RETRACT_POS, RobotInfo3543.WRIST_ROTATE_TIME)
             .setExtendParams(RobotInfo3543.WRIST_EXTEND_POS, RobotInfo3543.WRIST_ROTATE_TIME);
     private static final FtcServoActuator.Parameters grabberParams3543 = new FtcServoActuator.Parameters()
             .setStepParams(
                     RobotInfo3543.GRABBER_MAX_STEPRATE, RobotInfo3543.GRABBER_MIN_POS, RobotInfo3543.GRABBER_MAX_POS)
+            .setInverted(false, false)
             .setRetractParams(RobotInfo3543.GRABBER_CLOSE_POS, RobotInfo3543.GRABBER_GRAB_TIME)
             .setExtendParams(RobotInfo3543.GRABBER_OPEN_POS, RobotInfo3543.GRABBER_RELEASE_TIME);
     private static final FtcServoActuator.Parameters backFoundationLatchParams3543 = new FtcServoActuator.Parameters()
             .setStepParams(
                     RobotInfo3543.BACK_FOUNDATION_LATCH_MAX_STEPRATE, RobotInfo3543.BACK_FOUNDATION_LATCH_MIN_POS,
                     RobotInfo3543.BACK_FOUNDATION_LATCH_MAX_POS)
+            .setInverted(false, false)
             .setRetractParams(
                     RobotInfo3543.BACK_FOUNDATION_LATCH_GRAB_POS, RobotInfo3543.BACK_FOUNDATION_LATCH_GRAB_TIME)
             .setExtendParams(
@@ -104,6 +109,7 @@ class Robot3543 extends Robot
             .setStepParams(
                     RobotInfo3543.FRONT_FOUNDATION_LATCH_MAX_STEPRATE, RobotInfo3543.FRONT_FOUNDATION_LATCH_MIN_POS,
                     RobotInfo3543.FRONT_FOUNDATION_LATCH_MAX_POS)
+            .setInverted(true, false)
             .setRetractParams(
                     RobotInfo3543.FRONT_FOUNDATION_LATCH_GRAB_POS, RobotInfo3543.FRONT_FOUNDATION_LATCH_GRAB_TIME)
             .setExtendParams(
@@ -166,7 +172,7 @@ class Robot3543 extends Robot
                 // ExtenderArm is 3543 only.
 //                extenderArm = new FtcMotorActuator("extenderArm", extenderArmParams3543);
 //                extenderArm.zeroCalibrate();
-                extenderArm = new FtcServoActuator("externderArmServo", extenderArmParams3543);
+                extenderArm = new FtcServoActuator("extenderArmServo", extenderArmParams3543);
                 extenderArm.retract();
                 // Wrist is 3543 only.
                 wrist = new FtcServoActuator("wristServo", wristParams3543);

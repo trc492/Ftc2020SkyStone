@@ -74,9 +74,15 @@ public class FtcTeleOp3543 extends CommonTeleOp
             wristPos = robot3543.wrist.getPosition();
         }
 
+        double frontLatchPos = 0.0;
+        if (robot3543.frontFoundationLatch != null)
+        {
+            frontLatchPos = robot3543.frontFoundationLatch.getPosition();
+        }
+
         dashboard.displayPrintf(
-                5, "ArmPower=%.1f, ArmPos=%.1f, WristPower=%.1f, WristPos =%.1f",
-                extenderArmPower, extenderArmPos, wristPower, wristPos);
+                5, "ArmPower=%.1f, ArmPos=%.1f, WristPower=%.1f, WristPos =%.1f, FrontLatchPos=%.1f",
+                extenderArmPower, extenderArmPos, wristPower, wristPos, frontLatchPos);
     }   //runPeriodic
 
     //
@@ -131,6 +137,14 @@ public class FtcTeleOp3543 extends CommonTeleOp
                     break;
 
                 case FtcGamepad.GAMEPAD_LBUMPER:
+                    if (pressed)
+                    {
+                        robot3543.frontFoundationLatch.grab();
+                    }
+                    else
+                    {
+                        robot3543.frontFoundationLatch.release();
+                    }
                     break;
 
                 case FtcGamepad.GAMEPAD_RBUMPER:
@@ -155,7 +169,7 @@ public class FtcTeleOp3543 extends CommonTeleOp
                 case FtcGamepad.GAMEPAD_DPAD_LEFT:
                     if (pressed)
                     {
-                        robot3543.wrist.extend();
+                        robot3543.wrist.retract();
                     }
                     processed = true;
                     break;
@@ -163,7 +177,7 @@ public class FtcTeleOp3543 extends CommonTeleOp
                 case FtcGamepad.GAMEPAD_DPAD_RIGHT:
                     if (pressed)
                     {
-                        robot3543.wrist.retract();
+                        robot3543.wrist.extend();
                     }
                     processed = true;
                     break;

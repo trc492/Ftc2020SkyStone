@@ -37,7 +37,7 @@ public class CmdSkystoneVision implements TrcRobot.RobotCommand
     private static final boolean debugXPid = true;
     private static final boolean debugYPid = true;
     private static final boolean debugTurnPid = true;
-    private static final double VISION_TIMEOUT = 1.0;
+    private static final double VISION_TIMEOUT = 0.5;
 
     private enum State
     {
@@ -90,6 +90,10 @@ public class CmdSkystoneVision implements TrcRobot.RobotCommand
         if (pose != null)
         {
             skystonePose = pose;
+            robot.globalTracer.traceInfo(
+                    "visionTrigger", "Skystone found at x=%.1f, y=%.1f.",
+                    skystonePose.x, skystonePose.y);
+            robot.speak(String.format(Locale.US, "Sky stone found at %.1f inches.", skystonePose.x));
         }
 
         return pose != null;
@@ -170,8 +174,9 @@ public class CmdSkystoneVision implements TrcRobot.RobotCommand
                     //
                     visionTrigger.setEnabled(true);
 
-                    xTarget = autoChoices.strategy == CommonAuto.AutoStrategy.LOADING_ZONE_FAR?
-                                RobotInfo.SKYSTONE_SCAN_DISTANCE_FAR: RobotInfo.SKYSTONE_SCAN_DISTANCE_WALL;
+                    xTarget = autoChoices.strategy == CommonAuto.AutoStrategy.LOADING_ZONE_WALL?
+                                    RobotInfo.SKYSTONE_SCAN_DISTANCE_WALL:
+                                    RobotInfo.SKYSTONE_SCAN_DISTANCE_FAR;
                     xTarget *= allianceDirection;
                     robot.pidDrive.setRelativeXTarget(xTarget, event);
                     sm.waitForSingleEvent(event, State.ALIGN_SKYSTONE);
@@ -203,7 +208,7 @@ public class CmdSkystoneVision implements TrcRobot.RobotCommand
                                         "GetTargetPose", "Skystone not found, try next stone.");
                                 robot.speak("Not found, try next.");
                                 scootCount--;
-                                xTarget = -8.0*allianceDirection;
+                                xTarget = -9.0*allianceDirection;
                                 // If this is the last stone, don't need to check it's a skystone, just grab and go.
                                 nextState = scootCount == 0? State.ALIGN_SKYSTONE: State.SETUP_VISION;
                                 robot.pidDrive.setRelativeXTarget(xTarget, event);
