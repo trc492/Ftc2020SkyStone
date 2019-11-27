@@ -157,9 +157,17 @@ public abstract class CommonTeleOp extends FtcOpMode
             switch (button)
             {
                 case FtcGamepad.GAMEPAD_A:
+                    if (pressed)
+                    {
+                        robot.startSong(0, !robot.lesMiserablesPlaying);
+                    }
                     break;
 
                 case FtcGamepad.GAMEPAD_B:
+                    if (pressed)
+                    {
+                        robot.startSong(1, !robot.starWarsPlaying);
+                    }
                     break;
 
                 case FtcGamepad.GAMEPAD_X:

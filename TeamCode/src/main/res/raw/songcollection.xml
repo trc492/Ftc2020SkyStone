@@ -28,7 +28,7 @@ SOFTWARE.
           b          - flat
           <octave>   - 1 through 8 (e.g. C4 is the middle C)
           <noteType> - note type (1: whole, 2: half, 4: quarter, ...)
-                     - add half time
+          +          - add half time
 -->
 
 <collection>

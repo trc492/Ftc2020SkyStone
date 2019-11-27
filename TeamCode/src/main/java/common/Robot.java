@@ -276,32 +276,8 @@ public class Robot
     //        b          - flat
     //        <octave>   - 1 through 8 (e.g. C4 is the middle C)
     //        <noteType> - note type (1: whole, 2: half, 4: quarter, ...)
-    //                   - add half time
+    //        +          - add half time
     //
-    private static final String[] starWarsSections =
-    {
-            // section 1
-            "1:G4.12,G4.12,G4.12,"
-                    + "C5.2,G5.2,"
-                    + "F5.12,E5.12,D5.12,C6.2,G5.4,"
-                    + "F5.12,E5.12,D5.12,C6.2,G5.4,"
-                    + "F5.12,E5.12,F5.12,D5.2,G4.8,G4.8,"
-                    + "C5.2,G5.2",
-            // section 2
-            "2:F5.12,E5.12,D5.12,C6.2,G5.4,"
-                    + "F5.12,E5.12,D5.12,C6.2,G5.4,"
-                    + "F5.12,E5.12,F5.12,D5.2,G4.8,G4.8,"
-                    + "A4.4+,A4.8,F5.8,E5.8,D5.8,C5.8,"
-                    + "C5.12,D5.12,E5.12,D5.4,B4.4,G4.8,G4.8,"
-                    + "A4.4+,A4.8,F5.8,E5.8,D5.8,C5.8,"
-                    + "G5.4,D5.2,G4.8,G4.8",
-            // section 3
-            "3:A4.4+,A4.8,F5.8,E5.8,D5.8,C5.8,"
-                    + "C5.12,D5.12,E5.12,D5.4,B4.4,G5.8,G5.8,"
-                    + "C6.8,Bb5.8,Ab5.8,G5.8,F5.8,Eb5.8,D5.8,C5.8,"
-                    + "G5.2+"
-    };
-    private static final String starWarsSequence = "1,2,3";
     private static final String[] lesMiserablesSections =
     {
             // section 1
@@ -338,6 +314,30 @@ public class Robot
                     + "C5.4,R.2.4"
     };
     private static final String lesMiserablesSequence = "1,2,3,4,5,6,3,4,5,7";
+    private static final String[] starWarsSections =
+            {
+                    // section 1
+                    "1:G4.12,G4.12,G4.12,"
+                            + "C5.2,G5.2,"
+                            + "F5.12,E5.12,D5.12,C6.2,G5.4,"
+                            + "F5.12,E5.12,D5.12,C6.2,G5.4,"
+                            + "F5.12,E5.12,F5.12,D5.2,G4.8,G4.8,"
+                            + "C5.2,G5.2",
+                    // section 2
+                    "2:F5.12,E5.12,D5.12,C6.2,G5.4,"
+                            + "F5.12,E5.12,D5.12,C6.2,G5.4,"
+                            + "F5.12,E5.12,F5.12,D5.2,G4.8,G4.8,"
+                            + "A4.4+,A4.8,F5.8,E5.8,D5.8,C5.8,"
+                            + "C5.12,D5.12,E5.12,D5.4,B4.4,G4.8,G4.8,"
+                            + "A4.4+,A4.8,F5.8,E5.8,D5.8,C5.8,"
+                            + "G5.4,D5.2,G4.8,G4.8",
+                    // section 3
+                    "3:A4.4+,A4.8,F5.8,E5.8,D5.8,C5.8,"
+                            + "C5.12,D5.12,E5.12,D5.4,B4.4,G5.8,G5.8,"
+                            + "C6.8,Bb5.8,Ab5.8,G5.8,F5.8,Eb5.8,D5.8,C5.8,"
+                            + "G5.2+"
+            };
+    private static final String starWarsSequence = "1,2,3";
     //
     // Global objects.
     //
@@ -350,10 +350,13 @@ public class Robot
     public TextToSpeech textToSpeech = null;
     public FtcRobotBattery battery = null;
     public LEDIndicator ledIndicator = null;
-    private TrcSong starWars = new TrcSong("StarWars", starWarsSections, starWarsSequence);
-    private TrcSong lesMiserables = new TrcSong("LesMiserables", lesMiserablesSections, lesMiserablesSequence);
-    private TrcSong[] songCollection = null;
-    private TrcSongPlayer songPlayer = null;
+
+    public TrcSong[] songCollection = null;
+    public TrcSongPlayer songPlayer = null;
+    public TrcSong lesMiserables = new TrcSong("LesMiserables", lesMiserablesSections, lesMiserablesSequence);
+    public TrcSong starWars = new TrcSong("StarWars", starWarsSections, starWarsSequence);
+    public boolean lesMiserablesPlaying = false;
+    public boolean starWarsPlaying = false;
     //
     // Sensors.
     //
@@ -506,24 +509,17 @@ public class Robot
             vuforiaVision.setEnabled(true, preferences.useFlashLight);
         }
 
-        if (songPlayer != null)
+        if (songPlayer != null && runMode == TrcRobot.RunMode.AUTO_MODE)
         {
-            if (preferences.songsInResources)
-            {
-                songPlayer.playSong(songCollection[1], songParams.barDuration, true, false);
-            }
-            else
-            {
-                songPlayer.playSong(starWars, songParams.barDuration, true, false);
-            }
+            startSong(1, true);
         }
     }   //startMode
 
     public void stopMode(TrcRobot.RunMode runMode)
     {
-        if (songPlayer != null)
+        if (songPlayer != null && runMode == TrcRobot.RunMode.AUTO_MODE)
         {
-            songPlayer.stop();
+            startSong(1, false);
         }
 
         if (vuforiaVision != null)
@@ -733,5 +729,56 @@ public class Robot
 
         return robotPose;
     }   //getRobotPose
+
+    /**
+     * This method is called to start/stop the song. It takes care of keeping track of the song state and
+     * will do the right thing if it is a start or a resume of the song.
+     *
+     * @param index specifies the index of the song to start or stop.
+     * @param start specifies true to start the song, false to stop.
+     */
+    public void startSong(int index, boolean start)
+    {
+        if (songPlayer != null)
+        {
+            if (start)
+            {
+                if (songCollection != null && index >= 0 && index < songCollection.length)
+                {
+                    songPlayer.playSong(songCollection[index], songParams.barDuration, true, false);
+                }
+                else if (index == 0)
+                {
+                    songPlayer.playSong(lesMiserables, songParams.barDuration, true, false);
+                }
+                else
+                {
+                    songPlayer.playSong(starWars, songParams.barDuration, true, false);
+                }
+
+                if (index == 0)
+                {
+                    lesMiserablesPlaying = true;
+                    starWarsPlaying = false;
+                }
+                else if (index == 1)
+                {
+                    lesMiserablesPlaying = false;
+                    starWarsPlaying = true;
+                }
+            }
+            else
+            {
+                //
+                // Pause the song.
+                //
+                songPlayer.pause();
+                if (lesMiserablesPlaying)
+                    lesMiserablesPlaying = false;
+                else if (starWarsPlaying)
+                    starWarsPlaying = false;
+            }
+        }
+    }   //startSong
 
 }   //class Robot
