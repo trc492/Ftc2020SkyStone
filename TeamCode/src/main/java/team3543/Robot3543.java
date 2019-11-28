@@ -70,22 +70,15 @@ class Robot3543 extends Robot
             .setMotorParams(
                     RobotInfo3543.ELEVATOR_INVERTED, RobotInfo3543.ELEVATOR_HAS_UPPER_LIMIT_SWITCH,
                     RobotInfo3543.ELEVATOR_CAL_POWER);
-//    private static final FtcMotorActuator.Parameters extenderArmParams3543 = new FtcMotorActuator.Parameters()
-//            .setPosRange(RobotInfo3543.EXTENDER_ARM_MIN_POS, RobotInfo3543.EXTENDER_ARM_MAX_POS)
-//            .setScaleOffset(RobotInfo3543.EXTENDER_ARM_SCALE, RobotInfo3543.EXTENDER_ARM_OFFSET)
-//            .setPidParams(
-//                    RobotInfo3543.EXTENDER_ARM_KP, RobotInfo3543.EXTENDER_ARM_KI, RobotInfo3543.EXTENDER_ARM_KD,
-//                    RobotInfo3543.EXTENDER_ARM_TOLERANCE)
-//            .setMotorParams(
-//                    RobotInfo3543.EXTENDER_ARM_INVERTED, RobotInfo3543.EXTENDER_ARM_HAS_UPPER_LIMIT_SWITCH,
-//                    RobotInfo3543.EXTENDER_ARM_CAL_POWER);
-    private static final FtcServoActuator.Parameters extenderArmParams3543 = new FtcServoActuator.Parameters()
-            .setStepParams(
-                    RobotInfo3543.EXTENDER_ARM_MAX_STEPRATE, RobotInfo3543.EXTENDER_ARM_MIN_POS,
-                    RobotInfo3543.EXTENDER_ARM_MAX_POS)
-            .setInverted(false, false)
-            .setRetractParams(RobotInfo3543.EXTENDER_ARM_RETRACTED_POS, RobotInfo3543.EXTENDER_ARM_MOVE_TIME)
-            .setExtendParams(RobotInfo3543.EXTENDER_ARM_EXTEND_POS, RobotInfo3543.EXTENDER_ARM_MOVE_TIME);
+    private static final FtcMotorActuator.Parameters extenderArmParams3543 = new FtcMotorActuator.Parameters()
+            .setPosRange(RobotInfo3543.EXTENDER_ARM_MIN_POS, RobotInfo3543.EXTENDER_ARM_MAX_POS)
+            .setScaleOffset(RobotInfo3543.EXTENDER_ARM_SCALE, RobotInfo3543.EXTENDER_ARM_OFFSET)
+            .setPidParams(
+                    RobotInfo3543.EXTENDER_ARM_KP, RobotInfo3543.EXTENDER_ARM_KI, RobotInfo3543.EXTENDER_ARM_KD,
+                    RobotInfo3543.EXTENDER_ARM_TOLERANCE)
+            .setMotorParams(
+                    RobotInfo3543.EXTENDER_ARM_INVERTED, RobotInfo3543.EXTENDER_ARM_HAS_UPPER_LIMIT_SWITCH,
+                    RobotInfo3543.EXTENDER_ARM_CAL_POWER);
     private static final FtcServoActuator.Parameters wristParams3543 = new FtcServoActuator.Parameters()
             .setStepParams(RobotInfo3543.WRIST_MAX_STEPRATE, RobotInfo3543.WRIST_MIN_POS, RobotInfo3543.WRIST_MAX_POS)
             .setInverted(false, false)
@@ -119,8 +112,7 @@ class Robot3543 extends Robot
     //
     // Team specific subsystems.
     //
-    FtcServoActuator extenderArm = null;
-//    FtcMotorActuator extenderArm = null;
+    FtcMotorActuator extenderArm = null;
     FtcServoActuator wrist = null;
     Grabber frontFoundationLatch = null;
 
@@ -171,10 +163,8 @@ class Robot3543 extends Robot
                     elevator.zeroCalibrate();
                 }
                 // ExtenderArm is 3543 only.
-//                extenderArm = new FtcMotorActuator("extenderArm", extenderArmParams3543);
-//                extenderArm.zeroCalibrate();
-                extenderArm = new FtcServoActuator("extenderArmServo", extenderArmParams3543);
-                extenderArm.retract();
+                extenderArm = new FtcMotorActuator("extenderArm", extenderArmParams3543);
+                extenderArm.zeroCalibrate();
                 // Wrist is 3543 only.
                 wrist = new FtcServoActuator("wristServo", wristParams3543);
                 wrist.retract();

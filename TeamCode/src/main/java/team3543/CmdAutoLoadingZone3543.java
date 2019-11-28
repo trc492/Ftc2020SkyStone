@@ -255,8 +255,9 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                     }
 
                 case GO_DOWN_ON_SKYSTONE:
-                    robot.extenderArm.extend(2.5, event);
-                    sm.waitForSingleEvent(event, State.GRAB_SKYSTONE);
+//                    robot.extenderArm.extend(2.5, event);
+//                    sm.waitForSingleEvent(event, State.GRAB_SKYSTONE);
+                    sm.setState(State.GRAB_SKYSTONE);
                     break;
 
                 case GRAB_SKYSTONE:
@@ -270,7 +271,7 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                     break;
 
                 case START_EXTENDER_ARM_RETRACTION:
-                    robot.extenderArm.retract(1.0, event);
+                    robot.extenderArm.setPosition(RobotInfo3543.EXTENDER_ARM_MIN_POS);
                     sm.waitForSingleEvent(event, State.GOTO_FOUNDATION);
                     break;
 
@@ -288,14 +289,15 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
 
                 case APPROACH_FOUNDATION:
                     robot.elevator.setPosition(6.0);
-                    robot.extenderArm.extend(); //start extending early
+//                    robot.extenderArm.setPosition(RobotInfo3543.SOMETHING); //start extending early
                     yTarget = 12.0;
                     simplePidDrive.setRelativeYTarget(yTarget, State.EXTEND_ARM_OVER_FOUNDATION);
                     break;
 
                 case EXTEND_ARM_OVER_FOUNDATION:
-                    robot.extenderArm.extend(1.5, event);
-                    sm.waitForSingleEvent(event, State.DROP_SKYSTONE);
+//                    robot.extenderArm.extend(1.5, event);
+//                    sm.waitForSingleEvent(event, State.DROP_SKYSTONE);
+                    sm.setState(State.DROP_SKYSTONE);
                     break;
 
                 case DROP_SKYSTONE:
@@ -304,7 +306,7 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                     break;
 
                 case BACK_OFF_FOUNDATION:
-                    robot.extenderArm.retract();
+//                    robot.extenderArm.retract();
                     robot.wrist.retract();
                     robot.elevator.zeroCalibrate();
                     yTarget = -6.0;

@@ -155,23 +155,17 @@ class RobotInfo3543
     //
     // ExtenderArm subsystem (3543-only).
     //
-//    static final double EXTENDER_ARM_KP                         = 0.5;
-//    static final double EXTENDER_ARM_KI                         = 0.0;
-//    static final double EXTENDER_ARM_KD                         = 0.0;
-//    static final double EXTENDER_ARM_TOLERANCE                  = 0.5;
-//    static final boolean EXTENDER_ARM_INVERTED                  = false;
-//    static final boolean EXTENDER_ARM_HAS_UPPER_LIMIT_SWITCH    = false;
-//    static final double EXTENDER_ARM_CAL_POWER                  = 0.5;
-//    static final double EXTENDER_ARM_MIN_POS                    = 0.0;
-//    static final double EXTENDER_ARM_MAX_POS                    = 3000.0;
-//    static final double EXTENDER_ARM_SCALE                      = 1.0;
-//    static final double EXTENDER_ARM_OFFSET                     = 0.0;
-    static final double EXTENDER_ARM_MAX_STEPRATE               = (1.0/3.0);
-    static final double EXTENDER_ARM_MIN_POS                    = 0.2;
-    static final double EXTENDER_ARM_MAX_POS                    = 0.8;
-    static final double EXTENDER_ARM_RETRACTED_POS              = 0.2;
-    static final double EXTENDER_ARM_EXTEND_POS                 = 0.6;
-    static final double EXTENDER_ARM_MOVE_TIME                  = 3.0;
+    static final double EXTENDER_ARM_KP                         = 0.5;
+    static final double EXTENDER_ARM_KI                         = 0.0;
+    static final double EXTENDER_ARM_KD                         = 0.0;
+    static final double EXTENDER_ARM_TOLERANCE                  = 0.5;
+    static final boolean EXTENDER_ARM_INVERTED                  = true;
+    static final boolean EXTENDER_ARM_HAS_UPPER_LIMIT_SWITCH    = false;
+    static final double EXTENDER_ARM_CAL_POWER                  = 0.5;
+    static final double EXTENDER_ARM_MIN_POS                    = 0.0;
+    static final double EXTENDER_ARM_MAX_POS                    = 12.0;
+    static final double EXTENDER_ARM_SCALE                      = 17.0/4718.0;
+    static final double EXTENDER_ARM_OFFSET                     = 0.0;
     //
     // Wrist subsystem (3543-only).
     //

@@ -32,14 +32,14 @@ SOFTWARE.
         </LynxModule>
         <LynxModule name="Expansion Hub 3" port="3">
             <RevRobotics20HDHexMotor name="elevatorMotor" port="0" />
+            <RevRobotics20HDHexMotor name="extenderArmMotor" port="1" />
             <DigitalDevice name="elevatorLowerLimit" port="0" />
-            <DigitalDevice name="elevatorUpperLimit" port="1" />
+            <DigitalDevice name="extenderArmLowerLimit" port="1" />
             <Servo name="backFoundationLatchServo" port="0" />
-            <Servo name="extenderArmServo" port="1" />
-            <Servo name="grabberServo" port="2" />
+            <Servo name="leftFoundationLatchServo" port="1" />
+            <Servo name="rightFoundationLatchServo" port="2" />
             <Servo name="wristServo" port="3" />
-            <Servo name="leftFoundationLatchServo" port="4" />
-            <Servo name="rightFoundationLatchServo" port="5" />
+            <Servo name="grabberServo" port="4" />
             <LynxEmbeddedIMU name="imu 1" port="0" bus="0" />
         </LynxModule>
     </LynxUsbDevice>
