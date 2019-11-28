@@ -104,10 +104,10 @@ class RobotInfo6541
             VuforiaLocalizer.Parameters.CameraMonitorFeedback.AXES;
     static final boolean PHONE_IS_PORTRAIT                      = false;
     static final double ROBOT_LENGTH                            = 17.5; //Robot length in inches
-    static final double ROBOT_WIDTH                             = 17.5; //Robot width in inches
+    static final double ROBOT_WIDTH                             = 18.0; //Robot width in inches
     static final double PHONE_FRONT_OFFSET                      = 0.0;  //Phone offset from front of robot in inches
     static final double PHONE_HEIGHT_OFFSET                     = 4.75; //Phone offset from floor in inches
-    static final double PHONE_LEFT_OFFSET                       = 11.0; //Phone offset from left of robot in inches
+    static final double PHONE_LEFT_OFFSET                       = 11.5; //Phone offset from left of robot in inches
 
     static final double HOMOGRAPHY_CAMERA_TOPLEFT_X             = 0.0;
     static final double HOMOGRAPHY_CAMERA_TOPLEFT_Y             = 360.0;
@@ -168,7 +168,7 @@ class RobotInfo6541
     static final double GRABBER_GRAB_POS                        = 0.8;
     static final double GRABBER_GRAB_TIME                       = 1.0;
     static final double GRABBER_RELEASE_TIME                    = 1.0;
-    static final double GRABBER_OFFSET                          = 0.0;
+    static final double GRABBER_OFFSET                          = -5.0;
     //
     // BackFoundationLatch subsystem.
     //

@@ -257,10 +257,18 @@ public class CmdSkystoneVision implements TrcRobot.RobotCommand
                     }
                     else
                     {
-                        sm.setState(State.GOTO_SKYSTONE);
-                        //
-                        // Intentionally falling through to the next state.
-                        //
+                        xTarget = grabberOffset * allianceDirection;
+                        if (xTarget == 0.0)
+                        {
+                            sm.setState(State.GOTO_SKYSTONE);
+                            break;
+                        }
+                        else
+                        {
+                            robot.pidDrive.setRelativeXTarget(xTarget, event);
+                            sm.waitForSingleEvent(event, State.GOTO_SKYSTONE);
+                            break;
+                        }
                     }
 
                 case GOTO_SKYSTONE:
