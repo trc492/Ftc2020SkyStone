@@ -59,6 +59,7 @@ class RobotInfo3543
     // 2019-11-19: Scale=0.0174484434975099, Kp=0.06, Ki=0.0, Kd=0.002
     //
     static final double ENCODER_Y_KP                            = 0.06;
+    static final double ENCODER_Y_LOADED_KP                     = 0.085;
     static final double ENCODER_Y_KI                            = 0.0;
     static final double ENCODER_Y_KD                            = 0.002;
     static final double ENCODER_Y_TOLERANCE                     = 2.0;

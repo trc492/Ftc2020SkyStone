@@ -81,7 +81,11 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
     private final TrcStateMachine<State> sm;
     private final double allianceDirection;
     private final SimplePidDrive<State> simplePidDrive;
+    private final TrcPidController xPidCtrl;
+    private final TrcPidController yPidCtrl;
+    private final TrcPidController turnPidCtrl;
     private CmdSkystoneVision skystoneVisionCommand = null;
+    private TrcPidController.PidCoefficients savedYPidCoeff = null;
 
     /**
      * Constructor: Create an instance of the object.
@@ -99,6 +103,9 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
         sm = new TrcStateMachine<>(moduleName);
         allianceDirection = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE ? 1.0 : -1.0;
         simplePidDrive = new SimplePidDrive<>(robot.pidDrive, event, sm);
+        xPidCtrl = robot.pidDrive.getYPidCtrl();
+        yPidCtrl = robot.pidDrive.getYPidCtrl();
+        turnPidCtrl = robot.pidDrive.getTurnPidCtrl();
         sm.start(State.BEGIN);
     }   //CmdAutoLoadingZone3543
 
@@ -128,8 +135,8 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
             robot.pidDrive.cancel();
         }
 
-        robot.pidDrive.getXPidCtrl().setOutputLimit(1.0);
-        robot.pidDrive.getYPidCtrl().setOutputLimit(1.0);
+        xPidCtrl.setOutputLimit(1.0);
+        yPidCtrl.setOutputLimit(1.0);
         sm.stop();
     }   //cancel
 
@@ -208,8 +215,8 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                     robot.grabber.release();
                     robot.wrist.extend();
 
-                    robot.pidDrive.getXPidCtrl().setOutputLimit(0.5);
-                    robot.pidDrive.getYPidCtrl().setOutputLimit(0.5);
+                    xPidCtrl.setOutputLimit(0.5);
+                    yPidCtrl.setOutputLimit(0.5);
                     yTarget = 23.5;
                     simplePidDrive.setRelativeYTarget(yTarget, State.MOVE_TO_FIRST_STONE);
                     break;
@@ -277,8 +284,8 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
 
                 case GOTO_FOUNDATION:
                     // Need to go full speed to save time.
-                    robot.pidDrive.getXPidCtrl().setOutputLimit(1.0);
-                    robot.pidDrive.getYPidCtrl().setOutputLimit(1.0);
+                    xPidCtrl.setOutputLimit(1.0);
+                    yPidCtrl.setOutputLimit(1.0);
                     xTarget = (autoChoices.strategy == CommonAuto.AutoStrategy.LOADING_ZONE_WALL?
                                     RobotInfo.ABS_FOUNDATION_DROP_NEAR_X:
                                autoChoices.strategy == CommonAuto.AutoStrategy.LOADING_ZONE_MID?
@@ -340,11 +347,20 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                     // to make sure it hits the wall and we will correct the odometry and Absolute Target Pose in the
                     // Y direction.
                     //
+                    savedYPidCoeff = yPidCtrl.getPidCoefficients();
+                    TrcPidController.PidCoefficients loadedYPidCoeff = savedYPidCoeff.clone();
+                    loadedYPidCoeff.kP = RobotInfo3543.ENCODER_Y_LOADED_KP;
+                    yPidCtrl.setPidCoefficients(loadedYPidCoeff);
                     yTarget = 40.0;
                     simplePidDrive.setRelativeYTarget(yTarget, State.UNHOOK_FOUNDATION);
                     break;
 
                 case UNHOOK_FOUNDATION:
+                    if (savedYPidCoeff != null)
+                    {
+                        yPidCtrl.setPidCoefficients(savedYPidCoeff);
+                        savedYPidCoeff = null;
+                    }
                     // Correct odometry and absTargetPose after wheel slippage.
                     TrcPose2D pose = robot.driveBase.getAbsolutePose();
                     pose.y = RobotInfo.ROBOT_START_Y;
@@ -430,20 +446,19 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
 
             robot.globalTracer.traceInfo(moduleName, "RobotPose: %s", robot.driveBase.getAbsolutePose());
 
-            TrcPidController pidCtrl = robot.pidDrive.getXPidCtrl();
-            if (debugXPid && pidCtrl != null)
+            if (debugXPid && xPidCtrl != null)
             {
-                pidCtrl.printPidInfo(robot.globalTracer, elapsedTime);
+                xPidCtrl.printPidInfo(robot.globalTracer, elapsedTime);
             }
 
             if (debugYPid)
             {
-                robot.pidDrive.getYPidCtrl().printPidInfo(robot.globalTracer, elapsedTime);
+                yPidCtrl.printPidInfo(robot.globalTracer, elapsedTime);
             }
 
             if (debugTurnPid)
             {
-                robot.pidDrive.getTurnPidCtrl().printPidInfo(robot.globalTracer, elapsedTime);
+                turnPidCtrl.printPidInfo(robot.globalTracer, elapsedTime);
             }
         }
 

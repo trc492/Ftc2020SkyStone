@@ -261,7 +261,9 @@ public class CmdSkystoneVision implements TrcRobot.RobotCommand
                         if (xTarget == 0.0)
                         {
                             sm.setState(State.GOTO_SKYSTONE);
-                            break;
+                            //
+                            // Intentionally falling through to the next state.
+                            //
                         }
                         else
                         {
