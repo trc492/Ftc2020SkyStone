@@ -703,14 +703,16 @@ public class Robot
             }
         }
 
-        if (pose == null)
+        if (vuforiaVision != null || tensorFlowVision != null)
         {
-            globalTracer.traceInfo(funcName, "***** Skystone not found!");
-        }
-        else
-        {
-            globalTracer.traceInfo(funcName, "***** %s: x=%.1f, y=%.1f, angle=%.1f",
-                    targetFinder, pose.x, pose.y, pose.heading);
+            if (pose == null)
+            {
+                globalTracer.traceInfo(funcName, "***** Skystone not found!");
+            } else
+            {
+                globalTracer.traceInfo(funcName, "***** %s: x=%.1f, y=%.1f, angle=%.1f",
+                        targetFinder, pose.x, pose.y, pose.heading);
+            }
         }
 
         return pose;
@@ -743,14 +745,17 @@ public class Robot
             {
                 if (songCollection != null && index >= 0 && index < songCollection.length)
                 {
+                    globalTracer.traceInfo("startSong", "Staring song %s.", songCollection[index]);
                     songPlayer.playSong(songCollection[index], songParams.barDuration, true, false);
                 }
                 else if (index == 0)
                 {
+                    globalTracer.traceInfo("startSong", "Staring song Les Miserables.");
                     songPlayer.playSong(lesMiserables, songParams.barDuration, true, false);
                 }
                 else
                 {
+                    globalTracer.traceInfo("startSong", "Staring song Star Wars.");
                     songPlayer.playSong(starWars, songParams.barDuration, true, false);
                 }
 
@@ -772,9 +777,15 @@ public class Robot
                 //
                 songPlayer.pause();
                 if (lesMiserablesPlaying)
+                {
                     lesMiserablesPlaying = false;
+                    globalTracer.traceInfo("startSong", "Stopping song Les Miserables.");
+                }
                 else if (starWarsPlaying)
+                {
                     starWarsPlaying = false;
+                    globalTracer.traceInfo("startSong", "Stopping song Star Wars.");
+                }
             }
         }
     }   //startSong

@@ -73,7 +73,7 @@ class RobotInfo3543
     static final double GYRO_KD                                 = 0.001;
     static final double GYRO_TOLERANCE                          = 2.0;
 
-    static final double PIDDRIVE_STALL_TIMEOUT                  = 0.5;  //in seconds.
+    static final double PIDDRIVE_STALL_TIMEOUT                  = 0.2;  //in seconds.
 
     // TODO: need to tune all PID coefficients
     // average of encoder KP for x and y PID drive, as suggested by Abhay.

@@ -36,10 +36,10 @@ SOFTWARE.
             <DigitalDevice name="elevatorLowerLimit" port="0" />
             <DigitalDevice name="extenderArmLowerLimit" port="1" />
             <Servo name="backFoundationLatchServo" port="0" />
-            <Servo name="leftFoundationLatchServo" port="1" />
-            <Servo name="rightFoundationLatchServo" port="2" />
-            <Servo name="wristServo" port="3" />
-            <Servo name="grabberServo" port="4" />
+            <Servo name="wristServo" port="1" />
+            <Servo name="grabberServo" port="2" />
+            <Servo name="leftFoundationLatchServo" port="3" />
+            <Servo name="rightFoundationLatchServo" port="4" />
             <LynxEmbeddedIMU name="imu 1" port="0" bus="0" />
         </LynxModule>
     </LynxUsbDevice>
