@@ -283,7 +283,7 @@ class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
                     break;
 
                 case APPROACH_FOUNDATION:
-                    robot.elevator.setPosition(6.0);
+                    robot.elevator.setPosition(4.0);
                     yTarget = 12.0;
                     simplePidDrive.setRelativeYTarget(yTarget, State.EXTEND_ARM_OVER_FOUNDATION);
                     break;
@@ -299,7 +299,7 @@ class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
 
                 case BACK_OFF_FOUNDATION:
                     robot.elevator.zeroCalibrate();
-                    robot.elbow.setPosition(0.5);
+                    robot.elbow.retract();
                     robot.grabber.setPosition(1.0);
                     yTarget = -6.0;
                     nextState = autoChoices.moveFoundation?
@@ -364,7 +364,7 @@ class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
                     break;
 
                 case PUSH_FOUNDATION_TO_WALL:
-                    xTarget = -13.0 * allianceDirection;
+                    xTarget = -16.0 * allianceDirection;
                     nextState = autoChoices.parkUnderBridge == CommonAuto.ParkPosition.PARK_CLOSE_TO_CENTER?
                             State.MOVE_UNDER_BRIDGE: State.MOVE_BACK_TO_WALL;
                     simplePidDrive.setRelativeXTarget(xTarget, nextState);
