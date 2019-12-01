@@ -136,7 +136,7 @@ class RobotInfo6541
     static final double ELEVATOR_KP                             = 0.35;
     static final double ELEVATOR_KI                             = 0.0;
     static final double ELEVATOR_KD                             = 0.01;
-    static final double ELEVATOR_TOLERANCE                      = 1.0;
+    static final double ELEVATOR_TOLERANCE                      = 0.5; //1.0;
     static final boolean ELEVATOR_INVERTED                      = false;
     static final boolean ELEVATOR_HAS_UPPER_LIMIT_SWITCH        = false;
     static final double ELEVATOR_CAL_POWER                      = 0.025;
@@ -147,7 +147,7 @@ class RobotInfo6541
     static final double ELEVATOR_RELEASE_HEIGHT                 = 18.0;
     static final double ELEVATOR_PICKUP_HEIGHT                  = 4.0;
 
-    static final double[] ELEVATOR_HEIGHT_PRESETS               = {2.5, 6.5, 10.5, 14.5, 18.5};
+    static final double[] ELEVATOR_HEIGHT_PRESETS               = {0.0, 3.0, 7.0, 11.0, 15.0};
     //
     // elbow subsystem.
     //
@@ -156,7 +156,7 @@ class RobotInfo6541
     static final double ELBOW_MAX_POS                           = 1.0;
     static final double ELBOW_EXTEND_POS                        = 1.0;
     static final double ELBOW_EXTEND_TIME                       = 1.0;
-    static final double ELBOW_RETRACT_POS                       = 0.5;
+    static final double ELBOW_RETRACT_POS                       = 0.45;
     static final double ELBOW_RETRACT_TIME                      = 1.0;
     static final double ELBOW_READY_POS                         = 0.5;
     //

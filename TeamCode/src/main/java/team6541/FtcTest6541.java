@@ -24,6 +24,8 @@ package team6541;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import java.util.Locale;
+
 import common.CommonTest;
 import ftclib.FtcGamepad;
 import trclib.TrcGameController;
@@ -35,6 +37,9 @@ public class FtcTest6541 extends FtcTeleOp6541
 {
     private static final String MODULE_NAME = "FtcTest6541";
     private CommonTest commonTest = new CommonTest();
+
+    // elbow servo tuning variables.
+    private double debugServoPos = 0.5;
 
     //
     // Overrides FtcOpMode abstract method.
@@ -123,6 +128,33 @@ public class FtcTest6541 extends FtcTeleOp6541
 
                 case FtcGamepad.GAMEPAD_DPAD_RIGHT:
                     break;
+
+                case FtcGamepad.GAMEPAD_A:
+                    if (pressed)
+                    {
+                        if (debugServoPos < 1.0)
+                        {
+                            debugServoPos += 0.05;
+                        }
+                        //robot6541.speak(String.format(Locale.US, "Elbow position %.2f", debugServoPos));
+                        robot6541.elbow.setPosition(debugServoPos);
+                    }
+                    processed = true;
+                    break;
+
+                case FtcGamepad.GAMEPAD_B:
+                    if (pressed)
+                    {
+                        if (debugServoPos > 0.0)
+                        {
+                            debugServoPos -= 0.05;
+                        }
+                        //robot6541.speak(String.format(Locale.US, "Elbow position %.2f", debugServoPos));
+                        robot6541.elbow.setPosition(debugServoPos);
+                    }
+                    processed = true;
+                    break;
+
             }
         }
         else if (gamepad == operatorGamepad)
