@@ -41,7 +41,7 @@ class Robot3543 extends Robot
             .setInitSubsystems(true)
             .setHasElevator(true)
             .setHasBlinkin(true)
-            .setPlaySongs(true)
+            .setPlaySongs(false)
             .setSongsInResources(true)
             .setUseVuforia(true)
             .setUseTensorFlow(false)
