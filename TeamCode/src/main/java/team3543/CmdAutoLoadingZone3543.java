@@ -57,7 +57,7 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
         DROP_SKYSTONE,
         BACK_OFF_FOUNDATION,
         TURN_AROUND,
-        BACKUP_TO_FOUNDATION,
+        PULL_UP_TO_FOUNDATION,
         HOOK_FOUNDATION,
         PULL_FOUNDATION_TO_WALL,
         UNHOOK_FOUNDATION,
@@ -326,12 +326,13 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                     break;
 
                 case TURN_AROUND:
-                    turnTarget = 180.0;
-                    simplePidDrive.setRelativeTurnTarget(turnTarget, State.BACKUP_TO_FOUNDATION);
-                    break;
+                    // skip this state and fall through to the next
+//                    turnTarget = 180.0;
+//                    simplePidDrive.setRelativeTurnTarget(turnTarget, State.PULL_UP_TO_FOUNDATION);
+//                    break;
 
-                case BACKUP_TO_FOUNDATION:
-                    yTarget = -8.0;
+                case PULL_UP_TO_FOUNDATION:
+                    yTarget = 8.0;
                     simplePidDrive.setRelativeYTarget(yTarget, State.HOOK_FOUNDATION);
                     break;
 
@@ -351,7 +352,7 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                     TrcPidController.PidCoefficients loadedYPidCoeff = savedYPidCoeff.clone();
                     loadedYPidCoeff.kP = RobotInfo3543.ENCODER_Y_LOADED_KP;
                     yPidCtrl.setPidCoefficients(loadedYPidCoeff);
-                    yTarget = 40.0;
+                    yTarget = -40.0;
                     simplePidDrive.setRelativeYTarget(yTarget, State.UNHOOK_FOUNDATION);
                     break;
 
@@ -384,7 +385,7 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                     break;
 
                 case PUSH_FOUNDATION_TO_WALL:
-                    xTarget = -13.0 * allianceDirection;
+                    xTarget = 13.0 * allianceDirection;
                     nextState = autoChoices.parkUnderBridge == CommonAuto.ParkPosition.PARK_CLOSE_TO_CENTER?
                             State.MOVE_UNDER_BRIDGE: State.MOVE_BACK_TO_WALL;
                     simplePidDrive.setRelativeXTarget(xTarget, nextState);
@@ -393,12 +394,12 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                 case MOVE_BACK_TO_WALL:
                     nextState = autoChoices.parkUnderBridge == CommonAuto.ParkPosition.NO_PARK?
                                     State.DONE: State.MOVE_UNDER_BRIDGE;
-                    yTarget = 22.0;
+                    yTarget = -22.0;
                     simplePidDrive.setRelativeYTarget(yTarget, nextState);
                     break;
 
                 case MOVE_UNDER_BRIDGE:
-                    xTarget = 32.0 * allianceDirection;
+                    xTarget = -32.0 * allianceDirection;
                     simplePidDrive.setRelativeXTarget(xTarget, State.DONE);
                     break;
 
