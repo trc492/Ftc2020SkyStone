@@ -142,7 +142,7 @@ class RobotInfo3543
     // 2019-10-28: Scale=18.622/17897.0 = 0.0010405095826116, Kp=1.0, Ki=0.0, Kd=0.0
     // 2019-11-19: Scale=17.0/4718.0=0.00360322, Kp=1.0, Ki=0.0, Kd=0.0 (Replaced with faster motor)
     //
-    static final double ELEVATOR_KP                             = 1.0;
+    static final double ELEVATOR_KP                             = 0.5;
     static final double ELEVATOR_KI                             = 0.0;
     static final double ELEVATOR_KD                             = 0.0;
     static final double ELEVATOR_TOLERANCE                      = 0.5;
@@ -150,21 +150,21 @@ class RobotInfo3543
     static final boolean ELEVATOR_HAS_UPPER_LIMIT_SWITCH        = false;
     static final double ELEVATOR_CAL_POWER                      = 0.5;
     static final double ELEVATOR_MIN_HEIGHT                     = 0.0;
-    static final double ELEVATOR_MAX_HEIGHT                     = 18.5;
+    static final double ELEVATOR_MAX_HEIGHT                     = 19.0;
     static final double ELEVATOR_SCALE                          = 17.0/4718.0;
     static final double ELEVATOR_OFFSET                         = 0.0;
     //
     // ExtenderArm subsystem (3543-only).
     //
-    static final double EXTENDER_ARM_KP                         = 0.5;
+    static final double EXTENDER_ARM_KP                         = 1.0;
     static final double EXTENDER_ARM_KI                         = 0.0;
     static final double EXTENDER_ARM_KD                         = 0.0;
     static final double EXTENDER_ARM_TOLERANCE                  = 0.5;
     static final boolean EXTENDER_ARM_INVERTED                  = true;
     static final boolean EXTENDER_ARM_HAS_UPPER_LIMIT_SWITCH    = false;
-    static final double EXTENDER_ARM_CAL_POWER                  = 0.5;
-    static final double EXTENDER_ARM_MIN_POS                    = 0.0;
-    static final double EXTENDER_ARM_MAX_POS                    = 12.0;
+    static final double EXTENDER_ARM_CAL_POWER                  = 1.0;
+    static final double EXTENDER_ARM_MIN_POS                    = -2.0;
+    static final double EXTENDER_ARM_MAX_POS                    = 15.0;
     static final double EXTENDER_ARM_SCALE                      = 17.0/4718.0;
     static final double EXTENDER_ARM_OFFSET                     = 0.0;
     //
@@ -173,8 +173,8 @@ class RobotInfo3543
     static final double WRIST_MAX_STEPRATE                      = (1.0/0.75);
     static final double WRIST_MIN_POS                           = 0.2;
     static final double WRIST_MAX_POS                           = 0.8;
-    static final double WRIST_RETRACT_POS                       = 0.6;
-    static final double WRIST_EXTEND_POS                        = 0.2;
+    static final double WRIST_RETRACT_POS                       = 0.0;
+    static final double WRIST_EXTEND_POS                        = 0.625;
     static final double WRIST_ROTATE_TIME                       = 0.3;
 //    static final boolean WRIST_INVERTED                         = true;
     //

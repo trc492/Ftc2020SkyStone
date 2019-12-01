@@ -62,9 +62,12 @@ public class FtcTeleOp3543 extends CommonTeleOp
         //
         double extenderArmPower = operatorGamepad.getLeftStickY(true);
         double extenderArmPos;
+        boolean extenderArmLimitSwitch;
 
         robot3543.extenderArm.setPower(extenderArmPower);
         extenderArmPos = robot3543.extenderArm.getPosition();
+        extenderArmLimitSwitch = robot3543.extenderArm.isLowerLimitSwitchActive();
+
 
         double wristPower = operatorGamepad.getLeftStickX(true) / 3.0;
         double wristPos = 0.0;
@@ -81,8 +84,8 @@ public class FtcTeleOp3543 extends CommonTeleOp
         }
 
         dashboard.displayPrintf(
-                5, "ArmPower=%.1f, ArmPos=%.1f, WristPower=%.1f, WristPos =%.1f, FrontLatchPos=%.1f",
-                extenderArmPower, extenderArmPos, wristPower, wristPos, frontLatchPos);
+                5, "ArmPower=%.1f, ArmPos=%.1f, ArmLimit=%s, WristPower=%.1f, WristPos =%.1f, FrontLatchPos=%.1f",
+                extenderArmPower, extenderArmPos, extenderArmLimitSwitch? "True": "False", wristPower, wristPos, frontLatchPos);
     }   //runPeriodic
 
     //
@@ -148,6 +151,7 @@ public class FtcTeleOp3543 extends CommonTeleOp
                     break;
 
                 case FtcGamepad.GAMEPAD_RBUMPER:
+                    robot3543.extenderArm.setManualOverride(pressed);
                     break;
 
                 case FtcGamepad.GAMEPAD_DPAD_UP:
@@ -183,6 +187,9 @@ public class FtcTeleOp3543 extends CommonTeleOp
                     break;
 
                 case FtcGamepad.GAMEPAD_BACK:
+                    if (pressed){
+                        robot3543.extenderArm.zeroCalibrate();
+                    }
                     break;
 
                 case FtcGamepad.GAMEPAD_START:
