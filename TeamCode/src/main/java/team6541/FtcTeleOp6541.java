@@ -39,10 +39,6 @@ public class FtcTeleOp6541 extends CommonTeleOp
     // elbow deployed checker
     private boolean hasDeployedElbow = false;
 
-    // elbow servo tuning variables.
-    private static final boolean DO_ELBOW_TUNING = false;
-    private double debugServoPos = 0.5;
-
     //
     // Implements FtcOpMode abstract method.
     //
@@ -74,7 +70,7 @@ public class FtcTeleOp6541 extends CommonTeleOp
             robot6541.elbow.extend();
             hasDeployedElbow = true;
         }
-        dashboard.displayPrintf(5, "ElbowPos=%.1f", robot6541.elbow.getPosition());
+        dashboard.displayPrintf(5, "ElbowPos=%.2f", robot6541.elbow.getPosition());
     }   //runPeriodic
 
     //
@@ -94,35 +90,9 @@ public class FtcTeleOp6541 extends CommonTeleOp
             switch (button)
             {
                 case FtcGamepad.GAMEPAD_A:
-                    if (DO_ELBOW_TUNING)
-                    {
-                        if (pressed)
-                        {
-                            if (debugServoPos < 1.0)
-                            {
-                                debugServoPos += 0.05;
-                            }
-                            robot6541.speak(String.format(Locale.US, "Elbow position %.2f", debugServoPos));
-                            robot6541.elbow.setPosition(debugServoPos);
-                        }
-                        processed = true;
-                    }
                     break;
 
                 case FtcGamepad.GAMEPAD_B:
-                    if (DO_ELBOW_TUNING)
-                    {
-                        if (pressed)
-                        {
-                            if (debugServoPos > 0.0)
-                            {
-                                debugServoPos -= 0.05;
-                            }
-                            robot6541.speak(String.format(Locale.US, "Elbow position %.2f", debugServoPos));
-                            robot6541.elbow.setPosition(debugServoPos);
-                        }
-                        processed = true;
-                    }
                     break;
 
                 case FtcGamepad.GAMEPAD_X:
