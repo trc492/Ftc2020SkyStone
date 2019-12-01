@@ -154,7 +154,6 @@ public class FtcTest6541 extends FtcTeleOp6541
                     }
                     processed = true;
                     break;
-
             }
         }
         else if (gamepad == operatorGamepad)

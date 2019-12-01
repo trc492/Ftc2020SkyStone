@@ -68,7 +68,6 @@ public class FtcTeleOp3543 extends CommonTeleOp
         extenderArmPos = robot3543.extenderArm.getPosition();
         extenderArmLimitSwitch = robot3543.extenderArm.isLowerLimitSwitchActive();
 
-
         double wristPower = operatorGamepad.getLeftStickX(true) / 3.0;
         double wristPos = 0.0;
         if (robot3543.wrist != null)
@@ -83,9 +82,9 @@ public class FtcTeleOp3543 extends CommonTeleOp
             frontLatchPos = robot3543.frontFoundationLatch.getPosition();
         }
 
-        dashboard.displayPrintf(
-                5, "ArmPower=%.1f, ArmPos=%.1f, ArmLimit=%s, WristPower=%.1f, WristPos =%.1f, FrontLatchPos=%.1f",
-                extenderArmPower, extenderArmPos, extenderArmLimitSwitch? "True": "False", wristPower, wristPos, frontLatchPos);
+        dashboard.displayPrintf(5,
+                "ArmPower=%.1f, ArmPos=%.1f, ArmLimit=%s, WristPower=%.1f, WristPos =%.1f, FrontLatchPos=%.1f",
+                extenderArmPower, extenderArmPos, extenderArmLimitSwitch, wristPower, wristPos, frontLatchPos);
     }   //runPeriodic
 
     //
@@ -187,7 +186,8 @@ public class FtcTeleOp3543 extends CommonTeleOp
                     break;
 
                 case FtcGamepad.GAMEPAD_BACK:
-                    if (pressed){
+                    if (pressed)
+                    {
                         robot3543.extenderArm.zeroCalibrate();
                     }
                     break;
