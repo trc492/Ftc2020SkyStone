@@ -335,7 +335,7 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                     //
                     // We can safely retract everything here because the skystone should be dropped by now.
                     //
-                    robot.extenderArm.setPosition(RobotInfo3543.EXTENDER_ARM_MIN_POS);
+                    robot.extenderArm.setPosition(RobotInfo3543.EXTENDER_ARM_RETRACT_POS);
                     robot.wrist.retract();
                     robot.elevator.zeroCalibrate();
                     if (savedYPidCoeff != null)

@@ -154,19 +154,19 @@ public class FtcTeleOp3543 extends CommonTeleOp
                     break;
 
                 case FtcGamepad.GAMEPAD_DPAD_UP:
-//                    if (pressed)
-//                    {
-//                        robot3543.extenderArm.extend();
-//                    }
-//                    processed = true;
+                    if (pressed)
+                    {
+                        robot3543.extenderArm.setPosition(RobotInfo3543.EXTENDER_ARM_EXTEND_POS);
+                    }
+                    processed = true;
                     break;
 
                 case FtcGamepad.GAMEPAD_DPAD_DOWN:
-//                    if (pressed)
-//                    {
-//                        robot3543.extenderArm.retract();
-//                    }
-//                    processed = true;
+                    if (pressed)
+                    {
+                        robot3543.extenderArm.setPosition(RobotInfo3543.EXTENDER_ARM_RETRACT_POS);
+                    }
+                    processed = true;
                     break;
 
                 case FtcGamepad.GAMEPAD_DPAD_LEFT:
