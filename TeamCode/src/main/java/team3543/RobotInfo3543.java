@@ -153,6 +153,7 @@ class RobotInfo3543
     static final double ELEVATOR_MAX_HEIGHT                     = 19.0;
     static final double ELEVATOR_SCALE                          = 17.0/4718.0;
     static final double ELEVATOR_OFFSET                         = 0.0;
+    static final double ELEVATOR_DROP_HEIGHT                    = 3.0;
     //
     // ExtenderArm subsystem (3543-only).
     //
@@ -167,6 +168,9 @@ class RobotInfo3543
     static final double EXTENDER_ARM_MAX_POS                    = 15.0;
     static final double EXTENDER_ARM_SCALE                      = 17.0/4718.0;
     static final double EXTENDER_ARM_OFFSET                     = 0.0;
+    static final double EXTENDER_ARM_PICKUP_POS                 = 13.5;
+    static final double EXTENDER_ARM_CARRY_POS                  = 1.0;
+    static final double EXTENDER_ARM_DROP_POS                   = 13.0;
     //
     // Wrist subsystem (3543-only).
     //
