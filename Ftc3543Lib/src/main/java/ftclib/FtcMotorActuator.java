@@ -222,6 +222,17 @@ public class FtcMotorActuator
     }   //setPosition
 
     /**
+     * This method starts moving the actuator to the specified position.
+     *
+     * @param target specifies the target position to set the actuator.
+     * @param event specifies the event to be signal when the actuator reaches the specified position.
+     */
+    public void setPosition(double target, TrcEvent event)
+    {
+        pidActuator.setTarget(target, event, 0.0);
+    }   //setPosition
+
+    /**
      * This method starts moving the actuator to the specified position. The actuator will maintain the target position
      * after target is reached.
      *

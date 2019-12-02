@@ -260,7 +260,7 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                     }
 
                 case GO_DOWN_ON_SKYSTONE:
-                    robot.extenderArm.setPosition(RobotInfo3543.EXTENDER_ARM_PICKUP_POS, event, 2.5);
+                    robot.extenderArm.setPosition(RobotInfo3543.EXTENDER_ARM_PICKUP_POS, event);
                     sm.waitForSingleEvent(event, State.GRAB_SKYSTONE);
                     break;
 
@@ -279,8 +279,10 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                     break;
 
                 case START_EXTENDER_ARM_RETRACTION:
-                    // CodeReview: may be able to tune the delay down further.
-                    robot.extenderArm.setPosition(RobotInfo3543.EXTENDER_ARM_CARRY_POS, event, 2.5);
+                    //
+                    // Bring the extender arm back so we don't run into the bridge during travel.
+                    //
+                    robot.extenderArm.setPosition(RobotInfo3543.EXTENDER_ARM_CARRY_POS, event);
                     sm.waitForSingleEvent(event, State.GOTO_FOUNDATION);
                     break;
 
@@ -301,7 +303,7 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                     // Raise the elevator and extender arm to drop position while approaching the foundation.
                     //
                     robot.elevator.setPosition(RobotInfo3543.ELEVATOR_DROP_HEIGHT);
-                    robot.extenderArm.setPosition(RobotInfo3543.EXTENDER_ARM_DROP_POS, event, 1.5);
+                    robot.extenderArm.setPosition(RobotInfo3543.EXTENDER_ARM_DROP_POS, event);
                     yTarget = 12.0;
                     simplePidDrive.setRelativeYTarget(yTarget, State.DROP_SKYSTONE);
                     break;
