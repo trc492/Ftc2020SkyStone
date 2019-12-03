@@ -69,7 +69,10 @@ class Robot3543 extends Robot
                     RobotInfo3543.ELEVATOR_TOLERANCE)
             .setMotorParams(
                     RobotInfo3543.ELEVATOR_INVERTED, RobotInfo3543.ELEVATOR_HAS_UPPER_LIMIT_SWITCH,
-                    RobotInfo3543.ELEVATOR_CAL_POWER);
+                    RobotInfo3543.ELEVATOR_CAL_POWER)
+            .setStallProtectionParams(
+                    RobotInfo3543.ELEVATOR_STALL_MIN_POWER, RobotInfo3543.ELEVATOR_STALL_TIMEOUT,
+                    RobotInfo3543.ELEVATOR_RESET_TIMEOUT);
     private static final FtcMotorActuator.Parameters extenderArmParams3543 = new FtcMotorActuator.Parameters()
             .setPosRange(RobotInfo3543.EXTENDER_ARM_MIN_POS, RobotInfo3543.EXTENDER_ARM_MAX_POS)
             .setScaleOffset(RobotInfo3543.EXTENDER_ARM_SCALE, RobotInfo3543.EXTENDER_ARM_OFFSET)
@@ -78,7 +81,10 @@ class Robot3543 extends Robot
                     RobotInfo3543.EXTENDER_ARM_TOLERANCE)
             .setMotorParams(
                     RobotInfo3543.EXTENDER_ARM_INVERTED, RobotInfo3543.EXTENDER_ARM_HAS_UPPER_LIMIT_SWITCH,
-                    RobotInfo3543.EXTENDER_ARM_CAL_POWER);
+                    RobotInfo3543.EXTENDER_ARM_CAL_POWER)
+            .setStallProtectionParams(
+                RobotInfo3543.EXTENDER_ARM_STALL_MIN_POWER, RobotInfo3543.EXTENDER_ARM_STALL_TIMEOUT,
+                RobotInfo3543.EXTENDER_ARM_RESET_TIMEOUT);
     private static final FtcServoActuator.Parameters wristParams3543 = new FtcServoActuator.Parameters()
             .setStepParams(RobotInfo3543.WRIST_MAX_STEPRATE, RobotInfo3543.WRIST_MIN_POS, RobotInfo3543.WRIST_MAX_POS)
             .setInverted(false, false)
@@ -160,10 +166,12 @@ class Robot3543 extends Robot
                 if (preferences.hasElevator)
                 {
                     elevator = new FtcMotorActuator("elevator", elevatorParams3543);
+                    elevator.setBeep(androidTone);
                     elevator.zeroCalibrate();
                 }
                 // ExtenderArm is 3543 only.
                 extenderArm = new FtcMotorActuator("extenderArm", extenderArmParams3543);
+                extenderArm.setBeep(androidTone);
                 extenderArm.zeroCalibrate();
                 // Wrist is 3543 only.
                 wrist = new FtcServoActuator("wristServo", wristParams3543);
