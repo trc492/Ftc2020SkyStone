@@ -98,7 +98,7 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
         sm = new TrcStateMachine<>(moduleName);
         allianceDirection = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE ? 1.0 : -1.0;
         simplePidDrive = new SimplePidDrive<>(robot.pidDrive, event, sm);
-        xPidCtrl = robot.pidDrive.getYPidCtrl();
+        xPidCtrl = robot.pidDrive.getXPidCtrl();
         yPidCtrl = robot.pidDrive.getYPidCtrl();
         turnPidCtrl = robot.pidDrive.getTurnPidCtrl();
         sm.start(State.BEGIN);
@@ -303,7 +303,7 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                     // Raise the elevator and extender arm to drop position while approaching the foundation.
                     //
                     robot.elevator.setPosition(RobotInfo3543.ELEVATOR_DROP_HEIGHT);
-                    robot.extenderArm.setPosition(RobotInfo3543.EXTENDER_ARM_DROP_POS, event);
+                    robot.extenderArm.setPosition(RobotInfo3543.EXTENDER_ARM_DROP_POS);
                     yTarget = 12.0;
                     simplePidDrive.setRelativeYTarget(yTarget, State.DROP_SKYSTONE);
                     break;

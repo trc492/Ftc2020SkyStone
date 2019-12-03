@@ -102,7 +102,7 @@ class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
         sm = new TrcStateMachine<>(moduleName);
         allianceDirection = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE ? 1.0 : -1.0;
         simplePidDrive = new SimplePidDrive<>(robot.pidDrive, event, sm);
-        xPidCtrl = robot.pidDrive.getYPidCtrl();
+        xPidCtrl = robot.pidDrive.getXPidCtrl();
         yPidCtrl = robot.pidDrive.getYPidCtrl();
         turnPidCtrl = robot.pidDrive.getTurnPidCtrl();
         sm.start(State.BEGIN);
