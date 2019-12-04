@@ -150,7 +150,7 @@ class RobotInfo3543
     static final boolean ELEVATOR_HAS_UPPER_LIMIT_SWITCH        = false;
     static final double ELEVATOR_CAL_POWER                      = 0.5;
     static final double ELEVATOR_STALL_MIN_POWER                = 0.5;
-    static final double ELEVATOR_STALL_TIMEOUT                  = 0.5;
+    static final double ELEVATOR_STALL_TIMEOUT                  = 1.0;
     static final double ELEVATOR_RESET_TIMEOUT                  = 0.5;
     static final double ELEVATOR_MIN_HEIGHT                     = 0.0;
     static final double ELEVATOR_MAX_HEIGHT                     = 19.0;
@@ -168,7 +168,7 @@ class RobotInfo3543
     static final boolean EXTENDER_ARM_HAS_UPPER_LIMIT_SWITCH    = false;
     static final double EXTENDER_ARM_CAL_POWER                  = 1.0;
     static final double EXTENDER_ARM_STALL_MIN_POWER            = 0.5;
-    static final double EXTENDER_ARM_STALL_TIMEOUT              = 0.5;
+    static final double EXTENDER_ARM_STALL_TIMEOUT              = 1.0;
     static final double EXTENDER_ARM_RESET_TIMEOUT              = 0.5;
     static final double EXTENDER_ARM_MIN_POS                    = -2.0;
     static final double EXTENDER_ARM_MAX_POS                    = 15.0;

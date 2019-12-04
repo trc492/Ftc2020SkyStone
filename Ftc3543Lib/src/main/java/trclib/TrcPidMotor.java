@@ -22,6 +22,8 @@
 
 package trclib;
 
+import ftclib.FtcOpMode;
+
 /**
  * This class implements a platform independent PID controlled motor. A PID controlled motor may consist of one or
  * two physical motors, a position sensor, typically an encoder (or could be a potentiometer). Optionally, it supports
@@ -1021,6 +1023,7 @@ public class TrcPidMotor
      */
     private boolean zeroCalibratingMotor(TrcMotor motor)
     {
+        final String funcName = "zeroCalibratingMotor";
         boolean done = motor.isLowerLimitSwitchActive() || stalled;
 
         if (done)
@@ -1036,6 +1039,8 @@ public class TrcPidMotor
                     beepDevice.playTone(beepLowFrequency, beepDuration);
                 }
                 stalled = false;
+                FtcOpMode.getGlobalTracer().traceWarn(
+                        funcName, "%s is stalled, lower limit switch might have failed!", instanceName);
             }
             motor.set(0.0);
             motor.resetPosition(false);
