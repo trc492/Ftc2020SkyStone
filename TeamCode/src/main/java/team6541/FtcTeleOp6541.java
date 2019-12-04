@@ -38,6 +38,8 @@ public class FtcTeleOp6541 extends CommonTeleOp
 
     // elbow deployed checker
     private boolean hasDeployedElbow = false;
+    // capstone deployer status tracker
+    private boolean capstoneDeployerExtended = false;
 
     //
     // Implements FtcOpMode abstract method.
@@ -133,6 +135,18 @@ public class FtcTeleOp6541 extends CommonTeleOp
                     break;
 
                 case FtcGamepad.GAMEPAD_RBUMPER:
+                    if (pressed)
+                    {
+                        capstoneDeployerExtended = !capstoneDeployerExtended;
+                        if (capstoneDeployerExtended)
+                        {
+                            robot6541.capstoneDeployer.extend();
+                        }
+                        else
+                        {
+                            robot6541.capstoneDeployer.retract();
+                        }
+                    }
                     break;
 
                 case FtcGamepad.GAMEPAD_DPAD_UP:
