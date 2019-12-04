@@ -24,8 +24,6 @@ package team6541;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import java.util.Locale;
-
 import common.CommonTeleOp;
 import ftclib.FtcGamepad;
 import trclib.TrcGameController;
@@ -37,7 +35,8 @@ public class FtcTeleOp6541 extends CommonTeleOp
     protected Robot6541 robot6541;
 
     // elbow deployed checker
-    private boolean hasDeployedElbow = false;
+    private boolean hasDeployedElbowDefault = false;
+    private boolean elbowExtended = false;
     // capstone deployer status tracker
     private boolean capstoneDeployerExtended = false;
 
@@ -67,10 +66,11 @@ public class FtcTeleOp6541 extends CommonTeleOp
         //
         // Operate other team specific subsystems.
         //
-        if (!hasDeployedElbow)
+        if (!hasDeployedElbowDefault)
         {
             robot6541.elbow.extend();
-            hasDeployedElbow = true;
+            hasDeployedElbowDefault = true;
+            elbowExtended = true;
         }
         dashboard.displayPrintf(5, "ElbowPos=%.2f", robot6541.elbow.getPosition());
     }   //runPeriodic
@@ -129,7 +129,15 @@ public class FtcTeleOp6541 extends CommonTeleOp
                 case FtcGamepad.GAMEPAD_LBUMPER:
                     if (pressed)
                     {
-                        robot6541.elbow.extend();
+                        elbowExtended = !elbowExtended;
+                        if (elbowExtended)
+                        {
+                            robot6541.elbow.extend();
+                        }
+                        else
+                        {
+                            robot6541.elbow.retract();
+                        }
                     }
                     processed = true;
                     break;
