@@ -135,18 +135,6 @@ public class FtcTeleOp6541 extends CommonTeleOp
                     break;
 
                 case FtcGamepad.GAMEPAD_RBUMPER:
-                    if (pressed)
-                    {
-                        capstoneDeployerExtended = !capstoneDeployerExtended;
-                        if (capstoneDeployerExtended)
-                        {
-                            robot6541.capstoneDeployer.extend();
-                        }
-                        else
-                        {
-                            robot6541.capstoneDeployer.retract();
-                        }
-                    }
                     break;
 
                 case FtcGamepad.GAMEPAD_DPAD_UP:
@@ -185,6 +173,19 @@ public class FtcTeleOp6541 extends CommonTeleOp
                     break;
 
                 case FtcGamepad.GAMEPAD_START:
+                    if (pressed)
+                    {
+                        capstoneDeployerExtended = !capstoneDeployerExtended;
+                        if (capstoneDeployerExtended)
+                        {
+                            robot6541.capstoneDeployer.extend();
+                        }
+                        else
+                        {
+                            robot6541.capstoneDeployer.retract();
+                        }
+                    }
+                    processed = true;
                     break;
             }
         }
