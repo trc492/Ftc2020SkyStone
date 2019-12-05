@@ -94,10 +94,16 @@ class Robot6541 extends Robot
                     RobotInfo6541.BACK_FOUNDATION_LATCH_RELEASE_POS, RobotInfo6541.BACK_FOUNDATION_LATCH_RELEASE_TIME)
             .setExtendParams(
                     RobotInfo6541.BACK_FOUNDATION_LATCH_GRAB_POS, RobotInfo6541.BACK_FOUNDATION_LATCH_GRAB_TIME);
+    private static final FtcServoActuator.Parameters deployerParams6541 = new FtcServoActuator.Parameters()
+            .setStepParams(RobotInfo6541.DEPLOYER_MAX_STEPRATE, RobotInfo6541.DEPLOYER_MIN_POS, RobotInfo6541.DEPLOYER_MAX_POS)
+            .setInverted(false, false)
+            .setRetractParams(RobotInfo6541.DEPLOYER_RETRACT_POS, RobotInfo6541.DEPLOYER_RETRACT_TIME)
+            .setExtendParams(RobotInfo6541.DEPLOYER_EXTEND_POS, RobotInfo6541.DEPLOYER_EXTEND_TIME);
     //
     // Team specific subsystems.
     //
     FtcServoActuator elbow = null;
+    FtcServoActuator capstoneDeployer = null;
 
     Robot6541(TrcRobot.RunMode runMode)
     {
@@ -155,6 +161,9 @@ class Robot6541 extends Robot
 
                 backFoundationLatch = new Grabber("backFoundationLatchServo", backFoundationLatchParams6541);
                 backFoundationLatch.release();
+
+                capstoneDeployer = new FtcServoActuator("capstoneDeployerServo", deployerParams6541);
+                capstoneDeployer.retract();
             }
         }
         //
