@@ -252,7 +252,6 @@ public class CmdSkystoneVision implements TrcRobot.RobotCommand
                     xTarget = grabberOffset;
                     if (skystonePose != null)
                     {
-                        // Move slightly over to compensate the grabber offset.
                         xTarget += skystonePose.x;
                     }
 
