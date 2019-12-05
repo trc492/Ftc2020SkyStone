@@ -58,6 +58,7 @@ public class CmdSkystoneVision implements TrcRobot.RobotCommand
     private final TrcStateMachine<State> sm;
     private final TrcTrigger visionTrigger;
     private final double allianceDirection;
+    private final boolean wallStart;
     private int scootCount;
     private TrcPose2D skystonePose = null;
     private double visionTimeout = 0.0;
@@ -81,7 +82,8 @@ public class CmdSkystoneVision implements TrcRobot.RobotCommand
         visionTrigger = useVisionTrigger?
                 new TrcTrigger("VisionTrigger", this::isTriggered, this::targetDetected): null;
         allianceDirection = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE? 1.0: -1.0;
-        scootCount = autoChoices.strategy == CommonAuto.AutoStrategy.LOADING_ZONE_WALL? 1: 2;
+        wallStart = Math.abs(robot.driveBase.getXPosition()) < RobotInfo.ROBOT_START_X_MID;
+        scootCount = wallStart? 1: 2;
         sm.start(useVisionTrigger? State.SCAN_FOR_SKYSTONE: State.SETUP_VISION);
     }   //CmdSkystoneVision
 
@@ -176,9 +178,7 @@ public class CmdSkystoneVision implements TrcRobot.RobotCommand
                     //
                     visionTrigger.setEnabled(true);
 
-                    xTarget = autoChoices.strategy == CommonAuto.AutoStrategy.LOADING_ZONE_WALL?
-                                    RobotInfo.SKYSTONE_SCAN_DISTANCE_WALL:
-                                    RobotInfo.SKYSTONE_SCAN_DISTANCE_FAR;
+                    xTarget = wallStart? RobotInfo.SKYSTONE_SCAN_DISTANCE_WALL: RobotInfo.SKYSTONE_SCAN_DISTANCE_FAR;
                     xTarget *= allianceDirection;
                     robot.pidDrive.setRelativeXTarget(xTarget, event);
                     sm.waitForSingleEvent(event, State.ALIGN_SKYSTONE);

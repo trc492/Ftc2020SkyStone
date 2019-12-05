@@ -50,9 +50,9 @@ public class FtcAuto3543 extends CommonAuto
         //
         switch (autoChoices.strategy)
         {
-            case LOADING_ZONE_MID:
-            case LOADING_ZONE_FAR:
-            case LOADING_ZONE_WALL:
+            case LOADING_ZONE_SINGLE_SKYSTONE:
+            case LOADING_ZONE_DOUBLE_SKYSTONE_FAR:
+            case LOADING_ZONE_DOUBLE_SKYSTONE_CENTER:
                 if (robot3543.preferences.hasRobot)
                 {
                     autoCommand = new CmdAutoLoadingZone3543(robot3543, autoChoices);

@@ -83,6 +83,7 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
     private final TrcPidController turnPidCtrl;
     private CmdSkystoneVision skystoneVisionCommand = null;
     private TrcPidController.PidCoefficients savedYPidCoeff = null;
+    private double startX = 0.0;
 
     /**
      * Constructor: Create an instance of the object.
@@ -168,10 +169,9 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                     //
                     // Set the robot's absolute field starting position.
                     //
-                    double startX = (autoChoices.strategy == CommonAuto.AutoStrategy.LOADING_ZONE_MID?
-                                     RobotInfo.ROBOT_START_X_MID: autoChoices.robotStartX) * allianceDirection;
-                    double startY = RobotInfo.ROBOT_START_Y;
-                    robot.pidDrive.setAbsolutePose(new TrcPose2D(startX, startY));
+                    startX = (autoChoices.strategy == CommonAuto.AutoStrategy.LOADING_ZONE_SINGLE_SKYSTONE ?
+                              RobotInfo.ROBOT_START_X_MID: autoChoices.robotStartX) * allianceDirection;
+                    robot.pidDrive.setAbsolutePose(new TrcPose2D(startX, RobotInfo.ROBOT_START_Y));
 
                     robot.encoderXPidCtrl.setNoOscillation(true);
                     robot.encoderYPidCtrl.setNoOscillation(true);
@@ -220,10 +220,10 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                     break;
 
                 case MOVE_TO_FIRST_STONE:
-                    xTarget = autoChoices.strategy == CommonAuto.AutoStrategy.LOADING_ZONE_MID?
+                    xTarget = autoChoices.strategy == CommonAuto.AutoStrategy.LOADING_ZONE_SINGLE_SKYSTONE ?
                                 0.0:
-                              autoChoices.strategy == CommonAuto.AutoStrategy.LOADING_ZONE_FAR?
-                                RobotInfo.ABS_LEFT_STONE_FAR_X : RobotInfo.ABS_LEFT_STONE_WALL_X;
+                              Math.abs(startX) > RobotInfo.ROBOT_START_X_MID ?
+                                RobotInfo.ABS_FAR_FIRST_STONE_X: RobotInfo.ABS_WALL_FIRST_STONE_X;
                     if (xTarget == 0.0)
                     {
                         sm.setState(State.DO_VISION);
@@ -290,10 +290,10 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                     // Need to go full speed to save time.
                     xPidCtrl.setOutputLimit(1.0);
                     yPidCtrl.setOutputLimit(1.0);
-                    xTarget = (autoChoices.strategy == CommonAuto.AutoStrategy.LOADING_ZONE_WALL?
-                                    RobotInfo.ABS_FOUNDATION_DROP_NEAR_X:
-                               autoChoices.strategy == CommonAuto.AutoStrategy.LOADING_ZONE_MID?
-                                    RobotInfo.ABS_FOUNDATION_DROP_MID_X: RobotInfo.ABS_FOUNDATION_DROP_FAR_X) *
+                    xTarget = (autoChoices.strategy == CommonAuto.AutoStrategy.LOADING_ZONE_SINGLE_SKYSTONE?
+                                    RobotInfo.ABS_FOUNDATION_DROP_MID_X:
+                               autoChoices.strategy == CommonAuto.AutoStrategy.LOADING_ZONE_DOUBLE_SKYSTONE_CENTER?
+                                    RobotInfo.ABS_FOUNDATION_DROP_NEAR_X: RobotInfo.ABS_FOUNDATION_DROP_FAR_X) *
                               allianceDirection;
                     simplePidDrive.setAbsoluteXTarget(xTarget, State.APPROACH_FOUNDATION);
                     break;
@@ -310,7 +310,6 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
 
                 case DROP_SKYSTONE:
                     robot.grabber.release();
-
                     if (autoChoices.moveFoundation)
                     {
                         //
@@ -329,7 +328,6 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                                         State.MOVE_TOWARDS_CENTER: State.SKIP_MOVE_FOUNDATION_PARK_WALL;
                         timer.set(1.5, event);
                     }
-
                     sm.waitForSingleEvent(event, nextState);
                     break;
 

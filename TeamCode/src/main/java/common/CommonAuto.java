@@ -61,9 +61,9 @@ public abstract class CommonAuto extends FtcOpMode
 
     public enum AutoStrategy
     {
-        LOADING_ZONE_MID,
-        LOADING_ZONE_FAR,
-        LOADING_ZONE_WALL,
+        LOADING_ZONE_SINGLE_SKYSTONE,
+        LOADING_ZONE_DOUBLE_SKYSTONE_FAR,
+        LOADING_ZONE_DOUBLE_SKYSTONE_CENTER,
         BUILDING_ZONE,
         PURE_PURSUIT_DRIVE,
         PID_DRIVE,
@@ -267,11 +267,14 @@ public abstract class CommonAuto extends FtcOpMode
         allianceMenu.addChoice("Blue", Alliance.BLUE_ALLIANCE, false, startDelayMenu);
 
         strategyMenu.addChoice(
-                "Loading Zone Middle", AutoStrategy.LOADING_ZONE_MID, true, moveFoundationMenu);
+                "Loading Zone Single Skystone", AutoStrategy.LOADING_ZONE_SINGLE_SKYSTONE, true,
+                moveFoundationMenu);
         strategyMenu.addChoice(
-                "Loading Zone Far Side", AutoStrategy.LOADING_ZONE_FAR, false, robotStartXMenu);
+                "Loading Zone Double Skystone Far", AutoStrategy.LOADING_ZONE_DOUBLE_SKYSTONE_FAR,
+                false, robotStartXMenu);
         strategyMenu.addChoice(
-                "Loading Zone Wall Side", AutoStrategy.LOADING_ZONE_WALL, false, robotStartXMenu);
+                "Loading Zone Double Skystone Center", AutoStrategy.LOADING_ZONE_DOUBLE_SKYSTONE_CENTER,
+                false, robotStartXMenu);
         strategyMenu.addChoice(
                 "Building Zone", AutoStrategy.BUILDING_ZONE, false, moveFoundationMenu);
         strategyMenu.addChoice("Pure Pursuit Drive", AutoStrategy.PURE_PURSUIT_DRIVE, false);
