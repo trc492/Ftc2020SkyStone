@@ -84,8 +84,6 @@ public abstract class CommonAuto extends FtcOpMode
         public double delay = 0.0;
         public AutoStrategy strategy = AutoStrategy.DO_NOTHING;
         public double robotStartX = 0.0;
-//        public double foundationYPos = 0.0;
-//        public double foundationHeading = 0.0;
         public boolean moveFoundation = true;
         public ParkPosition parkUnderBridge = ParkPosition.NO_PARK;
         public double xTarget = 0.0;
@@ -231,13 +229,7 @@ public abstract class CommonAuto extends FtcOpMode
         FtcChoiceMenu<AutoStrategy> strategyMenu = new FtcChoiceMenu<>("Auto Strategies:", delayMenu);
         FtcValueMenu robotStartXMenu = new FtcValueMenu(
                 "Robot Start X:", strategyMenu, 0.0, 80.0, 1.0, 45.0,
-                "%.1f");
-//        FtcValueMenu foundationYMenu = new FtcValueMenu(
-//                "Foundation Y:", foundationXMenu, 0.0, 24.0, 1.0, 0.0,
-//                "%.1f");
-//        FtcValueMenu foundationHeadingMenu = new FtcValueMenu(
-//                "Foundation Heading:", robotStartXMenu, 0.0, 360.0, 45.0,
-//                0.0, "%.1f");
+                "%.0f in.");
         FtcChoiceMenu<Boolean> moveFoundationMenu = new FtcChoiceMenu<>("Move foundation:",
                 robotStartXMenu);
         FtcChoiceMenu<ParkPosition> parkMenu = new FtcChoiceMenu<>("Park under bridge:", moveFoundationMenu);
@@ -259,8 +251,6 @@ public abstract class CommonAuto extends FtcOpMode
 
         delayMenu.setChildMenu(strategyMenu);
         robotStartXMenu.setChildMenu(moveFoundationMenu);
-//        foundationYMenu.setChildMenu(foundationHeadingMenu);
-//        foundationHeadingMenu.setChildMenu(moveFoundationMenu);
         xTargetMenu.setChildMenu(yTargetMenu);
         yTargetMenu.setChildMenu(turnTargetMenu);
         turnTargetMenu.setChildMenu(drivePowerMenu);
@@ -272,7 +262,7 @@ public abstract class CommonAuto extends FtcOpMode
         allianceMenu.addChoice("Blue", Alliance.BLUE_ALLIANCE, false, delayMenu);
 
         strategyMenu.addChoice(
-                "Loading Zone Middle", AutoStrategy.LOADING_ZONE_MID, true, robotStartXMenu);
+                "Loading Zone Middle", AutoStrategy.LOADING_ZONE_MID, true, moveFoundationMenu);
         strategyMenu.addChoice(
                 "Loading Zone Far Side", AutoStrategy.LOADING_ZONE_FAR, false, robotStartXMenu);
         strategyMenu.addChoice(
@@ -302,8 +292,6 @@ public abstract class CommonAuto extends FtcOpMode
         autoChoices.delay = delayMenu.getCurrentValue();
         autoChoices.strategy = strategyMenu.getCurrentChoiceObject();
         autoChoices.robotStartX = robotStartXMenu.getCurrentValue();
-//        autoChoices.foundationYPos = foundationYMenu.getCurrentValue();
-//        autoChoices.foundationHeading = foundationHeadingMenu.getCurrentValue();
         autoChoices.moveFoundation = moveFoundationMenu.getCurrentChoiceObject();
         autoChoices.parkUnderBridge = parkMenu.getCurrentChoiceObject();
         autoChoices.xTarget = xTargetMenu.getCurrentValue();
