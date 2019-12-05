@@ -61,6 +61,7 @@ public class CmdSkystoneVision implements TrcRobot.RobotCommand
     private int scootCount;
     private TrcPose2D skystonePose = null;
     private double visionTimeout = 0.0;
+    private final double grabSkystoneYTarget;
 
     /**
      * Constructor: Create an instance of the object.
@@ -70,16 +71,22 @@ public class CmdSkystoneVision implements TrcRobot.RobotCommand
     public CmdSkystoneVision(
             Robot robot, CommonAuto.AutoChoices autoChoices, double grabberOffset, boolean useVisionTrigger)
     {
+        this(robot, autoChoices,grabberOffset, useVisionTrigger, 8.0);
+    }   //CmdSkystoneVision
+
+    public CmdSkystoneVision(
+            Robot robot, CommonAuto.AutoChoices autoChoices, double grabberOffset, boolean useVisionTrigger, double grabSkystoneYTarget)
+    {
         this.robot = robot;
         this.autoChoices = autoChoices;
         this.grabberOffset = grabberOffset;
+        this.grabSkystoneYTarget = grabSkystoneYTarget;
         event = new TrcEvent(moduleName);
         sm = new TrcStateMachine<>(moduleName);
         visionTrigger = useVisionTrigger?
                 new TrcTrigger("VisionTrigger", this::isTriggered, this::targetDetected): null;
         allianceDirection = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE? 1.0: -1.0;
         scootCount = autoChoices.strategy == CommonAuto.AutoStrategy.LOADING_ZONE_WALL? 1: 2;
-
         sm.start(useVisionTrigger? State.SCAN_FOR_SKYSTONE: State.SETUP_VISION);
     }   //CmdSkystoneVision
 
@@ -274,7 +281,7 @@ public class CmdSkystoneVision implements TrcRobot.RobotCommand
                     }
 
                 case GOTO_SKYSTONE:
-                    yTarget = 8.0;
+                    yTarget = grabSkystoneYTarget;
                     robot.pidDrive.setRelativeYTarget(yTarget, event);
                     sm.waitForSingleEvent(event, State.DONE);
                     break;

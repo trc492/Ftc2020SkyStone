@@ -51,6 +51,7 @@ class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
         GRAB_SKYSTONE,
         PULL_SKYSTONE,
         GOTO_FOUNDATION,
+        RAISE_ELEVATOR,
         APPROACH_FOUNDATION,
         EXTEND_ARM_OVER_FOUNDATION,
         DROP_SKYSTONE,
@@ -203,7 +204,7 @@ class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
 
                 case SETUP_VISION:
                     skystoneVisionCommand = new CmdSkystoneVision(
-                            robot, autoChoices, RobotInfo6541.GRABBER_OFFSET, robot.preferences.useVisionTrigger);
+                            robot, autoChoices, RobotInfo6541.GRABBER_OFFSET, robot.preferences.useVisionTrigger, 9.0);//, 8.0);
                     sm.setState(State.MOVE_CLOSER);
                     //
                     // Intentionally falling through to the next state.
@@ -212,10 +213,9 @@ class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
                     //
                     // Move closer slowly to a distance so Vuforia can detect the target.
                     //
-
                     xPidCtrl.setOutputLimit(0.5);
                     yPidCtrl.setOutputLimit(0.5);
-                    yTarget = 23.5;
+                    yTarget = 17.5;
                     simplePidDrive.setRelativeYTarget(yTarget, State.MOVE_TO_FIRST_STONE);
                     break;
 
@@ -279,11 +279,14 @@ class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
                             autoChoices.strategy == CommonAuto.AutoStrategy.LOADING_ZONE_MID?
                                     RobotInfo.ABS_FOUNDATION_DROP_MID_X: RobotInfo.ABS_FOUNDATION_DROP_FAR_X) + 4.0) *
                             allianceDirection;
-                    simplePidDrive.setAbsoluteXTarget(xTarget, State.APPROACH_FOUNDATION);
+                    simplePidDrive.setAbsoluteXTarget(xTarget, State.RAISE_ELEVATOR);
                     break;
 
+                case RAISE_ELEVATOR:
+                    robot.elevator.setPosition(4.0, event, 2.0);
+                    sm.waitForSingleEvent(event, State.APPROACH_FOUNDATION);
+
                 case APPROACH_FOUNDATION:
-                    robot.elevator.setPosition(4.0);
                     yTarget = 12.0;
                     simplePidDrive.setRelativeYTarget(yTarget, State.EXTEND_ARM_OVER_FOUNDATION);
                     break;
@@ -300,7 +303,6 @@ class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
                 case BACK_OFF_FOUNDATION:
                     robot.elevator.zeroCalibrate();
                     robot.elbow.retract();
-                    robot.grabber.setPosition(1.0);
                     yTarget = -6.0;
                     nextState = autoChoices.moveFoundation?
                             State.TURN_AROUND:
@@ -316,6 +318,7 @@ class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
                     break;
 
                 case BACKUP_TO_FOUNDATION:
+                    robot.grabber.setPosition(1.0);
                     yTarget = -8.0;
                     simplePidDrive.setRelativeYTarget(yTarget, State.HOOK_FOUNDATION);
                     break;
