@@ -61,26 +61,21 @@ public class CmdSkystoneVision implements TrcRobot.RobotCommand
     private int scootCount;
     private TrcPose2D skystonePose = null;
     private double visionTimeout = 0.0;
-    private final double grabSkystoneYTarget;
 
     /**
      * Constructor: Create an instance of the object.
      *
      * @param robot specifies the robot object for providing access to various global objects.
+     * @param autoChoices specifies the object containing all autonomous choices.
+     * @param grabberOffset specifies the grabber X offset from the center of the robot in inches.
+     * @param useVisionTrigger specifies true to use vision trigger, false otherwise.
      */
     public CmdSkystoneVision(
             Robot robot, CommonAuto.AutoChoices autoChoices, double grabberOffset, boolean useVisionTrigger)
     {
-        this(robot, autoChoices,grabberOffset, useVisionTrigger, 8.0);
-    }   //CmdSkystoneVision
-
-    public CmdSkystoneVision(
-            Robot robot, CommonAuto.AutoChoices autoChoices, double grabberOffset, boolean useVisionTrigger, double grabSkystoneYTarget)
-    {
         this.robot = robot;
         this.autoChoices = autoChoices;
         this.grabberOffset = grabberOffset;
-        this.grabSkystoneYTarget = grabSkystoneYTarget;
         event = new TrcEvent(moduleName);
         sm = new TrcStateMachine<>(moduleName);
         visionTrigger = useVisionTrigger?
@@ -168,7 +163,7 @@ public class CmdSkystoneVision implements TrcRobot.RobotCommand
             double xTarget = 0.0;
             double yTarget = 0.0;
             double turnTarget = 0.0;
-            State nextState = null;
+            State nextState;
 
             robot.dashboard.displayPrintf(1, "State: %s", state);
 
@@ -254,35 +249,30 @@ public class CmdSkystoneVision implements TrcRobot.RobotCommand
                         visionTrigger.setEnabled(false);
                     }
 
+                    xTarget = grabberOffset;
                     if (skystonePose != null)
                     {
                         // Move slightly over to compensate the grabber offset.
-                        xTarget = skystonePose.x + grabberOffset*allianceDirection;
+                        xTarget += skystonePose.x;
+                    }
+
+                    if (xTarget == 0.0)
+                    {
+                        sm.setState(State.GOTO_SKYSTONE);
+                        //
+                        // Intentionally falling through to the next state.
+                        //
+                    }
+                    else
+                    {
                         robot.pidDrive.setRelativeXTarget(xTarget, event);
                         sm.waitForSingleEvent(event, State.GOTO_SKYSTONE);
                         break;
                     }
-                    else
-                    {
-                        xTarget = grabberOffset * allianceDirection;
-                        if (xTarget == 0.0)
-                        {
-                            sm.setState(State.GOTO_SKYSTONE);
-                            //
-                            // Intentionally falling through to the next state.
-                            //
-                        }
-                        else
-                        {
-                            robot.pidDrive.setRelativeXTarget(xTarget, event);
-                            sm.waitForSingleEvent(event, State.GOTO_SKYSTONE);
-                            break;
-                        }
-                    }
 
                 case GOTO_SKYSTONE:
-                    yTarget = grabSkystoneYTarget;
-                    robot.pidDrive.setRelativeYTarget(yTarget, event);
+                    yTarget = RobotInfo.ABS_GRAB_SKYSTONE_POS_Y;
+                    robot.pidDrive.setAbsoluteYTarget(yTarget, event);
                     sm.waitForSingleEvent(event, State.DONE);
                     break;
 
