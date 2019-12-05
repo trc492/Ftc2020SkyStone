@@ -81,9 +81,10 @@ public abstract class CommonAuto extends FtcOpMode
     public class AutoChoices
     {
         public Alliance alliance = Alliance.RED_ALLIANCE;
-        public double delay = 0.0;
+        public double startDelay = 0.0;
         public AutoStrategy strategy = AutoStrategy.DO_NOTHING;
         public double robotStartX = 0.0;
+        public double finishDelay = 0.0;
         public boolean moveFoundation = true;
         public ParkPosition parkUnderBridge = ParkPosition.NO_PARK;
         public double xTarget = 0.0;
@@ -95,9 +96,9 @@ public abstract class CommonAuto extends FtcOpMode
         public String toString()
         {
             return String.format(Locale.US,
-                    "%s: Strategy=%s, delay=%.0f, moveFoundation=%s, robotStartX=%.1f, park=%s, " +
-                    "xTarget=%.1f, yTarget=%.1f, turnTarget=%.1f, driveTime=%.1f, drivePower=%.1f",
-                    alliance, strategy, delay, moveFoundation, robotStartX, parkUnderBridge,
+                    "%s: Strategy=%s, startDelay=%.0f, robotStartX=%.1f, finishDelay=%.0f, moveFoundation=%s, " +
+                    "park=%s, xTarget=%.1f, yTarget=%.1f, turnTarget=%.1f, driveTime=%.1f, drivePower=%.1f",
+                    alliance, strategy, startDelay, robotStartX, finishDelay, moveFoundation, parkUnderBridge,
                     xTarget, yTarget, turnTarget, driveTime, drivePower);
         }   //toString
     }   //class AutoChoices
@@ -223,13 +224,16 @@ public abstract class CommonAuto extends FtcOpMode
         // Construct menus.
         //
         FtcChoiceMenu<Alliance> allianceMenu = new FtcChoiceMenu<>("Alliance:", null);
-        FtcValueMenu delayMenu = new FtcValueMenu(
-                "Delay time:", allianceMenu, 0.0, 30.0, 1.0, 0.0,
+        FtcValueMenu startDelayMenu = new FtcValueMenu(
+                "Start delay time:", allianceMenu, 0.0, 30.0, 1.0, 0.0,
                 " %.0f sec");
-        FtcChoiceMenu<AutoStrategy> strategyMenu = new FtcChoiceMenu<>("Auto Strategies:", delayMenu);
+        FtcChoiceMenu<AutoStrategy> strategyMenu = new FtcChoiceMenu<>("Auto Strategies:", startDelayMenu);
         FtcValueMenu robotStartXMenu = new FtcValueMenu(
                 "Robot Start X:", strategyMenu, 0.0, 80.0, 1.0, 45.0,
                 "%.0f in.");
+        FtcValueMenu finishDelayMenu = new FtcValueMenu(
+                "Finish Delay time:", robotStartXMenu, 0.0, 30.0, 1.0, 0.0,
+                " %.0f sec");
         FtcChoiceMenu<Boolean> moveFoundationMenu = new FtcChoiceMenu<>("Move foundation:",
                 robotStartXMenu);
         FtcChoiceMenu<ParkPosition> parkMenu = new FtcChoiceMenu<>("Park under bridge:", moveFoundationMenu);
@@ -249,8 +253,9 @@ public abstract class CommonAuto extends FtcOpMode
                 "Drive power:", strategyMenu, -1.0, 1.0, 0.1, 0.5,
                 " %.1f");
 
-        delayMenu.setChildMenu(strategyMenu);
-        robotStartXMenu.setChildMenu(moveFoundationMenu);
+        startDelayMenu.setChildMenu(strategyMenu);
+        robotStartXMenu.setChildMenu(finishDelayMenu);
+        finishDelayMenu.setChildMenu(moveFoundationMenu);
         xTargetMenu.setChildMenu(yTargetMenu);
         yTargetMenu.setChildMenu(turnTargetMenu);
         turnTargetMenu.setChildMenu(drivePowerMenu);
@@ -258,8 +263,8 @@ public abstract class CommonAuto extends FtcOpMode
         //
         // Populate choice menus.
         //
-        allianceMenu.addChoice("Red", Alliance.RED_ALLIANCE, true, delayMenu);
-        allianceMenu.addChoice("Blue", Alliance.BLUE_ALLIANCE, false, delayMenu);
+        allianceMenu.addChoice("Red", Alliance.RED_ALLIANCE, true, startDelayMenu);
+        allianceMenu.addChoice("Blue", Alliance.BLUE_ALLIANCE, false, startDelayMenu);
 
         strategyMenu.addChoice(
                 "Loading Zone Middle", AutoStrategy.LOADING_ZONE_MID, true, moveFoundationMenu);
@@ -289,9 +294,10 @@ public abstract class CommonAuto extends FtcOpMode
         // Fetch choices.
         //
         autoChoices.alliance = allianceMenu.getCurrentChoiceObject();
-        autoChoices.delay = delayMenu.getCurrentValue();
+        autoChoices.startDelay = startDelayMenu.getCurrentValue();
         autoChoices.strategy = strategyMenu.getCurrentChoiceObject();
         autoChoices.robotStartX = robotStartXMenu.getCurrentValue();
+        autoChoices.finishDelay = finishDelayMenu.getCurrentValue();
         autoChoices.moveFoundation = moveFoundationMenu.getCurrentChoiceObject();
         autoChoices.parkUnderBridge = parkMenu.getCurrentChoiceObject();
         autoChoices.xTarget = xTargetMenu.getCurrentValue();
@@ -302,11 +308,7 @@ public abstract class CommonAuto extends FtcOpMode
         //
         // Show choices.
         //
-        robot.dashboard.displayPrintf(2, "Auto Strategy: %s", strategyMenu.getCurrentChoiceText());
-        robot.dashboard.displayPrintf(
-                3, "Drive: xTarget=%.0f ft,yTarget=%.0f ft,turnTarget=%.0f ft,Time=%.0f,Power=%.1f",
-                autoChoices.xTarget, autoChoices.yTarget, autoChoices.turnTarget, autoChoices.driveTime,
-                autoChoices.drivePower);
+        robot.dashboard.displayPrintf(2, "Auto Choices: %s", autoChoices);
     }   //doAutoChoicesMenus
 
     private void createTraceLog()

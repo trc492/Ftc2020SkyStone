@@ -132,13 +132,13 @@ class CmdAutoBuildingZone3543 implements TrcRobot.RobotCommand
                     //
                     // Do delay if any.
                     //
-                    if (autoChoices.delay == 0.0)
+                    if (autoChoices.startDelay == 0.0)
                     {
                         sm.setState(nextState);
                     }
                     else
                     {
-                        timer.set(autoChoices.delay, event);
+                        timer.set(autoChoices.startDelay, event);
                         sm.waitForSingleEvent(event, nextState);
                     }
                     break;

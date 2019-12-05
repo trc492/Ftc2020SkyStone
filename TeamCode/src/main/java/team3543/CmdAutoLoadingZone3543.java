@@ -42,7 +42,7 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
     private enum State
     {
         BEGIN,
-        DO_DELAY,
+        START_DELAY,
         SETUP_VISION,
         MOVE_CLOSER,
         MOVE_TO_FIRST_STONE,
@@ -54,6 +54,7 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
         GOTO_FOUNDATION,
         APPROACH_FOUNDATION,
         DROP_SKYSTONE,
+        FINISH_DELAY,
         PULL_FOUNDATION_TO_WALL,
         UNHOOK_FOUNDATION,
         CLEAR_OF_FOUNDATION,
@@ -176,15 +177,15 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                     robot.encoderYPidCtrl.setNoOscillation(true);
                     robot.gyroPidCtrl.setNoOscillation(true);
 
-                    sm.setState(State.DO_DELAY);
+                    sm.setState(State.START_DELAY);
                     //
                     // Intentionally falling through to the next state.
                     //
-                case DO_DELAY:
+                case START_DELAY:
                     //
-                    // Do delay if any.
+                    // Do start delay if any.
                     //
-                    if (autoChoices.delay == 0.0)
+                    if (autoChoices.startDelay == 0.0)
                     {
                         sm.setState(State.SETUP_VISION);
                         //
@@ -193,7 +194,7 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                     }
                     else
                     {
-                        timer.set(autoChoices.delay, event);
+                        timer.set(autoChoices.startDelay, event);
                         sm.waitForSingleEvent(event, State.SETUP_VISION);
                         break;
                     }
@@ -316,7 +317,7 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                         // Start dropping the skystone but we don't have to wait for it. Just wait for the foundation
                         // to be latched and the robot can move immediately. The skystone can continue to drop enroute.
                         //
-                        nextState = State.PULL_FOUNDATION_TO_WALL;
+                        nextState = State.FINISH_DELAY;
                         robot.frontFoundationLatch.grab(event);
                     }
                     else
@@ -331,6 +332,30 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
 
                     sm.waitForSingleEvent(event, nextState);
                     break;
+
+                case FINISH_DELAY:
+                    //
+                    // Do finish delay if any.
+                    // This is for performing a double-skystone autonomous with our alliance partner.
+                    // In this strategy, we will go first and drop the first skystone. Our partner should follow
+                    // closely. In case our partner is slow, we will wait for them to finish dropping the second
+                    // skystone and clear of the foundation before we pull the foundation to the wall.
+                    // Our full autonomous takes about 20 seconds, so we can afford to wait up to approx. 10 seconds.
+                    // But for safety margin, we should not wait more than 5-6 seconds.
+                    //
+                    if (autoChoices.finishDelay == 0.0)
+                    {
+                        sm.setState(State.PULL_FOUNDATION_TO_WALL);
+                        //
+                        // Intentionally falling through to the next state.
+                        //
+                    }
+                    else
+                    {
+                        timer.set(autoChoices.finishDelay, event);
+                        sm.waitForSingleEvent(event, State.PULL_FOUNDATION_TO_WALL);
+                        break;
+                    }
 
                 case PULL_FOUNDATION_TO_WALL:
                     //
