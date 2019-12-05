@@ -32,7 +32,8 @@ import trclib.TrcRobot;
 @TeleOp(name="FtcTeleOp3543", group="FtcTeleOp")
 public class FtcTeleOp3543 extends CommonTeleOp
 {
-    protected Robot3543 robot3543;
+    Robot3543 robot3543;
+    boolean frontFoundationLatched = false;
 
     //
     // Implements FtcOpMode abstract method.
@@ -141,11 +142,15 @@ public class FtcTeleOp3543 extends CommonTeleOp
                 case FtcGamepad.GAMEPAD_LBUMPER:
                     if (pressed)
                     {
-                        robot3543.frontFoundationLatch.grab();
-                    }
-                    else
-                    {
-                        robot3543.frontFoundationLatch.release();
+                        frontFoundationLatched = !frontFoundationLatched;
+                        if (frontFoundationLatched)
+                        {
+                            robot3543.frontFoundationLatch.grab();
+                        }
+                        else
+                        {
+                            robot3543.frontFoundationLatch.release();
+                        }
                     }
                     break;
 

@@ -603,7 +603,7 @@ public class TrcPidMotor
             // - motor has not moved for at least stallTimeout.
             //
             double currPos = getPosition();
-            if (Math.abs(power) < Math.abs(stallMinPower) || currPos != prevPos)
+            if (Math.abs(power) < Math.abs(stallMinPower) || currPos != prevPos || prevTime == 0.0)
             {
                 prevPos = currPos;
                 prevTime = TrcUtil.getCurrentTime();
@@ -1038,10 +1038,10 @@ public class TrcPidMotor
                 {
                     beepDevice.playTone(beepLowFrequency, beepDuration);
                 }
-                stalled = false;
                 FtcOpMode.getGlobalTracer().traceWarn(
                         funcName, "%s is stalled, lower limit switch might have failed!", instanceName);
             }
+            stalled = false;
             motor.set(0.0);
             motor.resetPosition(false);
         }

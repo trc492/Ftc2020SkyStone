@@ -334,12 +334,6 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                     break;
 
                 case UNHOOK_FOUNDATION:
-                    //
-                    // We can safely retract everything here because the skystone should be dropped by now.
-                    //
-                    robot.extenderArm.setPosition(RobotInfo3543.EXTENDER_ARM_RETRACT_POS);
-                    robot.wrist.retract();
-                    robot.elevator.zeroCalibrate();
                     if (savedYPidCoeff != null)
                     {
                         yPidCtrl.setPidCoefficients(savedYPidCoeff);
@@ -370,6 +364,12 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                     break;
 
                 case MOVE_TO_FOUNDATION_SIDE:
+                    //
+                    // We can safely retract everything here because the skystone should be dropped by now.
+                    //
+                    robot.extenderArm.setPosition(RobotInfo3543.EXTENDER_ARM_RETRACT_POS);
+                    robot.wrist.retract();
+                    robot.elevator.zeroCalibrate();
                     //
                     // Move to the side of the foundation so we can bump it to the wall.
                     //
