@@ -61,9 +61,10 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
         PUSH_FOUNDATION_TO_WALL,
         MOVE_BACK_TO_WALL,
         MOVE_UNDER_BRIDGE,
+        START_RETRACTIONS,
         SKIP_MOVE_FOUNDATION_PARK_WALL,
-        STRAFE_TO_PARK,
         MOVE_TOWARDS_CENTER,
+        STRAFE_TO_PARK,
         DONE
     }   //enum State
 
@@ -166,10 +167,8 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                     //
                     // Set the robot's absolute field starting position.
                     //
-                    double startX = (autoChoices.strategy == CommonAuto.AutoStrategy.LOADING_ZONE_WALL?
-                                        RobotInfo.ROBOT_START_X_WALL:
-                                     autoChoices.strategy == CommonAuto.AutoStrategy.LOADING_ZONE_MID?
-                                        RobotInfo.ROBOT_START_X_MID: RobotInfo.ROBOT_START_X_FAR) * allianceDirection;
+                    double startX = (autoChoices.strategy == CommonAuto.AutoStrategy.LOADING_ZONE_MID?
+                            RobotInfo.ROBOT_START_X_MID: autoChoices.robotStartX) * allianceDirection;
                     double startY = RobotInfo.ROBOT_START_Y;
                     robot.pidDrive.setAbsolutePose(new TrcPose2D(startX, startY));
 
@@ -313,9 +312,17 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                     // Start dropping the skystone but we don't have to wait for it. Just wait for the foundation to
                     // be latched and the robot can move immediately. The skystone can continue to drop enroute.
                     //
-                    robot.grabber.release();
-                    robot.frontFoundationLatch.grab(event);
-                    sm.waitForSingleEvent(event, State.PULL_FOUNDATION_TO_WALL);
+                    if (autoChoices.moveFoundation) {
+                        robot.grabber.release();
+                        robot.frontFoundationLatch.grab(event);
+                        sm.waitForSingleEvent(event, State.PULL_FOUNDATION_TO_WALL);
+                    } else {
+                        robot.grabber.release();
+                        timer.set(1.5, event);
+                        nextState = autoChoices.parkUnderBridge == CommonAuto.ParkPosition.PARK_CLOSE_TO_CENTER?
+                                State.MOVE_TOWARDS_CENTER: State.SKIP_MOVE_FOUNDATION_PARK_WALL;
+                        sm.waitForSingleEvent(event, nextState);
+                    }
                     break;
 
                 case PULL_FOUNDATION_TO_WALL:
@@ -399,23 +406,29 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                     simplePidDrive.setRelativeXTarget(xTarget, State.DONE);
                     break;
 
-                case SKIP_MOVE_FOUNDATION_PARK_WALL:
-                    yTarget = RobotInfo.ROBOT_START_Y;
-                    nextState = autoChoices.parkUnderBridge == CommonAuto.ParkPosition.PARK_CLOSE_TO_WALL?
-                                    State.STRAFE_TO_PARK: State.DONE;
-                    simplePidDrive.setAbsoluteYTarget(yTarget, nextState);
+                case START_RETRACTIONS:
+                    robot.elevator.zeroCalibrate();
+                    robot.extenderArm.zeroCalibrate();
+                    robot.wrist.retract(event);
+
+                    nextState = autoChoices.parkUnderBridge == CommonAuto.ParkPosition.NO_PARK?
+                            State.DONE: State.STRAFE_TO_PARK;
+                    sm.waitForSingleEvent(event, nextState);
                     break;
 
-                case STRAFE_TO_PARK:
-                    xTarget = RobotInfo.ABS_UNDER_BRIDGE_PARK_X * allianceDirection;
-                    nextState = autoChoices.parkUnderBridge == CommonAuto.ParkPosition.PARK_CLOSE_TO_CENTER?
-                                    State.MOVE_TOWARDS_CENTER: State.DONE;
-                    simplePidDrive.setAbsoluteXTarget(xTarget, nextState);
+                case SKIP_MOVE_FOUNDATION_PARK_WALL:
+                    yTarget = RobotInfo.ROBOT_START_Y;
+                    simplePidDrive.setAbsoluteYTarget(yTarget, State.START_RETRACTIONS);
                     break;
 
                 case MOVE_TOWARDS_CENTER:
                     yTarget = RobotInfo.ABS_CENTER_BRIDGE_PARK_Y;
-                    simplePidDrive.setAbsoluteYTarget(yTarget, State.DONE);
+                    simplePidDrive.setAbsoluteYTarget(yTarget, State.START_RETRACTIONS);
+                    break;
+
+                case STRAFE_TO_PARK:
+                    xTarget = RobotInfo.ABS_UNDER_BRIDGE_PARK_X * allianceDirection;
+                    simplePidDrive.setAbsoluteXTarget(xTarget, State.DONE);
                     break;
 
                 case DONE:

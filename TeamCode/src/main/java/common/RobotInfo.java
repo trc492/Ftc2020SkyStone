@@ -31,8 +31,8 @@ public class RobotInfo
     public static final double ROBOT_START_X_MID                = 45.0;
     public static final double ROBOT_START_X_FAR                = 52.0;
     public static final double ROBOT_START_Y                    = 9.0;
-    public static final double ABS_LEFT_STONE_WALL_X            = -(ROBOT_START_X_WALL - 12.0);
-    public static final double ABS_LEFT_STONE_FAR_X             = -(ROBOT_START_X_FAR - 7.0);
+    public static final double ABS_LEFT_STONE_WALL_X            = ROBOT_START_X_WALL - 12.0;
+    public static final double ABS_LEFT_STONE_FAR_X             = ROBOT_START_X_FAR - 7.0;
     public static final double SKYSTONE_SCAN_DISTANCE_WALL      = -9.0;
     public static final double SKYSTONE_SCAN_DISTANCE_FAR       = -18.0;
 
