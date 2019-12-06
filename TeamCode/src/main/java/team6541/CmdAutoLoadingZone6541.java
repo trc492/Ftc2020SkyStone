@@ -205,7 +205,8 @@ class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
 
                 case SETUP_VISION:
                     skystoneVisionCommand = new CmdSkystoneVision(
-                            robot, autoChoices, RobotInfo6541.GRABBER_OFFSET, robot.preferences.useVisionTrigger);
+                            robot, autoChoices, RobotInfo6541.GRABBER_OFFSET_X, RobotInfo6541.GRABBER_OFFSET_Y,
+                            robot.preferences.useVisionTrigger);
                     sm.setState(State.MOVE_CLOSER);
                     //
                     // Intentionally falling through to the next state.
@@ -222,8 +223,8 @@ class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
 
                 case MOVE_TO_FIRST_STONE:
                     xTarget = autoChoices.strategy == CommonAuto.AutoStrategy.LOADING_ZONE_SINGLE_SKYSTONE ?
-                            0.0:
-                            Math.abs(startX) > RobotInfo.ROBOT_START_X_MID ?
+                                    0.0:
+                              Math.abs(startX) > RobotInfo.ROBOT_START_X_MID ?
                                     RobotInfo.ABS_FAR_FIRST_STONE_X: RobotInfo.ABS_WALL_FIRST_STONE_X;
                     if (xTarget == 0.0)
                     {

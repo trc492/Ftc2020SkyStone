@@ -201,7 +201,8 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
 
                 case SETUP_VISION:
                     skystoneVisionCommand = new CmdSkystoneVision(
-                            robot, autoChoices, RobotInfo3543.GRABBER_OFFSET, robot.preferences.useVisionTrigger);
+                            robot, autoChoices, RobotInfo3543.GRABBER_OFFSET_X, RobotInfo3543.GRABBER_OFFSET_Y,
+                            robot.preferences.useVisionTrigger);
                     sm.setState(State.MOVE_CLOSER);
                     //
                     // Intentionally falling through to the next state.

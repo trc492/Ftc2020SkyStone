@@ -198,7 +198,8 @@ class RobotInfo3543
     static final double GRABBER_CLOSE_POS                       = 0.2;
     static final double GRABBER_GRAB_TIME                       = 3.0;
     static final double GRABBER_RELEASE_TIME                    = 3.0;
-    static final double GRABBER_OFFSET                          = 0.0;
+    static final double GRABBER_OFFSET_X                        = 0.0;
+    static final double GRABBER_OFFSET_Y                        = 0.0;
     //
     // BackFoundationLatch subsystem.
     //

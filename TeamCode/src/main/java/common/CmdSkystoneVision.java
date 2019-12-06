@@ -53,7 +53,7 @@ public class CmdSkystoneVision implements TrcRobot.RobotCommand
 
     private final Robot robot;
     private final CommonAuto.AutoChoices autoChoices;
-    private final double grabberOffset;
+    private final double grabberOffsetX, grabberOffsetY;
     private final TrcEvent event;
     private final TrcStateMachine<State> sm;
     private final TrcTrigger visionTrigger;
@@ -68,15 +68,18 @@ public class CmdSkystoneVision implements TrcRobot.RobotCommand
      *
      * @param robot specifies the robot object for providing access to various global objects.
      * @param autoChoices specifies the object containing all autonomous choices.
-     * @param grabberOffset specifies the grabber X offset from the center of the robot in inches.
+     * @param grabberOffsetX specifies the grabber X offset from the center of the robot in inches.
+     * @param grabberOffsetY specifies the grabber Y offset from the front of the robot in inches.
      * @param useVisionTrigger specifies true to use vision trigger, false otherwise.
      */
     public CmdSkystoneVision(
-            Robot robot, CommonAuto.AutoChoices autoChoices, double grabberOffset, boolean useVisionTrigger)
+            Robot robot, CommonAuto.AutoChoices autoChoices, double grabberOffsetX, double grabberOffsetY,
+            boolean useVisionTrigger)
     {
         this.robot = robot;
         this.autoChoices = autoChoices;
-        this.grabberOffset = grabberOffset;
+        this.grabberOffsetX = grabberOffsetX;
+        this.grabberOffsetY = grabberOffsetY;
         event = new TrcEvent(moduleName);
         sm = new TrcStateMachine<>(moduleName);
         visionTrigger = useVisionTrigger?
@@ -249,7 +252,7 @@ public class CmdSkystoneVision implements TrcRobot.RobotCommand
                         visionTrigger.setEnabled(false);
                     }
 
-                    xTarget = grabberOffset;
+                    xTarget = grabberOffsetX;
                     if (skystonePose != null)
                     {
                         xTarget += skystonePose.x;
@@ -270,7 +273,7 @@ public class CmdSkystoneVision implements TrcRobot.RobotCommand
                     }
 
                 case GOTO_SKYSTONE:
-                    yTarget = RobotInfo.ABS_GRAB_SKYSTONE_POS_Y;
+                    yTarget = RobotInfo.ABS_GRAB_SKYSTONE_POS_Y - grabberOffsetY;
                     robot.pidDrive.setAbsoluteYTarget(yTarget, event);
                     sm.waitForSingleEvent(event, State.DONE);
                     break;
