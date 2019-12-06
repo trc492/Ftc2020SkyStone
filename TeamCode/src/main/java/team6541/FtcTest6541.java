@@ -24,8 +24,6 @@ package team6541;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import java.util.Locale;
-
 import common.CommonTest;
 import ftclib.FtcGamepad;
 import trclib.TrcGameController;
@@ -39,7 +37,8 @@ public class FtcTest6541 extends FtcTeleOp6541
     private CommonTest commonTest = new CommonTest();
 
     // elbow servo tuning variables.
-    private double debugServoPos = 0.5;
+    private double debugElbowPos = 0.5;
+    private double debugGrabberPos = 0.5;
 
     //
     // Overrides FtcOpMode abstract method.
@@ -132,12 +131,12 @@ public class FtcTest6541 extends FtcTeleOp6541
                 case FtcGamepad.GAMEPAD_A:
                     if (pressed)
                     {
-                        if (debugServoPos < 1.0)
+                        if (debugElbowPos < 1.0)
                         {
-                            debugServoPos += 0.05;
+                            debugElbowPos += 0.05;
                         }
-                        //robot6541.speak(String.format(Locale.US, "Elbow position %.2f", debugServoPos));
-                        robot6541.elbow.setPosition(debugServoPos);
+                        //robot6541.speak(String.format(Locale.US, "Elbow position %.2f", debugElbowPos));
+                        robot6541.elbow.setPosition(debugElbowPos);
                     }
                     processed = true;
                     break;
@@ -145,12 +144,36 @@ public class FtcTest6541 extends FtcTeleOp6541
                 case FtcGamepad.GAMEPAD_B:
                     if (pressed)
                     {
-                        if (debugServoPos > 0.0)
+                        if (debugElbowPos > 0.0)
                         {
-                            debugServoPos -= 0.05;
+                            debugElbowPos -= 0.05;
                         }
-                        //robot6541.speak(String.format(Locale.US, "Elbow position %.2f", debugServoPos));
-                        robot6541.elbow.setPosition(debugServoPos);
+                        //robot6541.speak(String.format(Locale.US, "Elbow position %.2f", debugElbowPos));
+                        robot6541.elbow.setPosition(debugElbowPos);
+                    }
+                    processed = true;
+                    break;
+
+                case FtcGamepad.GAMEPAD_X:
+                    if (pressed)
+                    {
+                        if (debugGrabberPos < 1.0)
+                        {
+                            debugGrabberPos += 0.05;
+                        }
+                        robot6541.grabber.setPosition(debugGrabberPos);
+                    }
+                    processed = true;
+                    break;
+
+                case FtcGamepad.GAMEPAD_Y:
+                    if (pressed)
+                    {
+                        if (debugGrabberPos > 0.0)
+                        {
+                            debugGrabberPos -= 0.05;
+                        }
+                        robot6541.grabber.setPosition(debugGrabberPos);
                     }
                     processed = true;
                     break;
