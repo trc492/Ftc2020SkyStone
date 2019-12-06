@@ -32,6 +32,15 @@ import trclib.TrcStateMachine;
 import trclib.TrcTrigger;
 import trclib.TrcUtil;
 
+/**
+ * This class implements the state machine that performs skystone detection using Vuforia. It assumes the robot
+ * starts at the position right in front of the first of the 3-stone set and at a distance that Vuforia is able
+ * to detect the skystone. This is refactored to a standalone RobotCommand so that both teams can share the same
+ * skystone detection code. At the end of the execution, the robot should be right in front of the detected skystone
+ * at grabbing distance so that the caller can just grab the stone right there. If for some reason Vuforia failed
+ * to detect the skystone, it will stop in front of the last stone of the 3-stone set hoping it is the skystone.
+ * Even if it is not the skystone, we will still score some points transporting it to the building zone.
+ */
 public class CmdSkystoneVision implements TrcRobot.RobotCommand
 {
     private static final boolean debugXPid = true;
@@ -59,6 +68,9 @@ public class CmdSkystoneVision implements TrcRobot.RobotCommand
     private final TrcTrigger visionTrigger;
     private final double allianceDirection;
     private final boolean wallStart;
+    private final TrcPidController xPidCtrl;
+    private final TrcPidController yPidCtrl;
+    private final TrcPidController turnPidCtrl;
     private int scootCount;
     private TrcPose2D skystonePose = null;
     private double visionTimeout = 0.0;
@@ -86,6 +98,9 @@ public class CmdSkystoneVision implements TrcRobot.RobotCommand
                 new TrcTrigger("VisionTrigger", this::isTriggered, this::targetDetected): null;
         allianceDirection = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE? 1.0: -1.0;
         wallStart = Math.abs(robot.driveBase.getXPosition()) < RobotInfo.ABS_LOADING_ZONE_ROBOT_START_X_MID;
+        xPidCtrl = robot.pidDrive.getXPidCtrl();
+        yPidCtrl = robot.pidDrive.getYPidCtrl();
+        turnPidCtrl = robot.pidDrive.getTurnPidCtrl();
         scootCount = wallStart? 1: 2;
         sm.start(useVisionTrigger? State.SCAN_FOR_SKYSTONE: State.SETUP_VISION);
     }   //CmdSkystoneVision
@@ -189,7 +204,7 @@ public class CmdSkystoneVision implements TrcRobot.RobotCommand
 
                 case SETUP_VISION:
                     //
-                    // Vuforia may take time to detect target, set a timeout for detection.
+                    // Vuforia may take time to detect target, set a timeout for retrying.
                     //
                     visionTimeout = TrcUtil.getCurrentTime() + VISION_TIMEOUT;
                     sm.setState(State.GET_TARGET_POSE);
@@ -199,8 +214,8 @@ public class CmdSkystoneVision implements TrcRobot.RobotCommand
                 case GET_TARGET_POSE:
                     //
                     // Get the detected skystone pose. If pose is null, it could be because Vuforia is still
-                    // processing the image. So keep repeating this state until it finds the target or we pass
-                    // vision timeout.
+                    // processing the image. So keep repeating this state until it finds the target or vision
+                    // timeout has expired.
                     //
                     skystonePose = robot.getSkyStonePose();
                     if (skystonePose == null)
@@ -209,20 +224,38 @@ public class CmdSkystoneVision implements TrcRobot.RobotCommand
                         {
                             if (scootCount > 0)
                             {
+                                StringBuilder sentence = new StringBuilder("Not found, ");
+
                                 robot.globalTracer.traceInfo(
                                         "GetTargetPose", "Skystone not found, try next stone.");
-                                robot.speak("Not found, try next.");
                                 scootCount--;
                                 xTarget = -9.0*allianceDirection;
-                                // If this is the last stone, don't need to check it's a skystone, just grab and go.
-                                nextState = scootCount == 0? State.ALIGN_SKYSTONE: State.SETUP_VISION;
+                                //
+                                // If this is the last stone, don't need to check if it's a skystone, just grab and go.
+                                // Note that our stone grabber design cannot grab the last stone touching the perimeter
+                                // wall so if we are dealing with the 3-stone set closer to the wall, we will only
+                                // scoot once to get to the middle stone and not attempting the last stone since we
+                                // can't get to it anyway.
+                                //
+                                if (scootCount == 0)
+                                {
+                                    nextState = State.ALIGN_SKYSTONE;
+                                    sentence.append("give up.");
+                                }
+                                else
+                                {
+                                    nextState = State.SETUP_VISION;
+                                    sentence.append("try next.");
+                                }
+                                robot.speak(sentence.toString());
                                 robot.pidDrive.setRelativeXTarget(xTarget, event);
                                 sm.waitForSingleEvent(event, nextState);
                             }
                             else
                             {
                                 //
-                                // Should never come here but handle it just in case.
+                                // Should never come here because the above code should have handled the last stone,
+                                // but handle it just in case.
                                 //
                                 robot.globalTracer.traceInfo(
                                         "GetTargetPose", "Skystone not found, giving up.");
@@ -300,20 +333,19 @@ public class CmdSkystoneVision implements TrcRobot.RobotCommand
 
             robot.globalTracer.traceInfo(moduleName, "RobotPose: %s", robot.driveBase.getAbsolutePose());
 
-            TrcPidController pidCtrl = robot.pidDrive.getXPidCtrl();
-            if (debugXPid && pidCtrl != null)
+            if (debugXPid && xPidCtrl != null)
             {
-                pidCtrl.printPidInfo(robot.globalTracer, elapsedTime);
+                xPidCtrl.printPidInfo(robot.globalTracer, elapsedTime);
             }
 
             if (debugYPid)
             {
-                robot.pidDrive.getYPidCtrl().printPidInfo(robot.globalTracer, elapsedTime);
+                yPidCtrl.printPidInfo(robot.globalTracer, elapsedTime);
             }
 
             if (debugTurnPid)
             {
-                robot.pidDrive.getTurnPidCtrl().printPidInfo(robot.globalTracer, elapsedTime);
+                turnPidCtrl.printPidInfo(robot.globalTracer, elapsedTime);
             }
         }
 
