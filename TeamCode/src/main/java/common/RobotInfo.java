@@ -27,20 +27,21 @@ public class RobotInfo
     //
     // Game element distances: all referenced as red alliance.
     //
-    public static final double ROBOT_START_X_MID                = 45.0;
-    public static final double ROBOT_START_Y                    = 9.0;
-    public static final double ABS_WALL_FIRST_STONE_X           = 20.0;
-    public static final double ABS_FAR_FIRST_STONE_X            = 45.0;
-    public static final double ABS_GRAB_SKYSTONE_POS_Y          = 40.0;
-    public static final double SKYSTONE_SCAN_DISTANCE_WALL      = -9.0;
-    public static final double SKYSTONE_SCAN_DISTANCE_FAR       = -18.0;
+    public static final double ABS_ROBOT_START_Y                        = 9.0;
+    public static final double ABS_LOADING_ZONE_ROBOT_START_X_MID       = 45.0;
+    public static final double ABS_BUILDING_ZONE_ROBOT_START_X          = 120.0;
+    public static final double ABS_WALL_FIRST_STONE_X                   = 20.0;
+    public static final double ABS_FAR_FIRST_STONE_X                    = 45.0;
+    public static final double ABS_GRAB_SKYSTONE_POS_Y                  = 40.0;
+    public static final double SKYSTONE_SCAN_DISTANCE_WALL              = -9.0;
+    public static final double SKYSTONE_SCAN_DISTANCE_FAR               = -18.0;
 
     // Absolute position waypoint coordinates
-    public static final double ABS_FOUNDATION_DROP_FAR_X        = 128.0;
-    public static final double ABS_FOUNDATION_DROP_MID_X        = 120.0;
-    public static final double ABS_FOUNDATION_DROP_NEAR_X       = 112.0;
-    public static final double ABS_NEXT_TO_PARTNER_PARK_X       = 86.0;
-    public static final double ABS_CENTER_BRIDGE_PARK_Y         = 32.0;
-    public static final double ABS_UNDER_BRIDGE_PARK_X          = 70.0;
+    public static final double ABS_FOUNDATION_DROP_FAR_X                = 128.0;
+    public static final double ABS_FOUNDATION_DROP_MID_X                = 120.0;
+    public static final double ABS_FOUNDATION_DROP_NEAR_X               = 112.0;
+    public static final double ABS_NEXT_TO_PARTNER_PARK_X               = 86.0;
+    public static final double ABS_CENTER_BRIDGE_PARK_Y                 = 32.0;
+    public static final double ABS_UNDER_BRIDGE_PARK_X                  = 70.0;
 
 }   //class RobotInfo

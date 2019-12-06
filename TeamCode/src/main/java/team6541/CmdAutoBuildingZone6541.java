@@ -123,7 +123,8 @@ class CmdAutoBuildingZone6541 implements TrcRobot.RobotCommand
             {
                 case BEGIN:
                     robot.pidDrive.setAbsolutePose(new TrcPose2D(
-                            RobotInfo6541.BUILDING_ZONE_ROBOT_START_X * allianceDirection, RobotInfo.ROBOT_START_Y));
+                            RobotInfo.ABS_BUILDING_ZONE_ROBOT_START_X * allianceDirection,
+                            RobotInfo.ABS_ROBOT_START_Y));
                     robot.pidDrive.getXPidCtrl().saveAndSetOutputLimit(0.5);
                     robot.pidDrive.getYPidCtrl().saveAndSetOutputLimit(0.5);
                     robot.encoderXPidCtrl.setNoOscillation(true);

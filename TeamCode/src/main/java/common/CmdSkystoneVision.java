@@ -85,7 +85,7 @@ public class CmdSkystoneVision implements TrcRobot.RobotCommand
         visionTrigger = useVisionTrigger?
                 new TrcTrigger("VisionTrigger", this::isTriggered, this::targetDetected): null;
         allianceDirection = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE? 1.0: -1.0;
-        wallStart = Math.abs(robot.driveBase.getXPosition()) < RobotInfo.ROBOT_START_X_MID;
+        wallStart = Math.abs(robot.driveBase.getXPosition()) < RobotInfo.ABS_LOADING_ZONE_ROBOT_START_X_MID;
         scootCount = wallStart? 1: 2;
         sm.start(useVisionTrigger? State.SCAN_FOR_SKYSTONE: State.SETUP_VISION);
     }   //CmdSkystoneVision

@@ -25,7 +25,6 @@ package team3543;
 import common.CommonAuto;
 import common.RobotInfo;
 import common.SimplePidDrive;
-import common.Robot;
 import trclib.TrcEvent;
 import trclib.TrcPidController;
 import trclib.TrcPose2D;
@@ -124,7 +123,8 @@ class CmdAutoBuildingZone3543 implements TrcRobot.RobotCommand
             {
                 case BEGIN:
                     robot.pidDrive.setAbsolutePose(new TrcPose2D(
-                            RobotInfo3543.BUILDING_ZONE_ROBOT_START_X * allianceDirection, RobotInfo.ROBOT_START_Y));
+                            RobotInfo.ABS_BUILDING_ZONE_ROBOT_START_X * allianceDirection,
+                            RobotInfo.ABS_ROBOT_START_Y));
                     xPidCtrl.saveAndSetOutputLimit(0.5);
                     yPidCtrl.saveAndSetOutputLimit(0.5);
                     xPidCtrl.setNoOscillation(true);
@@ -201,10 +201,10 @@ class CmdAutoBuildingZone3543 implements TrcRobot.RobotCommand
                     }
                     // Correct odometry and absTargetPose after wheel slippage.
                     TrcPose2D pose = robot.driveBase.getAbsolutePose();
-                    pose.y = RobotInfo.ROBOT_START_Y;
+                    pose.y = RobotInfo.ABS_ROBOT_START_Y;
                     robot.driveBase.setAbsolutePose(pose);
                     pose = robot.pidDrive.getAbsoluteTargetPose();
-                    pose.y = RobotInfo.ROBOT_START_Y;
+                    pose.y = RobotInfo.ABS_ROBOT_START_Y;
                     robot.pidDrive.setAbsoluteTargetPose(pose);
                     //
                     // Release the foundation and continue.
@@ -244,7 +244,7 @@ class CmdAutoBuildingZone3543 implements TrcRobot.RobotCommand
                 case MOVE_BACK_TO_WALL:
                     nextState = autoChoices.parkUnderBridge == CommonAuto.ParkPosition.NO_PARK?
                             State.DONE: State.MOVE_UNDER_BRIDGE;
-                    yTarget = RobotInfo.ROBOT_START_Y;
+                    yTarget = RobotInfo.ABS_ROBOT_START_Y;
                     simplePidDrive.setAbsoluteYTarget(yTarget, nextState);
                     break;
 

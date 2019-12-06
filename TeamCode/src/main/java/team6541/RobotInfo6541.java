@@ -195,6 +195,4 @@ class RobotInfo6541
     static final double DEPLOYER_EXTEND_TIME                     = 1.0;
     static final double DEPLOYER_RETRACT_TIME                    = 1.0;
 
-    static final double BUILDING_ZONE_ROBOT_START_X             = 120.0;
-
 }   //class RobotInfo6541

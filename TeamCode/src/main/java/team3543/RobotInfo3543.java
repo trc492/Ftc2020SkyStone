@@ -221,6 +221,4 @@ class RobotInfo3543
     static final double FRONT_FOUNDATION_LATCH_GRAB_POS         = 1.0;
     static final double FRONT_FOUNDATION_LATCH_GRAB_TIME        = 0.5;
 
-    static final double BUILDING_ZONE_ROBOT_START_X             = 120.0;
-
 }   //class RobotInfo3543
