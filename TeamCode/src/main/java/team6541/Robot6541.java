@@ -68,8 +68,8 @@ class Robot6541 extends Robot
                     RobotInfo6541.ELEVATOR_KP, RobotInfo6541.ELEVATOR_KI, RobotInfo6541.ELEVATOR_KD,
                     RobotInfo6541.ELEVATOR_TOLERANCE)
             .setMotorParams(
-                    RobotInfo6541.ELEVATOR_INVERTED, RobotInfo6541.ELEVATOR_HAS_UPPER_LIMIT_SWITCH,
-                    RobotInfo6541.ELEVATOR_CAL_POWER)
+                    RobotInfo6541.ELEVATOR_INVERTED, RobotInfo6541.ELEVATOR_HAS_LOWER_LIMIT_SWITCH,
+                    RobotInfo6541.ELEVATOR_HAS_UPPER_LIMIT_SWITCH, RobotInfo6541.ELEVATOR_CAL_POWER)
             .setStallProtectionParams(
                     RobotInfo6541.ELEVATOR_STALL_MIN_POWER, RobotInfo6541.ELEVATOR_STALL_TIMEOUT,
                     RobotInfo6541.ELEVATOR_RESET_TIMEOUT)

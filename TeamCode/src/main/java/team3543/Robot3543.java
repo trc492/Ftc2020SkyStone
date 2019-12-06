@@ -68,8 +68,8 @@ class Robot3543 extends Robot
                     RobotInfo3543.ELEVATOR_KP, RobotInfo3543.ELEVATOR_KI, RobotInfo3543.ELEVATOR_KD,
                     RobotInfo3543.ELEVATOR_TOLERANCE)
             .setMotorParams(
-                    RobotInfo3543.ELEVATOR_INVERTED, RobotInfo3543.ELEVATOR_HAS_UPPER_LIMIT_SWITCH,
-                    RobotInfo3543.ELEVATOR_CAL_POWER)
+                    RobotInfo3543.ELEVATOR_INVERTED, RobotInfo3543.ELEVATOR_HAS_LOWER_LIMIT_SWITCH,
+                    RobotInfo3543.ELEVATOR_HAS_UPPER_LIMIT_SWITCH, RobotInfo3543.ELEVATOR_CAL_POWER)
             .setStallProtectionParams(
                     RobotInfo3543.ELEVATOR_STALL_MIN_POWER, RobotInfo3543.ELEVATOR_STALL_TIMEOUT,
                     RobotInfo3543.ELEVATOR_RESET_TIMEOUT);
@@ -80,8 +80,8 @@ class Robot3543 extends Robot
                     RobotInfo3543.EXTENDER_ARM_KP, RobotInfo3543.EXTENDER_ARM_KI, RobotInfo3543.EXTENDER_ARM_KD,
                     RobotInfo3543.EXTENDER_ARM_TOLERANCE)
             .setMotorParams(
-                    RobotInfo3543.EXTENDER_ARM_INVERTED, RobotInfo3543.EXTENDER_ARM_HAS_UPPER_LIMIT_SWITCH,
-                    RobotInfo3543.EXTENDER_ARM_CAL_POWER)
+                    RobotInfo3543.EXTENDER_ARM_INVERTED, RobotInfo3543.EXTENDER_ARM_HAS_LOWER_LIMIT_SWITCH,
+                    RobotInfo3543.EXTENDER_ARM_HAS_UPPER_LIMIT_SWITCH, RobotInfo3543.EXTENDER_ARM_CAL_POWER)
             .setStallProtectionParams(
                 RobotInfo3543.EXTENDER_ARM_STALL_MIN_POWER, RobotInfo3543.EXTENDER_ARM_STALL_TIMEOUT,
                 RobotInfo3543.EXTENDER_ARM_RESET_TIMEOUT);

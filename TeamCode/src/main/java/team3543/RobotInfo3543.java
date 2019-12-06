@@ -147,6 +147,7 @@ class RobotInfo3543
     static final double ELEVATOR_KD                             = 0.0;
     static final double ELEVATOR_TOLERANCE                      = 0.5;
     static final boolean ELEVATOR_INVERTED                      = false;
+    static final boolean ELEVATOR_HAS_LOWER_LIMIT_SWITCH        = true;
     static final boolean ELEVATOR_HAS_UPPER_LIMIT_SWITCH        = false;
     static final double ELEVATOR_CAL_POWER                      = 0.5;
     static final double ELEVATOR_STALL_MIN_POWER                = 0.5;
@@ -165,6 +166,7 @@ class RobotInfo3543
     static final double EXTENDER_ARM_KD                         = 0.0;
     static final double EXTENDER_ARM_TOLERANCE                  = 0.5;
     static final boolean EXTENDER_ARM_INVERTED                  = true;
+    static final boolean EXTENDER_ARM_HAS_LOWER_LIMIT_SWITCH    = true;
     static final boolean EXTENDER_ARM_HAS_UPPER_LIMIT_SWITCH    = false;
     static final double EXTENDER_ARM_CAL_POWER                  = 1.0;
     static final double EXTENDER_ARM_STALL_MIN_POWER            = 0.5;

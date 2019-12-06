@@ -138,6 +138,7 @@ class RobotInfo6541
     static final double ELEVATOR_KD                             = 0.01;
     static final double ELEVATOR_TOLERANCE                      = 0.5; //1.0;
     static final boolean ELEVATOR_INVERTED                      = false;
+    static final boolean ELEVATOR_HAS_LOWER_LIMIT_SWITCH        = true;
     static final boolean ELEVATOR_HAS_UPPER_LIMIT_SWITCH        = false;
     static final double ELEVATOR_CAL_POWER                      = 0.025;
     static final double ELEVATOR_STALL_MIN_POWER                = 0.8;
