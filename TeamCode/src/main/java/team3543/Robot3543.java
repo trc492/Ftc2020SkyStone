@@ -45,7 +45,7 @@ class Robot3543 extends Robot
             .setSongsInResources(true)
             .setUseVuforia(true)
             .setUseTensorFlow(false)
-            .setShowVuforiaView(false)
+            .setShowVuforiaView(true)
             .setShowTensorFlowView(false)
             .setUseFlashLight(true)
             .setUseVisionTrigger(false)
