@@ -65,7 +65,6 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
         SKIP_MOVE_FOUNDATION_PARK_WALL,
         MOVE_TOWARDS_CENTER,
         START_RETRACTIONS,
-        STRAFE_TO_PARK,
         DONE
     }   //enum State
 
@@ -173,9 +172,9 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                               RobotInfo.ROBOT_START_X_MID: autoChoices.robotStartX) * allianceDirection;
                     robot.pidDrive.setAbsolutePose(new TrcPose2D(startX, RobotInfo.ROBOT_START_Y));
 
-                    robot.encoderXPidCtrl.setNoOscillation(true);
-                    robot.encoderYPidCtrl.setNoOscillation(true);
-                    robot.gyroPidCtrl.setNoOscillation(true);
+                    xPidCtrl.setNoOscillation(true);
+                    yPidCtrl.setNoOscillation(true);
+                    turnPidCtrl.setNoOscillation(true);
 
                     sm.setState(State.START_DELAY);
                     //
@@ -270,7 +269,7 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                     // Don't need to wait for the grab to finish before moving. Can tune this down to minimum for
                     // saving time.
                     //
-                    robot.grabber.grab(0.5, event);
+                    robot.grabber.grab(1.0, event);
                     sm.waitForSingleEvent(event, State.PULL_SKYSTONE);
                     break;
 
@@ -453,13 +452,8 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                     robot.wrist.retract(event);
 
                     nextState = autoChoices.parkUnderBridge == CommonAuto.ParkPosition.NO_PARK?
-                                    State.DONE: State.STRAFE_TO_PARK;
+                                    State.DONE: State.MOVE_UNDER_BRIDGE;
                     sm.waitForSingleEvent(event, nextState);
-                    break;
-
-                case STRAFE_TO_PARK:
-                    xTarget = RobotInfo.ABS_UNDER_BRIDGE_PARK_X * allianceDirection;
-                    simplePidDrive.setAbsoluteXTarget(xTarget, State.DONE);
                     break;
 
                 case DONE:
