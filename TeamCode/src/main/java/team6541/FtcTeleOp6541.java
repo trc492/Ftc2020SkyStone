@@ -37,8 +37,6 @@ public class FtcTeleOp6541 extends CommonTeleOp
     // elbow deployed checker
     private boolean hasDeployedElbowDefault = false;
     private boolean elbowExtended = false;
-    // capstone deployer status tracker
-    private boolean capstoneDeployerExtended = false;
 
     //
     // Implements FtcOpMode abstract method.
@@ -72,6 +70,9 @@ public class FtcTeleOp6541 extends CommonTeleOp
             hasDeployedElbowDefault = true;
             elbowExtended = true;
         }
+
+        robot6541.capstoneDeployer.setPosition(1.0 - operatorGamepad.getRightTrigger());
+
         dashboard.displayPrintf(5, "ElbowPos=%.2f", robot6541.elbow.getPosition());
     }   //runPeriodic
 
@@ -181,19 +182,6 @@ public class FtcTeleOp6541 extends CommonTeleOp
                     break;
 
                 case FtcGamepad.GAMEPAD_START:
-                    if (pressed)
-                    {
-                        capstoneDeployerExtended = !capstoneDeployerExtended;
-                        if (capstoneDeployerExtended)
-                        {
-                            robot6541.capstoneDeployer.extend();
-                        }
-                        else
-                        {
-                            robot6541.capstoneDeployer.retract();
-                        }
-                    }
-                    processed = true;
                     break;
             }
         }
