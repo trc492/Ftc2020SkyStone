@@ -254,9 +254,7 @@ class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
                         // Skystone vision is done, continue on.
                         //
                         sm.setState(State.GRAB_SKYSTONE);
-                        //
-                        // Intentionally falling through to the next state.
-                        //
+                        break;
                     }
                     else
                     {
