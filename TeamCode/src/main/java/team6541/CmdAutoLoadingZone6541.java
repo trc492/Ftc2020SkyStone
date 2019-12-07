@@ -278,10 +278,10 @@ class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
                     // Need to go full speed to save time.
                     xPidCtrl.setOutputLimit(1.0);
                     yPidCtrl.setOutputLimit(1.0);
-                    xTarget = (autoChoices.strategy == CommonAuto.AutoStrategy.LOADING_ZONE_SINGLE_SKYSTONE?
-                                    RobotInfo.ABS_FOUNDATION_DROP_MID_X + 5.5:
+                    xTarget = ((autoChoices.strategy == CommonAuto.AutoStrategy.LOADING_ZONE_SINGLE_SKYSTONE?
+                                    RobotInfo.ABS_FOUNDATION_DROP_MID_X:
                                autoChoices.strategy == CommonAuto.AutoStrategy.LOADING_ZONE_DOUBLE_SKYSTONE_CENTER?
-                                    RobotInfo.ABS_FOUNDATION_DROP_NEAR_X: RobotInfo.ABS_FOUNDATION_DROP_FAR_X) *
+                                    RobotInfo.ABS_FOUNDATION_DROP_NEAR_X: RobotInfo.ABS_FOUNDATION_DROP_FAR_X) + 5.5) *
                               allianceDirection;
                     simplePidDrive.setAbsoluteXTarget(xTarget, State.APPROACH_FOUNDATION);
                     break;
