@@ -189,7 +189,7 @@ class CmdAutoBuildingZone3543 implements TrcRobot.RobotCommand
                     TrcPidController.PidCoefficients loadedYPidCoeff = savedYPidCoeff.clone();
                     loadedYPidCoeff.kP = RobotInfo3543.ENCODER_Y_LOADED_KP;
                     yPidCtrl.setPidCoefficients(loadedYPidCoeff);
-                    yTarget = -38.0;
+                    yTarget = -40.0;
                     simplePidDrive.setRelativeYTarget(yTarget, State.UNHOOK_FOUNDATION);
                     break;
 
