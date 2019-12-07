@@ -67,6 +67,7 @@ class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
         PUSH_FOUNDATION_TO_WALL,
         MOVE_BACK_TO_WALL,
         MOVE_UNDER_BRIDGE,
+        KISS_THE_BRIDGE,
         SKIP_MOVE_FOUNDATION_PARK_WALL,
         STRAFE_TO_PARK,
         MOVE_TOWARDS_CENTER,
@@ -287,7 +288,7 @@ class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
 
                 case APPROACH_FOUNDATION:
                     robot.elevator.setPosition(4.0);
-                    yTarget = 15.0;
+                    yTarget = 16.0;
                     simplePidDrive.setRelativeYTarget(yTarget, State.DROP_SKYSTONE);
                     break;
 
@@ -318,7 +319,7 @@ class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
 
                 case LOWER_ELEVATOR:
                     robot.elevator.zeroCalibrate();
-                    timer.set(2.0, event);
+                    timer.set(1.0, event);
                     sm.waitForSingleEvent(event, State.BACKUP_TO_FOUNDATION);
                     break;
 
@@ -369,7 +370,7 @@ class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
                     TrcPidController.PidCoefficients loadedYPidCoeff = savedYPidCoeff.clone();
                     loadedYPidCoeff.kP = RobotInfo6541.ENCODER_Y_LOADED_KP;
                     yPidCtrl.setPidCoefficients(loadedYPidCoeff);
-                    yTarget = 36.0; // TODO: verify
+                    yTarget = 36.0;
                     simplePidDrive.setRelativeYTarget(yTarget, State.UNHOOK_FOUNDATION);
                     break;
 
@@ -412,7 +413,12 @@ class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
 
                 case MOVE_UNDER_BRIDGE:
                     xTarget = 32.0 * allianceDirection;
-                    simplePidDrive.setRelativeXTarget(xTarget, State.DONE);
+                    simplePidDrive.setRelativeXTarget(xTarget, State.KISS_THE_BRIDGE);
+                    break;
+
+                case KISS_THE_BRIDGE:
+                    yTarget = 6.0 * allianceDirection;
+                    simplePidDrive.setRelativeYTarget(yTarget, State.DONE);
                     break;
 
                 case SKIP_MOVE_FOUNDATION_PARK_WALL:
