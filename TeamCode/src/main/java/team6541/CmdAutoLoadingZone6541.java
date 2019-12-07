@@ -413,7 +413,7 @@ class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
 
                 case MOVE_UNDER_BRIDGE:
                     xTarget = 32.0 * allianceDirection;
-                    simplePidDrive.setRelativeXTarget(xTarget, State.KISS_THE_BRIDGE);
+                    simplePidDrive.setRelativeXTarget(xTarget, (autoChoices.parkUnderBridge == CommonAuto.ParkPosition.PARK_CLOSE_TO_CENTER ? State.KISS_THE_BRIDGE : State.DONE));
                     break;
 
                 case KISS_THE_BRIDGE:
