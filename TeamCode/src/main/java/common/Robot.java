@@ -407,7 +407,7 @@ public class Robot
         opMode = FtcOpMode.getInstance();
         opMode.hardwareMap.logDevices();
         dashboard = HalDashboard.getInstance();
-        globalTracer = FtcOpMode.getGlobalTracer();
+        globalTracer = TrcDbgTrace.getGlobalTracer();
         dashboard.setTextView(
                 ((FtcRobotControllerActivity)opMode.hardwareMap.appContext).findViewById(R.id.textOpMode));
         androidTone = new FtcAndroidTone("AndroidTone");
