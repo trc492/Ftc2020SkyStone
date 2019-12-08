@@ -239,10 +239,10 @@ public abstract class CommonAuto extends FtcOpMode
         FtcChoiceMenu<ParkPosition> parkMenu = new FtcChoiceMenu<>("Park under bridge:", moveFoundationMenu);
         FtcValueMenu xTargetMenu = new FtcValueMenu(
                 "xTarget:", strategyMenu, -12.0, 12.0, 0.5, 4.0,
-                " %.0f ft");
+                " %.1f ft");
         FtcValueMenu yTargetMenu = new FtcValueMenu(
                 "yTarget:", strategyMenu, -12.0, 12.0, 0.5, 4.0,
-                " %.0f ft");
+                " %.1f ft");
         FtcValueMenu turnTargetMenu = new FtcValueMenu(
                 "turnTarget:", strategyMenu, -180.0, 180.0, 5.0, 90.0,
                 " %.0f ft");

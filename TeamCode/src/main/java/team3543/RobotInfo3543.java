@@ -68,9 +68,9 @@ class RobotInfo3543
     // 2019-10-28: Kp=0.02, Ki=0.0, Kd=0.0015
     // 2019-11-13: Kp=0.02, Ki=0.0, Kd=0.001
     //
-    static final double GYRO_KP                                 = 0.02;
+    static final double GYRO_KP                                 = 0.01;
     static final double GYRO_KI                                 = 0.0;
-    static final double GYRO_KD                                 = 0.001;
+    static final double GYRO_KD                                 = 0.0;
     static final double GYRO_TOLERANCE                          = 2.0;
 
     static final double PIDDRIVE_STALL_TIMEOUT                  = 0.2;  //in seconds.
@@ -201,7 +201,7 @@ class RobotInfo3543
     static final double GRABBER_GRAB_TIME                       = 3.0;
     static final double GRABBER_RELEASE_TIME                    = 3.0;
     static final double GRABBER_OFFSET_X                        = 0.0;
-    static final double GRABBER_OFFSET_Y                        = 0.0;
+    static final double GRABBER_OFFSET_Y                        = 2.0;
     //
     // BackFoundationLatch subsystem.
     //

@@ -123,7 +123,7 @@ class CmdAutoBuildingZone3543 implements TrcRobot.RobotCommand
             {
                 case BEGIN:
                     robot.pidDrive.setAbsolutePose(new TrcPose2D(
-                            RobotInfo.ABS_BUILDING_ZONE_ROBOT_START_X * allianceDirection,
+                            (RobotInfo.ABS_BUILDING_ZONE_ROBOT_START_X - 12.0) * allianceDirection,
                             RobotInfo.ABS_ROBOT_START_Y));
                     xPidCtrl.saveAndSetOutputLimit(0.5);
                     yPidCtrl.saveAndSetOutputLimit(0.5);
@@ -167,7 +167,8 @@ class CmdAutoBuildingZone3543 implements TrcRobot.RobotCommand
 
                 case GOTO_FOUNDATION:
                     yTarget = 30;
-                    simplePidDrive.setRelativeYTarget(yTarget, State.HOOK_FOUNDATION);
+                    xTarget = 12.0 * allianceDirection;
+                    simplePidDrive.setRelativeTarget(xTarget, yTarget, 0.0, State.HOOK_FOUNDATION);
                     break;
 
                 case HOOK_FOUNDATION:

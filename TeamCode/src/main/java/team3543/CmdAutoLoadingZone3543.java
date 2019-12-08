@@ -51,6 +51,8 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
         GRAB_SKYSTONE,
         PULL_SKYSTONE,
         START_EXTENDER_ARM_RETRACTION,
+        TURN_TOWARDS_FOUNDATION_UNDER_BRIDGE,
+        TURN_TO_FOUNDATION,
         GOTO_FOUNDATION,
         APPROACH_FOUNDATION,
         DROP_SKYSTONE,
@@ -174,7 +176,7 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
 
                     xPidCtrl.setNoOscillation(true);
                     yPidCtrl.setNoOscillation(true);
-                    turnPidCtrl.setNoOscillation(true);
+                    turnPidCtrl.setNoOscillation(false);
 
                     sm.setState(State.START_DELAY);
                     //
@@ -215,7 +217,7 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
 
                     xPidCtrl.setOutputLimit(0.5);
                     yPidCtrl.setOutputLimit(0.5);
-                    yTarget = 18.0;
+                    yTarget = 22.0;
                     simplePidDrive.setRelativeYTarget(yTarget, State.MOVE_TO_FIRST_STONE);
                     break;
 
@@ -269,12 +271,12 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                     // Don't need to wait for the grab to finish before moving. Can tune this down to minimum for
                     // saving time.
                     //
-                    robot.grabber.grab(1.0, event);
+                    robot.grabber.grab(3.0, event);
                     sm.waitForSingleEvent(event, State.PULL_SKYSTONE);
                     break;
 
                 case PULL_SKYSTONE:
-                    yTarget = -12.0;
+                    yTarget = -8.0;
                     simplePidDrive.setRelativeYTarget(yTarget, State.START_EXTENDER_ARM_RETRACTION);
                     break;
 
@@ -283,19 +285,29 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                     // Bring the extender arm back so we don't run into the bridge during travel.
                     //
                     robot.extenderArm.setPosition(RobotInfo3543.EXTENDER_ARM_CARRY_POS, event);
-                    sm.waitForSingleEvent(event, State.GOTO_FOUNDATION);
+                    sm.waitForSingleEvent(event, State.TURN_TOWARDS_FOUNDATION_UNDER_BRIDGE);
+                    break;
+
+                case TURN_TOWARDS_FOUNDATION_UNDER_BRIDGE:
+                    turnTarget = 90.0 * allianceDirection;
+                    simplePidDrive.setAbsoluteHeadingTarget(turnTarget, State.GOTO_FOUNDATION);
+                    break;
+
+                case TURN_TO_FOUNDATION:
+                    turnTarget = 0.0;
+                    simplePidDrive.setAbsoluteHeadingTarget(turnTarget, State.APPROACH_FOUNDATION);
                     break;
 
                 case GOTO_FOUNDATION:
                     // Need to go full speed to save time.
-                    xPidCtrl.setOutputLimit(1.0);
-                    yPidCtrl.setOutputLimit(1.0);
+                    xPidCtrl.setOutputLimit(0.8);
+                    yPidCtrl.setOutputLimit(0.8);
                     xTarget = (autoChoices.strategy == CommonAuto.AutoStrategy.LOADING_ZONE_SINGLE_SKYSTONE?
                                     RobotInfo.ABS_FOUNDATION_DROP_MID_X:
                                autoChoices.strategy == CommonAuto.AutoStrategy.LOADING_ZONE_DOUBLE_SKYSTONE_CENTER?
                                     RobotInfo.ABS_FOUNDATION_DROP_NEAR_X: RobotInfo.ABS_FOUNDATION_DROP_FAR_X) *
                               allianceDirection;
-                    simplePidDrive.setAbsoluteXTarget(xTarget, State.APPROACH_FOUNDATION);
+                    simplePidDrive.setAbsoluteXTarget(xTarget, State.TURN_TO_FOUNDATION);
                     break;
 
                 case APPROACH_FOUNDATION:
@@ -304,7 +316,7 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                     //
                     robot.elevator.setPosition(RobotInfo3543.ELEVATOR_DROP_HEIGHT);
                     robot.extenderArm.setPosition(RobotInfo3543.EXTENDER_ARM_DROP_POS);
-                    yTarget = 12.0;
+                    yTarget =  14.0;
                     simplePidDrive.setRelativeYTarget(yTarget, State.DROP_SKYSTONE);
                     break;
 
@@ -366,7 +378,7 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                     TrcPidController.PidCoefficients loadedYPidCoeff = savedYPidCoeff.clone();
                     loadedYPidCoeff.kP = RobotInfo3543.ENCODER_Y_LOADED_KP;
                     yPidCtrl.setPidCoefficients(loadedYPidCoeff);
-                    yTarget = -42.0;
+                    yTarget = -43.0;
                     simplePidDrive.setRelativeYTarget(yTarget, State.UNHOOK_FOUNDATION);
                     break;
 
