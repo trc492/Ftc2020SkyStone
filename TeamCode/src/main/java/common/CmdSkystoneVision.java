@@ -48,6 +48,34 @@ public class CmdSkystoneVision implements TrcRobot.RobotCommand
     private static final boolean debugTurnPid = true;
     private static final double VISION_TIMEOUT = 0.5;
 
+    public static class Parameters
+    {
+        public boolean useVisionTrigger = false;
+        public double grabberOffsetX = 0.0;
+        public double grabberOffsetY = 0.0;
+        public double scanDirection = 1.0;
+
+        public Parameters setUseVisionTrigger(boolean useVisionTrigger)
+        {
+            this.useVisionTrigger = useVisionTrigger;
+            return this;
+        }
+
+        public Parameters setGrabberOffset(double grabberOffsetX, double grabberOffsetY)
+        {
+            this.grabberOffsetX = grabberOffsetX;
+            this.grabberOffsetY = grabberOffsetY;
+            return this;
+        }
+
+        public Parameters setScanDirection(double scanDirection)
+        {
+            this.scanDirection = scanDirection;
+            return this;
+        }
+
+    }   //class Parameters
+
     private enum State
     {
         SCAN_FOR_SKYSTONE,
@@ -62,7 +90,7 @@ public class CmdSkystoneVision implements TrcRobot.RobotCommand
 
     private final Robot robot;
     private final CommonAuto.AutoChoices autoChoices;
-    private final double grabberOffsetX, grabberOffsetY;
+    private final Parameters visionParams;
     private final TrcEvent event;
     private final TrcStateMachine<State> sm;
     private final TrcTrigger visionTrigger;
@@ -80,21 +108,16 @@ public class CmdSkystoneVision implements TrcRobot.RobotCommand
      *
      * @param robot specifies the robot object for providing access to various global objects.
      * @param autoChoices specifies the object containing all autonomous choices.
-     * @param grabberOffsetX specifies the grabber X offset from the center of the robot in inches.
-     * @param grabberOffsetY specifies the grabber Y offset from the front of the robot in inches.
-     * @param useVisionTrigger specifies true to use vision trigger, false otherwise.
+     * @param visionParams specifies the parameters for the SkystoneVision command.
      */
-    public CmdSkystoneVision(
-            Robot robot, CommonAuto.AutoChoices autoChoices, double grabberOffsetX, double grabberOffsetY,
-            boolean useVisionTrigger)
+    public CmdSkystoneVision(Robot robot, CommonAuto.AutoChoices autoChoices, Parameters visionParams)
     {
         this.robot = robot;
         this.autoChoices = autoChoices;
-        this.grabberOffsetX = grabberOffsetX;
-        this.grabberOffsetY = grabberOffsetY;
+        this.visionParams = visionParams;
         event = new TrcEvent(moduleName);
         sm = new TrcStateMachine<>(moduleName);
-        visionTrigger = useVisionTrigger?
+        visionTrigger = visionParams.useVisionTrigger?
                 new TrcTrigger("VisionTrigger", this::isTriggered, this::targetDetected): null;
         allianceDirection = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE? 1.0: -1.0;
         wallStart = Math.abs(robot.driveBase.getXPosition()) < RobotInfo.ABS_LOADING_ZONE_ROBOT_START_X_MID;
@@ -102,7 +125,7 @@ public class CmdSkystoneVision implements TrcRobot.RobotCommand
         yPidCtrl = robot.pidDrive.getYPidCtrl();
         turnPidCtrl = robot.pidDrive.getTurnPidCtrl();
         scootCount = wallStart? 1: 2;
-        sm.start(useVisionTrigger? State.SCAN_FOR_SKYSTONE: State.SETUP_VISION);
+        sm.start(visionParams.useVisionTrigger? State.SCAN_FOR_SKYSTONE: State.SETUP_VISION);
     }   //CmdSkystoneVision
 
     private boolean isTriggered()
@@ -197,7 +220,7 @@ public class CmdSkystoneVision implements TrcRobot.RobotCommand
                     visionTrigger.setEnabled(true);
 
                     xTarget = wallStart? RobotInfo.SKYSTONE_SCAN_DISTANCE_WALL: RobotInfo.SKYSTONE_SCAN_DISTANCE_FAR;
-                    xTarget *= allianceDirection;
+                    xTarget *= allianceDirection * visionParams.scanDirection;
                     robot.pidDrive.setRelativeXTarget(xTarget, event);
                     sm.waitForSingleEvent(event, State.ALIGN_SKYSTONE);
                     break;
@@ -229,7 +252,7 @@ public class CmdSkystoneVision implements TrcRobot.RobotCommand
                                 robot.globalTracer.traceInfo(
                                         "GetTargetPose", "Skystone not found, try next stone.");
                                 scootCount--;
-                                xTarget = -9.0*allianceDirection;
+                                xTarget = -9.0*allianceDirection*visionParams.scanDirection;
                                 //
                                 // If this is the last stone, don't need to check if it's a skystone, just grab and go.
                                 // Note that our stone grabber design cannot grab the last stone touching the perimeter
@@ -285,7 +308,7 @@ public class CmdSkystoneVision implements TrcRobot.RobotCommand
                         visionTrigger.setEnabled(false);
                     }
 
-                    xTarget = grabberOffsetX;
+                    xTarget = visionParams.grabberOffsetX;
                     if (skystonePose != null)
                     {
                         xTarget += skystonePose.x;
@@ -306,7 +329,7 @@ public class CmdSkystoneVision implements TrcRobot.RobotCommand
                     }
 
                 case GOTO_SKYSTONE:
-                    yTarget = RobotInfo.ABS_GRAB_SKYSTONE_POS_Y - grabberOffsetY;
+                    yTarget = RobotInfo.ABS_GRAB_SKYSTONE_POS_Y - visionParams.grabberOffsetY;
                     robot.pidDrive.setAbsoluteYTarget(yTarget, event);
                     sm.waitForSingleEvent(event, State.DONE);
                     break;

@@ -74,6 +74,7 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
 
     private final Robot3543 robot;
     private final CommonAuto.AutoChoices autoChoices;
+    private final CmdSkystoneVision.Parameters visionParams;
     private final TrcTimer timer;
     private final TrcEvent event;
     private final TrcStateMachine<State> sm;
@@ -97,6 +98,10 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
 
         this.robot = robot;
         this.autoChoices = autoChoices;
+        visionParams = new CmdSkystoneVision.Parameters()
+                .setUseVisionTrigger(robot.preferences.useVisionTrigger)
+                .setGrabberOffset(RobotInfo3543.GRABBER_OFFSET_X, RobotInfo3543.GRABBER_OFFSET_Y)
+                .setScanDirection(1.0);
         timer = new TrcTimer(moduleName);
         event = new TrcEvent(moduleName);
         sm = new TrcStateMachine<>(moduleName);
@@ -201,9 +206,7 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                     }
 
                 case SETUP_VISION:
-                    skystoneVisionCommand = new CmdSkystoneVision(
-                            robot, autoChoices, RobotInfo3543.GRABBER_OFFSET_X, RobotInfo3543.GRABBER_OFFSET_Y,
-                            robot.preferences.useVisionTrigger);
+                    skystoneVisionCommand = new CmdSkystoneVision(robot, autoChoices, visionParams);
                     sm.setState(State.MOVE_CLOSER);
                     //
                     // Intentionally falling through to the next state.
