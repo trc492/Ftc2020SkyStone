@@ -284,8 +284,11 @@ public class CommonTest
             case TUNE_TURN_PID:
                 if (robot.preferences.hasRobot)
                 {
-                    robot.dashboard.displayPrintf(9, "xPos=%.1f,yPos=%.1f,heading=%.1f",
-                            robot.driveBase.getXPosition(), robot.driveBase.getYPosition(), robot.driveBase.getHeading());
+                    robot.dashboard.displayPrintf(
+                            9, "xPos=%.1f,yPos=%.1f,heading=%.1f,raw=lf:%.0f,rf:%.0f,lr:%.0f,rr:%.0f",
+                            robot.driveBase.getXPosition(), robot.driveBase.getYPosition(), robot.driveBase.getHeading(),
+                            robot.leftFrontWheel.getPosition(), robot.rightFrontWheel.getPosition(),
+                            robot.leftRearWheel.getPosition(), robot.rightRearWheel.getPosition());
                     if (robot.encoderXPidCtrl != null)
                     {
                         robot.encoderXPidCtrl.displayPidInfo(10);
