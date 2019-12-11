@@ -34,12 +34,13 @@ import trclib.TrcUtil;
 
 /**
  * This class implements the state machine that performs skystone detection using Vuforia. It assumes the robot
- * starts at the position right in front of the first of the 3-stone set and at a distance that Vuforia is able
- * to detect the skystone. This is refactored to a standalone RobotCommand so that both teams can share the same
- * skystone detection code. At the end of the execution, the robot should be right in front of the detected skystone
- * at grabbing distance so that the caller can just grab the stone right there. If for some reason Vuforia failed
- * to detect the skystone, it will stop in front of the last stone of the 3-stone set hoping it is the skystone.
- * Even if it is not the skystone, we will still score some points transporting it to the building zone.
+ * starts at the position right in front of the left-most or right-most of the 3-stone set and at a distance that
+ * Vuforia is able to detect the skystone. This is refactored to a standalone RobotCommand so that the autonomous may
+ * call it again to detect the second skystone and also both teams can share the same skystone detection code. At the
+ * end of the execution, the robot should be right in front of the detected skystone at grabbing distance so that the
+ * caller can just grab the stone right there. If for some reason Vuforia failed to detect the skystone, it will stop
+ * in front of the last stone of the 3-stone set hoping it is the skystone. Even if it is not the skystone, we will
+ * still score some points transporting it to the building zone.
  */
 public class CmdSkystoneVision implements TrcRobot.RobotCommand
 {
@@ -50,10 +51,11 @@ public class CmdSkystoneVision implements TrcRobot.RobotCommand
 
     public static class Parameters
     {
-        public boolean useVisionTrigger = false;
-        public double grabberOffsetX = 0.0;
-        public double grabberOffsetY = 0.0;
-        public double scanDirection = 1.0;
+        boolean useVisionTrigger = false;
+        boolean scanTowardsWall = true;
+        int scootCount = 0;
+        double grabberOffsetX = 0.0;
+        double grabberOffsetY = 0.0;
 
         public Parameters setUseVisionTrigger(boolean useVisionTrigger)
         {
@@ -61,16 +63,22 @@ public class CmdSkystoneVision implements TrcRobot.RobotCommand
             return this;
         }
 
+        public Parameters setScanTowardsWall(boolean scanTowardsWall)
+        {
+            this.scanTowardsWall = scanTowardsWall;
+            return this;
+        }
+
+        public Parameters setScootCount(int scootCount)
+        {
+            this.scootCount = scootCount;
+            return this;
+        }
+
         public Parameters setGrabberOffset(double grabberOffsetX, double grabberOffsetY)
         {
             this.grabberOffsetX = grabberOffsetX;
             this.grabberOffsetY = grabberOffsetY;
-            return this;
-        }
-
-        public Parameters setScanDirection(double scanDirection)
-        {
-            this.scanDirection = scanDirection;
             return this;
         }
 
@@ -89,17 +97,15 @@ public class CmdSkystoneVision implements TrcRobot.RobotCommand
     private static final String moduleName = "CmdSkystoneVision";
 
     private final Robot robot;
-    private final CommonAuto.AutoChoices autoChoices;
     private final Parameters visionParams;
     private final TrcEvent event;
     private final TrcStateMachine<State> sm;
     private final TrcTrigger visionTrigger;
     private final double allianceDirection;
-    private final boolean wallStart;
+    private final double scanDirection;
     private final TrcPidController xPidCtrl;
     private final TrcPidController yPidCtrl;
     private final TrcPidController turnPidCtrl;
-    private int scootCount;
     private TrcPose2D skystonePose = null;
     private double visionTimeout = 0.0;
 
@@ -113,20 +119,25 @@ public class CmdSkystoneVision implements TrcRobot.RobotCommand
     public CmdSkystoneVision(Robot robot, CommonAuto.AutoChoices autoChoices, Parameters visionParams)
     {
         this.robot = robot;
-        this.autoChoices = autoChoices;
         this.visionParams = visionParams;
         event = new TrcEvent(moduleName);
         sm = new TrcStateMachine<>(moduleName);
         visionTrigger = visionParams.useVisionTrigger?
                 new TrcTrigger("VisionTrigger", this::isTriggered, this::targetDetected): null;
         allianceDirection = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE? 1.0: -1.0;
-        wallStart = Math.abs(robot.driveBase.getXPosition()) < RobotInfo.ABS_LOADING_ZONE_ROBOT_START_X_MID;
+        scanDirection = visionParams.scanTowardsWall? 1.0: -1.0;
         xPidCtrl = robot.pidDrive.getXPidCtrl();
         yPidCtrl = robot.pidDrive.getYPidCtrl();
         turnPidCtrl = robot.pidDrive.getTurnPidCtrl();
-        scootCount = wallStart? 1: 2;
-        sm.start(visionParams.useVisionTrigger? State.SCAN_FOR_SKYSTONE: State.SETUP_VISION);
     }   //CmdSkystoneVision
+
+    public void start()
+    {
+        if (!sm.isEnabled())
+        {
+            sm.start(visionParams.useVisionTrigger ? State.SCAN_FOR_SKYSTONE : State.SETUP_VISION);
+        }
+    }
 
     private boolean isTriggered()
     {
@@ -213,14 +224,17 @@ public class CmdSkystoneVision implements TrcRobot.RobotCommand
             switch (state)
             {
                 case SCAN_FOR_SKYSTONE:
+                    visionTrigger.setEnabled(true);
                     //
                     // Strafe across all three stone to find the skystone. When a skystone is spotted, the strafe
                     // will be interrupted by visionTrigger.
+                    // Note: If we are scanning the stone set closer to the wall and towards the wall, the scan
+                    // distance is shorter or else we will run into the wall.
                     //
-                    visionTrigger.setEnabled(true);
-
-                    xTarget = wallStart? RobotInfo.SKYSTONE_SCAN_DISTANCE_WALL: RobotInfo.SKYSTONE_SCAN_DISTANCE_FAR;
-                    xTarget *= allianceDirection * visionParams.scanDirection;
+                    xTarget = visionParams.scanTowardsWall &&
+                              Math.abs(robot.driveBase.getXPosition()) < RobotInfo.ABS_LOADING_ZONE_ROBOT_START_X_MID?
+                                RobotInfo.SKYSTONE_SCAN_DISTANCE_WALL: RobotInfo.SKYSTONE_SCAN_DISTANCE_FAR;
+                    xTarget *= allianceDirection * scanDirection;
                     robot.pidDrive.setRelativeXTarget(xTarget, event);
                     sm.waitForSingleEvent(event, State.ALIGN_SKYSTONE);
                     break;
@@ -245,14 +259,14 @@ public class CmdSkystoneVision implements TrcRobot.RobotCommand
                     {
                         if (TrcUtil.getCurrentTime() > visionTimeout)
                         {
-                            if (scootCount > 0)
+                            if (visionParams.scootCount > 0)
                             {
                                 StringBuilder sentence = new StringBuilder("Not found, ");
 
                                 robot.globalTracer.traceInfo(
                                         "GetTargetPose", "Skystone not found, try next stone.");
-                                scootCount--;
-                                xTarget = -9.0*allianceDirection*visionParams.scanDirection;
+                                visionParams.scootCount--;
+                                xTarget = -9.0*allianceDirection*scanDirection;
                                 //
                                 // If this is the last stone, don't need to check if it's a skystone, just grab and go.
                                 // Note that our stone grabber design cannot grab the last stone touching the perimeter
@@ -260,7 +274,7 @@ public class CmdSkystoneVision implements TrcRobot.RobotCommand
                                 // scoot once to get to the middle stone and not attempting the last stone since we
                                 // can't get to it anyway.
                                 //
-                                if (scootCount == 0)
+                                if (visionParams.scootCount == 0)
                                 {
                                     nextState = State.ALIGN_SKYSTONE;
                                     sentence.append("give up.");

@@ -44,7 +44,6 @@ class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
     {
         BEGIN,
         START_DELAY,
-        SETUP_VISION,
         MOVE_CLOSER,
         MOVE_TO_FIRST_STONE,
         DO_VISION,
@@ -82,12 +81,12 @@ class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
     private final TrcTimer timer;
     private final TrcEvent event;
     private final TrcStateMachine<State> sm;
+    private final CmdSkystoneVision skystoneVisionCommand;
     private final double allianceDirection;
     private final SimplePidDrive<State> simplePidDrive;
     private final TrcPidController xPidCtrl;
     private final TrcPidController yPidCtrl;
     private final TrcPidController turnPidCtrl;
-    private CmdSkystoneVision skystoneVisionCommand = null;
     private TrcPidController.PidCoefficients savedYPidCoeff = null;
     private double startX = 0.0;
 
@@ -104,11 +103,13 @@ class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
         this.autoChoices = autoChoices;
         visionParams = new CmdSkystoneVision.Parameters()
                 .setUseVisionTrigger(robot.preferences.useVisionTrigger)
-                .setGrabberOffset(RobotInfo6541.GRABBER_OFFSET_X, RobotInfo6541.GRABBER_OFFSET_Y)
-                .setScanDirection(1.0);
+                .setScanTowardsWall(true)
+                .setScootCount(2)
+                .setGrabberOffset(RobotInfo6541.GRABBER_OFFSET_X, RobotInfo6541.GRABBER_OFFSET_Y);
         timer = new TrcTimer(moduleName);
         event = new TrcEvent(moduleName);
         sm = new TrcStateMachine<>(moduleName);
+        skystoneVisionCommand = new CmdSkystoneVision(robot, autoChoices, visionParams);
         allianceDirection = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE ? 1.0 : -1.0;
         simplePidDrive = new SimplePidDrive<>(robot.pidDrive, event, sm);
         xPidCtrl = robot.pidDrive.getXPidCtrl();
@@ -189,6 +190,12 @@ class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
 
                     robot.elbow.extend();
                     robot.grabber.release();
+
+                    if (Math.abs(startX) < RobotInfo.ABS_LOADING_ZONE_ROBOT_START_X_MID)
+                    {
+                        visionParams.setScootCount(1);
+                    }
+                    skystoneVisionCommand.start();
                     sm.setState(State.START_DELAY);
                     //
                     // Intentionally falling through to the next state.
@@ -199,7 +206,7 @@ class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
                     //
                     if (autoChoices.startDelay == 0.0)
                     {
-                        sm.setState(State.SETUP_VISION);
+                        sm.setState(State.MOVE_CLOSER);
                         //
                         // Intentionally falling through to the next state.
                         //
@@ -207,16 +214,10 @@ class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
                     else
                     {
                         timer.set(autoChoices.startDelay, event);
-                        sm.waitForSingleEvent(event, State.SETUP_VISION);
+                        sm.waitForSingleEvent(event, State.MOVE_CLOSER);
                         break;
                     }
 
-                case SETUP_VISION:
-                    skystoneVisionCommand = new CmdSkystoneVision(robot, autoChoices, visionParams);
-                    sm.setState(State.MOVE_CLOSER);
-                    //
-                    // Intentionally falling through to the next state.
-                    //
                 case MOVE_CLOSER:
                     //
                     // Move closer slowly to a distance so Vuforia can detect the target.
