@@ -807,7 +807,7 @@ public class TrcPidDrive
 
             TrcPose2D newTargetPose = new TrcPose2D(absX, absY, absHeading);
             TrcPose2D currRobotPose = driveBase.getAbsolutePose();
-            TrcPose2D  relativePose = newTargetPose.relativeTo(currRobotPose);
+            TrcPose2D relativePose = newTargetPose.relativeTo(currRobotPose);
             double turnTarget = turnPidCtrl.hasAbsoluteSetPoint()? newTargetPose.heading: relativePose.heading;
 
             if (debugEnabled)

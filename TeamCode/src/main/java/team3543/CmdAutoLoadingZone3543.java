@@ -50,9 +50,9 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
         GRAB_SKYSTONE,
         PULL_SKYSTONE,
         START_EXTENDER_ARM_RETRACTION,
-        TURN_TOWARDS_FOUNDATION_UNDER_BRIDGE,
-        TURN_TO_FOUNDATION,
+        TURN_TOWARDS_FOUNDATION,
         GOTO_FOUNDATION,
+        TURN_BACK_TO_FOUNDATION,
         APPROACH_FOUNDATION,
         DROP_SKYSTONE,
         FINISH_DELAY,
@@ -287,30 +287,33 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                     //
                     // Bring the extender arm back so we don't run into the bridge during travel.
                     //
+                    nextState = autoChoices.strafeToFoundation?
+                                    State.GOTO_FOUNDATION: State.TURN_TOWARDS_FOUNDATION;
                     robot.extenderArm.setPosition(RobotInfo3543.EXTENDER_ARM_CARRY_POS, event);
-                    sm.waitForSingleEvent(event, State.TURN_TOWARDS_FOUNDATION_UNDER_BRIDGE);
+                    sm.waitForSingleEvent(event, nextState);
                     break;
 
-                case TURN_TOWARDS_FOUNDATION_UNDER_BRIDGE:
+                case TURN_TOWARDS_FOUNDATION:
                     turnTarget = 90.0 * allianceDirection;
                     simplePidDrive.setAbsoluteHeadingTarget(turnTarget, State.GOTO_FOUNDATION);
                     break;
 
-                case TURN_TO_FOUNDATION:
-                    turnTarget = 0.0;
-                    simplePidDrive.setAbsoluteHeadingTarget(turnTarget, State.APPROACH_FOUNDATION);
-                    break;
-
                 case GOTO_FOUNDATION:
+                    nextState = autoChoices.strafeToFoundation? State.APPROACH_FOUNDATION: State.TURN_BACK_TO_FOUNDATION;
                     // Need to go full speed to save time.
-                    xPidCtrl.setOutputLimit(0.8);
-                    yPidCtrl.setOutputLimit(0.8);
+                    xPidCtrl.setOutputLimit(1.0);
+                    yPidCtrl.setOutputLimit(1.0);
                     xTarget = (autoChoices.strategy == CommonAuto.AutoStrategy.LOADING_ZONE_SINGLE_SKYSTONE?
                                     RobotInfo.ABS_FOUNDATION_DROP_MID_X:
                                autoChoices.strategy == CommonAuto.AutoStrategy.LOADING_ZONE_DOUBLE_SKYSTONE_CENTER?
                                     RobotInfo.ABS_FOUNDATION_DROP_NEAR_X: RobotInfo.ABS_FOUNDATION_DROP_FAR_X) *
                               allianceDirection;
-                    simplePidDrive.setAbsoluteXTarget(xTarget, State.TURN_TO_FOUNDATION);
+                    simplePidDrive.setAbsoluteXTarget(xTarget, nextState);
+                    break;
+
+                case TURN_BACK_TO_FOUNDATION:
+                    turnTarget = 0.0;
+                    simplePidDrive.setAbsoluteHeadingTarget(turnTarget, State.APPROACH_FOUNDATION);
                     break;
 
                 case APPROACH_FOUNDATION:
