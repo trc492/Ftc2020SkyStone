@@ -254,7 +254,7 @@ class Robot3543 extends Robot
                         RobotInfo3543.GYRO_KP, RobotInfo3543.GYRO_KI, RobotInfo3543.GYRO_KD),
                 RobotInfo3543.GYRO_TOLERANCE, driveBase::getHeading);
         gyroPidCtrl.setAbsoluteSetPoint(true);
-        gyroPidCtrl.setOutputRange(-RobotInfo3543.TURN_POWER_LIMIT, RobotInfo3543.TURN_POWER_LIMIT);
+//        gyroPidCtrl.setOutputRange(-RobotInfo3543.TURN_POWER_LIMIT, RobotInfo3543.TURN_POWER_LIMIT);
 
         pidDrive = new TrcPidDrive(
                 "pidDrive", driveBase, encoderXPidCtrl, encoderYPidCtrl, gyroPidCtrl);

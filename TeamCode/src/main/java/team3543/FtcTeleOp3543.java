@@ -33,7 +33,6 @@ import trclib.TrcRobot;
 public class FtcTeleOp3543 extends CommonTeleOp
 {
     Robot3543 robot3543;
-    boolean frontFoundationLatched = false;
 
     //
     // Implements FtcOpMode abstract method.
@@ -121,6 +120,22 @@ public class FtcTeleOp3543 extends CommonTeleOp
 
                 case FtcGamepad.GAMEPAD_RBUMPER:
                     break;
+
+                case FtcGamepad.GAMEPAD_DPAD_UP:
+                    if (pressed)
+                    {
+                        robot3543.frontFoundationLatch.grab();
+                    }
+                    processed = true;
+                    break;
+
+                case FtcGamepad.GAMEPAD_DPAD_DOWN:
+                    if (pressed)
+                    {
+                        robot3543.frontFoundationLatch.release();
+                    }
+                    processed = true;
+                    break;
             }
         }
         else if (gamepad == operatorGamepad)
@@ -140,21 +155,13 @@ public class FtcTeleOp3543 extends CommonTeleOp
                     break;
 
                 case FtcGamepad.GAMEPAD_LBUMPER:
-                    if (pressed)
-                    {
-                        frontFoundationLatched = !frontFoundationLatched;
-                        if (frontFoundationLatched)
-                        {
-                            robot3543.frontFoundationLatch.grab();
-                        }
-                        else
-                        {
-                            robot3543.frontFoundationLatch.release();
-                        }
-                    }
                     break;
 
                 case FtcGamepad.GAMEPAD_RBUMPER:
+                    //
+                    // Deliberately not setting processed so to pass it to the next level up to do manual override on
+                    // elevator as well.
+                    //
                     robot3543.extenderArm.setManualOverride(pressed);
                     break;
 
@@ -191,13 +198,14 @@ public class FtcTeleOp3543 extends CommonTeleOp
                     break;
 
                 case FtcGamepad.GAMEPAD_BACK:
+                    //
+                    // Deliberately not setting processed so to pass it to the next level up to do zero calibration on
+                    // elevator as well.
+                    //
                     if (pressed)
                     {
                         robot3543.extenderArm.zeroCalibrate();
                     }
-                    break;
-
-                case FtcGamepad.GAMEPAD_START:
                     break;
             }
         }

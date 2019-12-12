@@ -242,9 +242,6 @@ public abstract class CommonTeleOp extends FtcOpMode
                         robot.elevator.zeroCalibrate();
                     }
                     break;
-
-                case FtcGamepad.GAMEPAD_START:
-                    break;
             }
         }
     }   //buttonEvent

@@ -220,8 +220,8 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                     robot.grabber.release();
                     robot.wrist.extend();
 
-//                    xPidCtrl.setOutputLimit(0.5);
-//                    yPidCtrl.setOutputLimit(0.5);
+                    xPidCtrl.setOutputLimit(0.5);
+                    yPidCtrl.setOutputLimit(0.5);
                     yTarget = 22.0;
                     simplePidDrive.setRelativeYTarget(yTarget, State.MOVE_TO_FIRST_STONE);
                     break;
@@ -325,7 +325,7 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                     //
                     robot.elevator.setPosition(RobotInfo3543.ELEVATOR_DROP_HEIGHT);
                     robot.extenderArm.setPosition(RobotInfo3543.EXTENDER_ARM_DROP_POS);
-                    yTarget =  14.0;
+                    yTarget =  11.0;
                     simplePidDrive.setRelativeYTarget(yTarget, State.DROP_SKYSTONE);
                     break;
 
@@ -387,7 +387,7 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                     TrcPidController.PidCoefficients loadedYPidCoeff = savedYPidCoeff.clone();
                     loadedYPidCoeff.kP = RobotInfo3543.ENCODER_Y_LOADED_KP;
                     yPidCtrl.setPidCoefficients(loadedYPidCoeff);
-                    yTarget = -43.0;
+                    yTarget = -40.0;
                     simplePidDrive.setRelativeYTarget(yTarget, State.UNHOOK_FOUNDATION);
                     break;
 
@@ -439,7 +439,7 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                     //
                     // Bump the foundation toward the wall to make sure it lands inside the building site.
                     //
-                    xTarget = 16.0 * allianceDirection;
+                    xTarget = 13.0 * allianceDirection;
                     nextState = autoChoices.parkUnderBridge == CommonAuto.ParkPosition.PARK_CLOSE_TO_CENTER?
                                     State.MOVE_UNDER_BRIDGE: State.MOVE_BACK_TO_WALL;
                     simplePidDrive.setRelativeXTarget(xTarget, nextState);

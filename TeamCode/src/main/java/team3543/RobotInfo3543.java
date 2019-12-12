@@ -161,7 +161,7 @@ class RobotInfo3543
     //
     // ExtenderArm subsystem (3543-only).
     //
-    static final double EXTENDER_ARM_KP                         = 1.0;
+    static final double EXTENDER_ARM_KP                         = 0.5;
     static final double EXTENDER_ARM_KI                         = 0.0;
     static final double EXTENDER_ARM_KD                         = 0.0;
     static final double EXTENDER_ARM_TOLERANCE                  = 0.5;
