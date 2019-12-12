@@ -171,9 +171,17 @@ public abstract class CommonTeleOp extends FtcOpMode
                     break;
 
                 case FtcGamepad.GAMEPAD_X:
+                    if (robot.backFoundationLatch != null && pressed)
+                    {
+                        robot.backFoundationLatch.grab();
+                    }
                     break;
 
                 case FtcGamepad.GAMEPAD_Y:
+                    if (robot.backFoundationLatch != null && pressed)
+                    {
+                        robot.backFoundationLatch.release();
+                    }
                     break;
 
                 case FtcGamepad.GAMEPAD_LBUMPER:
@@ -204,17 +212,9 @@ public abstract class CommonTeleOp extends FtcOpMode
                     break;
 
                 case FtcGamepad.GAMEPAD_X:
-                    if (robot.backFoundationLatch != null && pressed)
-                    {
-                        robot.backFoundationLatch.grab();
-                    }
                     break;
 
                 case FtcGamepad.GAMEPAD_Y:
-                    if (robot.backFoundationLatch != null && pressed)
-                    {
-                        robot.backFoundationLatch.release();
-                    }
                     break;
 
                 case FtcGamepad.GAMEPAD_LBUMPER:

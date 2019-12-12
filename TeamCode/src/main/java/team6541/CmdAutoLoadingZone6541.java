@@ -47,6 +47,8 @@ class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
         MOVE_CLOSER,
         MOVE_TO_FIRST_STONE,
         DO_VISION,
+        EXTEND_ELBOW,
+        DRIVE_TO_ALIGN_SKYSTONE,
         GRAB_SKYSTONE,
         PULL_SKYSTONE,
         GOTO_FOUNDATION,
@@ -188,7 +190,7 @@ class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
                     robot.encoderYPidCtrl.setNoOscillation(true);
                     robot.gyroPidCtrl.setNoOscillation(true);
 
-                    robot.elbow.extend();
+                    robot.elbow.setPosition(0.8);
                     robot.grabber.release();
 
                     if (Math.abs(startX) < RobotInfo.ABS_LOADING_ZONE_ROBOT_START_X_MID)
@@ -257,7 +259,7 @@ class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
                         //
                         // Skystone vision is done, continue on.
                         //
-                        sm.setState(State.GRAB_SKYSTONE);
+                        sm.setState(State.DRIVE_TO_ALIGN_SKYSTONE);
                         break;
                     }
                     else
@@ -265,6 +267,16 @@ class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
                         traceState = false;
                         break;
                     }
+
+                case DRIVE_TO_ALIGN_SKYSTONE:
+                    yTarget = 2.0;
+                    simplePidDrive.setRelativeYTarget(yTarget, State.EXTEND_ELBOW);
+                    break;
+
+                case EXTEND_ELBOW:
+                    robot.elbow.extend(event);
+                    sm.waitForSingleEvent(event, State.GRAB_SKYSTONE);
+                    break;
 
                 case GRAB_SKYSTONE:
                     robot.grabber.grab(1.0, event);

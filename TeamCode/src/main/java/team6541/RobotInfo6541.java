@@ -158,9 +158,9 @@ class RobotInfo6541
     static final double ELBOW_MAX_STEPRATE                      = 0.0;
     static final double ELBOW_MIN_POS                           = 0.0;
     static final double ELBOW_MAX_POS                           = 1.0;
-    static final double ELBOW_EXTEND_POS                        = 0.75;
+    static final double ELBOW_EXTEND_POS                        = 1.0;
     static final double ELBOW_EXTEND_TIME                       = 1.0;
-    static final double ELBOW_RETRACT_POS                       = 0.3;
+    static final double ELBOW_RETRACT_POS                       = 0.25;
     static final double ELBOW_RETRACT_TIME                      = 1.0;
     static final double ELBOW_UPRIGHT_POS                       = 0.4;
     //
@@ -191,8 +191,8 @@ class RobotInfo6541
     static final double DEPLOYER_MAX_STEPRATE                    = 0.0;
     static final double DEPLOYER_MIN_POS                         = 0.0;
     static final double DEPLOYER_MAX_POS                         = 1.0;
-    static final double DEPLOYER_RETRACT_POS                     = 0.0;
-    static final double DEPLOYER_EXTEND_POS                      = 1.0;
+    static final double DEPLOYER_RETRACT_POS                     = 1.0;
+    static final double DEPLOYER_EXTEND_POS                      = 0.0;
     static final double DEPLOYER_EXTEND_TIME                     = 1.0;
     static final double DEPLOYER_RETRACT_TIME                    = 1.0;
 
