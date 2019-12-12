@@ -239,6 +239,7 @@ class Robot6541 extends Robot
         pidDrive.setAbsoluteTargetModeEnabled(false);
         pidDrive.setStallTimeout(RobotInfo6541.PIDDRIVE_STALL_TIMEOUT);
         pidDrive.setBeep(androidTone);
+        pidDrive.setMsgTracer(globalTracer);
     }   //initDriveBase
 
 }   //class Robot6541
