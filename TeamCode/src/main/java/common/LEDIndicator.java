@@ -28,7 +28,7 @@ import trclib.TrcRevBlinkin.LEDPattern;
 
 public class LEDIndicator
 {
-    private static final LEDPattern normalPattern = LEDPattern.FixedBreathRed;
+    private static final LEDPattern normalPattern = LEDPattern.SolidBlack;
     private static final TrcHashMap<String, LEDPattern> visionPatternMap = new TrcHashMap<String, LEDPattern>()
             .add(VuforiaVision.skystoneTargetName, LEDPattern.SolidGreen)
             .add(VuforiaVision.blueBridgeBackTargetName, LEDPattern.SolidViolet)
@@ -61,5 +61,10 @@ public class LEDIndicator
     {
         blinkin.setPattern(visionPatternMap.get(targetName));
     }   //setDetectedTarget
+
+    public void setFlashLightOn(boolean lightOn)
+    {
+        blinkin.setPattern(lightOn? LEDPattern.SolidRed: LEDPattern.SolidBlack);
+    }   //setFlashLightOn
 
 }   //class LEDIndicator

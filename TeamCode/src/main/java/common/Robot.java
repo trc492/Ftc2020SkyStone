@@ -77,7 +77,8 @@ public class Robot
         public boolean useTensorFlow = false;
         public boolean showVuforiaView = false;
         public boolean showTensorFlowView = false;
-        public boolean useFlashLight = true;
+        public boolean useCameraFlashLight = true;
+        public boolean useBlinkinFlashLight = true;
         public boolean useVisionTrigger = false;
         public boolean useTraceLog = true;
         public boolean useSpeech = true;
@@ -151,9 +152,10 @@ public class Robot
             return this;
         }
 
-        public Preferences setUseFlashLight(boolean useFlashLight)
+        public Preferences setUseFlashLight(boolean useCameraFlashLight, boolean useBlinkinFlashLight)
         {
-            this.useFlashLight = useFlashLight;
+            this.useCameraFlashLight = useCameraFlashLight;
+            this.useBlinkinFlashLight = useBlinkinFlashLight;
             return this;
         }
 
@@ -504,7 +506,7 @@ public class Robot
         if (vuforiaVision != null && (runMode == TrcRobot.RunMode.AUTO_MODE || runMode == TrcRobot.RunMode.TEST_MODE))
         {
             globalTracer.traceInfo(funcName, "Enabling Vuforia.");
-            vuforiaVision.setEnabled(true, preferences.useFlashLight);
+            vuforiaVision.setEnabled(true);
         }
 
         if (songPlayer != null && runMode == TrcRobot.RunMode.AUTO_MODE)
@@ -525,7 +527,7 @@ public class Robot
 
         if (vuforiaVision != null)
         {
-            vuforiaVision.setEnabled(false, preferences.useFlashLight);
+            vuforiaVision.setEnabled(false);
         }
 
         if (tensorFlowVision != null)
@@ -583,6 +585,19 @@ public class Robot
             textToSpeech.speak(sentence, TextToSpeech.QUEUE_FLUSH, null);
         }
     }   //speak
+
+    public void setFlashLightOn(boolean cameraFlashOn, boolean blinkinFlashOn)
+    {
+        if (vuforia != null && preferences.useCameraFlashLight)
+        {
+            vuforia.setFlashlightEnabled(cameraFlashOn);
+        }
+
+        if (ledIndicator != null && preferences.useBlinkinFlashLight)
+        {
+            ledIndicator.setFlashLightOn(blinkinFlashOn);
+        }
+    }   //setFlashLightOn
 
     public void setFieldOrigin(TrcPose2D pose)
     {
@@ -666,7 +681,7 @@ public class Robot
                         "tfodMonitorViewId", "id", opMode.hardwareMap.appContext.getPackageName());
         tensorFlowVision = new TensorFlowVision(
                 vuforia, tfodMonitorViewId, cameraRect, worldRect, globalTracer);
-        tensorFlowVision.setEnabled(true, preferences.useFlashLight);
+        tensorFlowVision.setEnabled(true, preferences.useCameraFlashLight);
         globalTracer.traceInfo(robotName, "Enabling TensorFlow.");
     } //initTensorFlow
 

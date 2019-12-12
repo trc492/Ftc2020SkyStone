@@ -191,12 +191,8 @@ public class VuforiaVision
         }
     }   //VuforiaVision
 
-    public void setEnabled(boolean enabled, boolean useFlashLight)
+    public void setEnabled(boolean enabled)
     {
-        if (useFlashLight)
-        {
-            vuforia.setFlashlightEnabled(enabled);
-        }
         vuforia.setTrackingEnabled(enabled);
     }   //setEnabled
 
@@ -224,7 +220,7 @@ public class VuforiaVision
         {
             robotLocation = vuforia.getRobotLocation(target);
 
-            if (robot.ledIndicator != null)
+            if (robot.ledIndicator != null && !robot.preferences.useBlinkinFlashLight)
             {
                 if (robotLocation != null)
                 {
@@ -274,7 +270,7 @@ public class VuforiaVision
             }
         }
 
-        if (robot.ledIndicator != null)
+        if (robot.ledIndicator != null && !robot.preferences.useBlinkinFlashLight)
         {
             if (robotLocation != null)
             {

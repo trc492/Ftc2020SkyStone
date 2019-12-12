@@ -189,7 +189,11 @@ public class CommonTest
 
     public void start()
     {
-        if (test == Test.PURE_PURSUIT_DRIVE)
+        if (test == Test.SENSORS_TEST)
+        {
+            robot.setFlashLightOn(true, true);
+        }
+        else if (test == Test.PURE_PURSUIT_DRIVE)
         {
             /*
             purePursuitDriveCommand.start(
@@ -220,7 +224,11 @@ public class CommonTest
 
     public void stop()
     {
-        if (test == Test.PURE_PURSUIT_DRIVE)
+        if (test == Test.SENSORS_TEST)
+        {
+            robot.setFlashLightOn(false, false);
+        }
+        else if (test == Test.PURE_PURSUIT_DRIVE)
         {
             testCommand.cancel();
         }
