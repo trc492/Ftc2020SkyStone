@@ -215,11 +215,13 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                     //
                     // Move closer slowly to a distance so Vuforia can detect the target.
                     //
+                    robot.setFlashLightOn(true, true);
+                    robot.extenderArm.setPosition(5.0);
                     robot.grabber.release();
                     robot.wrist.extend();
 
-                    xPidCtrl.setOutputLimit(0.5);
-                    yPidCtrl.setOutputLimit(0.5);
+//                    xPidCtrl.setOutputLimit(0.5);
+//                    yPidCtrl.setOutputLimit(0.5);
                     yTarget = 22.0;
                     simplePidDrive.setRelativeYTarget(yTarget, State.MOVE_TO_FIRST_STONE);
                     break;
@@ -265,6 +267,7 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                     }
 
                 case GO_DOWN_ON_SKYSTONE:
+                    robot.setFlashLightOn(false, false);
                     robot.extenderArm.setPosition(RobotInfo3543.EXTENDER_ARM_PICKUP_POS, event);
                     sm.waitForSingleEvent(event, State.GRAB_SKYSTONE);
                     break;

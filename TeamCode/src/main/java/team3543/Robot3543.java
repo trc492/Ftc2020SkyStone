@@ -47,7 +47,7 @@ class Robot3543 extends Robot
             .setUseTensorFlow(false)
             .setShowVuforiaView(true)
             .setShowTensorFlowView(false)
-            .setUseFlashLight(true)
+            .setUseFlashLight(true, true)
             .setUseVisionTrigger(false)
             .setUseTraceLog(true)
             .setUseSpeech(true)
