@@ -96,10 +96,10 @@ public abstract class TrcMotor implements TrcMotorController
     private final TrcTaskMgr.TaskObject velocityCtrlTaskObj;
     private TrcDigitalInputTrigger digitalTrigger = null;
     private boolean odometryEnabled = false;
-    private double maxMotorVelocity = 0.0;
+    protected double maxMotorVelocity = 0.0;
     private TrcPidController velocityPidCtrl = null;
     private DigitalTriggerHandler digitalTriggerHandler = null;
-    private boolean calibrating = false;
+    protected boolean calibrating = false;
 
     /**
      * Constructor: Create an instance of the object.
@@ -408,7 +408,7 @@ public abstract class TrcMotor implements TrcMotorController
     private double getNormalizedVelocity()
     {
         final String funcName = "getNormalizedVelocity";
-        double normalizedVel = getVelocity() / maxMotorVelocity;
+        double normalizedVel = maxMotorVelocity != 0.0? getVelocity() / maxMotorVelocity: 0.0;
 
         if (debugEnabled)
         {
