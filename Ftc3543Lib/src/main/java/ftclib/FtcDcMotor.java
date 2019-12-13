@@ -225,6 +225,7 @@ public class FtcDcMotor extends TrcMotor
             ((DcMotorEx)motor).setVelocityPIDFCoefficients(
                     pidCoefficients.kP, pidCoefficients.kI, pidCoefficients.kD, pidCoefficients.kF);
         }
+        motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         if (debugEnabled)
         {
@@ -247,6 +248,7 @@ public class FtcDcMotor extends TrcMotor
         }
 
         maxMotorVelocity = 0.0;
+        motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }   //disableVelocityMode
 
     /**
