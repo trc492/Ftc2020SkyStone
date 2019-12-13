@@ -74,9 +74,9 @@ public abstract class TrcMotor implements TrcMotorController
      * implementing its own native velocity control, it does not really need to do anything for this method.
      * But for completeness, it can just set the raw motor power in the motor controller.
      *
-     * @param power specifies the percentage power (range -1.0 to 1.0) to be set.
+     * @param value specifies the percentage power (range -1.0 to 1.0) to be set.
      */
-    public abstract void setMotorPower(double power);
+    public abstract void setMotorPower(double value);
 
     private class Odometry
     {
