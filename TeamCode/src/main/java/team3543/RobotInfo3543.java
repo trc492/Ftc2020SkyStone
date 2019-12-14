@@ -39,7 +39,7 @@ class RobotInfo3543
     //
     // Velocity controlled constants.
     //
-    static final double MOTOR_MAX_VELOCITY                      = (2240 * 2.5); //encoder counts/second for HD HEX 40
+    static final double MOTOR_MAX_VELOCITY                      = 2800;//2240*2.5;//encoder counts/second for HDHEX 40
     static final double MOTOR_KP                                = 0.75;
     static final double MOTOR_KI                                = 0.0;
     static final double MOTOR_KD                                = 0.0;

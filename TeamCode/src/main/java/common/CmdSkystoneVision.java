@@ -47,7 +47,7 @@ public class CmdSkystoneVision implements TrcRobot.RobotCommand
     private static final boolean debugXPid = true;
     private static final boolean debugYPid = true;
     private static final boolean debugTurnPid = true;
-    private static final double VISION_TIMEOUT = 0.5;
+    private static final double VISION_TIMEOUT = 1.0;
 
     public static class Parameters
     {

@@ -723,7 +723,8 @@ public class Robot
             if (pose == null)
             {
                 globalTracer.traceInfo(funcName, "***** Skystone not found!");
-            } else
+            }
+            else
             {
                 globalTracer.traceInfo(funcName, "***** %s: x=%.1f, y=%.1f, angle=%.1f",
                         targetFinder, pose.x, pose.y, pose.heading);
