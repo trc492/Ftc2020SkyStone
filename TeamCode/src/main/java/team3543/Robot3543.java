@@ -53,7 +53,7 @@ class Robot3543 extends Robot
             .setUseSpeech(true)
             .setUseBatteryMonitor(false)
             .setUseLoopPerformanceMonitor(false)
-            .setUseVelocityControl(false);
+            .setUseVelocityControl(true);
     private static final PhoneParameters phoneParams3543 = new PhoneParameters()
             .setCameraDir(RobotInfo3543.CAMERA_DIR)
             .setCameraMonitorFeedback(RobotInfo3543.CAMERA_MONITOR_FEEDBACK)
@@ -214,12 +214,16 @@ class Robot3543 extends Robot
 
         if (preferences.useVelocityControl)
         {
-            TrcPidController.PidCoefficients motorPidCoef = new TrcPidController.PidCoefficients(
-                    RobotInfo3543.MOTOR_KP, RobotInfo3543.MOTOR_KI, RobotInfo3543.MOTOR_KD);
-            leftFrontWheel.enableVelocityMode(RobotInfo3543.MOTOR_MAX_VELOCITY, motorPidCoef);
-            rightFrontWheel.enableVelocityMode(RobotInfo3543.MOTOR_MAX_VELOCITY, motorPidCoef);
-            leftRearWheel.enableVelocityMode(RobotInfo3543.MOTOR_MAX_VELOCITY, motorPidCoef);
-            rightRearWheel.enableVelocityMode(RobotInfo3543.MOTOR_MAX_VELOCITY, motorPidCoef);
+//            TrcPidController.PidCoefficients motorPidCoef = new TrcPidController.PidCoefficients(
+//                    RobotInfo3543.MOTOR_KP, RobotInfo3543.MOTOR_KI, RobotInfo3543.MOTOR_KD);
+//            leftFrontWheel.enableVelocityMode(RobotInfo3543.MOTOR_MAX_VELOCITY, motorPidCoef);
+//            rightFrontWheel.enableVelocityMode(RobotInfo3543.MOTOR_MAX_VELOCITY, motorPidCoef);
+//            leftRearWheel.enableVelocityMode(RobotInfo3543.MOTOR_MAX_VELOCITY, motorPidCoef);
+//            rightRearWheel.enableVelocityMode(RobotInfo3543.MOTOR_MAX_VELOCITY, motorPidCoef);
+            leftFrontWheel.enableVelocityMode(RobotInfo3543.MOTOR_MAX_VELOCITY, null);
+            rightFrontWheel.enableVelocityMode(RobotInfo3543.MOTOR_MAX_VELOCITY, null);
+            leftRearWheel.enableVelocityMode(RobotInfo3543.MOTOR_MAX_VELOCITY, null);
+            rightRearWheel.enableVelocityMode(RobotInfo3543.MOTOR_MAX_VELOCITY, null);
         }
 
         leftFrontWheel.setInverted(false);

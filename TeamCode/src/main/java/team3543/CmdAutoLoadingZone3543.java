@@ -182,7 +182,7 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
 
                     xPidCtrl.setNoOscillation(true);
                     yPidCtrl.setNoOscillation(true);
-                    turnPidCtrl.setNoOscillation(false);
+                    turnPidCtrl.setNoOscillation(true);
 
                     if (Math.abs(startX) < RobotInfo.ABS_LOADING_ZONE_ROBOT_START_X_MID)
                     {
@@ -222,7 +222,7 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
 
                     xPidCtrl.setOutputLimit(0.5);
                     yPidCtrl.setOutputLimit(0.5);
-                    yTarget = 22.0;
+                    yTarget = 20.0;
                     simplePidDrive.setRelativeYTarget(yTarget, State.MOVE_TO_FIRST_STONE);
                     break;
 
@@ -504,17 +504,17 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
 
             if (debugXPid && xPidCtrl != null)
             {
-                xPidCtrl.printPidInfo(robot.globalTracer, elapsedTime);
+                xPidCtrl.printPidInfo(robot.globalTracer, elapsedTime, true);
             }
 
             if (debugYPid)
             {
-                yPidCtrl.printPidInfo(robot.globalTracer, elapsedTime);
+                yPidCtrl.printPidInfo(robot.globalTracer, elapsedTime, true);
             }
 
             if (debugTurnPid)
             {
-                turnPidCtrl.printPidInfo(robot.globalTracer, elapsedTime);
+                turnPidCtrl.printPidInfo(robot.globalTracer, elapsedTime, true);
             }
         }
 
