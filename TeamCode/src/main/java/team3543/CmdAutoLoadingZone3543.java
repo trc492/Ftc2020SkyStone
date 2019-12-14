@@ -216,7 +216,7 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                     // Move closer slowly to a distance so Vuforia can detect the target.
                     //
                     robot.setFlashLightOn(true, true);
-                    robot.extenderArm.setPosition(5.0);
+                    robot.extenderArm.setPosition(4.5);
                     robot.grabber.release();
                     robot.wrist.extend();
 
@@ -302,7 +302,8 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                     break;
 
                 case GOTO_FOUNDATION:
-                    nextState = autoChoices.strafeToFoundation? State.APPROACH_FOUNDATION: State.TURN_BACK_TO_FOUNDATION;
+                    nextState = autoChoices.strafeToFoundation?
+                            State.APPROACH_FOUNDATION: State.TURN_BACK_TO_FOUNDATION;
                     // Need to go full speed to save time.
                     xPidCtrl.setOutputLimit(1.0);
                     yPidCtrl.setOutputLimit(1.0);

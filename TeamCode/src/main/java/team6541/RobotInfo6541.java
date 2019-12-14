@@ -174,7 +174,7 @@ class RobotInfo6541
     static final double GRABBER_GRAB_TIME                       = 1.0;
     static final double GRABBER_RELEASE_TIME                    = 1.0;
     static final double GRABBER_OFFSET_X                        = 2.5;
-    static final double GRABBER_OFFSET_Y                        = 4.0;
+    static final double GRABBER_OFFSET_Y                        = 2.0;
     //
     // BackFoundationLatch subsystem.
     //
