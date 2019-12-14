@@ -47,14 +47,15 @@ class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
         MOVE_CLOSER,
         MOVE_TO_FIRST_STONE,
         DO_VISION,
-        EXTEND_ELBOW,
         DRIVE_TO_ALIGN_SKYSTONE,
         GRAB_SKYSTONE,
         PULL_SKYSTONE,
+        TURN_TOWARDS_FOUNDATION,
         GOTO_FOUNDATION,
+        TURN_BACK_TO_FOUNDATION,
+        RAISE_ELEVATOR,
         APPROACH_FOUNDATION,
         DROP_SKYSTONE,
-        READY_ELEVATOR_FOR_LOWERING,
         LOWER_ELEVATOR,
         BACK_OFF_FOUNDATION,
         TURN_AROUND,
@@ -189,8 +190,7 @@ class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
                     robot.encoderXPidCtrl.setNoOscillation(true);
                     robot.encoderYPidCtrl.setNoOscillation(true);
                     robot.gyroPidCtrl.setNoOscillation(true);
-
-                    robot.elbow.setPosition(0.8);
+                    robot.elbow.extend();
                     robot.grabber.release();
 
                     if (Math.abs(startX) < RobotInfo.ABS_LOADING_ZONE_ROBOT_START_X_MID)
@@ -271,12 +271,7 @@ class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
 
                 case DRIVE_TO_ALIGN_SKYSTONE:
                     yTarget = 2.0;
-                    simplePidDrive.setRelativeYTarget(yTarget, State.EXTEND_ELBOW);
-                    break;
-
-                case EXTEND_ELBOW:
-                    robot.elbow.extend(event);
-                    sm.waitForSingleEvent(event, State.GRAB_SKYSTONE);
+                    simplePidDrive.setRelativeYTarget(yTarget, State.GRAB_SKYSTONE);
                     break;
 
                 case GRAB_SKYSTONE:
@@ -286,8 +281,13 @@ class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
                     break;
 
                 case PULL_SKYSTONE:
-                    yTarget = -14.0;
-                    simplePidDrive.setRelativeYTarget(yTarget, State.GOTO_FOUNDATION);
+                    yTarget = -11.0;
+                    simplePidDrive.setRelativeYTarget(yTarget, State.TURN_TOWARDS_FOUNDATION);
+                    break;
+
+                case TURN_TOWARDS_FOUNDATION:
+                    turnTarget = 90.0 * allianceDirection;
+                    simplePidDrive.setAbsoluteHeadingTarget(turnTarget, State.GOTO_FOUNDATION);
                     break;
 
                 case GOTO_FOUNDATION:
@@ -297,13 +297,22 @@ class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
                     xTarget = ((autoChoices.strategy == CommonAuto.AutoStrategy.LOADING_ZONE_SINGLE_SKYSTONE?
                                     RobotInfo.ABS_FOUNDATION_DROP_MID_X:
                                autoChoices.strategy == CommonAuto.AutoStrategy.LOADING_ZONE_DOUBLE_SKYSTONE_CENTER?
-                                    RobotInfo.ABS_FOUNDATION_DROP_NEAR_X: RobotInfo.ABS_FOUNDATION_DROP_FAR_X) + 5.5) *
+                                    RobotInfo.ABS_FOUNDATION_DROP_NEAR_X: RobotInfo.ABS_FOUNDATION_DROP_FAR_X) - 3.5) *
                               allianceDirection;
-                    simplePidDrive.setAbsoluteXTarget(xTarget, State.APPROACH_FOUNDATION);
+                    simplePidDrive.setAbsoluteXTarget(xTarget, State.TURN_BACK_TO_FOUNDATION);
+                    break;
+
+                case TURN_BACK_TO_FOUNDATION:
+                    turnTarget = 0.0;
+                    simplePidDrive.setAbsoluteHeadingTarget(turnTarget, State.RAISE_ELEVATOR);
+                    break;
+
+                case RAISE_ELEVATOR:
+                    robot.elevator.setPosition(4.0, event);
+                    sm.waitForSingleEvent(event, State.APPROACH_FOUNDATION);
                     break;
 
                 case APPROACH_FOUNDATION:
-                    robot.elevator.setPosition(4.0);
                     yTarget = 16.0;
                     simplePidDrive.setRelativeYTarget(yTarget, State.DROP_SKYSTONE);
                     break;
@@ -325,12 +334,8 @@ class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
 
                 case TURN_AROUND:
                     turnTarget = 180.0;
-                    simplePidDrive.setRelativeTurnTarget(turnTarget, State.READY_ELEVATOR_FOR_LOWERING);
-                    break;
-
-                case READY_ELEVATOR_FOR_LOWERING:
-                    robot.elbow.setPosition(RobotInfo6541.ELBOW_UPRIGHT_POS, 1.0, event);
-                    sm.waitForSingleEvent(event, State.LOWER_ELEVATOR);
+                    robot.elbow.setPosition(RobotInfo6541.ELBOW_UPRIGHT_POS);
+                    simplePidDrive.setRelativeTurnTarget(turnTarget, State.LOWER_ELEVATOR);
                     break;
 
                 case LOWER_ELEVATOR:
@@ -428,7 +433,7 @@ class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
                 case MOVE_BACK_TO_WALL:
                     nextState = autoChoices.parkUnderBridge == CommonAuto.ParkPosition.NO_PARK?
                                     State.DONE: State.MOVE_UNDER_BRIDGE;
-                    yTarget = 22.0;
+                    yTarget = 19.0;
                     simplePidDrive.setRelativeYTarget(yTarget, nextState);
                     break;
 
