@@ -94,8 +94,8 @@ class Robot3543 extends Robot
             .setStepParams(
                     RobotInfo3543.GRABBER_MAX_STEPRATE, RobotInfo3543.GRABBER_MIN_POS, RobotInfo3543.GRABBER_MAX_POS)
             .setInverted(false, false)
-            .setRetractParams(RobotInfo3543.GRABBER_CLOSE_POS, RobotInfo3543.GRABBER_GRAB_TIME)
-            .setExtendParams(RobotInfo3543.GRABBER_OPEN_POS, RobotInfo3543.GRABBER_RELEASE_TIME);
+            .setRetractParams(RobotInfo3543.GRABBER_GRAB_POS, RobotInfo3543.GRABBER_GRAB_TIME)
+            .setExtendParams(RobotInfo3543.GRABBER_RELEASE_POS, RobotInfo3543.GRABBER_RELEASE_TIME);
     private static final FtcServoActuator.Parameters backFoundationLatchParams3543 = new FtcServoActuator.Parameters()
             .setStepParams(
                     RobotInfo3543.BACK_FOUNDATION_LATCH_MAX_STEPRATE, RobotInfo3543.BACK_FOUNDATION_LATCH_MIN_POS,
@@ -214,16 +214,10 @@ class Robot3543 extends Robot
 
         if (preferences.useVelocityControl)
         {
-//            TrcPidController.PidCoefficients motorPidCoef = new TrcPidController.PidCoefficients(
-//                    RobotInfo3543.MOTOR_KP, RobotInfo3543.MOTOR_KI, RobotInfo3543.MOTOR_KD);
-//            leftFrontWheel.enableVelocityMode(RobotInfo3543.MOTOR_MAX_VELOCITY, motorPidCoef);
-//            rightFrontWheel.enableVelocityMode(RobotInfo3543.MOTOR_MAX_VELOCITY, motorPidCoef);
-//            leftRearWheel.enableVelocityMode(RobotInfo3543.MOTOR_MAX_VELOCITY, motorPidCoef);
-//            rightRearWheel.enableVelocityMode(RobotInfo3543.MOTOR_MAX_VELOCITY, motorPidCoef);
-            leftFrontWheel.enableVelocityMode(RobotInfo3543.MOTOR_MAX_VELOCITY, null);
-            rightFrontWheel.enableVelocityMode(RobotInfo3543.MOTOR_MAX_VELOCITY, null);
-            leftRearWheel.enableVelocityMode(RobotInfo3543.MOTOR_MAX_VELOCITY, null);
-            rightRearWheel.enableVelocityMode(RobotInfo3543.MOTOR_MAX_VELOCITY, null);
+            leftFrontWheel.enableVelocityMode(RobotInfo3543.MOTOR_MAX_VELOCITY);
+            rightFrontWheel.enableVelocityMode(RobotInfo3543.MOTOR_MAX_VELOCITY);
+            leftRearWheel.enableVelocityMode(RobotInfo3543.MOTOR_MAX_VELOCITY);
+            rightRearWheel.enableVelocityMode(RobotInfo3543.MOTOR_MAX_VELOCITY);
         }
 
         leftFrontWheel.setInverted(false);

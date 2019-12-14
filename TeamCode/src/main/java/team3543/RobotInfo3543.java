@@ -39,7 +39,7 @@ class RobotInfo3543
     //
     // Velocity controlled constants.
     //
-    static final double MOTOR_MAX_VELOCITY                      = 2800;//2240*2.5;//encoder counts/second for HDHEX 40
+    static final double MOTOR_MAX_VELOCITY                      = 2800;     //encoder counts/second
     static final double MOTOR_KP                                = 0.75;
     static final double MOTOR_KI                                = 0.0;
     static final double MOTOR_KD                                = 0.0;
@@ -62,7 +62,7 @@ class RobotInfo3543
     static final double ENCODER_Y_LOADED_KP                     = 0.085;
     static final double ENCODER_Y_KI                            = 0.0;
     static final double ENCODER_Y_KD                            = 0.002;
-    static final double ENCODER_Y_TOLERANCE                     = 2.0;
+    static final double ENCODER_Y_TOLERANCE                     = 1.0;
     static final double ENCODER_Y_INCHES_PER_COUNT              = 0.0174484434975099;
     //
     // 2019-10-28: Kp=0.02, Ki=0.0, Kd=0.0015
@@ -109,8 +109,8 @@ class RobotInfo3543
     static final VuforiaLocalizer.Parameters.CameraMonitorFeedback CAMERA_MONITOR_FEEDBACK =
             VuforiaLocalizer.Parameters.CameraMonitorFeedback.AXES;
     static final boolean PHONE_IS_PORTRAIT                      = false;
-    static final double ROBOT_LENGTH                            = 17.5; //Robot length in inches
-    static final double ROBOT_WIDTH                             = 17.5; //Robot width in inches
+    static final double ROBOT_LENGTH                            = 18.0; //Robot length in inches
+    static final double ROBOT_WIDTH                             = 18.0; //Robot width in inches
     static final double PHONE_FRONT_OFFSET                      = 6.0;  //Phone offset from front of robot in inches
     static final double PHONE_HEIGHT_OFFSET                     = 5.375;//Phone offset from floor in inches
     static final double PHONE_LEFT_OFFSET                       = 11.75;//Phone offset from left of robot in inches
@@ -196,12 +196,12 @@ class RobotInfo3543
     static final double GRABBER_MAX_STEPRATE                    = 0.0;
     static final double GRABBER_MIN_POS                         = 0.2;
     static final double GRABBER_MAX_POS                         = 0.8;
-    static final double GRABBER_OPEN_POS                        = 0.8;
-    static final double GRABBER_CLOSE_POS                       = 0.2;
-    static final double GRABBER_GRAB_TIME                       = 3.0;
+    static final double GRABBER_RELEASE_POS                     = 0.8;
     static final double GRABBER_RELEASE_TIME                    = 3.0;
+    static final double GRABBER_GRAB_POS                        = 0.2;
+    static final double GRABBER_GRAB_TIME                       = 3.0;
     static final double GRABBER_OFFSET_X                        = 0.0;
-    static final double GRABBER_OFFSET_Y                        = 2.0;
+    static final double GRABBER_OFFSET_Y                        = 0.0;
     //
     // BackFoundationLatch subsystem.
     //

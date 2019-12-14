@@ -32,7 +32,7 @@ public class RobotInfo
     public static final double ABS_BUILDING_ZONE_ROBOT_START_X          = 120.0;
     public static final double ABS_WALL_FIRST_STONE_X                   = 20.0;
     public static final double ABS_FAR_FIRST_STONE_X                    = 45.0;
-    public static final double ABS_GRAB_SKYSTONE_POS_Y                  = 40.0;
+    public static final double ABS_GRAB_SKYSTONE_POS_Y                  = 38.0;
     public static final double SKYSTONE_SCAN_DISTANCE_WALL              = -9.0;
     public static final double SKYSTONE_SCAN_DISTANCE_FAR               = -18.0;
 

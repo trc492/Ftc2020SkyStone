@@ -39,7 +39,7 @@ class RobotInfo6541
     //
     // Velocity controlled constants.
     //
-    static final double MOTOR_MAX_VELOCITY                      = (2240 * 2.5); //encoder counts/second for HD HEX 40
+    static final double MOTOR_MAX_VELOCITY                      = 2800;     //encoder counts/second
     static final double MOTOR_KP                                = 0.75;
     static final double MOTOR_KI                                = 0.0;
     static final double MOTOR_KD                                = 0.0;
@@ -104,7 +104,7 @@ class RobotInfo6541
     static final VuforiaLocalizer.Parameters.CameraMonitorFeedback CAMERA_MONITOR_FEEDBACK =
             VuforiaLocalizer.Parameters.CameraMonitorFeedback.AXES;
     static final boolean PHONE_IS_PORTRAIT                      = false;
-    static final double ROBOT_LENGTH                            = 17.5; //Robot length in inches
+    static final double ROBOT_LENGTH                            = 18.0; //Robot length in inches
     static final double ROBOT_WIDTH                             = 18.0; //Robot width in inches
     static final double PHONE_FRONT_OFFSET                      = 0.0;  //Phone offset from front of robot in inches
     static final double PHONE_HEIGHT_OFFSET                     = 4.75; //Phone offset from floor in inches
@@ -136,7 +136,7 @@ class RobotInfo6541
     static final double ELEVATOR_KP                             = 0.35;
     static final double ELEVATOR_KI                             = 0.0;
     static final double ELEVATOR_KD                             = 0.01;
-    static final double ELEVATOR_TOLERANCE                      = 0.5; //1.0;
+    static final double ELEVATOR_TOLERANCE                      = 0.5;
     static final boolean ELEVATOR_INVERTED                      = false;
     static final boolean ELEVATOR_HAS_LOWER_LIMIT_SWITCH        = true;
     static final boolean ELEVATOR_HAS_UPPER_LIMIT_SWITCH        = false;
@@ -170,11 +170,11 @@ class RobotInfo6541
     static final double GRABBER_MIN_POS                         = 0.0;
     static final double GRABBER_MAX_POS                         = 1.0;
     static final double GRABBER_RELEASE_POS                     = 0.05;
+    static final double GRABBER_RELEASE_TIME                    = 1.0;
     static final double GRABBER_GRAB_POS                        = 0.65;
     static final double GRABBER_GRAB_TIME                       = 1.0;
-    static final double GRABBER_RELEASE_TIME                    = 1.0;
     static final double GRABBER_OFFSET_X                        = 2.5;
-    static final double GRABBER_OFFSET_Y                        = 2.0;
+    static final double GRABBER_OFFSET_Y                        = 0.0;
     //
     // BackFoundationLatch subsystem.
     //
@@ -192,8 +192,8 @@ class RobotInfo6541
     static final double DEPLOYER_MIN_POS                         = 0.0;
     static final double DEPLOYER_MAX_POS                         = 1.0;
     static final double DEPLOYER_RETRACT_POS                     = 1.0;
+    static final double DEPLOYER_RETRACT_TIME                    = 1.0;
     static final double DEPLOYER_EXTEND_POS                      = 0.0;
     static final double DEPLOYER_EXTEND_TIME                     = 1.0;
-    static final double DEPLOYER_RETRACT_TIME                    = 1.0;
 
 }   //class RobotInfo6541

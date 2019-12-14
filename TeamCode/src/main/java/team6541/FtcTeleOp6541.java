@@ -61,6 +61,7 @@ public class FtcTeleOp6541 extends CommonTeleOp
     public void runPeriodic(double elapsedTime)
     {
         super.runPeriodic(elapsedTime);
+        // CodeReview: why do we deploy elbow here and not in startMode?
         //
         // Operate other team specific subsystems.
         //
@@ -72,7 +73,6 @@ public class FtcTeleOp6541 extends CommonTeleOp
         }
 
         robot6541.capstoneDeployer.setPosition(1.0 - operatorGamepad.getRightTrigger());
-
         dashboard.displayPrintf(5, "ElbowPos=%.2f", robot6541.elbow.getPosition());
     }   //runPeriodic
 

@@ -61,12 +61,9 @@ public class FtcTeleOp3543 extends CommonTeleOp
         // Operate other team specific subsystems.
         //
         double extenderArmPower = operatorGamepad.getLeftStickY(true);
-        double extenderArmPos;
-        boolean extenderArmLimitSwitch;
-
+        double extenderArmPos = robot3543.extenderArm.getPosition();
+        boolean extenderArmLimitSwitch = robot3543.extenderArm.isLowerLimitSwitchActive();
         robot3543.extenderArm.setPower(extenderArmPower);
-        extenderArmPos = robot3543.extenderArm.getPosition();
-        extenderArmLimitSwitch = robot3543.extenderArm.isLowerLimitSwitchActive();
 
         double wristPower = operatorGamepad.getLeftStickX(true) / 3.0;
         double wristPos = 0.0;

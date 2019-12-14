@@ -205,7 +205,8 @@ public class FtcDcMotor extends TrcMotor
      * This method sets the motor controller to velocity mode with the specified maximum velocity.
      *
      * @param maxVelocity     specifies the maximum velocity the motor can run, in sensor units per second.
-     * @param pidCoefficients specifies the PID coefficients to use to for velocity control.
+     * @param pidCoefficients specifies the PID coefficients to use to for velocity control. If null, use default
+     *                        PID coefficients built-in to the motor.
      */
     @Override
     public synchronized void enableVelocityMode(double maxVelocity, TrcPidController.PidCoefficients pidCoefficients)
@@ -230,6 +231,16 @@ public class FtcDcMotor extends TrcMotor
         {
             dbgTrace.traceExit(funcName, TrcDbgTrace.TraceLevel.API);
         }
+    }   //enableVelocityMode
+
+    /**
+     * This method sets the motor controller to velocity mode with the specified maximum velocity.
+     *
+     * @param maxVelocity     specifies the maximum velocity the motor can run, in sensor units per second.
+     */
+    public void enableVelocityMode(double maxVelocity)
+    {
+        enableVelocityMode(maxVelocity, null);
     }   //enableVelocityMode
 
     /**

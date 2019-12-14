@@ -53,7 +53,7 @@ class Robot6541 extends Robot
             .setUseSpeech(true)
             .setUseBatteryMonitor(false)
             .setUseLoopPerformanceMonitor(false)
-            .setUseVelocityControl(false);
+            .setUseVelocityControl(true);
     private static final PhoneParameters phoneParams6541 = new PhoneParameters()
             .setCameraDir(RobotInfo6541.CAMERA_DIR)
             .setCameraMonitorFeedback(RobotInfo6541.CAMERA_MONITOR_FEEDBACK)
@@ -191,12 +191,10 @@ class Robot6541 extends Robot
 
         if (preferences.useVelocityControl)
         {
-            TrcPidController.PidCoefficients motorPidCoef = new TrcPidController.PidCoefficients(
-                    RobotInfo6541.MOTOR_KP, RobotInfo6541.MOTOR_KI, RobotInfo6541.MOTOR_KD);
-            leftFrontWheel.enableVelocityMode(RobotInfo6541.MOTOR_MAX_VELOCITY, motorPidCoef);
-            rightFrontWheel.enableVelocityMode(RobotInfo6541.MOTOR_MAX_VELOCITY, motorPidCoef);
-            leftRearWheel.enableVelocityMode(RobotInfo6541.MOTOR_MAX_VELOCITY, motorPidCoef);
-            rightRearWheel.enableVelocityMode(RobotInfo6541.MOTOR_MAX_VELOCITY, motorPidCoef);
+            leftFrontWheel.enableVelocityMode(RobotInfo6541.MOTOR_MAX_VELOCITY);
+            rightFrontWheel.enableVelocityMode(RobotInfo6541.MOTOR_MAX_VELOCITY);
+            leftRearWheel.enableVelocityMode(RobotInfo6541.MOTOR_MAX_VELOCITY);
+            rightRearWheel.enableVelocityMode(RobotInfo6541.MOTOR_MAX_VELOCITY);
         }
 
         leftFrontWheel.setInverted(false);
