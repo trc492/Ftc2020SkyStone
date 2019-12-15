@@ -271,15 +271,13 @@ public class TrcPidController
             }
 
             msg.append(String.format(
-                    Locale.US, "%s: Target=%6.1f, Input=%6.1f, Error=%6.1f",
-                    instanceName, setPoint, currInput, currError));
+                    Locale.US, "%s: Target=%6.1f, Input=%6.1f, Error=%6.1f, Output=%6.3f(%6.3f/%5.3f)",
+                    instanceName, setPoint, currInput, currError, output, minOutput, maxOutput));
 
             if (verbose)
             {
                 msg.append(String.format(
-                        Locale.US, ", PIDTerms=%6.3f/%6.3f/%6.3f/%6.3f, Output=%6.3f(%6.3f/%5.3f)",
-                        pTerm, iTerm, dTerm, fTerm, output, minOutput,
-                        maxOutput));
+                        Locale.US, ", PIDTerms=%6.3f/%6.3f/%6.3f/%6.3f", pTerm, iTerm, dTerm, fTerm));
             }
 
             if (battery != null)

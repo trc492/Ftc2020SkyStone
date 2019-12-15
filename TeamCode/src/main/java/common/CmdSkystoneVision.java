@@ -125,7 +125,7 @@ public class CmdSkystoneVision implements TrcRobot.RobotCommand
         visionTrigger = visionParams.useVisionTrigger?
                 new TrcTrigger("VisionTrigger", this::isTriggered, this::targetDetected): null;
         allianceDirection = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE? 1.0: -1.0;
-        scanDirection = visionParams.scanTowardsWall? 1.0: -1.0;
+        scanDirection = visionParams.scanTowardsWall? -1.0: 1.0;
         xPidCtrl = robot.pidDrive.getXPidCtrl();
         yPidCtrl = robot.pidDrive.getYPidCtrl();
         turnPidCtrl = robot.pidDrive.getTurnPidCtrl();

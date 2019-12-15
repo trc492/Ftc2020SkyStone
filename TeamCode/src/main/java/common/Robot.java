@@ -375,6 +375,7 @@ public class Robot
     public int detectionSuccessCount = 0;
     public int detectionFailedCount = 0;
     public String targetFinder = null;
+    public TrcPose2D skystonePose = null;
     //
     // DriveBase subsystem.
     //
@@ -720,18 +721,23 @@ public class Robot
 
         if (vuforiaVision != null || tensorFlowVision != null)
         {
-            if (pose == null)
+            if (pose != null)
+            {
+                skystonePose = pose;
+                globalTracer.traceInfo(funcName, "***** %s: x=%.1f, y=%.1f, angle=%.1f",
+                        targetFinder, pose.x, pose.y, pose.heading);
+            }
+            else if (skystonePose == null)
             {
                 globalTracer.traceInfo(funcName, "***** Skystone not found!");
             }
             else
             {
-                globalTracer.traceInfo(funcName, "***** %s: x=%.1f, y=%.1f, angle=%.1f",
-                        targetFinder, pose.x, pose.y, pose.heading);
+                globalTracer.traceInfo(funcName, "***** Skystone not found, use last known position!");
             }
         }
 
-        return pose;
+        return skystonePose;
     }   //getSkyStonePose
 
     public TrcPose2D getRobotPose(String targetName, boolean exclude)
