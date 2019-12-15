@@ -112,7 +112,7 @@ class RobotInfo3543
     static final double ROBOT_LENGTH                            = 18.0; //Robot length in inches
     static final double ROBOT_WIDTH                             = 18.0; //Robot width in inches
     static final double PHONE_FRONT_OFFSET                      = 6.0;  //Phone offset from front of robot in inches
-    static final double PHONE_HEIGHT_OFFSET                     = 5.375;//Phone offset from floor in inches
+    static final double PHONE_HEIGHT_OFFSET                     = 5.75; //Phone offset from floor in inches
     static final double PHONE_LEFT_OFFSET                       = 11.75;//Phone offset from left of robot in inches
 
     // TODO: Need to retune.

@@ -169,6 +169,7 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
             State nextState;
 
             robot.dashboard.displayPrintf(1, "State: %s", state);
+            robot.getSkyStonePose();
 
             switch (state)
             {
@@ -177,7 +178,12 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                     // Set the robot's absolute field starting position.
                     //
                     startX = (autoChoices.strategy == CommonAuto.AutoStrategy.LOADING_ZONE_SINGLE_SKYSTONE?
-                              RobotInfo.ABS_LOADING_ZONE_ROBOT_START_X_MID: autoChoices.robotStartX)*allianceDirection;
+                                    RobotInfo.ABS_LOADING_ZONE_ROBOT_START_X_WALL:
+                              autoChoices.robotStartX != 0.0?
+                                    autoChoices.robotStartX:
+                              autoChoices.strategy == CommonAuto.AutoStrategy.LOADING_ZONE_DOUBLE_SKYSTONE_FAR?
+                                    RobotInfo.ABS_LOADING_ZONE_ROBOT_START_X_FAR:
+                                    RobotInfo.ABS_LOADING_ZONE_ROBOT_START_X_WALL) * allianceDirection;
                     robot.pidDrive.setAbsolutePose(new TrcPose2D(startX, RobotInfo.ABS_ROBOT_START_Y));
 
                     xPidCtrl.setNoOscillation(true);
@@ -222,23 +228,23 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
 
                     xPidCtrl.setOutputLimit(0.5);
                     yPidCtrl.setOutputLimit(0.5);
-                    yTarget = 20.0;
+                    yTarget = 23;
                     simplePidDrive.setRelativeYTarget(yTarget, State.MOVE_TO_FIRST_STONE);
                     break;
 
                 case MOVE_TO_FIRST_STONE:
-                    xTarget = autoChoices.strategy == CommonAuto.AutoStrategy.LOADING_ZONE_SINGLE_SKYSTONE ?
-                                0.0:
-                              Math.abs(startX) > RobotInfo.ABS_LOADING_ZONE_ROBOT_START_X_MID ?
-                                RobotInfo.ABS_FAR_FIRST_STONE_X: RobotInfo.ABS_WALL_FIRST_STONE_X;
-                    if (xTarget == 0.0)
-                    {
-                        sm.setState(State.DO_VISION);
-                        //
-                        // Intentionally falling through to the next state.
-                        //
-                    }
-                    else
+                    xTarget = (autoChoices.strategy == CommonAuto.AutoStrategy.LOADING_ZONE_SINGLE_SKYSTONE ||
+                               Math.abs(startX) > RobotInfo.ABS_LOADING_ZONE_ROBOT_START_X_MID)?
+                                RobotInfo.ABS_FAR_STONE1_X: RobotInfo.ABS_WALL_STONE3_X;
+                    visionParams.setScanTowardsWall(xTarget == RobotInfo.ABS_WALL_STONE3_X);
+//                    if (xTarget == 0.0)
+//                    {
+//                        sm.setState(State.DO_VISION);
+//                        //
+//                        // Intentionally falling through to the next state.
+//                        //
+//                    }
+//                    else
                     {
                         xTarget *= allianceDirection;
                         simplePidDrive.setAbsoluteXTarget(xTarget, State.DO_VISION);
@@ -505,17 +511,17 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
 
             if (debugXPid && xPidCtrl != null)
             {
-                xPidCtrl.printPidInfo(robot.globalTracer, elapsedTime, true);
+                xPidCtrl.printPidInfo(robot.globalTracer, elapsedTime);
             }
 
             if (debugYPid)
             {
-                yPidCtrl.printPidInfo(robot.globalTracer, elapsedTime, true);
+                yPidCtrl.printPidInfo(robot.globalTracer, elapsedTime);
             }
 
             if (debugTurnPid)
             {
-                turnPidCtrl.printPidInfo(robot.globalTracer, elapsedTime, true);
+                turnPidCtrl.printPidInfo(robot.globalTracer, elapsedTime);
             }
         }
 
