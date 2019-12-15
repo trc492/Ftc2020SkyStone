@@ -273,7 +273,7 @@ public abstract class CommonAuto extends FtcOpMode
 
         strategyMenu.addChoice(
                 "Loading Zone Double Skystone Solo", AutoStrategy.LOADING_ZONE_DOUBLE_SKYSTONE_SOLO,
-                false, robotStartXMenu);
+                false, strafeToFoundationMenu);
         strategyMenu.addChoice(
                 "Loading Zone Single Skystone", AutoStrategy.LOADING_ZONE_SINGLE_SKYSTONE, true,
                 strafeToFoundationMenu);

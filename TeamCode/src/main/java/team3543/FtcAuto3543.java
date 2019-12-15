@@ -56,6 +56,7 @@ public class FtcAuto3543 extends CommonAuto
                     autoCommand = new CmdAutoDoubleLoadingZone3543(robot3543, autoChoices);
                 }
                 break;
+
             case LOADING_ZONE_SINGLE_SKYSTONE:
             case LOADING_ZONE_DOUBLE_SKYSTONE_FAR:
             case LOADING_ZONE_DOUBLE_SKYSTONE_CENTER:

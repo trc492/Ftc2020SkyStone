@@ -220,7 +220,7 @@ class CmdAutoDoubleLoadingZone3543 implements TrcRobot.RobotCommand
 
                 case MOVE_TO_FIRST_STONE:
                     xTarget = autoChoices.robotStartX == RobotInfo.ABS_LOADING_ZONE_ROBOT_START_X_MID?
-                            0.0: RobotInfo.ABS_FAR_FIRST_STONE_X;
+                            0.0: RobotInfo.ABS_FAR_STONE3_X;
                     if (xTarget == 0.0)
                     {
                         sm.setState(State.DO_VISION);
@@ -362,17 +362,17 @@ class CmdAutoDoubleLoadingZone3543 implements TrcRobot.RobotCommand
 
                 case MOVE_BACK_TO_SKYSTONES:
                     robot.wrist.retract();
-                    int skystonePlacement = skystoneVisionCommand.getSkystonePlacement();
+                    double skystoneXPos = skystoneVisionCommand.getSkystoneXPos();
                     //
                     // If the SkyStone we first picked up was the third one, we will not be able to
                     // get the corresponding stone on the wall side, so just get the furthest left.
                     //
-                    if (skystonePlacement < 2) {
-                        xTarget = RobotInfo.ABS_WALL_FIRST_STONE_X +
-                                skystoneVisionCommand.getSkystonePlacement() * 6.0;
-                    } else {
-                        xTarget = RobotInfo.ABS_FAR_FIRST_STONE_X;
-                    }
+//                    if (skystonePlacement < 2) {
+//                        xTarget = RobotInfo.ABS_WALL_FIRST_STONE_X +
+//                                skystoneVisionCommand.getSkystonePlacement() * 6.0;
+//                    } else {
+//                        xTarget = RobotInfo.ABS_FAR_FIRST_STONE_X;
+//                    }
                     nextState = autoChoices.strafeToFoundation?
                             State.GOTO_SKYSTONE: State.TURN_BACK_TO_FOUNDATION;
                     //

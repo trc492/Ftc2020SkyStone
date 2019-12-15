@@ -108,7 +108,7 @@ public class CmdSkystoneVision implements TrcRobot.RobotCommand
     private final TrcPidController turnPidCtrl;
     private TrcPose2D skystonePose = null;
     private double visionTimeout = 0.0;
-    private int skystonePlacement;
+    private double skystoneXPos = 0.0;
 
     /**
      * Constructor: Create an instance of the object.
@@ -138,7 +138,12 @@ public class CmdSkystoneVision implements TrcRobot.RobotCommand
         {
             sm.start(visionParams.useVisionTrigger ? State.SCAN_FOR_SKYSTONE : State.SETUP_VISION);
         }
-    }
+    }   //start
+
+    public double getSkystoneXPos()
+    {
+        return skystoneXPos;
+    }   //getSkystoneXPos
 
     private boolean isTriggered()
     {
@@ -282,7 +287,6 @@ public class CmdSkystoneVision implements TrcRobot.RobotCommand
                                 }
                                 else
                                 {
-                                    skystonePlacement++; // I'm not sure if this is the right place to put this.
                                     nextState = State.SETUP_VISION;
                                     sentence.append("try next.");
                                 }
@@ -345,6 +349,7 @@ public class CmdSkystoneVision implements TrcRobot.RobotCommand
                     }
 
                 case GOTO_SKYSTONE:
+                    skystoneXPos = robot.driveBase.getXPosition();
                     yTarget = RobotInfo.ABS_GRAB_SKYSTONE_POS_Y - visionParams.grabberOffsetY;
                     robot.pidDrive.setAbsoluteYTarget(yTarget, event);
                     sm.waitForSingleEvent(event, State.DONE);
@@ -390,10 +395,5 @@ public class CmdSkystoneVision implements TrcRobot.RobotCommand
 
         return !sm.isEnabled();
     }   //cmdPeriodic
-
-    public int getSkystonePlacement()
-    {
-        return skystonePlacement;
-    }
 
 }   //class CmdSkystoneVision
