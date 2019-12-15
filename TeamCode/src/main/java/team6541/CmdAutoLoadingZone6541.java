@@ -301,7 +301,7 @@ class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
 
                 case APPROACH_FOUNDATION:
                     robot.elevator.setPosition(4.0);
-                    yTarget = 13.0;
+                    yTarget = 15.0;
                     simplePidDrive.setRelativeYTarget(yTarget, State.DROP_SKYSTONE);
                     break;
 

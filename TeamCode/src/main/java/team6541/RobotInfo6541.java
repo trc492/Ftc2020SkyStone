@@ -49,7 +49,7 @@ class RobotInfo6541
     static final double ENCODER_X_KP                            = 0.09;
     static final double ENCODER_X_KI                            = 0.0;
     static final double ENCODER_X_KD                            = 0.003;
-    static final double ENCODER_X_TOLERANCE                     = 2.0;
+    static final double ENCODER_X_TOLERANCE                     = 1.0;
     static final double ENCODER_X_INCHES_PER_COUNT              = 0.0167169366150308;
     //
     // 2019-10-29: Scale=0.0170448238583025, Kp=0.05, Ki=0.0, Kd=0.003

@@ -70,9 +70,9 @@ class Robot6541 extends Robot
             .setMotorParams(
                     RobotInfo6541.ELEVATOR_INVERTED, RobotInfo6541.ELEVATOR_HAS_LOWER_LIMIT_SWITCH,
                     RobotInfo6541.ELEVATOR_HAS_UPPER_LIMIT_SWITCH, RobotInfo6541.ELEVATOR_CAL_POWER)
-            .setStallProtectionParams(
-                    RobotInfo6541.ELEVATOR_STALL_MIN_POWER, RobotInfo6541.ELEVATOR_STALL_TIMEOUT,
-                    RobotInfo6541.ELEVATOR_RESET_TIMEOUT)
+            //.setStallProtectionParams(
+            //        RobotInfo6541.ELEVATOR_STALL_MIN_POWER, RobotInfo6541.ELEVATOR_STALL_TIMEOUT,
+            //        RobotInfo6541.ELEVATOR_RESET_TIMEOUT)
             .setPosPresets(RobotInfo6541.ELEVATOR_HEIGHT_PRESETS);
     private static final FtcServoActuator.Parameters elbowParams6541 = new FtcServoActuator.Parameters()
             .setStepParams(RobotInfo6541.ELBOW_MAX_STEPRATE, RobotInfo6541.ELBOW_MIN_POS, RobotInfo6541.ELBOW_MAX_POS)
