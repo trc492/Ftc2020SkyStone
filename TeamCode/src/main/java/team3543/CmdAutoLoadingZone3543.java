@@ -169,7 +169,6 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
             State nextState;
 
             robot.dashboard.displayPrintf(1, "State: %s", state);
-            robot.getSkyStonePose();
 
             switch (state)
             {
