@@ -51,8 +51,9 @@ public class CmdSkystoneVision implements TrcRobot.RobotCommand
 
     public static class Parameters
     {
-        boolean useVisionTrigger = false;
+        double scanDirection = -1.0;
         boolean scanTowardsWall = true;
+        boolean useVisionTrigger = false;
         int scootCount = 0;
         double grabberOffsetX = 0.0;
         double grabberOffsetY = 0.0;
@@ -66,6 +67,7 @@ public class CmdSkystoneVision implements TrcRobot.RobotCommand
         public Parameters setScanTowardsWall(boolean scanTowardsWall)
         {
             this.scanTowardsWall = scanTowardsWall;
+            this.scanDirection = scanTowardsWall? 1.0: -1.0;
             return this;
         }
 
@@ -102,7 +104,6 @@ public class CmdSkystoneVision implements TrcRobot.RobotCommand
     private final TrcStateMachine<State> sm;
     private final TrcTrigger visionTrigger;
     private final double allianceDirection;
-    private final double scanDirection;
     private final TrcPidController xPidCtrl;
     private final TrcPidController yPidCtrl;
     private final TrcPidController turnPidCtrl;
@@ -126,7 +127,6 @@ public class CmdSkystoneVision implements TrcRobot.RobotCommand
         visionTrigger = visionParams.useVisionTrigger?
                 new TrcTrigger("VisionTrigger", this::isTriggered, this::targetDetected): null;
         allianceDirection = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE? 1.0: -1.0;
-        scanDirection = visionParams.scanTowardsWall? -1.0: 1.0;
         xPidCtrl = robot.pidDrive.getXPidCtrl();
         yPidCtrl = robot.pidDrive.getYPidCtrl();
         turnPidCtrl = robot.pidDrive.getTurnPidCtrl();
@@ -240,7 +240,7 @@ public class CmdSkystoneVision implements TrcRobot.RobotCommand
                     xTarget = visionParams.scanTowardsWall &&
                               Math.abs(robot.driveBase.getXPosition()) < RobotInfo.ABS_LOADING_ZONE_ROBOT_START_X_MID?
                                 RobotInfo.SKYSTONE_SCAN_DISTANCE_WALL: RobotInfo.SKYSTONE_SCAN_DISTANCE_FAR;
-                    xTarget *= allianceDirection * scanDirection;
+                    xTarget *= allianceDirection * visionParams.scanDirection;
                     robot.pidDrive.setRelativeXTarget(xTarget, event);
                     sm.waitForSingleEvent(event, State.ALIGN_SKYSTONE);
                     break;
@@ -272,7 +272,7 @@ public class CmdSkystoneVision implements TrcRobot.RobotCommand
                                 robot.globalTracer.traceInfo(
                                         "GetTargetPose", "Skystone not found, try next stone.");
                                 visionParams.scootCount--;
-                                xTarget = -9.0*allianceDirection*scanDirection;
+                                xTarget = -9.0*allianceDirection*visionParams.scanDirection;
                                 //
                                 // If this is the last stone, don't need to check if it's a skystone, just grab and go.
                                 // Note that our stone grabber design cannot grab the last stone touching the perimeter

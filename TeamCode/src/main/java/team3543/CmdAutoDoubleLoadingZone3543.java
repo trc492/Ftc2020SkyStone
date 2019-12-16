@@ -59,7 +59,6 @@ class CmdAutoDoubleLoadingZone3543 implements TrcRobot.RobotCommand
         TURN_TOWARDS_SKYSTONES,
         MOVE_BACK_TO_SKYSTONES,
         TURN_BACK_TO_SKYSTONES,
-        GOTO_SKYSTONE,
         FINISH_DELAY,
         PULL_FOUNDATION_TO_WALL,
         UNHOOK_FOUNDATION,
@@ -78,6 +77,7 @@ class CmdAutoDoubleLoadingZone3543 implements TrcRobot.RobotCommand
 
     private final Robot3543 robot;
     private final CommonAuto.AutoChoices autoChoices;
+    private final CmdSkystoneVision.Parameters visionParams;
     private final TrcTimer timer;
     private final TrcEvent event;
     private final TrcStateMachine<State> sm;
@@ -101,9 +101,15 @@ class CmdAutoDoubleLoadingZone3543 implements TrcRobot.RobotCommand
 
         this.robot = robot;
         this.autoChoices = autoChoices;
+        visionParams = new CmdSkystoneVision.Parameters()
+                .setUseVisionTrigger(robot.preferences.useVisionTrigger)
+                .setScanTowardsWall(false)
+                .setScootCount(2)
+                .setGrabberOffset(RobotInfo3543.GRABBER_OFFSET_X, RobotInfo3543.GRABBER_OFFSET_Y);
         timer = new TrcTimer(moduleName);
         event = new TrcEvent(moduleName);
         sm = new TrcStateMachine<>(moduleName);
+        skystoneVisionCommand = new CmdSkystoneVision(robot, autoChoices, visionParams);
         allianceDirection = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE ? 1.0 : -1.0;
         simplePidDrive = new SimplePidDrive<>(robot.pidDrive, event, sm);
         xPidCtrl = robot.pidDrive.getXPidCtrl();
@@ -174,13 +180,12 @@ class CmdAutoDoubleLoadingZone3543 implements TrcRobot.RobotCommand
                     //
                     // Set the robot's absolute field starting position.
                     //
-                    double startX = autoChoices.robotStartX * allianceDirection;
+                    double startX = RobotInfo.ABS_LOADING_ZONE_ROBOT_START_X_WALL * allianceDirection;
                     robot.pidDrive.setAbsolutePose(new TrcPose2D(startX, RobotInfo.ABS_ROBOT_START_Y));
 
                     xPidCtrl.setNoOscillation(true);
                     yPidCtrl.setNoOscillation(true);
                     turnPidCtrl.setNoOscillation(true);
-
                     sm.setState(State.START_DELAY);
                     //
                     // Intentionally falling through to the next state.
@@ -219,27 +224,21 @@ class CmdAutoDoubleLoadingZone3543 implements TrcRobot.RobotCommand
                     break;
 
                 case MOVE_TO_FIRST_STONE:
-                    xTarget = autoChoices.robotStartX == RobotInfo.ABS_LOADING_ZONE_ROBOT_START_X_MID?
-                            0.0: RobotInfo.ABS_FAR_STONE3_X;
-                    if (xTarget == 0.0)
-                    {
-                        sm.setState(State.DO_VISION);
-                        //
-                        // Intentionally falling through to the next state.
-                        //
-                    }
-                    else
-                    {
-                        xTarget *= allianceDirection;
-                        simplePidDrive.setAbsoluteXTarget(xTarget, State.DO_VISION);
-                        break;
-                    }
+                    xTarget = RobotInfo.ABS_FAR_STONE1_X * allianceDirection;
+                    simplePidDrive.setAbsoluteXTarget(xTarget, State.DO_VISION);
+                    break;
 
                 case DO_VISION:
                     //
                     // Do vision to detect and go to the skystone. If vision did not detect skystone, it will stop
                     // at the last stone.
                     //
+
+                    if (skystonesDropped != 0) {
+                        visionParams.setScootCount(0);
+                    }
+                    skystoneVisionCommand.start();
+
                     if (skystoneVisionCommand.cmdPeriodic(elapsedTime))
                     {
                         //
@@ -255,6 +254,8 @@ class CmdAutoDoubleLoadingZone3543 implements TrcRobot.RobotCommand
                         traceState = false;
                         break;
                     }
+
+                    sm.setState(State.GO_DOWN_ON_SKYSTONE);
 
                 case GO_DOWN_ON_SKYSTONE:
                     robot.extenderArm.setPosition(RobotInfo3543.EXTENDER_ARM_PICKUP_POS, event);
@@ -300,8 +301,8 @@ class CmdAutoDoubleLoadingZone3543 implements TrcRobot.RobotCommand
                     // We might need to add something after this that readjusts the robot's position
                     // to center after it drops off the second SkyStone. Not sure yet.
                     //
-                    xTarget = skystonesDropped == 0? RobotInfo.ABS_FOUNDATION_DROP_FAR_X:
-                            RobotInfo.ABS_FOUNDATION_DROP_NEAR_X;
+                    xTarget = (skystonesDropped == 0? RobotInfo.ABS_FOUNDATION_DROP_FAR_X:
+                            RobotInfo.ABS_FOUNDATION_DROP_NEAR_X) * allianceDirection;
                     simplePidDrive.setAbsoluteXTarget(xTarget, nextState);
                     break;
 
@@ -324,8 +325,8 @@ class CmdAutoDoubleLoadingZone3543 implements TrcRobot.RobotCommand
                     robot.grabber.release();
                     skystonesDropped++;
                     if (skystonesDropped == 1) {
-                        timer.set(1.5, event);
-                        sm.waitForSingleEvent(event, State.MOVE_BACK_TO_SKYSTONES);
+                        timer.set(2.0, event);
+                        sm.waitForSingleEvent(event, State.BACK_OFF_FOUNDATION);
                     } else {
                         if (autoChoices.moveFoundation) {
                             //
@@ -361,8 +362,7 @@ class CmdAutoDoubleLoadingZone3543 implements TrcRobot.RobotCommand
                     break;
 
                 case MOVE_BACK_TO_SKYSTONES:
-                    robot.wrist.retract();
-                    double skystoneXPos = skystoneVisionCommand.getSkystoneXPos();
+                    double nextSkystoneXPos = skystoneVisionCommand.getSkystoneXPos() - 24.0*allianceDirection;
                     //
                     // If the SkyStone we first picked up was the third one, we will not be able to
                     // get the corresponding stone on the wall side, so just get the furthest left.
@@ -373,25 +373,22 @@ class CmdAutoDoubleLoadingZone3543 implements TrcRobot.RobotCommand
 //                    } else {
 //                        xTarget = RobotInfo.ABS_FAR_FIRST_STONE_X;
 //                    }
+
+                    // Quick fix to prevent robot from running into wall if SkyStone 1
+                    if (Math.abs(nextSkystoneXPos) <= 9.0) {
+                        xTarget = RobotInfo.ABS_FAR_STONE3_X*allianceDirection;
+                    } else {
+                        xTarget = nextSkystoneXPos;
+                    }
+
                     nextState = autoChoices.strafeToFoundation?
-                            State.GOTO_SKYSTONE: State.TURN_BACK_TO_FOUNDATION;
-                    //
-                    // Implementing something where we can just turn on vision just for a second to
-                    // align ourselves back to the SkyStone could be useful here.
-                    //
+                            State.DO_VISION: State.TURN_BACK_TO_SKYSTONES;
                     simplePidDrive.setAbsoluteXTarget(xTarget, nextState);
                     break;
 
                 case TURN_BACK_TO_SKYSTONES:
                     turnTarget = 0.0;
-                    simplePidDrive.setAbsoluteHeadingTarget(turnTarget, State.GOTO_SKYSTONE);
-                    break;
-
-                case GOTO_SKYSTONE:
-                    robot.wrist.extend();
-                    yTarget = RobotInfo.ABS_GRAB_SKYSTONE_POS_Y - RobotInfo3543.GRABBER_OFFSET_Y;
-                    robot.pidDrive.setAbsoluteYTarget(yTarget, event);
-                    sm.waitForSingleEvent(event, State.GO_DOWN_ON_SKYSTONE);
+                    simplePidDrive.setAbsoluteHeadingTarget(turnTarget, State.DO_VISION);
                     break;
 
                 case FINISH_DELAY:
