@@ -28,6 +28,7 @@ public class RobotInfo
     // Game element distances: all referenced as red alliance.
     //
     public static final double ABS_ROBOT_START_Y                        = 9.0;
+    public static final double ABS_ROBOT_TRAVEL_Y                       = 30.0;
     public static final double ABS_LOADING_ZONE_ROBOT_START_X_WALL      = 32.0;
     public static final double ABS_LOADING_ZONE_ROBOT_START_X_MID       = 45.0;
     public static final double ABS_LOADING_ZONE_ROBOT_START_X_FAR       = 59.0;
@@ -39,6 +40,7 @@ public class RobotInfo
     public static final double ABS_FAR_STONE2_X                         = 36.0;
     public static final double ABS_FAR_STONE3_X                         = 44.0;
     public static final double ABS_GRAB_SKYSTONE_POS_Y                  = 38.0;
+    public static final double ABS_FOUNDATION_Y                         = 38.0;
     public static final double SKYSTONE_SCAN_DISTANCE_WALL              = -9.0;
     public static final double SKYSTONE_SCAN_DISTANCE_FAR               = -18.0;
 

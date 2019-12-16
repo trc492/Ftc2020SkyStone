@@ -224,7 +224,6 @@ class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
                     //
                     // Move closer slowly to a distance so Vuforia can detect the target.
                     //
-                    robot.setFlashLightOn(true, true);
                     xPidCtrl.setOutputLimit(0.5);
                     yPidCtrl.setOutputLimit(0.5);
                     yTarget = 17.5;
@@ -263,7 +262,6 @@ class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
 
                 case GRAB_SKYSTONE:
                     // CodeReview: Can we tune this time down? 1 sec seems very long.
-                    robot.setFlashLightOn(false, false);
                     robot.grabber.grab(1.0, event);
                     sm.waitForSingleEvent(event, State.PULL_SKYSTONE);
                     break;

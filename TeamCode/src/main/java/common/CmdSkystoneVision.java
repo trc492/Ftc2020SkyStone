@@ -230,6 +230,7 @@ public class CmdSkystoneVision implements TrcRobot.RobotCommand
             switch (state)
             {
                 case SCAN_FOR_SKYSTONE:
+                    robot.setFlashLightOn(true, true);
                     visionTrigger.setEnabled(true);
                     //
                     // Strafe across all three stone to find the skystone. When a skystone is spotted, the strafe
@@ -249,6 +250,7 @@ public class CmdSkystoneVision implements TrcRobot.RobotCommand
                     //
                     // Vuforia may take time to detect target, set a timeout for retrying.
                     //
+                    robot.setFlashLightOn(true, true);
                     visionTimeout = TrcUtil.getCurrentTime() + VISION_TIMEOUT;
                     sm.setState(State.GET_TARGET_POSE);
                     //
@@ -360,6 +362,7 @@ public class CmdSkystoneVision implements TrcRobot.RobotCommand
                     //
                     // We are done.
                     //
+                    robot.setFlashLightOn(false, false);
                     cancel();
                     break;
             }

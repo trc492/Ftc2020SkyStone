@@ -79,10 +79,10 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
 
     private final Robot3543 robot;
     private final CommonAuto.AutoChoices autoChoices;
-    private final CmdSkystoneVision.Parameters visionParams;
     private final TrcTimer timer;
     private final TrcEvent event;
     private final TrcStateMachine<State> sm;
+    private final CmdSkystoneVision.Parameters visionParams;
     private final CmdSkystoneVision skystoneVisionCommand;
     private final double allianceDirection;
     private final SimplePidDrive<State> simplePidDrive;
@@ -104,14 +104,14 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
 
         this.robot = robot;
         this.autoChoices = autoChoices;
+        timer = new TrcTimer(moduleName);
+        event = new TrcEvent(moduleName);
+        sm = new TrcStateMachine<>(moduleName);
         visionParams = new CmdSkystoneVision.Parameters()
                 .setUseVisionTrigger(robot.preferences.useVisionTrigger)
                 .setScanTowardsWall(true)
                 .setScootCount(2)
                 .setGrabberOffset(RobotInfo3543.GRABBER_OFFSET_X, RobotInfo3543.GRABBER_OFFSET_Y);
-        timer = new TrcTimer(moduleName);
-        event = new TrcEvent(moduleName);
-        sm = new TrcStateMachine<>(moduleName);
         skystoneVisionCommand = new CmdSkystoneVision(robot, autoChoices, visionParams);
         allianceDirection = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE ? 1.0 : -1.0;
         simplePidDrive = new SimplePidDrive<>(robot.pidDrive, event, sm);
@@ -197,18 +197,33 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                     }
                     else if (autoChoices.robotStartX != 0.0)
                     {
+                        //
+                        // We are doing a double skystone with our alliance partner and we are flexible enough to
+                        // start at any starting position specified during auto choice menu selection.
+                        //
                         if (Math.abs(startX) < RobotInfo.ABS_LOADING_ZONE_ROBOT_START_X_MID)
                         {
+                            //
+                            // We are handling the stone set closer to the wall. Since our grabber design cannot
+                            // get to the stone closest to the wall, we will skip that stone.
+                            //
                             visionParams.setScootCount(1);
                         }
                         startX = autoChoices.robotStartX;
                     }
                     else if (autoChoices.strategy == CommonAuto.AutoStrategy.LOADING_ZONE_DOUBLE_SKYSTONE_FAR)
                     {
+                        //
+                        // We are handling the stone set away from the wall.
+                        //
                         startX = RobotInfo.ABS_LOADING_ZONE_ROBOT_START_X_FAR;
                     }
                     else
                     {
+                        //
+                        // We are dealing with the stone set closer to the wall. Since our grabber design cannot
+                        // get to the stone closest to the wall, we will skip that stone.
+                        //
                         visionParams.setScootCount(1);
                         startX = RobotInfo.ABS_LOADING_ZONE_ROBOT_START_X_WALL;
                     }
@@ -242,20 +257,23 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
 
                 case MOVE_CLOSER:
                     //
-                    // Move closer slowly to a distance so Vuforia can detect the target.
+                    // Move closer slowly to a distance so Vuforia can detect the target and start lowering the
+                    // extender arm to save time.
                     //
-                    robot.setFlashLightOn(true, true);
                     robot.extenderArm.setPosition(4.5);
                     robot.grabber.release();
                     robot.wrist.extend();
 
                     xPidCtrl.setOutputLimit(0.5);
                     yPidCtrl.setOutputLimit(0.5);
-                    yTarget = 23;
+                    yTarget = 22.0;
                     simplePidDrive.setRelativeYTarget(yTarget, State.MOVE_TO_FIRST_STONE);
                     break;
 
                 case MOVE_TO_FIRST_STONE:
+                    //
+                    // The robot start position may be anywhere so we need to strafe to the first stone.
+                    //
                     xTarget = (autoChoices.strategy == CommonAuto.AutoStrategy.LOADING_ZONE_SINGLE_SKYSTONE ||
                                autoChoices.strategy == CommonAuto.AutoStrategy.LOADING_ZONE_DOUBLE_SKYSTONE_SOLO)?
                                     RobotInfo.ABS_FAR_STONE1_X:
@@ -268,6 +286,12 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                 case SETUP_VISION:
                     if (skystonesDropped > 0)
                     {
+                        //
+                        // We are looking for the second skystone. We should be in front of it approximately so
+                        // we don't need to scoot to the next stone but we do need to detect the exact alignment
+                        // distance of the skystone so we can navigate the robot right in front of it for the
+                        // grabbing.
+                        //
                         visionParams.setScootCount(0);
                     }
                     skystoneVisionCommand.start();
@@ -296,13 +320,15 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                     }
 
                 case GO_DOWN_ON_SKYSTONE:
-                    robot.setFlashLightOn(false, false);
+                    //
+                    // We are done with vision, extend the arm to grab the skystone.
+                    //
                     robot.extenderArm.setPosition(RobotInfo3543.EXTENDER_ARM_PICKUP_POS, event);
                     sm.waitForSingleEvent(event, State.GRAB_SKYSTONE);
                     break;
 
                 case GRAB_SKYSTONE:
-                    //
+                    // TODO: this state can go away when we install the faster grabber.
                     // Don't need to wait for the grab to finish before moving. Can tune this down to minimum for
                     // saving time.
                     //
@@ -311,12 +337,16 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                     break;
 
                 case PULL_SKYSTONE:
-                    yTarget = -8.0;
-                    simplePidDrive.setRelativeYTarget(yTarget, State.START_EXTENDER_ARM_RETRACTION);
+                    //
+                    // Pull the skystone out to the travel Y position so we don't hit the bridge.
+                    //
+                    yTarget = RobotInfo.ABS_ROBOT_TRAVEL_Y;
+                    simplePidDrive.setAbsoluteYTarget(yTarget, State.START_EXTENDER_ARM_RETRACTION);
                     break;
 
                 case START_EXTENDER_ARM_RETRACTION:
                     //
+                    // TODO: may want to use a timer so we don't need to wait for the slow elevator.
                     // Bring the extender arm back so we don't run into the bridge during travel.
                     //
                     nextState = autoChoices.strafeToFoundation?
@@ -326,14 +356,19 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                     break;
 
                 case TURN_TOWARDS_FOUNDATION:
+                    //
+                    // For some reason, strafing is crappy. So we will turn, run in Y and turn back.
+                    //
                     turnTarget = 90.0 * allianceDirection;
                     simplePidDrive.setAbsoluteHeadingTarget(turnTarget, State.GOTO_FOUNDATION);
                     break;
 
                 case GOTO_FOUNDATION:
+                    //
+                    // Travel long distance to the foundation. So we need to travel in full speed to save time.
+                    //
                     nextState = autoChoices.strafeToFoundation?
-                            State.APPROACH_FOUNDATION: State.TURN_BACK_TO_FOUNDATION;
-                    // Need to go full speed to save time.
+                                    State.APPROACH_FOUNDATION: State.TURN_BACK_TO_FOUNDATION;
                     xPidCtrl.setOutputLimit(1.0);
                     yPidCtrl.setOutputLimit(1.0);
                     xTarget = autoChoices.strategy == CommonAuto.AutoStrategy.LOADING_ZONE_SINGLE_SKYSTONE?
@@ -347,6 +382,9 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                     break;
 
                 case TURN_BACK_TO_FOUNDATION:
+                    //
+                    // We were traveling in the Y direction, so turn back to face the foundation.
+                    //
                     turnTarget = 0.0;
                     simplePidDrive.setAbsoluteHeadingTarget(turnTarget, State.APPROACH_FOUNDATION);
                     break;
@@ -357,11 +395,15 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                     //
                     robot.elevator.setPosition(RobotInfo3543.ELEVATOR_DROP_HEIGHT);
                     robot.extenderArm.setPosition(RobotInfo3543.EXTENDER_ARM_DROP_POS);
-                    yTarget =  11.0;
-                    simplePidDrive.setRelativeYTarget(yTarget, State.DROP_SKYSTONE);
+                    yTarget =  RobotInfo.ABS_FOUNDATION_Y;//11.0;
+                    simplePidDrive.setAbsoluteYTarget(yTarget, State.DROP_SKYSTONE);
                     break;
 
                 case DROP_SKYSTONE:
+                    //
+                    // Drop off the skystone. If this is the first skystone, check if we want to go for the second
+                    // skystone.
+                    //
                     robot.grabber.release();
                     skystonesDropped++;
                     if (canDoSecondSkystone(elapsedTime))
@@ -392,25 +434,32 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                     break;
 
                 case BACK_OFF_FOUNDATION:
+                    //
+                    // We are going for the second skystone. Need to back up a little to clear the bridge.
+                    //
                     robot.extenderArm.zeroCalibrate();
                     robot.elevator.zeroCalibrate();
 
                     nextState = autoChoices.strafeToFoundation? State.GOTO_SECOND_SKYSTONE: State.TURN_TOWARDS_QUARRY;
-                    yTarget = -11.0;
-                    simplePidDrive.setRelativeYTarget(yTarget, nextState);
+                    yTarget = RobotInfo.ABS_ROBOT_TRAVEL_Y;
+                    simplePidDrive.setAbsoluteYTarget(yTarget, nextState);
                     break;
 
                 case TURN_TOWARDS_QUARRY:
+                    //
+                    // For some reason, strafing was crappy. So we will turn, run in Y and turn back.
+                    //
                     turnTarget = -90.0 * allianceDirection;
                     simplePidDrive.setAbsoluteHeadingTarget(turnTarget, State.GOTO_SECOND_SKYSTONE);
                     break;
 
                 case GOTO_SECOND_SKYSTONE:
+                    //
+                    // Travel long distance back to the second skystone. Determine the X position of the skystone.
+                    // If the second skystone is the one closest to the wall, we can't get to it so just get the
+                    // regular stone closest to the robot.
+                    //
                     nextState = autoChoices.strafeToFoundation? State.SETUP_VISION: State.TURN_TO_SECOND_SKYSTONE;
-                    //
-                    // If the SkyStone we first picked up was the one closest to the wall, we will not be able to
-                    // get the corresponding stone on the wall side, so just get the nearest regular stone instead.
-                    //
                     xTarget = skystoneVisionCommand.getSkystoneXPos() - 24.0*allianceDirection;
                     if (Math.abs(xTarget) < 8.0)
                     {
@@ -421,6 +470,10 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                     break;
 
                 case TURN_TO_SECOND_SKYSTONE:
+                    //
+                    // We traveled in the Y direction so we must turn back to face the skystone. Then call vision to
+                    // detect and align to the skystone.
+                    //
                     turnTarget = 0.0;
                     simplePidDrive.setAbsoluteHeadingTarget(turnTarget, State.SETUP_VISION);
                     break;
@@ -460,20 +513,26 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                     TrcPidController.PidCoefficients loadedYPidCoeff = savedYPidCoeff.clone();
                     loadedYPidCoeff.kP = RobotInfo3543.ENCODER_Y_LOADED_KP;
                     yPidCtrl.setPidCoefficients(loadedYPidCoeff);
+
                     yTarget = -40.0;
                     simplePidDrive.setRelativeYTarget(yTarget, State.UNHOOK_FOUNDATION);
                     break;
 
                 case UNHOOK_FOUNDATION:
+                    //
+                    // Pulling the heavy foundation to the wall may cause the wheels to slip so we need to correct
+                    // the Y odometry and Y absolute target pose.
+                    //
                     if (savedYPidCoeff != null)
                     {
                         yPidCtrl.setPidCoefficients(savedYPidCoeff);
                         savedYPidCoeff = null;
                     }
-                    // Correct odometry and absTargetPose after wheel slippage.
+
                     TrcPose2D pose = robot.driveBase.getAbsolutePose();
                     pose.y = RobotInfo.ABS_ROBOT_START_Y;
                     robot.driveBase.setAbsolutePose(pose);
+
                     pose = robot.pidDrive.getAbsoluteTargetPose();
                     pose.y = RobotInfo.ABS_ROBOT_START_Y;
                     robot.pidDrive.setAbsoluteTargetPose(pose);
@@ -519,6 +578,10 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                     break;
 
                 case MOVE_BACK_TO_WALL:
+                    //
+                    // We are going to either park by the wall under the bridge or just park by the wall.
+                    // Either way, let's get back to the wall.
+                    //
                     nextState = autoChoices.parkUnderBridge == CommonAuto.ParkPosition.NO_PARK?
                                     State.DONE: State.MOVE_UNDER_BRIDGE;
                     yTarget = RobotInfo.ABS_ROBOT_START_Y;
@@ -526,21 +589,35 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                     break;
 
                 case MOVE_UNDER_BRIDGE:
+                    //
+                    // Slide under the bridge.
+                    //
                     xTarget = RobotInfo.ABS_UNDER_BRIDGE_PARK_X * allianceDirection;
                     simplePidDrive.setAbsoluteXTarget(xTarget, State.DONE);
                     break;
 
                 case SKIP_MOVE_FOUNDATION_PARK_WALL:
+                    //
+                    // We did not move the foundation and we are going to park by the wall under the bridge.
+                    // So let's get back to the wall.
+                    //
                     yTarget = RobotInfo.ABS_ROBOT_START_Y;
                     simplePidDrive.setAbsoluteYTarget(yTarget, State.START_RETRACTIONS);
                     break;
 
                 case MOVE_TOWARDS_CENTER:
+                    //
+                    // Move the robot toward the bridge so we won't hit our alliance partner's robot.
+                    //
                     yTarget = RobotInfo.ABS_CENTER_BRIDGE_PARK_Y;
                     simplePidDrive.setAbsoluteYTarget(yTarget, State.START_RETRACTIONS);
                     break;
 
                 case START_RETRACTIONS:
+                    //
+                    // We are done with the grabber, arm and elevator. Let's retract everything before moving under
+                    // the bridge.
+                    //
                     robot.elevator.zeroCalibrate();
                     robot.extenderArm.zeroCalibrate();
                     robot.wrist.retract(event);
