@@ -51,16 +51,23 @@ public class CmdSkystoneVision implements TrcRobot.RobotCommand
 
     public static class Parameters
     {
-        double scanDirection = -1.0;
-        boolean scanTowardsWall = true;
         boolean useVisionTrigger = false;
+        boolean assumeLeftIfNotFound = false;
+        boolean scanTowardsWall = true;
         int scootCount = 0;
         double grabberOffsetX = 0.0;
         double grabberOffsetY = 0.0;
+        double scanDirection = -1.0;
 
         public Parameters setUseVisionTrigger(boolean useVisionTrigger)
         {
             this.useVisionTrigger = useVisionTrigger;
+            return this;
+        }
+
+        public Parameters setAssumeLeftIfNotFound(boolean assumeLeftIfNotFound)
+        {
+            this.assumeLeftIfNotFound = assumeLeftIfNotFound;
             return this;
         }
 
@@ -144,6 +151,11 @@ public class CmdSkystoneVision implements TrcRobot.RobotCommand
     {
         return skystoneXPos;
     }   //getSkystoneXPos
+
+    public TrcPose2D getSkystonePose()
+    {
+        return skystonePose;
+    }   //getSkystonePose
 
     private boolean isTriggered()
     {
@@ -296,11 +308,24 @@ public class CmdSkystoneVision implements TrcRobot.RobotCommand
                                 robot.pidDrive.setRelativeXTarget(xTarget, event);
                                 sm.waitForSingleEvent(event, nextState);
                             }
+                            else if (visionParams.assumeLeftIfNotFound)
+                            {
+                                //
+                                // We came here because we are either doing SINGLE_SKYSTONE or DOUBLE_SKYSTONE for
+                                // the first skystone and we did not find it. It's probably because our grabber
+                                // is blocking the camera's left corner. So we will assume the left stone is the
+                                // skystone.
+                                //
+                                robot.globalTracer.traceInfo(
+                                        "GetTargetPose", "Skystone not found, assume left.");
+                                robot.speak("Not found, assume left.");
+                                sm.setState(State.ALIGN_SKYSTONE);
+                            }
                             else
                             {
                                 //
-                                // Should never come here because the above code should have handled the last stone,
-                                // but handle it just in case.
+                                // Should never come here because the code above should have handled it when
+                                // scootCount was 1 and decremented to 0 but will handle it just in case.
                                 //
                                 robot.globalTracer.traceInfo(
                                         "GetTargetPose", "Skystone not found, giving up.");
@@ -322,7 +347,8 @@ public class CmdSkystoneVision implements TrcRobot.RobotCommand
 
                 case ALIGN_SKYSTONE:
                     //
-                    // Either we found the skystone or we pretend the one in front is the skystone.
+                    // Either we found the skystone or we pretend the one in front is the skystone. In the case
+                    // assumeLeftIfNotFound is true, we scoot a little to the stone on the left.
                     // If we did find the skystone, it may be mis-aligned, so let's align to it before we grab it.
                     //
                     if (visionTrigger != null)
@@ -334,6 +360,10 @@ public class CmdSkystoneVision implements TrcRobot.RobotCommand
                     if (skystonePose != null)
                     {
                         xTarget += skystonePose.x;
+                    }
+                    else if (visionParams.assumeLeftIfNotFound)
+                    {
+                        xTarget -= 6.0;
                     }
 
                     if (xTarget == 0.0)

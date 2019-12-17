@@ -109,6 +109,7 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
         sm = new TrcStateMachine<>(moduleName);
         visionParams = new CmdSkystoneVision.Parameters()
                 .setUseVisionTrigger(robot.preferences.useVisionTrigger)
+                .setAssumeLeftIfNotFound(false)
                 .setScanTowardsWall(true)
                 .setScootCount(2)
                 .setGrabberOffset(RobotInfo3543.GRABBER_OFFSET_X, RobotInfo3543.GRABBER_OFFSET_Y);
@@ -192,8 +193,9 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                     if (autoChoices.strategy == CommonAuto.AutoStrategy.LOADING_ZONE_SINGLE_SKYSTONE ||
                         autoChoices.strategy == CommonAuto.AutoStrategy.LOADING_ZONE_DOUBLE_SKYSTONE_SOLO)
                     {
-                        visionParams.setScanTowardsWall(false);
-                        startX = RobotInfo.ABS_LOADING_ZONE_ROBOT_START_X_WALL;
+                        visionParams.setScootCount(0);
+                        visionParams.setAssumeLeftIfNotFound(true);
+                        startX = RobotInfo.ABS_LOADING_ZONE_ROBOT_START_X_MID;
                     }
                     else if (autoChoices.robotStartX != 0.0)
                     {
@@ -262,11 +264,10 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                     //
                     robot.extenderArm.setPosition(4.5);
                     robot.grabber.release();
-                    robot.wrist.extend();
 
                     xPidCtrl.setOutputLimit(0.5);
                     yPidCtrl.setOutputLimit(0.5);
-                    yTarget = 22.0;
+                    yTarget = 14.0;
                     simplePidDrive.setRelativeYTarget(yTarget, State.MOVE_TO_FIRST_STONE);
                     break;
 
@@ -276,12 +277,22 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                     //
                     xTarget = (autoChoices.strategy == CommonAuto.AutoStrategy.LOADING_ZONE_SINGLE_SKYSTONE ||
                                autoChoices.strategy == CommonAuto.AutoStrategy.LOADING_ZONE_DOUBLE_SKYSTONE_SOLO)?
-                                    RobotInfo.ABS_FAR_STONE1_X:
+                                    0.0:
                               (Math.abs(startX) > RobotInfo.ABS_LOADING_ZONE_ROBOT_START_X_MID)?
                                     RobotInfo.ABS_FAR_STONE3_X: RobotInfo.ABS_WALL_STONE3_X;
-                    xTarget *= allianceDirection;
-                    simplePidDrive.setAbsoluteXTarget(xTarget, State.SETUP_VISION);
-                    break;
+                    if (xTarget == 0.0)
+                    {
+                        sm.setState(State.SETUP_VISION);
+                        //
+                        // Intentionally falling through to the next state.
+                        //
+                    }
+                    else
+                    {
+                        xTarget *= allianceDirection;
+                        simplePidDrive.setAbsoluteXTarget(xTarget, State.SETUP_VISION);
+                        break;
+                    }
 
                 case SETUP_VISION:
                     if (skystonesDropped > 0)
@@ -295,6 +306,9 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                         visionParams.setScootCount(0);
                     }
                     skystoneVisionCommand.start();
+                    // Delay turning the wrist until now so to give vision a chance to detect skystone before the
+                    // grabber blocks the camera view.
+                    robot.wrist.extend();
                     //
                     // Intentionally falling through to the next state.
                     //
