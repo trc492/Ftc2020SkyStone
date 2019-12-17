@@ -108,6 +108,9 @@ public class TrcPidDrive
     private String owner = null;
     private TrcPose2D savedPoseForTurnOnly = null;
     private TrcPose2D absTargetPose;
+    private boolean alwaysAllowXOsc = false;
+    private boolean alwaysAllowYOsc = false;
+    private boolean alwaysAllowTurnOsc = false;
 
     /**
      * Constructor: Create an instance of the object.
@@ -557,7 +560,7 @@ public class TrcPidDrive
      *                timeout, the operation will be canceled and the event will be signaled. If no timeout is
      *                specified, it should be set to zero.
      */
-    public void setSensorTarget(
+    public synchronized void setSensorTarget(
             String owner, double xTarget, double yTarget, double turnTarget, boolean holdTarget, TrcEvent event,
             double timeout)
     {
@@ -616,6 +619,9 @@ public class TrcPidDrive
      * This method sets the PID controlled relative drive targets.
      *
      * @param owner specifies the ID string of the caller requesting exclusive access.
+     * @param alwaysAllowXOsc specifies true to always allow X oscillation, false otherwise.
+     * @param alwaysAllowYOsc specifies true to always allow Y oscillation, false otherwise.
+     * @param alwaysAllowTurnOsc specifies true to always allow turn oscillation, false otherwise.
      * @param xDelta specifies the X target relative to the current X position.
      * @param yDelta specifies the Y target relative to the current Y position.
      * @param turnDelta specifies the turn target relative to the current heading.
@@ -626,14 +632,17 @@ public class TrcPidDrive
      *                specified, it should be set to zero.
      */
     public synchronized void setRelativeTarget(
-            String owner, double xDelta, double yDelta, double turnDelta,
-            boolean holdTarget, TrcEvent event, double timeout)
+            String owner, boolean alwaysAllowXOsc, boolean alwaysAllowYOsc, boolean alwaysAllowTurnOsc,
+            double xDelta, double yDelta, double turnDelta, boolean holdTarget, TrcEvent event, double timeout)
     {
         final String funcName = "setRelativeTarget";
 
         if (driveBase.validateOwnership(owner))
         {
             this.owner = owner;
+            this.alwaysAllowXOsc = alwaysAllowXOsc;
+            this.alwaysAllowYOsc = alwaysAllowYOsc;
+            this.alwaysAllowTurnOsc = alwaysAllowTurnOsc;
             // adding relative X and Y targets to the absolute target pose.
             TrcPose2D newTargetPose = absTargetPose.translatePose(xDelta, yDelta);
             // adding relative turn target to the absolute target heading.
@@ -642,8 +651,11 @@ public class TrcPidDrive
 
             if (debugEnabled)
             {
-                dbgTrace.traceInfo(funcName, "xDelta=%.1f, yDelta=%.1f, turnDelta=%.1f, CurrPose:%s",
-                        xDelta, yDelta, turnDelta, absTargetPose);
+                dbgTrace.traceInfo(
+                        funcName, "owner=%s,allowXOsc=%s,allowYOsc=%s,allowTurnOsc=%s," +
+                        "xDelta=%.1f,yDelta=%.1f,turnDelta=%.1f,CurrPose:%s",
+                        owner, alwaysAllowXOsc, alwaysAllowYOsc, alwaysAllowTurnOsc, xDelta, yDelta, turnDelta,
+                        absTargetPose);
             }
 
             if (absTargetModeEnabled)
@@ -695,6 +707,9 @@ public class TrcPidDrive
     /**
      * This method sets the PID controlled relative drive targets.
      *
+     * @param alwaysAllowXOsc specifies true to always allow X oscillation, false otherwise.
+     * @param alwaysAllowYOsc specifies true to always allow Y oscillation, false otherwise.
+     * @param alwaysAllowTurnOsc specifies true to always allow turn oscillation, false otherwise.
      * @param xDelta specifies the X target relative to the current X position.
      * @param yDelta specifies the Y target relative to the current Y position.
      * @param turnDelta specifies the turn target relative to the current heading.
@@ -705,9 +720,12 @@ public class TrcPidDrive
      *                specified, it should be set to zero.
      */
     public void setRelativeTarget(
+            boolean alwaysAllowXOsc, boolean alwaysAllowYOsc, boolean alwaysAllowTurnOsc,
             double xDelta, double yDelta, double turnDelta, boolean holdTarget, TrcEvent event, double timeout)
     {
-        setRelativeTarget(null, xDelta, yDelta, turnDelta, holdTarget, event, timeout);
+        setRelativeTarget(
+                null, alwaysAllowXOsc, alwaysAllowYOsc, alwaysAllowTurnOsc, xDelta, yDelta, turnDelta,
+                holdTarget, event, timeout);
     }   //setRelativeTarget
 
     /**
@@ -721,7 +739,9 @@ public class TrcPidDrive
      */
     public void setRelativeTarget(double xDelta, double yDelta, double turnDelta, boolean holdTarget, TrcEvent event)
     {
-        setRelativeTarget(null, xDelta, yDelta, turnDelta, holdTarget, event, 0.0);
+        setRelativeTarget(
+                null, false, false, false, xDelta, yDelta, turnDelta,
+                holdTarget, event, 0.0);
     }   //setRelativeTarget
 
     /**
@@ -734,7 +754,9 @@ public class TrcPidDrive
      */
     public void setRelativeTarget(double xDelta, double yDelta, double turnDelta, TrcEvent event)
     {
-        setRelativeTarget(null, xDelta, yDelta, turnDelta, false, event, 0.0);
+        setRelativeTarget(
+                null, false, false, false, xDelta, yDelta, turnDelta,
+                false, event, 0.0);
     }   //setRelativeTarget
 
     /**
@@ -746,7 +768,9 @@ public class TrcPidDrive
      */
     public void setRelativeXYTarget(double xDelta, double yDelta, TrcEvent event)
     {
-        setRelativeTarget(null, xDelta, yDelta, 0.0, false, event, 0.0);
+        setRelativeTarget(
+                null, false, false, true, xDelta, yDelta, 0.0,
+                false, event, 0.0);
     }   //setRelativeXYTarget
 
     /**
@@ -757,7 +781,9 @@ public class TrcPidDrive
      */
     public void setRelativeXTarget(double xDelta, TrcEvent event)
     {
-        setRelativeTarget(null, xDelta, 0.0, 0.0, false, event, 0.0);
+        setRelativeTarget(
+                null, false, true, true, xDelta, 0.0, 0.0,
+                false, event, 0.0);
     }   //setRelativeXTarget
 
     /**
@@ -768,7 +794,9 @@ public class TrcPidDrive
      */
     public void setRelativeYTarget(double yDelta, TrcEvent event)
     {
-        setRelativeTarget(null, 0.0, yDelta, 0.0, false, event, 0.0);
+        setRelativeTarget(
+                null, true, false, true, 0.0, yDelta, 0.0,
+                false, event, 0.0);
     }   //setRelativeYTarget
 
     /**
@@ -779,13 +807,22 @@ public class TrcPidDrive
      */
     public void setRelativeTurnTarget(double turnDelta, TrcEvent event)
     {
-        setRelativeTarget(null, 0.0, 0.0, turnDelta, false, event, 0.0);
+        //
+        // Since this is turn-only, alwaysAllowXOsc and alwaysAllowYOsc are irrelevant because turn-only mode will
+        // ignore the X and Y PID controllers anyway.
+        //
+        setRelativeTarget(
+                null, false, false, false, 0.0, 0.0, turnDelta,
+                false, event, 0.0);
     }   //setRelativeTurnTarget
 
     /**
      * This method sets the PID controlled absolute drive targets.
      *
      * @param owner specifies the ID string of the caller requesting exclusive access.
+     * @param alwaysAllowXOsc specifies true to always allow X oscillation, false otherwise.
+     * @param alwaysAllowYOsc specifies true to always allow Y oscillation, false otherwise.
+     * @param alwaysAllowTurnOsc specifies true to always allow turn oscillation, false otherwise.
      * @param absX specifies the absolute X target position.
      * @param absY specifies the absolute Y target position.
      * @param absHeading specifies the absolute target heading.
@@ -796,14 +833,17 @@ public class TrcPidDrive
      *                specified, it should be set to zero.
      */
     public synchronized void setAbsoluteTarget(
-            String owner, double absX, double absY, double absHeading,
-            boolean holdTarget, TrcEvent event, double timeout)
+            String owner, boolean alwaysAllowXOsc, boolean alwaysAllowYOsc, boolean alwaysAllowTurnOsc,
+            double absX, double absY, double absHeading, boolean holdTarget, TrcEvent event, double timeout)
     {
         final String funcName = "setAbsoluteTarget";
 
         if (driveBase.validateOwnership(owner))
         {
             this.owner = owner;
+            this.alwaysAllowXOsc = alwaysAllowXOsc;
+            this.alwaysAllowYOsc = alwaysAllowYOsc;
+            this.alwaysAllowTurnOsc = alwaysAllowTurnOsc;
 
             TrcPose2D newTargetPose = new TrcPose2D(absX, absY, absHeading);
             TrcPose2D currRobotPose = driveBase.getAbsolutePose();
@@ -813,8 +853,10 @@ public class TrcPidDrive
             if (debugEnabled)
             {
                 dbgTrace.traceInfo(
-                        funcName, "absX=%.1f, absY=%.1f, absHeading=%.1f, CurrPose:%s, absTargetPose=%s",
-                        absX, absY, absHeading, currRobotPose, absTargetPose);
+                        funcName, "owner=%s,allowXOsc=%s,allowYOsc=%s,allowTurnOsc=%s," +
+                        "absX=%.1f,absY=%.1f,absHeading=%.1f,CurrPose:%s,absTargetPose=%s",
+                        owner, alwaysAllowXOsc, alwaysAllowYOsc, alwaysAllowTurnOsc, absX, absY, absHeading,
+                        currRobotPose, absTargetPose);
                 dbgTrace.traceInfo(funcName, "xTarget=%.1f, yTarget=%.1f, turnTarget=%.1f, NewPose:%s",
                         relativePose.x, relativePose.y, turnTarget, newTargetPose);
             }
@@ -827,6 +869,9 @@ public class TrcPidDrive
     /**
      * This method sets the PID controlled absolute drive targets.
      *
+     * @param alwaysAllowXOsc specifies true to always allow X oscillation, false otherwise.
+     * @param alwaysAllowYOsc specifies true to always allow Y oscillation, false otherwise.
+     * @param alwaysAllowTurnOsc specifies true to always allow turn oscillation, false otherwise.
      * @param absX specifies the absolute X target position.
      * @param absY specifies the absolute Y target position.
      * @param absHeading specifies the absolute target heading.
@@ -837,9 +882,12 @@ public class TrcPidDrive
      *                specified, it should be set to zero.
      */
     public void setAbsoluteTarget(
+            boolean alwaysAllowXOsc, boolean alwaysAllowYOsc, boolean alwaysAllowTurnOsc,
             double absX, double absY, double absHeading, boolean holdTarget, TrcEvent event, double timeout)
     {
-        setAbsoluteTarget(null, absX, absY, absHeading, holdTarget, event, timeout);
+        setAbsoluteTarget(
+                null, alwaysAllowXOsc, alwaysAllowYOsc, alwaysAllowTurnOsc, absX, absY, absHeading,
+                holdTarget, event, timeout);
     }   //setAbsoluteTarget
 
     /**
@@ -853,7 +901,9 @@ public class TrcPidDrive
      */
     public void setAbsoluteTarget(double absX, double absY, double absHeading, boolean holdTarget, TrcEvent event)
     {
-        setAbsoluteTarget(null, absX, absY, absHeading, holdTarget, event, 0.0);
+        setAbsoluteTarget(
+                null, false, false, false, absX, absY, absHeading,
+                holdTarget, event, 0.0);
     }   //setAbsoluteTarget
 
     /**
@@ -866,7 +916,9 @@ public class TrcPidDrive
      */
     public void setAbsoluteTarget(double absX, double absY, double absHeading, TrcEvent event)
     {
-        setAbsoluteTarget(null, absX, absY, absHeading, false, event, 0.0);
+        setAbsoluteTarget(
+                null, false, false, false, absX, absY, absHeading,
+                false, event, 0.0);
     }   //setAbsoluteTarget
 
     /**
@@ -878,7 +930,9 @@ public class TrcPidDrive
      */
     public void setAbsoluteXYTarget(double absX, double absY, TrcEvent event)
     {
-        setAbsoluteTarget(null, absX, absY, absTargetPose.heading, false, event, 0.0);
+        setAbsoluteTarget(
+                null, false, false, true,
+                absX, absY, absTargetPose.heading, false, event, 0.0);
     }   //setAbsoluteXYTarget
 
     /**
@@ -889,7 +943,9 @@ public class TrcPidDrive
      */
     public void setAbsoluteXTarget(double absX, TrcEvent event)
     {
-        setAbsoluteTarget(null, absX, absTargetPose.y, absTargetPose.heading, false, event, 0.0);
+        setAbsoluteTarget(
+                null, false, true, true,
+                absX, absTargetPose.y, absTargetPose.heading, false, event, 0.0);
     }   //setAbsoluteXTarget
 
     /**
@@ -900,7 +956,9 @@ public class TrcPidDrive
      */
     public void setAbsoluteYTarget(double absY, TrcEvent event)
     {
-        setAbsoluteTarget(null, absTargetPose.x, absY, absTargetPose.heading, false, event, 0.0);
+        setAbsoluteTarget(
+                null, true, false, true,
+                absTargetPose.x, absY, absTargetPose.heading, false, event, 0.0);
     }   //setAbsoluteYTarget
 
     /**
@@ -911,11 +969,18 @@ public class TrcPidDrive
      */
     public void setAbsoluteHeadingTarget(double absHeading, TrcEvent event)
     {
+        //
+        // Since this is turn-only, alwaysAllowXOsc and alwaysAllowYOsc are irrelevant because turn-only mode will
+        // ignore the X and Y PID controllers anyway.
+        //
         // Use the current absolute pose for X and Y to ensure that
         // we do not find any error along X or Y, thereby ensuring that the X
         // and Y PID controllers are turned off during the turn.
+        //
         final TrcPose2D currentAbsPose = driveBase.getAbsolutePose();
-        setAbsoluteTarget(null, currentAbsPose.x, currentAbsPose.y, absHeading, false, event, 0.0);
+        setAbsoluteTarget(
+                null, false, false, false,
+                currentAbsPose.x, currentAbsPose.y, absHeading, false, event, 0.0);
     }   //setAbsoluteHeadingTarget
 
     /**
@@ -1047,16 +1112,19 @@ public class TrcPidDrive
         if (xPidCtrl != null)
         {
             xPidCtrl.reset();
+            alwaysAllowXOsc = true;
         }
 
         if (yPidCtrl != null)
         {
             yPidCtrl.reset();
+            alwaysAllowYOsc = true;
         }
 
         if (turnPidCtrl != null)
         {
             turnPidCtrl.reset();
+            alwaysAllowTurnOsc = true;
         }
 
         // restore the old reference pose.
@@ -1130,9 +1198,9 @@ public class TrcPidDrive
 
         boolean expired = expiredTime != 0.0 && TrcUtil.getCurrentTime() >= expiredTime;
         boolean stalled = stallTimeout != 0.0 && driveBase.isStalled(stallTimeout);
-        boolean xOnTarget = xPidCtrl == null || xPidCtrl.isOnTarget();
-        boolean yOnTarget = yPidCtrl == null || yPidCtrl.isOnTarget();
-        boolean turnOnTarget = turnPidCtrl == null || turnPidCtrl.isOnTarget();
+        boolean xOnTarget = xPidCtrl == null || xPidCtrl.isOnTarget(alwaysAllowXOsc);
+        boolean yOnTarget = yPidCtrl == null || yPidCtrl.isOnTarget(alwaysAllowYOsc);
+        boolean turnOnTarget = turnPidCtrl == null || turnPidCtrl.isOnTarget(alwaysAllowTurnOsc);
         boolean onTarget = turnOnTarget && (turnOnly || xOnTarget && yOnTarget);
 
         if (stuckWheelHandler != null)

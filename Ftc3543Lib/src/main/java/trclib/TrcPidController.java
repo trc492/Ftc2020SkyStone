@@ -795,20 +795,22 @@ public class TrcPidController
      * error is smaller than the tolerance and is maintained for at least settling time. If NoOscillation mode is
      * set, it is considered on target if we are within tolerance or pass target regardless of setting time.
      *
+     * @param alwaysAllowOscillation specifies true if the PID controller always allows oscillation, false otherwise.
      * @return true if we reached target, false otherwise.
      */
-    public synchronized boolean isOnTarget()
+    public synchronized boolean isOnTarget(boolean alwaysAllowOscillation)
     {
         final String funcName = "isOnTarget";
 
         if (debugEnabled)
         {
-            dbgTrace.traceEnter(funcName, TrcDbgTrace.TraceLevel.API);
+            dbgTrace.traceEnter(funcName, TrcDbgTrace.TraceLevel.API,
+                    "alwaysAllowOsc=%s", alwaysAllowOscillation);
         }
 
         boolean onTarget = false;
 
-        if (noOscillation)
+        if (!alwaysAllowOscillation && noOscillation)
         {
             //
             // Don't allow oscillation, so if we are within tolerance or we pass target, just quit.
@@ -837,6 +839,17 @@ public class TrcPidController
         }
 
         return onTarget;
+    }   //isOnTarget
+
+    /**
+     * This method determines if we have reached the set point target. It is considered on target if the previous
+     * error is smaller than the tolerance and is maintained for at least settling time.
+     *
+     * @return true if we reached target, false otherwise.
+     */
+    public boolean isOnTarget()
+    {
+        return isOnTarget(false);
     }   //isOnTarget
 
     /**
