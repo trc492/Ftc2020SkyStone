@@ -38,7 +38,6 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
     private static final boolean debugXPid = true;
     private static final boolean debugYPid = true;
     private static final boolean debugTurnPid = true;
-    private static final double SECOND_SKYSTONE_DEADLINE = 30.0;
 
     private enum State
     {
@@ -122,11 +121,47 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
         sm.start(State.BEGIN);
     }   //CmdAutoLoadingZone3543
 
-    private boolean canDoSecondSkystone(double elapsedTime)
+    private boolean doSecondSkystone(double elapsedTime)
     {
-        return autoChoices.strategy == CommonAuto.AutoStrategy.LOADING_ZONE_DOUBLE_SKYSTONE_SOLO &&
-               skystonesDropped == 1 && elapsedTime < SECOND_SKYSTONE_DEADLINE;
-    }   //canDoSecondSkystone
+        final String funcName = "doSecondSkystone";
+        boolean willDo = false;
+
+        if (autoChoices.strategy == CommonAuto.AutoStrategy.LOADING_ZONE_DOUBLE_SKYSTONE_SOLO && skystonesDropped == 1)
+        {
+            double projectedTime = elapsedTime;
+            int projectedScore = 14;
+
+            projectedTime += autoChoices.strafeToFoundation? 0.1: 0.1;  //round trip time strafing or turn-run-turn +
+            // dropping stone.
+            if (projectedTime <= 30.0) projectedScore += 14;
+
+            projectedTime += autoChoices.moveFoundation? 0.1: 0.1;  //time to pull foundation
+            if (projectedTime <= 30.0) projectedScore += 10;
+
+            if (autoChoices.moveFoundation)
+            {
+                projectedTime += autoChoices.parkUnderBridge == CommonAuto.ParkPosition.PARK_CLOSE_TO_CENTER?
+                                    0.1:
+                                 autoChoices.parkUnderBridge == CommonAuto.ParkPosition.PARK_CLOSE_TO_WALL?
+                                    0.1: 0.0;
+            }
+            else
+            {
+                projectedTime += autoChoices.parkUnderBridge == CommonAuto.ParkPosition.PARK_CLOSE_TO_CENTER?
+                                    0.1:
+                                 autoChoices.parkUnderBridge == CommonAuto.ParkPosition.PARK_CLOSE_TO_WALL?
+                                    0.1: 0.0;
+            }
+            if (projectedTime <= 30.0) projectedScore += 5;
+
+            willDo = projectedScore > 29;
+
+            robot.globalTracer.traceInfo(funcName, "WillDo=%s, ProjectedTotalTime=%.3f, AchievableMaxScore=%d",
+                    willDo, projectedTime, projectedScore);
+        }
+
+        return willDo;
+    }   //doSecondSkystone
 
     //
     // Implements the TrcRobot.RobotCommand interface.
@@ -420,7 +455,7 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                     //
                     robot.grabber.release();
                     skystonesDropped++;
-                    if (canDoSecondSkystone(elapsedTime))
+                    if (doSecondSkystone(elapsedTime))
                     {
                         // Wait until the skystone has dropped before moving.
                         nextState = State.BACK_OFF_FOUNDATION;
