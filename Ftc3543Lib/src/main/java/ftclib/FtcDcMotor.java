@@ -164,37 +164,37 @@ public class FtcDcMotor extends TrcMotor
     }   //getVoltage
 
     /**
-     * Ensures that the given requested motor power does not violate limit switch constraints (e.g. if the upper limit
+     * Ensures that the given requested motor value does not violate limit switch constraints (e.g. if the upper limit
      * switch is pressed, the motor may not be commanded forward).
      *
      * If the given value does not violate limit switch constraints, it is returned as-is; otherwise, 0;
      *
-     * @param motorPower The requested motor power value.
-     * @return The given motor power value respecting limit switch constraints.
+     * @param motorValue The requested motor value. It may be a power value or a velocity value.
+     * @return The given motor value respecting limit switch constraints.
      */
-    private double constrainMotorValueByLimitSwitches(double motorPower)
+    private double constrainMotorValueByLimitSwitches(double motorValue)
     {
         final String funcName = "constrainMotorValueByLimitSwitches";
 
         if (debugEnabled)
         {
-            dbgTrace.traceEnter(funcName, TrcDbgTrace.TraceLevel.API, "power=%f", motorPower);
+            dbgTrace.traceEnter(funcName, TrcDbgTrace.TraceLevel.API, "value=%f", motorValue);
         }
 
-        if (motorPower > 0.0 && (upperLimitSwitch != null && upperLimitSwitch.isActive() ||
+        if (motorValue > 0.0 && (upperLimitSwitch != null && upperLimitSwitch.isActive() ||
             softUpperLimitEnabled && getPosition() >= softUpperLimit) ||
-            motorPower < 0.0 && (lowerLimitSwitch != null && lowerLimitSwitch.isActive() ||
+            motorValue < 0.0 && (lowerLimitSwitch != null && lowerLimitSwitch.isActive() ||
             softLowerLimitEnabled && getPosition() <= softLowerLimit))
         {
-            motorPower = 0.0;
+            motorValue = 0.0;
         }
 
         if (debugEnabled)
         {
-            dbgTrace.traceExit(funcName, TrcDbgTrace.TraceLevel.API, "=%f", motorPower);
+            dbgTrace.traceExit(funcName, TrcDbgTrace.TraceLevel.API, "=%f", motorValue);
         }
 
-        return motorPower;
+        return motorValue;
     }   //constrainMotorValueByLimitSwitches
 
     //
@@ -236,7 +236,7 @@ public class FtcDcMotor extends TrcMotor
     /**
      * This method sets the motor controller to velocity mode with the specified maximum velocity.
      *
-     * @param maxVelocity     specifies the maximum velocity the motor can run, in sensor units per second.
+     * @param maxVelocity specifies the maximum velocity the motor can run, in sensor units per second.
      */
     public void enableVelocityMode(double maxVelocity)
     {
