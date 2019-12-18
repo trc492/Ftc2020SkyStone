@@ -38,6 +38,8 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
     private static final boolean debugXPid = true;
     private static final boolean debugYPid = true;
     private static final boolean debugTurnPid = true;
+    private static final double AUTONOMOUS_END_TIME = 100.0;
+    private static final int MAX_SCORE_SINGLE_SKYSTONE = 29;
 
     private enum State
     {
@@ -131,15 +133,14 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
             double projectedTime = elapsedTime;
             int projectedScore = 14;
 
-            projectedTime += autoChoices.strafeToFoundation? 0.1: 0.1;  //round trip time strafing or turn-run-turn +
-            // dropping stone.
-            if (projectedTime <= 30.0) projectedScore += 14;
-
-            projectedTime += autoChoices.moveFoundation? 0.1: 0.1;  //time to pull foundation
-            if (projectedTime <= 30.0) projectedScore += 10;
+            projectedTime += autoChoices.strafeToFoundation? 20.0: 20.0;
+            if (projectedTime <= AUTONOMOUS_END_TIME) projectedScore += 14;
 
             if (autoChoices.moveFoundation)
             {
+                projectedTime += 2.5;
+                if (projectedTime <= AUTONOMOUS_END_TIME) projectedScore += 10;
+
                 projectedTime += autoChoices.parkUnderBridge == CommonAuto.ParkPosition.PARK_CLOSE_TO_CENTER?
                                     0.1:
                                  autoChoices.parkUnderBridge == CommonAuto.ParkPosition.PARK_CLOSE_TO_WALL?
@@ -152,12 +153,13 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                                  autoChoices.parkUnderBridge == CommonAuto.ParkPosition.PARK_CLOSE_TO_WALL?
                                     0.1: 0.0;
             }
-            if (projectedTime <= 30.0) projectedScore += 5;
+            if (projectedTime <= AUTONOMOUS_END_TIME) projectedScore += 5;
 
-            willDo = projectedScore > 29;
+            willDo = projectedScore > MAX_SCORE_SINGLE_SKYSTONE;
 
-            robot.globalTracer.traceInfo(funcName, "WillDo=%s, ProjectedTotalTime=%.3f, AchievableMaxScore=%d",
-                    willDo, projectedTime, projectedScore);
+            robot.globalTracer.traceInfo(
+                    funcName, "[%.3f] WillDo=%s, ProjectedTotalTime=%.3f, AchievableMaxScore=%d",
+                    elapsedTime, willDo, projectedTime, projectedScore);
         }
 
         return willDo;

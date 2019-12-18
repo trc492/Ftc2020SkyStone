@@ -30,7 +30,7 @@ public class RobotInfo
     public static final double ABS_ROBOT_START_Y                        = 9.0;
     public static final double ABS_ROBOT_TRAVEL_Y                       = 32.0;
     public static final double ABS_LOADING_ZONE_ROBOT_START_X_WALL      = 32.0;
-    public static final double ABS_LOADING_ZONE_ROBOT_START_X_MID       = 39.0;
+    public static final double ABS_LOADING_ZONE_ROBOT_START_X_MID       = 36.0;
     public static final double ABS_LOADING_ZONE_ROBOT_START_X_FAR       = 59.0;
     public static final double ABS_BUILDING_ZONE_ROBOT_START_X          = 120.0;
     public static final double ABS_WALL_STONE1_X                        = 4.0;

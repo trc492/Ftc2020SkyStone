@@ -363,7 +363,7 @@ public class CmdSkystoneVision implements TrcRobot.RobotCommand
                     }
                     else if (visionParams.assumeLeftIfNotFound)
                     {
-                        xTarget -= 6.0;
+                        xTarget -= 9.0;
                     }
 
                     if (xTarget == 0.0)
