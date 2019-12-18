@@ -51,7 +51,7 @@ class Robot6541 extends Robot
             .setUseVisionTrigger(false)
             .setUseTraceLog(true)
             .setUseSpeech(true)
-            .setUseBatteryMonitor(false)
+            .setUseBatteryMonitor(true)
             .setUseLoopPerformanceMonitor(false)
             .setUseVelocityControl(true);
     private static final PhoneParameters phoneParams6541 = new PhoneParameters()

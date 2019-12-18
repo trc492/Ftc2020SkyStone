@@ -344,6 +344,7 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                     // Delay turning the wrist until now so to give vision a chance to detect skystone before the
                     // grabber blocks the camera view.
                     robot.wrist.extend();
+                    sm.setState(State.DO_VISION);
                     //
                     // Intentionally falling through to the next state.
                     //
@@ -395,7 +396,7 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
 
                 case START_EXTENDER_ARM_RETRACTION:
                     //
-                    // TODO: may want to use a timer so we don't need to wait for the slow elevator.
+                    // TODO: may want to use a timer so we don't need to wait for the slow arm extender.
                     // Bring the extender arm back so we don't run into the bridge during travel.
                     //
                     nextState = autoChoices.strafeToFoundation?
@@ -444,7 +445,7 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                     //
                     robot.elevator.setPosition(RobotInfo3543.ELEVATOR_DROP_HEIGHT);
                     robot.extenderArm.setPosition(RobotInfo3543.EXTENDER_ARM_DROP_POS);
-                    yTarget =  RobotInfo.ABS_FOUNDATION_Y;//11.0;
+                    yTarget =  RobotInfo.ABS_FOUNDATION_Y;
                     simplePidDrive.setAbsoluteYTarget(yTarget, State.DROP_SKYSTONE);
                     break;
 
