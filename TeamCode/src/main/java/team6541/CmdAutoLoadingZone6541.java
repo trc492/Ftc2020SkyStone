@@ -193,10 +193,10 @@ class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
                     robot.elbow.extend();
                     robot.grabber.release();
 
-                    if (Math.abs(startX) < RobotInfo.ABS_LOADING_ZONE_ROBOT_START_X_MID)
-                    {
-                        visionParams.setScootCount(1);
-                    }
+                    //if (Math.abs(startX) < RobotInfo.ABS_LOADING_ZONE_ROBOT_START_X_MID)
+                    //{
+                    //    visionParams.setScootCount(1);
+                    //}
                     skystoneVisionCommand.start();
                     sm.setState(State.START_DELAY);
                     //
@@ -299,8 +299,8 @@ class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
 
                 case APPROACH_FOUNDATION:
                     robot.elevator.setPosition(4.0);
-                    yTarget = 15.0;
-                    simplePidDrive.setRelativeYTarget(yTarget, State.DROP_SKYSTONE);
+                    //yTarget = 15.0;
+                    simplePidDrive.setAbsoluteYTarget(RobotInfo.ABS_FOUNDATION_Y, State.DROP_SKYSTONE);
                     break;
 
                 case DROP_SKYSTONE:
@@ -372,7 +372,7 @@ class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
                     TrcPidController.PidCoefficients loadedYPidCoeff = savedYPidCoeff.clone();
                     loadedYPidCoeff.kP = RobotInfo6541.ENCODER_Y_LOADED_KP;
                     yPidCtrl.setPidCoefficients(loadedYPidCoeff);
-                    yTarget = 36.0;
+                    yTarget = 38.0;
                     simplePidDrive.setRelativeYTarget(yTarget, State.UNHOOK_FOUNDATION);
                     break;
 
@@ -427,7 +427,7 @@ class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
                 case MOVE_BACK_TO_WALL:
                     nextState = autoChoices.parkUnderBridge == CommonAuto.ParkPosition.NO_PARK?
                                     State.DONE: State.MOVE_UNDER_BRIDGE;
-                    yTarget = RobotInfo.ABS_ROBOT_START_Y;
+                    yTarget = RobotInfo.ABS_ROBOT_TRAVEL_Y;
                     simplePidDrive.setAbsoluteYTarget(yTarget, nextState);
 //                    yTarget = 19.0;
 //                    simplePidDrive.setRelativeYTarget(yTarget, nextState);
