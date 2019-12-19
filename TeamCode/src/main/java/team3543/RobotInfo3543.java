@@ -113,7 +113,7 @@ class RobotInfo3543
     static final double ROBOT_WIDTH                             = 18.0; //Robot width in inches
     static final double PHONE_FRONT_OFFSET                      = 5.5;  //Phone offset from front of robot in inches
     static final double PHONE_HEIGHT_OFFSET                     = 5.75; //Phone offset from floor in inches
-    static final double PHONE_LEFT_OFFSET                       = 12.75;//Phone offset from left of robot in inches
+    static final double PHONE_LEFT_OFFSET                       = 12.0; //Phone offset from left of robot in inches
 
     // TODO: Need to retune.
     static final double HOMOGRAPHY_CAMERA_TOPLEFT_X             = 0.0;
@@ -176,9 +176,9 @@ class RobotInfo3543
     static final double EXTENDER_ARM_MAX_POS                    = 15.0;
     static final double EXTENDER_ARM_SCALE                      = 17.0/4718.0;
     static final double EXTENDER_ARM_OFFSET                     = 0.0;
-    static final double EXTENDER_ARM_PICKUP_POS                 = 13.5;
+    static final double EXTENDER_ARM_PICKUP_POS                 = 11.0;
     static final double EXTENDER_ARM_CARRY_POS                  = 1.0;
-    static final double EXTENDER_ARM_DROP_POS                   = 13.0;
+    static final double EXTENDER_ARM_DROP_POS                   = 15.0;
     static final double EXTENDER_ARM_RETRACT_POS                = 0.0;
     static final double EXTENDER_ARM_EXTEND_POS                 = 13.0;
     //
@@ -197,11 +197,11 @@ class RobotInfo3543
     static final double GRABBER_MIN_POS                         = 0.2;
     static final double GRABBER_MAX_POS                         = 0.8;
     static final double GRABBER_RELEASE_POS                     = 0.8;
-    static final double GRABBER_RELEASE_TIME                    = 3.0;
+    static final double GRABBER_RELEASE_TIME                    = 1.0;
     static final double GRABBER_GRAB_POS                        = 0.2;
-    static final double GRABBER_GRAB_TIME                       = 3.0;
+    static final double GRABBER_GRAB_TIME                       = 1.0;
     static final double GRABBER_OFFSET_X                        = 0.0;
-    static final double GRABBER_OFFSET_Y                        = 0.0;
+    static final double GRABBER_OFFSET_Y                        = -1.0;
     //
     // BackFoundationLatch subsystem.
     //

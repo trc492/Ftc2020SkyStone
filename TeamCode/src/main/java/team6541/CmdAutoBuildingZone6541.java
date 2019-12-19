@@ -311,17 +311,17 @@ class CmdAutoBuildingZone6541 implements TrcRobot.RobotCommand
             TrcPidController pidCtrl = robot.pidDrive.getXPidCtrl();
             if (debugXPid && pidCtrl != null)
             {
-                pidCtrl.printPidInfo(robot.globalTracer, elapsedTime);
+                pidCtrl.printPidInfo(robot.globalTracer);
             }
 
             if (debugYPid)
             {
-                robot.pidDrive.getYPidCtrl().printPidInfo(robot.globalTracer, elapsedTime);
+                robot.pidDrive.getYPidCtrl().printPidInfo(robot.globalTracer);
             }
 
             if (debugTurnPid)
             {
-                robot.pidDrive.getTurnPidCtrl().printPidInfo(robot.globalTracer, elapsedTime);
+                robot.pidDrive.getTurnPidCtrl().printPidInfo(robot.globalTracer);
             }
         }
 

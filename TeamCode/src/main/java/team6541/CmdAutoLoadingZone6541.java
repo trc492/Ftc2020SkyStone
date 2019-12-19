@@ -485,17 +485,17 @@ class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
 
             if (debugXPid && xPidCtrl != null)
             {
-                xPidCtrl.printPidInfo(robot.globalTracer, elapsedTime);
+                xPidCtrl.printPidInfo(robot.globalTracer);
             }
 
             if (debugYPid)
             {
-                yPidCtrl.printPidInfo(robot.globalTracer, elapsedTime);
+                yPidCtrl.printPidInfo(robot.globalTracer);
             }
 
             if (debugTurnPid)
             {
-                turnPidCtrl.printPidInfo(robot.globalTracer, elapsedTime);
+                turnPidCtrl.printPidInfo(robot.globalTracer);
             }
         }
 

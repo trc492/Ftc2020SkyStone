@@ -50,7 +50,7 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
         SETUP_VISION,
         DO_VISION,
         GO_DOWN_ON_SKYSTONE,
-        GRAB_SKYSTONE,
+//        GRAB_SKYSTONE,
         PULL_SKYSTONE,
         START_EXTENDER_ARM_RETRACTION,
         TURN_TOWARDS_FOUNDATION,
@@ -186,6 +186,7 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
     @Override
     public void cancel()
     {
+        robot.setFlashLightOn(false, false);
         if (robot.pidDrive.isActive())
         {
             robot.pidDrive.cancel();
@@ -224,6 +225,7 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
             switch (state)
             {
                 case BEGIN:
+                    robot.setFlashLightOn(true, true);
                     //
                     // Set the robot's absolute field starting position.
                     //
@@ -299,7 +301,7 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                     // Move closer slowly to a distance so Vuforia can detect the target and start lowering the
                     // extender arm to save time.
                     //
-                    robot.extenderArm.setPosition(4.5);
+                    robot.extenderArm.setPosition(3.0);
                     robot.grabber.release();
 
                     xPidCtrl.setOutputLimit(0.5);
@@ -376,22 +378,23 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                     // We are done with vision, extend the arm to grab the skystone.
                     //
                     robot.extenderArm.setPosition(RobotInfo3543.EXTENDER_ARM_PICKUP_POS, event);
-                    sm.waitForSingleEvent(event, State.GRAB_SKYSTONE);
-                    break;
-
-                case GRAB_SKYSTONE:
-                    // TODO: this state can go away when we install the faster grabber.
-                    // Don't need to wait for the grab to finish before moving. Can tune this down to minimum for
-                    // saving time.
-                    //
-                    robot.grabber.grab(3.0, event);
                     sm.waitForSingleEvent(event, State.PULL_SKYSTONE);
                     break;
+
+//                case GRAB_SKYSTONE:
+//                    // TODO: this state can go away when we install the faster grabber.
+//                    // Don't need to wait for the grab to finish before moving. Can tune this down to minimum for
+//                    // saving time.
+//                    //
+//                    robot.grabber.grab(1.0, event);
+//                    sm.waitForSingleEvent(event, State.PULL_SKYSTONE);
+//                    break;
 
                 case PULL_SKYSTONE:
                     //
                     // Pull the skystone out to the travel Y position so we don't hit the bridge.
                     //
+                    robot.grabber.grab();
                     yTarget = RobotInfo.ABS_ROBOT_TRAVEL_Y;
                     simplePidDrive.setAbsoluteYTarget(yTarget, State.START_EXTENDER_ARM_RETRACTION);
                     break;
@@ -448,6 +451,7 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                     robot.elevator.setPosition(RobotInfo3543.ELEVATOR_DROP_HEIGHT);
                     robot.extenderArm.setPosition(RobotInfo3543.EXTENDER_ARM_DROP_POS);
                     yTarget =  RobotInfo.ABS_FOUNDATION_Y;
+                    if (skystonesDropped > 0) yTarget += 2.0;
                     simplePidDrive.setAbsoluteYTarget(yTarget, State.DROP_SKYSTONE);
                     break;
 
@@ -462,7 +466,7 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                     {
                         // Wait until the skystone has dropped before moving.
                         nextState = State.BACK_OFF_FOUNDATION;
-                        timer.set(1.5, event);
+                        timer.set(0.5, event);
                     }
                     else if (autoChoices.moveFoundation)
                     {
@@ -480,7 +484,7 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                         //
                         nextState = autoChoices.parkUnderBridge == CommonAuto.ParkPosition.PARK_CLOSE_TO_CENTER?
                                         State.MOVE_TOWARDS_CENTER: State.SKIP_MOVE_FOUNDATION_PARK_WALL;
-                        timer.set(1.5, event);
+                        timer.set(0.5, event);
                     }
                     sm.waitForSingleEvent(event, nextState);
                     break;
@@ -489,8 +493,8 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                     //
                     // We are going for the second skystone. Need to back up a little to clear the bridge.
                     //
+                    robot.elevator.setPosition(5.0);
                     robot.extenderArm.zeroCalibrate();
-                    robot.elevator.zeroCalibrate();
 
                     nextState = autoChoices.strafeToFoundation? State.GOTO_SECOND_SKYSTONE: State.TURN_TOWARDS_QUARRY;
                     yTarget = RobotInfo.ABS_ROBOT_TRAVEL_Y;
@@ -501,6 +505,7 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                     //
                     // For some reason, strafing was crappy. So we will turn, run in Y and turn back.
                     //
+                    robot.elevator.zeroCalibrate(1.0);
                     turnTarget = -90.0 * allianceDirection;
                     simplePidDrive.setAbsoluteHeadingTarget(turnTarget, State.GOTO_SECOND_SKYSTONE);
                     break;
@@ -511,6 +516,7 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                     // If the second skystone is the one closest to the wall, we can't get to it so just get the
                     // regular stone closest to the robot.
                     //
+                    robot.elevator.zeroCalibrate(1.0);
                     nextState = autoChoices.strafeToFoundation? State.SETUP_VISION: State.TURN_TO_SECOND_SKYSTONE;
                     xTarget = skystoneVisionCommand.getSkystoneXPos() - 24.0*allianceDirection;
                     if (Math.abs(xTarget) < 8.0)
@@ -566,8 +572,8 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                     loadedYPidCoeff.kP = RobotInfo3543.ENCODER_Y_LOADED_KP;
                     yPidCtrl.setPidCoefficients(loadedYPidCoeff);
 
-                    yTarget = -40.0;
-                    simplePidDrive.setRelativeYTarget(yTarget, State.UNHOOK_FOUNDATION);
+                    yTarget = RobotInfo.ABS_ROBOT_START_Y;
+                    simplePidDrive.setAbsoluteYTarget(yTarget, State.UNHOOK_FOUNDATION);
                     break;
 
                 case UNHOOK_FOUNDATION:
@@ -623,7 +629,7 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                     //
                     // Bump the foundation toward the wall to make sure it lands inside the building site.
                     //
-                    xTarget = 13.0 * allianceDirection;
+                    xTarget = (skystonesDropped > 1? 16.0: 13.0) * allianceDirection;
                     nextState = autoChoices.parkUnderBridge == CommonAuto.ParkPosition.PARK_CLOSE_TO_CENTER?
                                     State.MOVE_UNDER_BRIDGE: State.MOVE_BACK_TO_WALL;
                     simplePidDrive.setRelativeXTarget(xTarget, nextState);
@@ -706,17 +712,17 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
 
             if (debugXPid && xPidCtrl != null)
             {
-                xPidCtrl.printPidInfo(robot.globalTracer, elapsedTime);
+                xPidCtrl.printPidInfo(robot.globalTracer);
             }
 
             if (debugYPid)
             {
-                yPidCtrl.printPidInfo(robot.globalTracer, elapsedTime);
+                yPidCtrl.printPidInfo(robot.globalTracer);
             }
 
             if (debugTurnPid)
             {
-                turnPidCtrl.printPidInfo(robot.globalTracer, elapsedTime);
+                turnPidCtrl.printPidInfo(robot.globalTracer);
             }
         }
 
