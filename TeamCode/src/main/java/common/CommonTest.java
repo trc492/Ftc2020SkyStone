@@ -37,6 +37,10 @@ import trclib.TrcTimer;
 
 public class CommonTest
 {
+    private static final boolean debugXPid = true;
+    private static final boolean debugYPid = true;
+    private static final boolean debugTurnPid = true;
+
     private enum Test
     {
         SENSORS_TEST,
@@ -57,7 +61,8 @@ public class CommonTest
         DONE
     }   //enum State
 
-    private Robot robot = null;
+    private Robot robot;
+    private String moduleName;
     private TrcLoopPerformanceMonitor loopPerformanceMonitor = null;
     //
     // State machine.
@@ -94,6 +99,7 @@ public class CommonTest
             TrcPidController.PidCoefficients turnPidCoeff, TrcPidController.PidCoefficients velPidCoeff)
     {
         this.robot = robot;
+        this.moduleName = moduleName;
         if (robot.preferences.useLoopPerformanceMonitor)
         {
             loopPerformanceMonitor = new TrcLoopPerformanceMonitor("TestLoopMonitor", 1.0);
@@ -111,10 +117,6 @@ public class CommonTest
 
         switch (test)
         {
-//            case SENSORS_TEST:
-//                robot.setFieldOrigin(CommonAuto.RED_ALLIANCE_FIELD_ORIGIN);
-//                break;
-
             case X_TIMED_DRIVE:
                 if (robot.preferences.hasRobot)
                 {
@@ -272,6 +274,32 @@ public class CommonTest
         if (testCommand != null)
         {
             testCommand.cmdPeriodic(elapsedTime);
+
+            if (robot.pidDrive.isActive() && (debugXPid || debugYPid || debugTurnPid))
+            {
+                if (robot.battery != null)
+                {
+                    robot.globalTracer.traceInfo("Battery", "Voltage=%5.2fV (%5.2fV)",
+                            robot.battery.getVoltage(), robot.battery.getLowestVoltage());
+                }
+
+                robot.globalTracer.traceInfo(moduleName, "RobotPose: %s", robot.driveBase.getAbsolutePose());
+
+                if (debugXPid && robot.encoderXPidCtrl != null)
+                {
+                    robot.encoderXPidCtrl.printPidInfo(robot.globalTracer);
+                }
+
+                if (debugYPid && robot.encoderYPidCtrl != null)
+                {
+                    robot.encoderYPidCtrl.printPidInfo(robot.globalTracer);
+                }
+
+                if (debugTurnPid && robot.gyroPidCtrl != null)
+                {
+                    robot.gyroPidCtrl.printPidInfo(robot.globalTracer);
+                }
+            }
         }
 
         switch (test)

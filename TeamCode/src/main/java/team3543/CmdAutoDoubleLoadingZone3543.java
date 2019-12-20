@@ -35,10 +35,6 @@ import trclib.TrcTimer;
 
 class CmdAutoDoubleLoadingZone3543 implements TrcRobot.RobotCommand
 {
-    private static final boolean debugXPid = true;
-    private static final boolean debugYPid = true;
-    private static final boolean debugTurnPid = true;
-
     private enum State
     {
         BEGIN,
@@ -528,32 +524,6 @@ class CmdAutoDoubleLoadingZone3543 implements TrcRobot.RobotCommand
             if (traceState)
             {
                 robot.traceStateInfo(elapsedTime, state.toString(), xTarget, yTarget, turnTarget);
-            }
-        }
-
-        if (robot.pidDrive.isActive() && (debugXPid || debugYPid || debugTurnPid))
-        {
-            if (robot.battery != null)
-            {
-                robot.globalTracer.traceInfo("Battery", "Voltage=%5.2fV (%5.2fV)",
-                        robot.battery.getVoltage(), robot.battery.getLowestVoltage());
-            }
-
-            robot.globalTracer.traceInfo(moduleName, "RobotPose: %s", robot.driveBase.getAbsolutePose());
-
-            if (debugXPid && xPidCtrl != null)
-            {
-                xPidCtrl.printPidInfo(robot.globalTracer);
-            }
-
-            if (debugYPid)
-            {
-                yPidCtrl.printPidInfo(robot.globalTracer);
-            }
-
-            if (debugTurnPid)
-            {
-                turnPidCtrl.printPidInfo(robot.globalTracer);
             }
         }
 

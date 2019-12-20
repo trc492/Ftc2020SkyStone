@@ -35,10 +35,6 @@ import trclib.TrcTimer;
 // CodeReview: This code need to be revised to be compatible with the new grabber.
 class CmdAutoBuildingZone6541 implements TrcRobot.RobotCommand
 {
-    private static final boolean debugXPid = true;
-    private static final boolean debugYPid = true;
-    private static final boolean debugTurnPid = true;
-
     private enum State
     {
         BEGIN,
@@ -296,33 +292,6 @@ class CmdAutoBuildingZone6541 implements TrcRobot.RobotCommand
             }
 
             robot.traceStateInfo(elapsedTime, state.toString(), xTarget, yTarget, turnTarget);
-        }
-
-        if (robot.pidDrive.isActive() && (debugXPid || debugYPid || debugTurnPid))
-        {
-            if (robot.battery != null)
-            {
-                robot.globalTracer.traceInfo("Battery", "Voltage=%5.2fV (%5.2fV)",
-                        robot.battery.getVoltage(), robot.battery.getLowestVoltage());
-            }
-
-            robot.globalTracer.traceInfo(moduleName, "RobotPose: %s", robot.driveBase.getAbsolutePose());
-
-            TrcPidController pidCtrl = robot.pidDrive.getXPidCtrl();
-            if (debugXPid && pidCtrl != null)
-            {
-                pidCtrl.printPidInfo(robot.globalTracer);
-            }
-
-            if (debugYPid)
-            {
-                robot.pidDrive.getYPidCtrl().printPidInfo(robot.globalTracer);
-            }
-
-            if (debugTurnPid)
-            {
-                robot.pidDrive.getTurnPidCtrl().printPidInfo(robot.globalTracer);
-            }
         }
 
         return !sm.isEnabled();

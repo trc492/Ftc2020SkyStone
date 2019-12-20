@@ -34,6 +34,10 @@ import trclib.TrcRobot;
 
 public abstract class CommonAuto extends FtcOpMode
 {
+    private static final boolean debugXPid = true;
+    private static final boolean debugYPid = true;
+    private static final boolean debugTurnPid = true;
+
     public enum MatchType
     {
         PRACTICE,
@@ -115,8 +119,8 @@ public abstract class CommonAuto extends FtcOpMode
             new TrcPose2D(-VuforiaVision.HALF_FIELD_INCHES, -VuforiaVision.HALF_FIELD_INCHES, 0.0);
     private static final TrcPose2D BLUE_ALLIANCE_FIELD_ORIGIN =
             new TrcPose2D(-VuforiaVision.HALF_FIELD_INCHES, VuforiaVision.HALF_FIELD_INCHES, 180.0);
-    private String moduleName = null;
     private Robot robot = null;
+    private String moduleName = null;
     private MatchInfo matchInfo = new MatchInfo();
     protected AutoChoices autoChoices = new AutoChoices();
     protected TrcRobot.RobotCommand autoCommand = null;
@@ -124,6 +128,7 @@ public abstract class CommonAuto extends FtcOpMode
     protected void setRobot(Robot robot)
     {
         this.robot = robot;
+        this.moduleName = robot.robotName + ".auto";
     }   //setRobot
 
     //
@@ -142,6 +147,7 @@ public abstract class CommonAuto extends FtcOpMode
             createTraceLog();
         }
         doAutoChoicesMenus();
+
         robot.setFieldOrigin(
                 autoChoices.alliance == Alliance.RED_ALLIANCE? RED_ALLIANCE_FIELD_ORIGIN: BLUE_ALLIANCE_FIELD_ORIGIN);
     }   //initRobot
@@ -191,6 +197,32 @@ public abstract class CommonAuto extends FtcOpMode
                 robot.dashboard.displayPrintf(2, "RobotPose: %s", robotPose);
             }
             autoCommand.cmdPeriodic(elapsedTime);
+
+            if (robot.pidDrive.isActive() && (debugXPid || debugYPid || debugTurnPid))
+            {
+                if (robot.battery != null)
+                {
+                    robot.globalTracer.traceInfo("Battery", "Voltage=%5.2fV (%5.2fV)",
+                            robot.battery.getVoltage(), robot.battery.getLowestVoltage());
+                }
+
+                robot.globalTracer.traceInfo(moduleName, "RobotPose: %s", robot.driveBase.getAbsolutePose());
+
+                if (debugXPid && robot.encoderXPidCtrl != null)
+                {
+                    robot.encoderXPidCtrl.printPidInfo(robot.globalTracer);
+                }
+
+                if (debugYPid && robot.encoderYPidCtrl != null)
+                {
+                    robot.encoderYPidCtrl.printPidInfo(robot.globalTracer);
+                }
+
+                if (debugTurnPid && robot.gyroPidCtrl != null)
+                {
+                    robot.gyroPidCtrl.printPidInfo(robot.globalTracer);
+                }
+            }
         }
     }   //runContinuous
 

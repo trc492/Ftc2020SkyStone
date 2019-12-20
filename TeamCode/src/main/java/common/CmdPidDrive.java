@@ -40,10 +40,6 @@ import trclib.TrcTimer;
  */
 public class CmdPidDrive implements TrcRobot.RobotCommand
 {
-    private static final boolean debugXPid = true;
-    private static final boolean debugYPid = true;
-    private static final boolean debugTurnPid = true;
-
     private enum State
     {
         DO_DELAY,
@@ -302,32 +298,6 @@ public class CmdPidDrive implements TrcRobot.RobotCommand
             }
 
             robot.traceStateInfo(elapsedTime, state.toString(), xDistance, yDistance, heading);
-        }
-
-        if (pidDrive.isActive() && (debugXPid || debugYPid || debugTurnPid))
-        {
-            if (robot.battery != null)
-            {
-                robot.globalTracer.traceInfo("Battery", "Voltage=%5.2fV (%5.2fV)",
-                        robot.battery.getVoltage(), robot.battery.getLowestVoltage());
-            }
-
-            robot.globalTracer.traceInfo(moduleName, "RobotPose: %s", robot.driveBase.getAbsolutePose());
-
-            if (debugXPid && xPidCtrl != null)
-            {
-                xPidCtrl.printPidInfo(robot.globalTracer);
-            }
-
-            if (debugYPid && yPidCtrl != null)
-            {
-                yPidCtrl.printPidInfo(robot.globalTracer);
-            }
-
-            if (debugTurnPid && turnPidCtrl != null)
-            {
-                turnPidCtrl.printPidInfo(robot.globalTracer);
-            }
         }
 
         return !sm.isEnabled();
