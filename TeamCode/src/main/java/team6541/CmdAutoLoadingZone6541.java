@@ -132,6 +132,7 @@ class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
     @Override
     public void cancel()
     {
+        robot.setFlashLightOn(false, false);
         if (robot.pidDrive.isActive())
         {
             robot.pidDrive.cancel();
@@ -170,6 +171,7 @@ class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
             switch (state)
             {
                 case BEGIN:
+                    robot.setFlashLightOn(true, true);
                     //
                     // Set the robot's absolute field starting position.
                     //
