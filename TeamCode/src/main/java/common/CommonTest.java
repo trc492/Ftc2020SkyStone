@@ -44,6 +44,7 @@ public class CommonTest
     private enum Test
     {
         SENSORS_TEST,
+        SUBSYSTEMS_TEST,
         MOTORS_TEST,
         X_TIMED_DRIVE,
         Y_TIMED_DRIVE,
@@ -177,9 +178,9 @@ public class CommonTest
                 break;
         }
         //
-        // Only SENSORS_TEST needs TensorFlow, shut it down for all other tests.
+        // Only SENSORS_TEST and SUBSYSTEMS_TEST need TensorFlow, shut it down for all other tests.
         //
-        if (robot.tensorFlowVision != null && test != Test.SENSORS_TEST)
+        if (robot.tensorFlowVision != null && test != Test.SENSORS_TEST && test != Test.SUBSYSTEMS_TEST)
         {
             robot.globalTracer.traceInfo("TestInit", "Shutting down TensorFlow.");
             robot.tensorFlowVision.shutdown();
@@ -191,7 +192,7 @@ public class CommonTest
 
     public void start()
     {
-        if (test == Test.SENSORS_TEST)
+        if (test == Test.SENSORS_TEST || test == Test.SUBSYSTEMS_TEST)
         {
             robot.setFlashLightOn(true, true);
         }
@@ -226,7 +227,7 @@ public class CommonTest
 
     public void stop()
     {
-        if (test == Test.SENSORS_TEST)
+        if (test == Test.SENSORS_TEST || test == Test.SUBSYSTEMS_TEST)
         {
             robot.setFlashLightOn(false, false);
         }
@@ -236,10 +237,10 @@ public class CommonTest
         }
     }   //stop
 
-    public boolean shouldRunTeleOpPeriodic()
+    public boolean shouldDoTeleOp()
     {
-        return robot.preferences.hasRobot && test == Test.SENSORS_TEST;
-    }   //shouldRunTeleOpPeriodic
+        return robot.preferences.hasRobot && test == Test.SUBSYSTEMS_TEST;
+    }   //shouldDoTeleOp
 
     public void runPeriodic(double elapsedTime)
     {
@@ -249,6 +250,7 @@ public class CommonTest
         switch (test)
         {
             case SENSORS_TEST:
+            case SUBSYSTEMS_TEST:
                 //
                 // Allow TeleOp to run so we can control the robot in sensors test mode.
                 //
@@ -409,6 +411,7 @@ public class CommonTest
         // Populate menus.
         //
         testMenu.addChoice("Sensors test", Test.SENSORS_TEST, true);
+        testMenu.addChoice("Subsystems test", Test.SUBSYSTEMS_TEST, false);
         testMenu.addChoice("Motors test", Test.MOTORS_TEST, false);
         testMenu.addChoice("X Timed drive", Test.X_TIMED_DRIVE, false, driveTimeMenu);
         testMenu.addChoice("Y Timed drive", Test.Y_TIMED_DRIVE, false, driveTimeMenu);

@@ -81,7 +81,7 @@ public class FtcTest3543 extends FtcTeleOp3543
     @Override
     public void runPeriodic(double elapsedTime)
     {
-        if (commonTest.shouldRunTeleOpPeriodic())
+        if (commonTest.shouldDoTeleOp())
         {
             super.runPeriodic(elapsedTime);
         }
@@ -101,53 +101,55 @@ public class FtcTest3543 extends FtcTeleOp3543
     @Override
     public void buttonEvent(TrcGameController gamepad, int button, boolean pressed)
     {
-        boolean processed = false;
-        //
-        // In addition to or instead of the gamepad controls handled by FtcTeleOp3543, we can add to or override the
-        // FtcTeleOp3543 gamepad actions.
-        //
-        dashboard.displayPrintf(
-                7, "%s: %04x->%s", gamepad.toString(), button, pressed? "Pressed": "Released");
-        if (gamepad == driverGamepad)
+        if (commonTest.shouldDoTeleOp())
         {
-            switch (button)
+            boolean processed = false;
+            //
+            // In addition to or instead of the gamepad controls handled by FtcTeleOp3543, we can add to or override the
+            // FtcTeleOp3543 gamepad actions.
+            //
+            dashboard.displayPrintf(
+                    7, "%s: %04x->%s", gamepad.toString(), button, pressed ? "Pressed" : "Released");
+            if (gamepad == driverGamepad)
             {
-                case FtcGamepad.GAMEPAD_DPAD_UP:
-                    break;
+                switch (button)
+                {
+                    case FtcGamepad.GAMEPAD_DPAD_UP:
+                        break;
 
-                case FtcGamepad.GAMEPAD_DPAD_DOWN:
-                    break;
+                    case FtcGamepad.GAMEPAD_DPAD_DOWN:
+                        break;
 
-                case FtcGamepad.GAMEPAD_DPAD_LEFT:
-                    break;
+                    case FtcGamepad.GAMEPAD_DPAD_LEFT:
+                        break;
 
-                case FtcGamepad.GAMEPAD_DPAD_RIGHT:
-                    break;
-            }
-        }
-        else if (gamepad == operatorGamepad)
-        {
-            switch (button)
+                    case FtcGamepad.GAMEPAD_DPAD_RIGHT:
+                        break;
+                }
+            } else if (gamepad == operatorGamepad)
             {
-                case FtcGamepad.GAMEPAD_DPAD_UP:
-                    break;
+                switch (button)
+                {
+                    case FtcGamepad.GAMEPAD_DPAD_UP:
+                        break;
 
-                case FtcGamepad.GAMEPAD_DPAD_DOWN:
-                    break;
+                    case FtcGamepad.GAMEPAD_DPAD_DOWN:
+                        break;
 
-                case FtcGamepad.GAMEPAD_DPAD_LEFT:
-                    break;
+                    case FtcGamepad.GAMEPAD_DPAD_LEFT:
+                        break;
 
-                case FtcGamepad.GAMEPAD_DPAD_RIGHT:
-                    break;
+                    case FtcGamepad.GAMEPAD_DPAD_RIGHT:
+                        break;
+                }
             }
-        }
-        //
-        // If the control was not processed by this method, pass it back to FtcTeleOp3543.
-        //
-        if (!processed)
-        {
-            super.buttonEvent(gamepad, button, pressed);
+            //
+            // If the control was not processed by this method, pass it back to FtcTeleOp3543.
+            //
+            if (!processed)
+            {
+                super.buttonEvent(gamepad, button, pressed);
+            }
         }
     }   //buttonEvent
 

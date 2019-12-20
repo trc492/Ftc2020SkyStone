@@ -33,6 +33,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 
 import java.io.InputStream;
+import java.util.Locale;
 
 import javax.annotation.Nonnull;
 
@@ -554,28 +555,26 @@ public class Robot
         }
     }   //stopMode
 
-    public void traceStateInfo(double elapsedTime, String stateName, double xTarget, double yTarget, double heading)
+    public void traceStateInfo(double elapsedTime, String stateName, double xTarget, double yTarget, double turnTarget)
     {
         if (driveBase != null)
         {
+            StringBuilder msg = new StringBuilder();
+
+            msg.append(String.format(
+                    Locale.US, "[%5.3f] >>>>> %s: xPos=%6.2f/%6.2f,yPos=%6.2f/%6.2f,heading=%6.1f/%6.1f",
+                    elapsedTime, stateName,
+                    driveBase.getXPosition(), xTarget,
+                    driveBase.getYPosition(), yTarget,
+                    driveBase.getHeading(), turnTarget));
+
             if (battery != null)
             {
-                globalTracer.traceInfo(
-                        robotName,
-                        "[%5.3f] >>>>> %s: xPos=%6.2f/%6.2f,yPos=%6.2f/%6.2f,heading=%6.1f/%6.1f,volt=%5.2fV(%5.2fV)",
-                        elapsedTime, stateName,
-                        driveBase.getXPosition(), xTarget, driveBase.getYPosition(), yTarget, driveBase.getHeading(),
-                        heading, battery.getVoltage(), battery.getLowestVoltage());
+                msg.append(String.format(
+                        Locale.US, ",volt=%5.2fV(%5.2fV)", battery.getVoltage(), battery.getLowestVoltage()));
             }
-            else
-            {
-                globalTracer.traceInfo(
-                        robotName,
-                        "[%5.3f] >>>>> %s: xPos=%6.2f/%6.2f,yPos=%6.2f/%6.2f,heading=%6.1f/%6.1f",
-                        elapsedTime, stateName,
-                        driveBase.getXPosition(), xTarget, driveBase.getYPosition(), yTarget, driveBase.getHeading(),
-                        heading);
-            }
+
+            globalTracer.traceInfo(robotName, "%s", msg);
         }
     }   //traceStateInfo
 
