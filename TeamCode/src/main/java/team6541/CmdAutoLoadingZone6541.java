@@ -430,7 +430,7 @@ class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
                     // CodeReview: This is moving back to wall, why is yTarget ABS_ROBOT_TRAVEL_Y???
                     // I suggested ABS_ROBOT_TRAVEL_Y for clearing the alliance partner's robot when traveling towards
                     // the bridge, not for moving back to the wall?!
-                    yTarget = RobotInfo.ABS_ROBOT_TRAVEL_Y;
+                    yTarget = RobotInfo.ABS_ROBOT_START_Y;
                     simplePidDrive.setAbsoluteYTarget(yTarget, nextState);
 //                    yTarget = 19.0;
 //                    simplePidDrive.setRelativeYTarget(yTarget, nextState);

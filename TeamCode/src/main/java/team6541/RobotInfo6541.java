@@ -158,9 +158,9 @@ class RobotInfo6541
     static final double ELBOW_MAX_STEPRATE                      = 0.0;
     static final double ELBOW_MIN_POS                           = 0.0;
     static final double ELBOW_MAX_POS                           = 1.0;
-    static final double ELBOW_EXTEND_POS                        = 0.9;
+    static final double ELBOW_EXTEND_POS                        = 1.0;
     static final double ELBOW_EXTEND_TIME                       = 1.0;
-    static final double ELBOW_RETRACT_POS                       = 0.45;
+    static final double ELBOW_RETRACT_POS                       = 0.5;
     static final double ELBOW_RETRACT_TIME                      = 1.0;
     static final double ELBOW_UPRIGHT_POS                       = 0.55;
     //
@@ -169,9 +169,9 @@ class RobotInfo6541
     static final double GRABBER_MAX_STEPRATE                    = 0.0;
     static final double GRABBER_MIN_POS                         = 0.0;
     static final double GRABBER_MAX_POS                         = 1.0;
-    static final double GRABBER_RELEASE_POS                     = 0.0;
+    static final double GRABBER_RELEASE_POS                     = 0.5;
     static final double GRABBER_RELEASE_TIME                    = 1.0;
-    static final double GRABBER_GRAB_POS                        = 0.65;
+    static final double GRABBER_GRAB_POS                        = 0.0;
     static final double GRABBER_GRAB_TIME                       = 1.0;
     static final double GRABBER_OFFSET_X                        = 3.5;
     static final double GRABBER_OFFSET_Y                        = 0.0;
