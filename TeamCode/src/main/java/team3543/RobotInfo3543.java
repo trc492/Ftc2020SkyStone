@@ -113,7 +113,7 @@ class RobotInfo3543
     static final double ROBOT_WIDTH                             = 18.0; //Robot width in inches
     static final double PHONE_FRONT_OFFSET                      = 5.5;  //Phone offset from front of robot in inches
     static final double PHONE_HEIGHT_OFFSET                     = 5.75; //Phone offset from floor in inches
-    static final double PHONE_LEFT_OFFSET                       = 12.0; //Phone offset from left of robot in inches
+    static final double PHONE_LEFT_OFFSET                       = 11.0; //Phone offset from left of robot in inches
 
     // TODO: Need to retune.
     static final double HOMOGRAPHY_CAMERA_TOPLEFT_X             = 0.0;
@@ -194,8 +194,8 @@ class RobotInfo3543
     // Grabber subsystem.
     //
     static final double GRABBER_MAX_STEPRATE                    = 0.0;
-    static final double GRABBER_MIN_POS                         = 0.2;
-    static final double GRABBER_MAX_POS                         = 0.8;
+    static final double GRABBER_MIN_POS                         = 0.0;
+    static final double GRABBER_MAX_POS                         = 1.0;
     static final double GRABBER_RELEASE_POS                     = 0.8;
     static final double GRABBER_RELEASE_TIME                    = 1.0;
     static final double GRABBER_GRAB_POS                        = 0.2;

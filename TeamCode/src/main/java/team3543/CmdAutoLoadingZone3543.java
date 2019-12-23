@@ -158,9 +158,74 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                     funcName, "[%.3f] WillDo=%s, ProjectedTotalTime=%.3f, AchievableMaxScore=%d",
                     elapsedTime, willDo, projectedTime, projectedScore);
         }
-
         return willDo;
     }   //doSecondSkystone
+
+    private boolean doPullFoundation(double elapsedTime)
+    {
+        final String funcName = "doPullFoundation";
+        boolean willDo = false;
+
+        if (autoChoices.moveFoundation) {
+            if (autoChoices.strategy != CommonAuto.AutoStrategy.LOADING_ZONE_DOUBLE_SKYSTONE_SOLO) {
+                willDo = true;
+            } else {
+
+                //
+                // The above example was a little confusing to me, so I decided to do it my own way.
+                // Maybe there is something I'm missing, or maybe it's simply that that scenario is
+                // more complicated than this one. Or maybe I'm over-thinking it and doSecondSkystone
+                // is just a more efficient way of doing this.
+                //
+                // Essentially, find the total score we would get if we did not pull the foundation
+                // and the total score we would get if we did pull the foundation and compare them.
+                // If the score we would get with pulling is greater than the score we would get if
+                // we did not pull, then do the foundation pulling.
+                //
+
+                double projectedTimeWith = elapsedTime;
+                double projectedTimeWithout = elapsedTime;
+
+                int projectedScoreWith = 0;
+                int projectedScoreWithout = 0;
+
+                //
+                // The score we would get if we did not do any foundation pulling/pushing. There are
+                // different parking time values here because we are starting in a different position
+                // from if we had moved around to push the foundation. They might still be off.
+                //
+                projectedTimeWithout += autoChoices.parkUnderBridge == CommonAuto.ParkPosition.PARK_CLOSE_TO_CENTER ?
+                        1.5 :
+                        autoChoices.parkUnderBridge == CommonAuto.ParkPosition.PARK_CLOSE_TO_WALL ?
+                                2.0 : 0.0;
+                if (projectedTimeWithout < AUTONOMOUS_END_TIME) projectedScoreWithout += 5;
+
+                //
+                // The score we would get with foundation pushing/pulling
+                //
+                // Assuming it takes 5 seconds to move the foundation backwards, move around it,
+                // and push it to the wall.
+                //
+                projectedTimeWith += 5.0;
+                if (projectedTimeWith < AUTONOMOUS_END_TIME) projectedScoreWith += 10;
+                projectedTimeWith += autoChoices.parkUnderBridge == CommonAuto.ParkPosition.PARK_CLOSE_TO_CENTER ?
+                        0.6 :
+                        autoChoices.parkUnderBridge == CommonAuto.ParkPosition.PARK_CLOSE_TO_WALL ?
+                                1.0 : 0.0;
+                if (projectedTimeWith < AUTONOMOUS_END_TIME) projectedScoreWith += 5;
+
+                // More complicated because we have to decide which time/score to print out
+                if (projectedScoreWith > projectedScoreWithout) willDo = true;
+
+                robot.globalTracer.traceInfo(
+                        funcName, "[%.3f] WillDo=%s, ProjectedTotalTime=%.3f, AchievableMaxScore=%d",
+                        elapsedTime, willDo, willDo? projectedTimeWith: projectedTimeWithout,
+                        willDo? projectedScoreWith: projectedScoreWithout);
+            }
+        }
+
+        return willDo;
+    }
 
     //
     // Implements the TrcRobot.RobotCommand interface.
@@ -447,7 +512,7 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                     //
                     robot.elevator.setPosition(RobotInfo3543.ELEVATOR_DROP_HEIGHT);
                     robot.extenderArm.setPosition(RobotInfo3543.EXTENDER_ARM_DROP_POS);
-                    yTarget =  RobotInfo.ABS_FOUNDATION_Y;
+                    yTarget =  RobotInfo.ABS_FOUNDATION_Y + 1.0; //TODO: Temporary inconsistency fix
                     if (skystonesDropped > 0) yTarget += 2.0;
                     simplePidDrive.setAbsoluteYTarget(yTarget, State.DROP_SKYSTONE);
                     break;
@@ -465,7 +530,7 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                         nextState = State.BACK_OFF_FOUNDATION;
                         timer.set(0.5, event);
                     }
-                    else if (autoChoices.moveFoundation)
+                    else if (doPullFoundation(elapsedTime))
                     {
                         //
                         // Start dropping the skystone but we don't have to wait for it. Just wait for the foundation
@@ -564,12 +629,16 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                     // to make sure it hits the wall and we will correct the odometry and Absolute Target Pose in the
                     // Y direction.
                     //
+
+                    robot.elevator.setPosition(5.0);
+                    robot.extenderArm.setPosition(RobotInfo3543.EXTENDER_ARM_RETRACT_POS);
+
                     savedYPidCoeff = yPidCtrl.getPidCoefficients();
                     TrcPidController.PidCoefficients loadedYPidCoeff = savedYPidCoeff.clone();
                     loadedYPidCoeff.kP = RobotInfo3543.ENCODER_Y_LOADED_KP;
                     yPidCtrl.setPidCoefficients(loadedYPidCoeff);
 
-                    yTarget = RobotInfo.ABS_ROBOT_START_Y;
+                    yTarget = RobotInfo.ABS_ROBOT_START_Y - 3.0;
                     simplePidDrive.setAbsoluteYTarget(yTarget, State.UNHOOK_FOUNDATION);
                     break;
 
@@ -612,7 +681,6 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                     //
                     // We can safely retract everything here because the skystone should be dropped by now.
                     //
-                    robot.extenderArm.setPosition(RobotInfo3543.EXTENDER_ARM_RETRACT_POS);
                     robot.wrist.retract();
                     robot.elevator.zeroCalibrate();
                     //
