@@ -196,9 +196,9 @@ class RobotInfo3543
     static final double GRABBER_MAX_STEPRATE                    = 0.0;
     static final double GRABBER_MIN_POS                         = 0.0;
     static final double GRABBER_MAX_POS                         = 1.0;
-    static final double GRABBER_RELEASE_POS                     = 0.8;
+    static final double GRABBER_RELEASE_POS                     = 1.0;
     static final double GRABBER_RELEASE_TIME                    = 1.0;
-    static final double GRABBER_GRAB_POS                        = 0.2;
+    static final double GRABBER_GRAB_POS                        = 0.0;
     static final double GRABBER_GRAB_TIME                       = 1.0;
     static final double GRABBER_OFFSET_X                        = 0.0;
     static final double GRABBER_OFFSET_Y                        = -1.0;
