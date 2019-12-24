@@ -47,7 +47,6 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
         SETUP_VISION,
         DO_VISION,
         GO_DOWN_ON_SKYSTONE,
-//        GRAB_SKYSTONE,
         PULL_SKYSTONE,
         START_EXTENDER_ARM_RETRACTION,
         TURN_TOWARDS_FOUNDATION,
@@ -124,32 +123,37 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
     {
         final String funcName = "doSecondSkystone";
         boolean willDo = false;
-
+        //
+        // We will only do this if we are doing DOUBLE_SKYSTONE and we have already dropped off the first skystone.
+        // We will determine if it is beneficial to do the second skystone. Doing the second skystone takes time
+        // and will gain us 14 extra points (10 for fetching the skystone cross the bridge line and 4 for dropping
+        // it on the foundation). But if we run out of time, we risk giving up 15 points (10 for pulling the foundation
+        // to the building site and 5 to park). Giving up 15 points for 14 points doesn't make sense. So we will only
+        // do the second skystone if the total score we can achieve within the 30-second autonomous time is greater
+        // than the 29 points in our SINGLE_SKYSTONE strategy.
+        //
         if (autoChoices.strategy == CommonAuto.AutoStrategy.LOADING_ZONE_DOUBLE_SKYSTONE_SOLO && skystonesDropped == 1)
         {
             double projectedTime = elapsedTime;
-            int projectedScore = 14;
+            int projectedScore = 14;    //We already have one skystone on the foundation, so that's 14 points.
 
-            projectedTime += autoChoices.strafeToFoundation? 20.0: 20.0;
+            projectedTime += autoChoices.strafeToFoundation? 20.0: 20.0; //TODO: determine extra time for not strafing.
+            //
+            // If we are within time limit, we gain an extra 14 points (10 for carrying the skystone crossing the
+            // bridge line and 4 for dropping it off to the foundation).
+            //
             if (projectedTime <= AUTONOMOUS_END_TIME) projectedScore += 14;
-
-            if (autoChoices.moveFoundation)
-            {
-                projectedTime += 2.5;
-                if (projectedTime <= AUTONOMOUS_END_TIME) projectedScore += 10;
-
-                projectedTime += autoChoices.parkUnderBridge == CommonAuto.ParkPosition.PARK_CLOSE_TO_CENTER?
-                                    0.1:
-                                 autoChoices.parkUnderBridge == CommonAuto.ParkPosition.PARK_CLOSE_TO_WALL?
-                                    0.1: 0.0;
-            }
-            else
-            {
-                projectedTime += autoChoices.parkUnderBridge == CommonAuto.ParkPosition.PARK_CLOSE_TO_CENTER?
-                                    0.1:
-                                 autoChoices.parkUnderBridge == CommonAuto.ParkPosition.PARK_CLOSE_TO_WALL?
-                                    0.1: 0.0;
-            }
+            //
+            // Now check if we could just go park without moving the foundation. If we can, we are already ahead of
+            // the SINGLE_SKYSTONE strategy.
+            //
+            projectedTime += autoChoices.parkUnderBridge == CommonAuto.ParkPosition.PARK_CLOSE_TO_CENTER?
+                                0.1:    //TODO: determine this time
+                             autoChoices.parkUnderBridge == CommonAuto.ParkPosition.PARK_CLOSE_TO_WALL?
+                                0.1: 0.0;   //TODO: determine these times.
+            //
+            // If we are within time limit, we gain an extra 5 points for parking under the bridge.
+            //
             if (projectedTime <= AUTONOMOUS_END_TIME) projectedScore += 5;
 
             willDo = projectedScore > MAX_SCORE_SINGLE_SKYSTONE;
@@ -166,66 +170,29 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
         final String funcName = "doPullFoundation";
         boolean willDo = false;
 
-        if (autoChoices.moveFoundation) {
-            if (autoChoices.strategy != CommonAuto.AutoStrategy.LOADING_ZONE_DOUBLE_SKYSTONE_SOLO) {
+        if (autoChoices.moveFoundation)
+        {
+            if (autoChoices.strategy != CommonAuto.AutoStrategy.LOADING_ZONE_DOUBLE_SKYSTONE_SOLO)
+            {
                 willDo = true;
-            } else {
-
+            }
+            else
+            {
+                double projectedTime = elapsedTime + 5.0;   //Time to pull foundation to wall, and bump it in.
                 //
-                // The above example was a little confusing to me, so I decided to do it my own way.
-                // Maybe there is something I'm missing, or maybe it's simply that that scenario is
-                // more complicated than this one. Or maybe I'm over-thinking it and doSecondSkystone
-                // is just a more efficient way of doing this.
+                // If we are doing DOUBLE_SKYSTONE and we want to move the foundation, let's check if we have enough time to
+                // do so.
                 //
-                // Essentially, find the total score we would get if we did not pull the foundation
-                // and the total score we would get if we did pull the foundation and compare them.
-                // If the score we would get with pulling is greater than the score we would get if
-                // we did not pull, then do the foundation pulling.
-                //
-
-                double projectedTimeWith = elapsedTime;
-                double projectedTimeWithout = elapsedTime;
-
-                int projectedScoreWith = 0;
-                int projectedScoreWithout = 0;
-
-                //
-                // The score we would get if we did not do any foundation pulling/pushing. There are
-                // different parking time values here because we are starting in a different position
-                // from if we had moved around to push the foundation. They might still be off.
-                //
-                projectedTimeWithout += autoChoices.parkUnderBridge == CommonAuto.ParkPosition.PARK_CLOSE_TO_CENTER ?
-                        1.5 :
-                        autoChoices.parkUnderBridge == CommonAuto.ParkPosition.PARK_CLOSE_TO_WALL ?
-                                2.0 : 0.0;
-                if (projectedTimeWithout < AUTONOMOUS_END_TIME) projectedScoreWithout += 5;
-
-                //
-                // The score we would get with foundation pushing/pulling
-                //
-                // Assuming it takes 5 seconds to move the foundation backwards, move around it,
-                // and push it to the wall.
-                //
-                projectedTimeWith += 5.0;
-                if (projectedTimeWith < AUTONOMOUS_END_TIME) projectedScoreWith += 10;
-                projectedTimeWith += autoChoices.parkUnderBridge == CommonAuto.ParkPosition.PARK_CLOSE_TO_CENTER ?
-                        0.6 :
-                        autoChoices.parkUnderBridge == CommonAuto.ParkPosition.PARK_CLOSE_TO_WALL ?
-                                1.0 : 0.0;
-                if (projectedTimeWith < AUTONOMOUS_END_TIME) projectedScoreWith += 5;
-
-                // More complicated because we have to decide which time/score to print out
-                if (projectedScoreWith > projectedScoreWithout) willDo = true;
-
-                robot.globalTracer.traceInfo(
-                        funcName, "[%.3f] WillDo=%s, ProjectedTotalTime=%.3f, AchievableMaxScore=%d",
-                        elapsedTime, willDo, willDo? projectedTimeWith: projectedTimeWithout,
-                        willDo? projectedScoreWith: projectedScoreWithout);
+                projectedTime += autoChoices.parkUnderBridge == CommonAuto.ParkPosition.PARK_CLOSE_TO_CENTER ?
+                                    0.6 :   //Time to just move sideways under the bridge.
+                                 autoChoices.parkUnderBridge == CommonAuto.ParkPosition.PARK_CLOSE_TO_WALL ?
+                                    1.0 : 0.5;  //Even NO_PARK still need time to move back to the wall.
+                willDo = projectedTime < MAX_SCORE_SINGLE_SKYSTONE;
             }
         }
 
         return willDo;
-    }
+    }   //doPullFoundation
 
     //
     // Implements the TrcRobot.RobotCommand interface.
@@ -442,15 +409,6 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                     robot.extenderArm.setPosition(RobotInfo3543.EXTENDER_ARM_PICKUP_POS, event);
                     sm.waitForSingleEvent(event, State.PULL_SKYSTONE);
                     break;
-
-//                case GRAB_SKYSTONE:
-//                    // TODO: this state can go away when we install the faster grabber.
-//                    // Don't need to wait for the grab to finish before moving. Can tune this down to minimum for
-//                    // saving time.
-//                    //
-//                    robot.grabber.grab(1.0, event);
-//                    sm.waitForSingleEvent(event, State.PULL_SKYSTONE);
-//                    break;
 
                 case PULL_SKYSTONE:
                     //
