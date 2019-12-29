@@ -96,7 +96,7 @@ public class TrcWaypoint
     public TrcWaypoint(TrcPose2D position, TrcPose2D velocity)
     {
         this(0, position.x, position.y, 0,
-                velocity != null? TrcUtil.magnitude(velocity.x, velocity.y): 0.0, 0, 0, position.angle);
+             velocity != null? TrcUtil.magnitude(velocity.x, velocity.y): 0.0, 0, 0, position.angle);
     }   //TrcWaypoint
 
     /**

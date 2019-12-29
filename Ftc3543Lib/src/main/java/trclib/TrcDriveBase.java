@@ -335,14 +335,26 @@ public abstract class TrcDriveBase implements TrcExclusiveSubsystem
      * This method returns the robot position relative to <code>pose</code>.
      *
      * @param posPose specifies the position to be referenced to.
+     * @param transformAngle specifies true to also transform angle, false to leave it alone.
+     * @return position transformed into the new reference pose.
+     */
+    public TrcPose2D getPositionRelativeTo(TrcPose2D posPose, boolean transformAngle)
+    {
+        synchronized (odometry)
+        {
+            return odometry.position.relativeTo(posPose, transformAngle);
+        }
+    }   //getPositionRelativeTo
+
+    /**
+     * This method returns the robot position relative to <code>pose</code>.
+     *
+     * @param posPose specifies the position to be referenced to.
      * @return position transformed into the new reference pose.
      */
     public TrcPose2D getPositionRelativeTo(TrcPose2D posPose)
     {
-        synchronized (odometry)
-        {
-            return odometry.position.relativeTo(posPose, true);
-        }
+        return getPositionRelativeTo(posPose, true);
     }   //getPositionRelativeTo
 
     /**
