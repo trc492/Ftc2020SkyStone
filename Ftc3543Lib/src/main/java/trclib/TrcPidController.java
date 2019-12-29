@@ -52,6 +52,25 @@ public class TrcPidController
         public double kI;
         public double kD;
         public double kF;
+        public double iZone;
+
+        /**
+         * Constructor: Create an instance of the object.
+         *
+         * @param kP specifies the Proportional constant.
+         * @param kI specifies the Integral constant.
+         * @param kD specifies the Differential constant.
+         * @param kF specifies the Feed forward constant.
+         * @param iZone specifies the integral zone.
+         */
+        public PidCoefficients(double kP, double kI, double kD, double kF, double iZone)
+        {
+            this.kP = Math.abs(kP);
+            this.kI = Math.abs(kI);
+            this.kD = Math.abs(kD);
+            this.kF = Math.abs(kF);
+            this.iZone = Math.abs(iZone);
+        }   //PidCoefficients
 
         /**
          * Constructor: Create an instance of the object.
@@ -63,10 +82,7 @@ public class TrcPidController
          */
         public PidCoefficients(double kP, double kI, double kD, double kF)
         {
-            this.kP = Math.abs(kP);
-            this.kI = Math.abs(kI);
-            this.kD = Math.abs(kD);
-            this.kF = Math.abs(kF);
+            this(kP, kI, kD, kF, 0.0);
         }   //PidCoefficients
 
         /**
