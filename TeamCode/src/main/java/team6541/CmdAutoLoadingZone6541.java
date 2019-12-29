@@ -60,7 +60,8 @@ class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
         MOVE_TO_FOUNDATION_SIDE,
         PUSH_FOUNDATION_TO_WALL,
         MOVE_BACK_TO_WALL,
-        MOVE_UNDER_BRIDGE,
+        MOVE_UNDER_BRIDGE_Y,
+        MOVE_UNDER_BRIDGE_X,
         SKIP_MOVE_FOUNDATION_PARK_WALL,
         MOVE_TOWARDS_CENTER,
         DONE
@@ -269,7 +270,7 @@ class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
 
                 case PULL_SKYSTONE:
                     nextState = autoChoices.strafeToFoundation? State.GOTO_FOUNDATION: State.TURN_TOWARDS_FOUNDATION;
-                    yTarget = -11.0;
+                    yTarget = -14.0;
                     simplePidDrive.setRelativeYTarget(yTarget, nextState);
                     break;
 
@@ -287,7 +288,7 @@ class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
                     xTarget = (autoChoices.strategy == CommonAuto.AutoStrategy.LOADING_ZONE_SINGLE_SKYSTONE?
                                     RobotInfo.ABS_FOUNDATION_DROP_MID_X:
                                autoChoices.strategy == CommonAuto.AutoStrategy.LOADING_ZONE_DOUBLE_SKYSTONE_CENTER?
-                                    RobotInfo.ABS_FOUNDATION_DROP_NEAR_X: RobotInfo.ABS_FOUNDATION_DROP_FAR_X) - 3.5;
+                                    RobotInfo.ABS_FOUNDATION_DROP_NEAR_X: RobotInfo.ABS_FOUNDATION_DROP_FAR_X) - (3.5 * allianceDirection);
                     xTarget *= allianceDirection;
                     simplePidDrive.setAbsoluteXTarget(xTarget, nextState);
                     break;
@@ -314,7 +315,7 @@ class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
                     nextState = autoChoices.moveFoundation?
                                     State.TURN_AROUND:
                                 autoChoices.parkUnderBridge == CommonAuto.ParkPosition.PARK_CLOSE_TO_CENTER?
-                                    State.MOVE_UNDER_BRIDGE:
+                                    State.MOVE_UNDER_BRIDGE_Y :
                                     State.SKIP_MOVE_FOUNDATION_PARK_WALL;
                     simplePidDrive.setRelativeYTarget(yTarget, nextState);
                     break;
@@ -372,7 +373,7 @@ class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
                     TrcPidController.PidCoefficients loadedYPidCoeff = savedYPidCoeff.clone();
                     loadedYPidCoeff.kP = RobotInfo6541.ENCODER_Y_LOADED_KP;
                     yPidCtrl.setPidCoefficients(loadedYPidCoeff);
-                    yTarget = 32.0;
+                    yTarget = 36.0;
                     simplePidDrive.setRelativeYTarget(yTarget, State.UNHOOK_FOUNDATION);
                     break;
 
@@ -410,6 +411,12 @@ class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
                     //
                     // Move to the side of the foundation so we can bump it to the wall.
                     //
+                    if (!autoChoices.moveFoundation)
+                    {
+                        robot.elevator.zeroCalibrate();
+                        robot.elbow.retract();
+                        robot.grabber.setPosition(1.0);
+                    }
                     yTarget = RobotInfo.ABS_CENTER_BRIDGE_PARK_Y;
                     simplePidDrive.setAbsoluteYTarget(yTarget, State.PUSH_FOUNDATION_TO_WALL);
                     break;
@@ -418,31 +425,25 @@ class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
                     //
                     // Bump the foundation toward the wall to make sure it lands inside the building site.
                     //
-                    xTarget = -12.0 * allianceDirection;
+                    xTarget = -6.0 * allianceDirection;
                     nextState = autoChoices.parkUnderBridge == CommonAuto.ParkPosition.PARK_CLOSE_TO_CENTER?
-                                    State.MOVE_UNDER_BRIDGE: State.MOVE_BACK_TO_WALL;
+                                    State.MOVE_UNDER_BRIDGE_Y : State.MOVE_BACK_TO_WALL;
                     simplePidDrive.setRelativeXTarget(xTarget, nextState);
                     break;
 
                 case MOVE_BACK_TO_WALL:
                     nextState = autoChoices.parkUnderBridge == CommonAuto.ParkPosition.NO_PARK?
-                                    State.DONE: State.MOVE_UNDER_BRIDGE;
-                    // CodeReview: This is moving back to wall, why is yTarget ABS_ROBOT_TRAVEL_Y???
-                    // I suggested ABS_ROBOT_TRAVEL_Y for clearing the alliance partner's robot when traveling towards
-                    // the bridge, not for moving back to the wall?!
+                                    State.DONE: State.MOVE_UNDER_BRIDGE_Y;
                     yTarget = RobotInfo.ABS_ROBOT_START_Y;
                     simplePidDrive.setAbsoluteYTarget(yTarget, nextState);
-//                    yTarget = 19.0;
-//                    simplePidDrive.setRelativeYTarget(yTarget, nextState);
                     break;
 
-                case MOVE_UNDER_BRIDGE:
-                    if (!autoChoices.moveFoundation)
-                    {
-                        robot.elevator.zeroCalibrate();
-                        robot.elbow.retract();
-                        robot.grabber.setPosition(1.0);
-                    }
+                case MOVE_UNDER_BRIDGE_Y:
+                    yTarget = -12.0 * allianceDirection;
+                    simplePidDrive.setRelativeYTarget(yTarget, State.MOVE_UNDER_BRIDGE_X);
+                    break;
+
+                case MOVE_UNDER_BRIDGE_X:
                     xTarget = RobotInfo.ABS_UNDER_BRIDGE_PARK_X * allianceDirection;
                     simplePidDrive.setAbsoluteXTarget(xTarget, State.DONE);
                     break;
@@ -450,7 +451,7 @@ class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
                 case SKIP_MOVE_FOUNDATION_PARK_WALL:
                     yTarget = RobotInfo.ABS_ROBOT_START_Y;
                     nextState = autoChoices.parkUnderBridge == CommonAuto.ParkPosition.PARK_CLOSE_TO_WALL?
-                                    State.MOVE_UNDER_BRIDGE: State.DONE;
+                                    State.MOVE_UNDER_BRIDGE_Y : State.DONE;
                     simplePidDrive.setAbsoluteYTarget(yTarget, nextState);
                     break;
 
