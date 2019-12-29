@@ -165,7 +165,7 @@ public class CmdSkystoneVision implements TrcRobot.RobotCommand
         {
             skystonePose = pose;
             robot.globalTracer.traceInfo(
-                    "visionTrigger", "Skystone found at x=%.1f, y=%.1f.",
+                    "visionTrigger", ">>> Skystone found at x=%.1f, y=%.1f.",
                     skystonePose.x, skystonePose.y);
             robot.speak(String.format(Locale.US, "Sky stone found at %.1f inches.", skystonePose.x));
         }
@@ -282,7 +282,7 @@ public class CmdSkystoneVision implements TrcRobot.RobotCommand
                                 StringBuilder sentence = new StringBuilder("Not found, ");
 
                                 robot.globalTracer.traceInfo(
-                                        "GetTargetPose", "Skystone not found, try next stone.");
+                                        "GetTargetPose", ">>> Skystone not found, try next stone.");
                                 visionParams.scootCount--;
                                 xTarget = -9.0*allianceDirection*visionParams.scanDirection;
                                 //
@@ -315,7 +315,7 @@ public class CmdSkystoneVision implements TrcRobot.RobotCommand
                                 // skystone.
                                 //
                                 robot.globalTracer.traceInfo(
-                                        "GetTargetPose", "Skystone not found, assume left.");
+                                        "GetTargetPose", ">>> Skystone not found, assume left.");
                                 robot.speak("Not found, assume left.");
                                 sm.setState(State.ALIGN_SKYSTONE);
                             }
@@ -326,7 +326,7 @@ public class CmdSkystoneVision implements TrcRobot.RobotCommand
                                 // scootCount was 1 and decremented to 0 but will handle it just in case.
                                 //
                                 robot.globalTracer.traceInfo(
-                                        "GetTargetPose", "Skystone not found, giving up.");
+                                        "GetTargetPose", ">>> Skystone not found, giving up.");
                                 robot.speak("Not found, give up.");
                                 sm.setState(State.ALIGN_SKYSTONE);
                             }
@@ -336,7 +336,7 @@ public class CmdSkystoneVision implements TrcRobot.RobotCommand
                     {
                         // Vuforia found the skystone.
                         robot.globalTracer.traceInfo(
-                                "getTargetPose", "Skystone found at x=%.1f, y=%.1f.",
+                                "getTargetPose", ">>> Skystone found at x=%.1f, y=%.1f.",
                                 skystonePose.x, skystonePose.y);
                         robot.speak(String.format(Locale.US, "Sky stone found at %.1f inches.", skystonePose.x));
                         sm.setState(State.ALIGN_SKYSTONE);

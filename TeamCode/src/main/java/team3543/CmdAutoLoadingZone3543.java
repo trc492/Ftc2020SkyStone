@@ -64,6 +64,7 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
         CLEAR_OF_FOUNDATION,
         MOVE_TO_FOUNDATION_SIDE,
         PUSH_FOUNDATION_TO_WALL,
+        RESYNC_ROBOT_X,
         MOVE_BACK_TO_WALL,
         MOVE_UNDER_BRIDGE,
         SKIP_MOVE_FOUNDATION_PARK_WALL,
@@ -97,7 +98,7 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
      */
     CmdAutoLoadingZone3543(Robot3543 robot, CommonAuto.AutoChoices autoChoices)
     {
-        robot.globalTracer.traceInfo(moduleName, "robot=%s", robot);
+        robot.globalTracer.traceInfo(moduleName, ">>> robot=%s", robot);
 
         this.robot = robot;
         this.autoChoices = autoChoices;
@@ -137,7 +138,7 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
             double projectedTime = elapsedTime;
             int projectedScore = 14;    //We already have one skystone on the foundation, so that's 14 points.
 
-            projectedTime += autoChoices.strafeToFoundation? 20.0: 20.0; //TODO: determine extra time for not strafing.
+            projectedTime += autoChoices.strafeToFoundation? 16.0: 20.0; //TODO: determine extra time for not strafing.
             //
             // If we are within time limit, we gain an extra 14 points (10 for carrying the skystone crossing the
             // bridge line and 4 for dropping it off to the foundation).
@@ -148,7 +149,7 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
             // the SINGLE_SKYSTONE strategy.
             //
             projectedTime += autoChoices.parkUnderBridge == CommonAuto.ParkPosition.PARK_CLOSE_TO_CENTER?
-                                0.1:    //TODO: determine this time
+                                3.5:
                              autoChoices.parkUnderBridge == CommonAuto.ParkPosition.PARK_CLOSE_TO_WALL?
                                 0.1: 0.0;   //TODO: determine these times.
             //
@@ -159,7 +160,7 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
             willDo = projectedScore > MAX_SCORE_SINGLE_SKYSTONE;
 
             robot.globalTracer.traceInfo(
-                    funcName, "[%.3f] WillDo=%s, ProjectedTotalTime=%.3f, AchievableMaxScore=%d",
+                    funcName, "[%.3f] >>> WillDo=%s, ProjectedTotalTime=%.3f, AchievableMaxScore=%d",
                     elapsedTime, willDo, projectedTime, projectedScore);
         }
         return willDo;
@@ -169,6 +170,7 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
     {
         final String funcName = "doPullFoundation";
         boolean willDo = false;
+        double projectedTime = elapsedTime;
 
         if (autoChoices.moveFoundation)
         {
@@ -178,18 +180,20 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
             }
             else
             {
-                double projectedTime = elapsedTime + 5.0;   //Time to pull foundation to wall, and bump it in.
+                projectedTime += 7.0;   //Time to pull foundation to wall, and bump it in.
                 //
                 // If we are doing DOUBLE_SKYSTONE and we want to move the foundation, let's check if we have enough time to
                 // do so.
                 //
-                projectedTime += autoChoices.parkUnderBridge == CommonAuto.ParkPosition.PARK_CLOSE_TO_CENTER ?
-                                    0.6 :   //Time to just move sideways under the bridge.
-                                 autoChoices.parkUnderBridge == CommonAuto.ParkPosition.PARK_CLOSE_TO_WALL ?
-                                    1.0 : 0.5;  //Even NO_PARK still need time to move back to the wall.
-                willDo = projectedTime < MAX_SCORE_SINGLE_SKYSTONE;
+//                projectedTime += autoChoices.parkUnderBridge == CommonAuto.ParkPosition.PARK_CLOSE_TO_CENTER ?
+//                                    0.6 :   //Time to just move sideways under the bridge.
+//                                 autoChoices.parkUnderBridge == CommonAuto.ParkPosition.PARK_CLOSE_TO_WALL ?
+//                                    1.0 : 0.5;  //Even NO_PARK still need time to move back to the wall.
+                willDo = projectedTime < AUTONOMOUS_END_TIME;
             }
         }
+        robot.globalTracer.traceInfo(
+                funcName, "[%.3f] >>> WillDo=%s, ProjectedTotalTime=%.3f", elapsedTime, willDo, projectedTime);
 
         return willDo;
     }   //doPullFoundation
@@ -597,6 +601,7 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                     yPidCtrl.setPidCoefficients(loadedYPidCoeff);
 
                     yTarget = RobotInfo.ABS_ROBOT_START_Y - 3.0;
+                    if (skystonesDropped > 1) yTarget -= 3.0;
                     simplePidDrive.setAbsoluteYTarget(yTarget, State.UNHOOK_FOUNDATION);
                     break;
 
@@ -653,11 +658,24 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                     // Bump the foundation toward the wall to make sure it lands inside the building site.
                     //
                     xTarget = (skystonesDropped > 1? 16.0: 13.0) * allianceDirection;
-                    nextState = autoChoices.parkUnderBridge == CommonAuto.ParkPosition.PARK_CLOSE_TO_CENTER?
-                                    State.MOVE_UNDER_BRIDGE: State.MOVE_BACK_TO_WALL;
-                    simplePidDrive.setRelativeXTarget(xTarget, nextState);
+                    simplePidDrive.setRelativeXTarget(xTarget, State.RESYNC_ROBOT_X);
                     break;
 
+                case RESYNC_ROBOT_X:
+                    pose = robot.driveBase.getFieldPosition();
+                    pose.x = RobotInfo.ABS_FOUNDATION_SIDE_X * allianceDirection;
+                    robot.driveBase.setFieldPosition(pose);
+
+                    pose = robot.pidDrive.getAbsoluteTargetPose();
+                    pose.x = RobotInfo.ABS_FOUNDATION_SIDE_X * allianceDirection;
+                    robot.pidDrive.setAbsoluteTargetPose(pose);
+
+                    nextState = autoChoices.parkUnderBridge == CommonAuto.ParkPosition.PARK_CLOSE_TO_CENTER?
+                                    State.MOVE_UNDER_BRIDGE: State.MOVE_BACK_TO_WALL;
+                    sm.setState(nextState);
+                    //
+                    // Intentionally falling through to the next state.
+                    //
                 case MOVE_BACK_TO_WALL:
                     //
                     // We are going to either park by the wall under the bridge or just park by the wall.

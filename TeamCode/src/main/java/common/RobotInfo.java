@@ -41,6 +41,7 @@ public class RobotInfo
     public static final double ABS_FAR_STONE3_X                         = 44.0;
     public static final double ABS_GRAB_SKYSTONE_POS_Y                  = 38.0;
     public static final double ABS_FOUNDATION_Y                         = 40.0;
+    public static final double ABS_FOUNDATION_SIDE_X                    = 98.0;
     public static final double SKYSTONE_SCAN_DISTANCE_WALL              = -9.0;
     public static final double SKYSTONE_SCAN_DISTANCE_FAR               = -18.0;
 
