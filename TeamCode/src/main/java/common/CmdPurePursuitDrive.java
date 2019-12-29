@@ -54,7 +54,7 @@ public class CmdPurePursuitDrive implements TrcRobot.RobotCommand
 
         for (int i = 0; i < waypoints.length; i++)
         {
-            waypoints[i] = new TrcWaypoint(poses[i]);
+            waypoints[i] = new TrcWaypoint(poses[i], null);
         }
 
         purePursuitDrive.start(new TrcPath(true, waypoints), event, 0.0);

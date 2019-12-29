@@ -397,32 +397,6 @@ public class CmdSkystoneVision implements TrcRobot.RobotCommand
             robot.traceStateInfo(elapsedTime, state.toString(), xTarget, yTarget, turnTarget);
         }
 
-        if (robot.pidDrive.isActive() && (debugXPid || debugYPid || debugTurnPid))
-        {
-            if (robot.battery != null)
-            {
-                robot.globalTracer.traceInfo("Battery", "Voltage=%5.2fV (%5.2fV)",
-                        robot.battery.getVoltage(), robot.battery.getLowestVoltage());
-            }
-
-            robot.globalTracer.traceInfo(moduleName, "RobotPose: %s", robot.driveBase.getAbsolutePose());
-
-            if (debugXPid && xPidCtrl != null)
-            {
-                xPidCtrl.printPidInfo(robot.globalTracer);
-            }
-
-            if (debugYPid)
-            {
-                yPidCtrl.printPidInfo(robot.globalTracer);
-            }
-
-            if (debugTurnPid)
-            {
-                turnPidCtrl.printPidInfo(robot.globalTracer);
-            }
-        }
-
         return !sm.isEnabled();
     }   //cmdPeriodic
 

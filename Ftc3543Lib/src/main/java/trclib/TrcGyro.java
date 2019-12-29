@@ -31,7 +31,7 @@ package trclib;
  * INTEGRATE option and let the built-in integrator handle it. Or if it provides a Cardinal heading instead of
  * Cartesian, it can set the CONVERT_TO_CARTESIAN option to enable the CardinalConverter to do the conversion.
  */
-public abstract class TrcGyro extends TrcSensor<TrcGyro.DataType>
+public abstract class TrcGyro extends TrcSensor<TrcGyro.DataType> implements TrcDriveBaseOdometry.OdometrySensor
 {
     protected static final String moduleName = "TrcGyro";
     protected static final boolean debugEnabled = false;
@@ -832,5 +832,43 @@ public abstract class TrcGyro extends TrcSensor<TrcGyro.DataType>
 
         return data;
     }   //getRawData
+
+    //
+    // Implements TrcDriveBase.OdometrySensor interface.
+    //
+
+    /**
+     * This method is called by the odometry device to reset the sensor.
+     *
+     * @param resetHardware specifies true to do a hardware reset, false to do a software reset. Hardware reset may
+     *                      require some time to complete and will block this method from returning until finish.
+     */
+    @Override
+    public void resetPosition(boolean resetHardware)
+    {
+        resetZIntegrator();
+    }   //resetPosition
+
+    /**
+     * This method returns the position data from the sensor.
+     *
+     * @return position data.
+     */
+    @Override
+    public double getPosition()
+    {
+        return getZHeading().value;
+    }   //getPosition
+
+    /**
+     * This method returns the velocity data from the sensor.
+     *
+     * @return velocity data.
+     */
+    @Override
+    public double getVelocity()
+    {
+        return getZRotationRate().value;
+    }   //getVelocity
 
 }   //class TrcGyro

@@ -206,7 +206,7 @@ public abstract class CommonAuto extends FtcOpMode
                             robot.battery.getVoltage(), robot.battery.getLowestVoltage());
                 }
 
-                robot.globalTracer.traceInfo(moduleName, "RobotPose: %s", robot.driveBase.getAbsolutePose());
+                robot.globalTracer.traceInfo(moduleName, "RobotPose: %s", robot.driveBase.getFieldPosition());
 
                 if (debugXPid && robot.encoderXPidCtrl != null)
                 {

@@ -848,15 +848,15 @@ public class TrcPidController
         synchronized (this)
         {
             final String funcName = "getOutput";
+            double prevError = currError;
+            double currTime = TrcUtil.getCurrentTime();
+            double deltaTime = currTime - prevTime;
 
             if (debugEnabled)
             {
                 dbgTrace.traceEnter(funcName, TrcDbgTrace.TraceLevel.API);
             }
 
-            double prevError = currError;
-            double currTime = TrcUtil.getCurrentTime();
-            double deltaTime = currTime - prevTime;
             prevTime = currTime;
             currInput = currentInputValue;
             currError = setPoint - currInput;

@@ -383,9 +383,9 @@ class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
                         savedYPidCoeff = null;
                     }
                     // Correct odometry and absTargetPose after wheel slippage.
-                    TrcPose2D pose = robot.driveBase.getAbsolutePose();
+                    TrcPose2D pose = robot.driveBase.getFieldPosition();
                     pose.y = RobotInfo.ABS_ROBOT_START_Y;
-                    robot.driveBase.setAbsolutePose(pose);
+                    robot.driveBase.setFieldPosition(pose);
                     pose = robot.pidDrive.getAbsoluteTargetPose();
                     pose.y = RobotInfo.ABS_ROBOT_START_Y;
                     robot.pidDrive.setAbsoluteTargetPose(pose);

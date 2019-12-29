@@ -35,7 +35,7 @@ import trclib.TrcTaskMgr.TaskType;
  * If the motor controller hardware support these features, the platform dependent class should override these methods
  * to provide the support in hardware.
  */
-public abstract class TrcMotor implements TrcMotorController
+public abstract class TrcMotor implements TrcMotorController, TrcDriveBaseOdometry.OdometrySensor
 {
     protected static final String moduleName = "TrcMotor";
     protected static final TrcDbgTrace globalTracer = TrcDbgTrace.getGlobalTracer();

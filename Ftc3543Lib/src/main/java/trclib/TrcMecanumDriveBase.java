@@ -163,33 +163,39 @@ public class TrcMecanumDriveBase extends TrcSimpleDriveBase
     }   //holonomicDrive
 
     /**
-     * This method is called periodically to monitor the position sensors for calculating the delta from the previous
-     * position.
+     * This method is called periodically to calculate the position delta from the previous pose as well as velocity.
      *
      * @param motorsState specifies the state information of the drivebase motors for calculating pose delta.
      * @return a TrcPose2D object describing the change in position since the last call.
      */
     @Override
-    protected TrcPose2D getPoseDelta(MotorsState motorsState)
+    protected Odometry getOdometryDelta(MotorsState motorsState)
     {
+        final String funcName = "getOdometryDelta";
         //
         // Call super class to get Y and turn data.
         //
-        TrcPose2D poseDelta = super.getPoseDelta(motorsState);
+        Odometry delta = super.getOdometryDelta(motorsState);
 
-        poseDelta.x = xScale * TrcUtil.average(
+        delta.position.x = xScale * TrcUtil.average(
                 motorsState.motorPosDiffs[MotorType.LEFT_FRONT.value],
                 motorsState.motorPosDiffs[MotorType.RIGHT_REAR.value],
                 -motorsState.motorPosDiffs[MotorType.RIGHT_FRONT.value],
                 -motorsState.motorPosDiffs[MotorType.LEFT_REAR.value]);
 
-        poseDelta.xVel = xScale * TrcUtil.average(
+        delta.velocity.x = xScale * TrcUtil.average(
                 motorsState.currVelocities[MotorType.LEFT_FRONT.value],
                 motorsState.currVelocities[MotorType.RIGHT_REAR.value],
                 -motorsState.currVelocities[MotorType.RIGHT_FRONT.value],
                 -motorsState.currVelocities[MotorType.LEFT_REAR.value]);
 
-        return poseDelta;
-    }   //getPoseDelta
+        if (debugEnabled)
+        {
+            dbgTrace.traceInfo(funcName, "motorsState=%s", motorsState);
+            dbgTrace.traceInfo(funcName, "delta=%s", delta);
+        }
+
+        return delta;
+    }   //getOdometryDelta
 
 }   //class TrcMecanumDriveBase

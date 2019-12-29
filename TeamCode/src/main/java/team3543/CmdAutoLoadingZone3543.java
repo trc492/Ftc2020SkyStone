@@ -35,7 +35,7 @@ import trclib.TrcTimer;
 
 class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
 {
-    private static final double AUTONOMOUS_END_TIME = 100.0;
+    private static final double AUTONOMOUS_END_TIME = 100.0;//30.0; //TODO: set it back to 30 sec when done debugging.
     private static final int MAX_SCORE_SINGLE_SKYSTONE = 29;
 
     private enum State
@@ -611,9 +611,9 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                         savedYPidCoeff = null;
                     }
 
-                    TrcPose2D pose = robot.driveBase.getAbsolutePose();
+                    TrcPose2D pose = robot.driveBase.getFieldPosition();
                     pose.y = RobotInfo.ABS_ROBOT_START_Y;
-                    robot.driveBase.setAbsolutePose(pose);
+                    robot.driveBase.setFieldPosition(pose);
 
                     pose = robot.pidDrive.getAbsoluteTargetPose();
                     pose.y = RobotInfo.ABS_ROBOT_START_Y;

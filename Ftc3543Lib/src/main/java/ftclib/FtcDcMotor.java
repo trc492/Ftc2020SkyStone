@@ -215,8 +215,8 @@ public class FtcDcMotor extends TrcMotor
 
         if (debugEnabled)
         {
-            dbgTrace.traceEnter(funcName, TrcDbgTrace.TraceLevel.API, "maxVel=%f,pidCoef=%s", maxVelocity,
-                    pidCoefficients.toString());
+            dbgTrace.traceEnter(funcName, TrcDbgTrace.TraceLevel.API, "maxVel=%f,pidCoef=%s",
+                    maxVelocity, pidCoefficients);
         }
 
         this.maxMotorVelocity = maxVelocity;

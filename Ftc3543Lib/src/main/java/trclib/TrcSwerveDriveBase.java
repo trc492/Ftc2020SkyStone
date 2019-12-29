@@ -107,36 +107,35 @@ public class TrcSwerveDriveBase extends TrcSimpleDriveBase
     }   //supportsHolonomicDrive
 
     /**
-     * This method sets the position scales. The raw position from the encoder is in encoder counts. By setting the
+     * This method sets the odometry scales. The raw position from the encoder is in encoder counts. By setting the
      * scale factor, one could make getPosition to return unit in inches, for example.
      *
-     * @param xScale   specifies the X position scale.
-     * @param yScale   specifies the Y position scale.
-     * @param rotScale specifies the rotation scale.
+     * @param xScale     specifies the X position scale.
+     * @param yScale     specifies the Y position scale.
+     * @param angleScale specifies the angle scale.
      */
     @Override
-    public void setPositionScales(double xScale, double yScale, double rotScale)
+    public void setOdometryScales(double xScale, double yScale, double angleScale)
     {
         if (xScale != yScale)
         {
             throw new IllegalArgumentException("Swerve does not have different x and y scales!");
         }
 
-        super.setPositionScales(xScale, yScale, rotScale);
-    }   //setPositionScales
+        super.setOdometryScales(xScale, yScale, angleScale);
+    }   //setOdometryScales
 
     /**
-     * This method sets the position scales. The raw position from the encoder is in encoder counts. By setting the
-     * scale factor, one could make getPosition to return unit in inches, for example. This also automatically
-     * calculates the rotateScale, which is used for approximating the heading without the gyro.
+     * This method sets the odometry scales. The raw position from the encoder is in encoder counts. By setting the
+     * scale factor, one could make getPosition to return unit in inches, for example.
      *
      * @param scale specifies the position scale for each motor.
      */
     @Override
-    public void setPositionScales(double scale)
+    public void setOdometryScales(double scale)
     {
-        super.setPositionScales(scale, scale, 1.0);
-    }   //setPositionScales
+        super.setOdometryScales(scale, scale, 1.0);
+    }   //setOdometryScales
 
     /**
      * This method sets the steering angle of all four wheels.
@@ -374,16 +373,15 @@ public class TrcSwerveDriveBase extends TrcSimpleDriveBase
     }   //holonomicDrive
 
     /**
-     * This method is called periodically to monitor the position sensors for calculating the delta from the previous
-     * position.
+     * This method is called periodically to calculate the position delta from the previous pose as well as velocity.
      *
      * @param motorsState specifies the state information of the drivebase motors for calculating pose delta.
      * @return a TrcPose2D object describing the change in position since the last call.
      */
     @Override
-    protected TrcPose2D getPoseDelta(MotorsState motorsState)
+    protected Odometry getOdometryDelta(MotorsState motorsState)
     {
-        final String funcName = "getPoseDelta";
+        final String funcName = "getOdometryDelta";
 
         if (debugEnabled)
         {
@@ -417,13 +415,13 @@ public class TrcSwerveDriveBase extends TrcSimpleDriveBase
         posSum.mapMultiplyToSelf(0.25);
         velSum.mapMultiplyToSelf(0.25);
 
-        TrcPose2D poseDelta = new TrcPose2D();
+        Odometry delta = new Odometry();
 
-        poseDelta.x = posSum.getEntry(0);
-        poseDelta.y = posSum.getEntry(1);
+        delta.position.x = posSum.getEntry(0);
+        delta.position.y = posSum.getEntry(1);
 
-        poseDelta.xVel = velSum.getEntry(0);
-        poseDelta.yVel = velSum.getEntry(1);
+        delta.velocity.x = velSum.getEntry(0);
+        delta.velocity.y = velSum.getEntry(1);
 
         double x = wheelBaseWidth / 2;
         double y = wheelBaseLength / 2;
@@ -435,7 +433,7 @@ public class TrcSwerveDriveBase extends TrcSimpleDriveBase
 
         dRot /= 4 * Math.pow(wheelBaseDiagonal, 2);
         dRot = Math.toDegrees(dRot);
-        poseDelta.heading = dRot;
+        delta.position.angle = dRot;
 
         double rotVel = x * (wheelVelocities[0].getEntry(1) + wheelVelocities[2].getEntry(1) -
                              wheelVelocities[1].getEntry(1) - wheelVelocities[3].getEntry(1)) +
@@ -443,14 +441,14 @@ public class TrcSwerveDriveBase extends TrcSimpleDriveBase
                              wheelVelocities[2].getEntry(0) - wheelVelocities[3].getEntry(0));
         rotVel /= 4 * Math.pow(wheelBaseDiagonal, 2);
         rotVel = Math.toDegrees(rotVel);
-        poseDelta.turnRate = rotVel;
+        delta.velocity.angle = rotVel;
 
         if (debugEnabled)
         {
             dbgTrace.traceExit(funcName, TrcDbgTrace.TraceLevel.TASK);
         }
 
-        return poseDelta;
-    }   //getPoseDelta
+        return delta;
+    }   //getOdometryDelta
 
 }   //class TrcSwerveDriveBase

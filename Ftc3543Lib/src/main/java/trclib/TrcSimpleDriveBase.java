@@ -193,7 +193,7 @@ public class TrcSimpleDriveBase extends TrcDriveBase
      */
     public void setWheelBaseWidth(double width)
     {
-        setPositionScales(xScale, yScale, yScale / width);
+        setOdometryScales(xScale, yScale, yScale / width);
     }   //setWheelBaseWidth
 
     /**
@@ -338,26 +338,25 @@ public class TrcSimpleDriveBase extends TrcDriveBase
     }   //tankDrive
 
     /**
-     * This method is called periodically to monitor the position sensors for calculating the delta from the previous
-     * position.
+     * This method is called periodically to calculate the position delta from the previous pose as well as velocity.
      *
      * @param motorsState specifies the state information of the drivebase motors for calculating pose delta.
      * @return a TrcPose2D object describing the change in position since the last call.
      */
     @Override
-    protected TrcPose2D getPoseDelta(MotorsState motorsState)
+    protected Odometry getOdometryDelta(MotorsState motorsState)
     {
-        final String funcName = "getPoseDelta";
+        final String funcName = "getOdometryDelta";
+        Odometry delta = new Odometry();
 
         if (debugEnabled)
         {
             dbgTrace.traceEnter(funcName, TrcDbgTrace.TraceLevel.TASK);
         }
-
-        TrcPose2D poseDelta = new TrcPose2D();
-
+        //
         // Calculate heading and turn rate using positional info in case we don't have a gyro.
         // Get the average of all left and right motors separately, since this drivebase may have between 2-6 motors
+        //
         double lPos = 0.0, rPos = 0.0;
         double lVel = 0.0, rVel = 0.0;
 
@@ -384,21 +383,21 @@ public class TrcSimpleDriveBase extends TrcDriveBase
         lVel /= motorsPerSide;
         rVel /= motorsPerSide;
 
-        poseDelta.x = 0;
-        poseDelta.y = (lPos + rPos)/2 * yScale;
+        delta.position.x = 0.0;
+        delta.position.y = (lPos + rPos)/2 * yScale;
 
-        poseDelta.xVel = 0;
-        poseDelta.yVel = (lVel + rVel)/2 * yScale;
+        delta.velocity.x = 0.0;
+        delta.velocity.y = (lVel + rVel)/2 * yScale;
 
-        poseDelta.heading = Math.toDegrees((lPos - rPos) * rotScale);
-        poseDelta.turnRate = Math.toDegrees((lVel - rVel) * rotScale);
+        delta.position.angle = Math.toDegrees((lPos - rPos) * angleScale);
+        delta.velocity.angle = Math.toDegrees((lVel - rVel) * angleScale);
 
         if (debugEnabled)
         {
             dbgTrace.traceExit(funcName, TrcDbgTrace.TraceLevel.TASK);
         }
 
-        return poseDelta;
-    }   //getPoseDelta
+        return delta;
+    }   //getOdometryDelta
 
 }   //class TrcSimpleDriveBase

@@ -285,7 +285,7 @@ public class CommonTest
                             robot.battery.getVoltage(), robot.battery.getLowestVoltage());
                 }
 
-                robot.globalTracer.traceInfo(moduleName, "RobotPose: %s", robot.driveBase.getAbsolutePose());
+                robot.globalTracer.traceInfo(moduleName, "RobotPose: %s", robot.driveBase.getFieldPosition());
 
                 if (debugXPid && robot.encoderXPidCtrl != null)
                 {
@@ -482,7 +482,7 @@ public class CommonTest
         if (skystonePose != null)
         {
             robot.dashboard.displayPrintf(12, "%s: x=%.1f, y=%.1f, angle=%.1f",
-                    robot.targetFinder, skystonePose.x, skystonePose.y, skystonePose.heading);
+                    robot.targetFinder, skystonePose.x, skystonePose.y, skystonePose.angle);
         }
         else
         {

@@ -27,6 +27,7 @@ import common.Robot;
 import ftclib.FtcServoActuator;
 import ftclib.FtcDcMotor;
 import ftclib.FtcMotorActuator;
+import trclib.TrcDriveBaseOdometry;
 import trclib.TrcHomographyMapper;
 import trclib.TrcMecanumDriveBase;
 import trclib.TrcPidController;
@@ -39,6 +40,7 @@ class Robot3543 extends Robot
             .setTeam3543(true)
             .setHasRobot(true)
             .setInitSubsystems(true)
+            .setUseExternalOdometry(false)
             .setHasElevator(true)
             .setHasBlinkin(true)
             .setPlaySongs(false)
@@ -231,7 +233,21 @@ class Robot3543 extends Robot
         rightRearWheel.setBrakeModeEnabled(true);
 
         driveBase = new TrcMecanumDriveBase(leftFrontWheel, leftRearWheel, rightFrontWheel, rightRearWheel, gyro);
-        driveBase.setPositionScales(RobotInfo3543.ENCODER_X_INCHES_PER_COUNT, RobotInfo3543.ENCODER_Y_INCHES_PER_COUNT);
+        if (preferences.useExternalOdometry)
+        {
+            //
+            // Create the external odometry device that uses the left front encoder port as the X odometry and
+            // the left and right rear encoder ports as the Y1 and Y2 odometry. Gyro will serve as the angle
+            // odometry.
+            //
+            TrcDriveBaseOdometry driveBaseOdometry = new TrcDriveBaseOdometry(
+                    leftFrontWheel, leftRearWheel, rightRearWheel, gyro);
+            //
+            // Set the drive base to use the external odometry device overriding the built-in one.
+            //
+            driveBase.setDriveBaseOdometry(driveBaseOdometry);
+        }
+        driveBase.setOdometryScales(RobotInfo3543.ENCODER_X_INCHES_PER_COUNT, RobotInfo3543.ENCODER_Y_INCHES_PER_COUNT);
         driveMode = DriveMode.HOLONOMIC_MODE;
         //
         // Initialize PID drive.

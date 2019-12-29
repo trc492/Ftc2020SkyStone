@@ -70,6 +70,7 @@ public class Robot
         public boolean team3543 = true;
         public boolean hasRobot = true;
         public boolean initSubsystems = true;
+        public boolean useExternalOdometry = false;
         public boolean hasElevator = true;
         public boolean hasBlinkin = true;
         public boolean playSongs = true;
@@ -102,6 +103,12 @@ public class Robot
         public Preferences setInitSubsystems(boolean initSubsystems)
         {
             this.initSubsystems = initSubsystems;
+            return this;
+        }
+
+        public Preferences setUseExternalOdometry(boolean useExternalOdometry)
+        {
+            this.useExternalOdometry = useExternalOdometry;
             return this;
         }
 
@@ -724,7 +731,7 @@ public class Robot
             {
                 skystonePose = pose;
                 globalTracer.traceInfo(funcName, "***** %s: x=%.1f, y=%.1f, angle=%.1f",
-                        targetFinder, pose.x, pose.y, pose.heading);
+                        targetFinder, pose.x, pose.y, pose.angle);
             }
             else if (skystonePose == null)
             {
