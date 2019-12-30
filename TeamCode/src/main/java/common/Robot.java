@@ -389,8 +389,8 @@ public class Robot
     //
     public FtcDcMotor leftFrontWheel = null;
     public FtcDcMotor rightFrontWheel = null;
-    public FtcDcMotor leftRearWheel = null;
-    public FtcDcMotor rightRearWheel = null;
+    public FtcDcMotor leftBackWheel = null;
+    public FtcDcMotor rightBackWheel = null;
 
     public TrcDriveBase driveBase = null;
     public DriveMode driveMode = DriveMode.HOLONOMIC_MODE;
@@ -628,8 +628,8 @@ public class Robot
          * of the camera is pointing to the left side of the  robot.  The rotation angles don't work if you flip
          * the phone.
          *
-         * If using the rear (High Res) camera:
-         * We need to rotate the camera around it's long axis to bring the rear camera forward.
+         * If using the back (High Res) camera:
+         * We need to rotate the camera around it's long axis to bring the back camera forward.
          * This requires a negative 90 degree rotation on the Y axis
          *
          * If using the Front (Low Res) camera

@@ -323,10 +323,10 @@ public class CommonTest
                 if (robot.preferences.hasRobot)
                 {
                     robot.dashboard.displayPrintf(
-                            9, "xPos=%.1f,yPos=%.1f,heading=%.1f,raw=lf:%.0f,rf:%.0f,lr:%.0f,rr:%.0f",
+                            9, "xPos=%.1f,yPos=%.1f,heading=%.1f,raw=lf:%.0f,rf:%.0f,lb:%.0f,rb:%.0f",
                             robot.driveBase.getXPosition(), robot.driveBase.getYPosition(), robot.driveBase.getHeading(),
                             robot.leftFrontWheel.getPosition(), robot.rightFrontWheel.getPosition(),
-                            robot.leftRearWheel.getPosition(), robot.rightRearWheel.getPosition());
+                            robot.leftBackWheel.getPosition(), robot.rightBackWheel.getPosition());
                     if (robot.encoderXPidCtrl != null)
                     {
                         robot.encoderXPidCtrl.displayPidInfo(10);
@@ -463,9 +463,9 @@ public class CommonTest
         if (robot.preferences.hasRobot)
         {
             robot.dashboard.displayPrintf(
-                    9, LABEL_WIDTH, "Enc: ", "lf=%.0f,rf=%.0f,lr=%.0f,rr=%.0f",
+                    9, LABEL_WIDTH, "Enc: ", "lf=%.0f,rf=%.0f,lb=%.0f,rb=%.0f",
                     robot.leftFrontWheel.getPosition(), robot.rightFrontWheel.getPosition(),
-                    robot.leftRearWheel.getPosition(), robot.rightRearWheel.getPosition());
+                    robot.leftBackWheel.getPosition(), robot.rightBackWheel.getPosition());
         }
 
         if (robot.gyro != null)
@@ -535,12 +535,12 @@ public class CommonTest
     {
         double lfEnc = robot.leftFrontWheel.getPosition();
         double rfEnc = robot.rightFrontWheel.getPosition();
-        double lrEnc = robot.leftRearWheel.getPosition();
-        double rrEnc = robot.rightRearWheel.getPosition();
+        double lbEnc = robot.leftBackWheel.getPosition();
+        double rbEnc = robot.rightBackWheel.getPosition();
 
         robot.dashboard.displayPrintf(9, "Motors Test: index=%d", motorIndex);
         robot.dashboard.displayPrintf(10, "Enc: lf=%.0f, rf=%.0f", lfEnc, rfEnc);
-        robot.dashboard.displayPrintf(11, "Enc: lr=%.0f, rr=%.0f", lrEnc, rrEnc);
+        robot.dashboard.displayPrintf(11, "Enc: lb=%.0f, rb=%.0f", lbEnc, rbEnc);
 
         if (sm.isReady())
         {
@@ -559,8 +559,8 @@ public class CommonTest
                             //
                             robot.leftFrontWheel.set(0.5);
                             robot.rightFrontWheel.set(0.0);
-                            robot.leftRearWheel.set(0.0);
-                            robot.rightRearWheel.set(0.0);
+                            robot.leftBackWheel.set(0.0);
+                            robot.rightBackWheel.set(0.0);
                             break;
 
                         case 1:
@@ -569,28 +569,28 @@ public class CommonTest
                             //
                             robot.leftFrontWheel.set(0.0);
                             robot.rightFrontWheel.set(0.5);
-                            robot.leftRearWheel.set(0.0);
-                            robot.rightRearWheel.set(0.0);
+                            robot.leftBackWheel.set(0.0);
+                            robot.rightBackWheel.set(0.0);
                             break;
 
                         case 2:
                             //
-                            // Run the left rear wheel.
+                            // Run the left back wheel.
                             //
                             robot.leftFrontWheel.set(0.0);
                             robot.rightFrontWheel.set(0.0);
-                            robot.leftRearWheel.set(0.5);
-                            robot.rightRearWheel.set(0.0);
+                            robot.leftBackWheel.set(0.5);
+                            robot.rightBackWheel.set(0.0);
                             break;
 
                         case 3:
                             //
-                            // Run the right rear wheel.
+                            // Run the right back wheel.
                             //
                             robot.leftFrontWheel.set(0.0);
                             robot.rightFrontWheel.set(0.0);
-                            robot.leftRearWheel.set(0.0);
-                            robot.rightRearWheel.set(0.5);
+                            robot.leftBackWheel.set(0.0);
+                            robot.rightBackWheel.set(0.5);
                             break;
                     }
                     motorIndex = motorIndex + 1;
@@ -604,8 +604,8 @@ public class CommonTest
                     //
                     robot.leftFrontWheel.set(0.0);
                     robot.rightFrontWheel.set(0.0);
-                    robot.leftRearWheel.set(0.0);
-                    robot.rightRearWheel.set(0.0);
+                    robot.leftBackWheel.set(0.0);
+                    robot.rightBackWheel.set(0.0);
                     sm.setState(State.DONE);
                     break;
 
@@ -613,8 +613,8 @@ public class CommonTest
                 default:
                     if (robot.textToSpeech != null)
                     {
-                        double[] encCounts = {lfEnc, rfEnc, lrEnc, rrEnc};
-                        double avgEnc = (lfEnc + rfEnc + lrEnc + rrEnc) / 4.0;
+                        double[] encCounts = {lfEnc, rfEnc, lbEnc, rbEnc};
+                        double avgEnc = (lfEnc + rfEnc + lbEnc + rbEnc) / 4.0;
                         double minEnc = encCounts[0];
                         double maxEnc = encCounts[0];
 
@@ -636,14 +636,14 @@ public class CommonTest
                             robot.speak("right front wheel is stuck.");
                         }
 
-                        if ((avgEnc - lrEnc) / avgEnc > 0.5)
+                        if ((avgEnc - lbEnc) / avgEnc > 0.5)
                         {
-                            robot.speak("left rear wheel is stuck.");
+                            robot.speak("left back wheel is stuck.");
                         }
 
-                        if ((avgEnc - rrEnc) / avgEnc > 0.5)
+                        if ((avgEnc - rbEnc) / avgEnc > 0.5)
                         {
-                            robot.speak("right rear wheel is stuck.");
+                            robot.speak("right back wheel is stuck.");
                         }
                     }
                     sm.stop();

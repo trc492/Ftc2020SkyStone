@@ -201,47 +201,47 @@ class Robot3543 extends Robot
     {
         leftFrontWheel = new FtcDcMotor("lfWheel");
         rightFrontWheel = new FtcDcMotor("rfWheel");
-        leftRearWheel = new FtcDcMotor("lrWheel");
-        rightRearWheel = new FtcDcMotor("rrWheel");
+        leftBackWheel = new FtcDcMotor("lbWheel");
+        rightBackWheel = new FtcDcMotor("rbWheel");
 
         leftFrontWheel.motor.setMode(RobotInfo3543.DRIVE_MOTOR_MODE);
         rightFrontWheel.motor.setMode(RobotInfo3543.DRIVE_MOTOR_MODE);
-        leftRearWheel.motor.setMode(RobotInfo3543.DRIVE_MOTOR_MODE);
-        rightRearWheel.motor.setMode(RobotInfo3543.DRIVE_MOTOR_MODE);
+        leftBackWheel.motor.setMode(RobotInfo3543.DRIVE_MOTOR_MODE);
+        rightBackWheel.motor.setMode(RobotInfo3543.DRIVE_MOTOR_MODE);
 
         leftFrontWheel.setOdometryEnabled(true);
         rightFrontWheel.setOdometryEnabled(true);
-        leftRearWheel.setOdometryEnabled(true);
-        rightRearWheel.setOdometryEnabled(true);
+        leftBackWheel.setOdometryEnabled(true);
+        rightBackWheel.setOdometryEnabled(true);
 
         if (preferences.useVelocityControl)
         {
             leftFrontWheel.enableVelocityMode(RobotInfo3543.MOTOR_MAX_VELOCITY);
             rightFrontWheel.enableVelocityMode(RobotInfo3543.MOTOR_MAX_VELOCITY);
-            leftRearWheel.enableVelocityMode(RobotInfo3543.MOTOR_MAX_VELOCITY);
-            rightRearWheel.enableVelocityMode(RobotInfo3543.MOTOR_MAX_VELOCITY);
+            leftBackWheel.enableVelocityMode(RobotInfo3543.MOTOR_MAX_VELOCITY);
+            rightBackWheel.enableVelocityMode(RobotInfo3543.MOTOR_MAX_VELOCITY);
         }
 
         leftFrontWheel.setInverted(false);
-        leftRearWheel.setInverted(false);
+        leftBackWheel.setInverted(false);
         rightFrontWheel.setInverted(true);
-        rightRearWheel.setInverted(true);
+        rightBackWheel.setInverted(true);
 
         leftFrontWheel.setBrakeModeEnabled(true);
-        leftRearWheel.setBrakeModeEnabled(true);
+        leftBackWheel.setBrakeModeEnabled(true);
         rightFrontWheel.setBrakeModeEnabled(true);
-        rightRearWheel.setBrakeModeEnabled(true);
+        rightBackWheel.setBrakeModeEnabled(true);
 
-        driveBase = new TrcMecanumDriveBase(leftFrontWheel, leftRearWheel, rightFrontWheel, rightRearWheel, gyro);
+        driveBase = new TrcMecanumDriveBase(leftFrontWheel, leftBackWheel, rightFrontWheel, rightBackWheel, gyro);
         if (preferences.useExternalOdometry)
         {
             //
             // Create the external odometry device that uses the left front encoder port as the X odometry and
-            // the left and right rear encoder ports as the Y1 and Y2 odometry. Gyro will serve as the angle
+            // the left and right back encoder ports as the Y1 and Y2 odometry. Gyro will serve as the angle
             // odometry.
             //
             TrcDriveBaseOdometry driveBaseOdometry = new TrcDriveBaseOdometry(
-                    leftFrontWheel, leftRearWheel, rightRearWheel, gyro);
+                    leftFrontWheel, leftBackWheel, rightBackWheel, gyro);
             //
             // Set the drive base to use the external odometry device overriding the built-in one.
             //

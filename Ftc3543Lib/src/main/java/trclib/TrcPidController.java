@@ -724,8 +724,10 @@ public class TrcPidController
 
             totalError = 0.0;
             prevTime = settlingStartTime = TrcUtil.getCurrentTime();
+            //
             // Only init the prevOutputTime if this setTarget is called after a reset()
             // If it's called mid-operation, we don't want to reset the prevOutputTime clock
+            //
             if (prevOutputTime == 0.0)
             {
                 prevOutputTime = prevTime;

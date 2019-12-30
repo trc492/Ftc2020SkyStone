@@ -35,7 +35,7 @@ package trclib;
  *
  * The second configuration has 3 sensors, two for Y and one for angle. The two Y sensors must be installed in-line
  * with and equidistant from the centroid of the robot and are most likely installed in the middle between the front
- * and rear wheels, one on the left and one on the right. The installation locations of the Y sensors are such that
+ * and back wheels, one on the left and one on the right. The installation locations of the Y sensors are such that
  * if the robot is doing an in-place turn, the two Y sensors will cancel each other out netting a zero displacement.
  * Just like the first configuration, this configuration is not for holonomic drive base since it doesn't provide X
  * odometry.
@@ -48,7 +48,7 @@ package trclib;
  * The fourth configuration has 5 sensors, two for Y, two for X and one for angle. The two Y sensors must be installed
  * just like the configurations with 3 or 4 sensors. The two X sensors must also be installed in-line with and
  * equidistant from the centroid of the robot and it must be orthogonal to the two Y sensors most likely one in mid
- * front and the other in mid rear. With this configuration, the X and Y sensor pairs will cancel each other out
+ * front and the other in mid back. With this configuration, the X and Y sensor pairs will cancel each other out
  * during an in-place turn producing net zero X and Y displacements.
  */
 public class TrcDriveBaseOdometry

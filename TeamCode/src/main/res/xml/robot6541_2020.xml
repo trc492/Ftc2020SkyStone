@@ -23,10 +23,10 @@ SOFTWARE.
 <Robot type="FirstInspires-FTC" name="Robot6541_2020">
     <LynxUsbDevice name="Expansion Hub Portal 1" serialNumber="DQ2F1A8T" parentModuleAddress="2">
         <LynxModule name="Expansion Hub 2" port="2">
-            <RevRobotics40HDHexMotor name="rrWheel" port="0" />
+            <RevRobotics40HDHexMotor name="rbWheel" port="0" />
             <RevRobotics40HDHexMotor name="rfWheel" port="1" />
             <RevRobotics40HDHexMotor name="lfWheel" port="2" />
-            <RevRobotics40HDHexMotor name="lrWheel" port="3" />
+            <RevRobotics40HDHexMotor name="lbWheel" port="3" />
             <RevBlinkinLedDriver name="blinkin" port="5" />
             <LynxEmbeddedIMU name="imu" port="0" bus="0" />
         </LynxModule>
