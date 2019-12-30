@@ -391,7 +391,7 @@ public abstract class TrcDriveBase implements TrcExclusiveSubsystem
         synchronized (odometry)
         {
             return referenceOdometry == null ?
-                    getFieldPosition() : getPositionRelativeTo(referenceOdometry.position);
+                    getFieldPosition() : getPositionRelativeTo(referenceOdometry.position, true);
         }
     }   //getRelativePosition
 
@@ -481,7 +481,8 @@ public abstract class TrcDriveBase implements TrcExclusiveSubsystem
             if (!referenceOdometryStack.empty())
             {
                 referenceOdometry = referenceOdometryStack.pop();
-            } else
+            }
+            else
             {
                 referenceOdometry = null;
             }
@@ -509,13 +510,16 @@ public abstract class TrcDriveBase implements TrcExclusiveSubsystem
             dbgTrace.traceExit(funcName, TrcDbgTrace.TraceLevel.API);
         }
 
-        this.xScale = xScale;
-        this.yScale = yScale;
-        this.angleScale = angleScale;
-
-        if (driveBaseOdometry != null)
+        synchronized (odometry)
         {
-            driveBaseOdometry.setOdometryScales(xScale, yScale, angleScale);
+            this.xScale = xScale;
+            this.yScale = yScale;
+            this.angleScale = angleScale;
+
+            if (driveBaseOdometry != null)
+            {
+                driveBaseOdometry.setOdometryScales(xScale, yScale, angleScale);
+            }
         }
     }   //setOdometryScales
 
@@ -693,13 +697,14 @@ public abstract class TrcDriveBase implements TrcExclusiveSubsystem
 
         synchronized (odometry)
         {
+            clearReferenceOdometry();
+
             if (driveBaseOdometry != null)
             {
                 driveBaseOdometry.resetOdometry(resetHardware, resetAngle);
             }
             else
             {
-                clearReferenceOdometry();
                 motorsState.prevTimestamp = motorsState.currTimestamp = TrcUtil.getCurrentTime();
 
                 for (int i = 0; i < motors.length; i++)
