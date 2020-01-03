@@ -339,13 +339,15 @@ public class TrcSimpleDriveBase extends TrcDriveBase
     }   //tankDrive
 
     /**
-     * This method is called periodically to calculate the position delta from the previous pose as well as velocity.
+     * This method is called periodically to calculate the delta between the previous and current motor odometries.
      *
-     * @param motorsState specifies the state information of the drivebase motors for calculating pose delta.
-     * @return a TrcPose2D object describing the change in position since the last call.
+     * @param prevOdometries specifies the previous motor odometries.
+     * @param currOdometries specifies the current motor odometries.
+     * @return an Odometry object describing the odometry changes since the last update.
      */
     @Override
-    protected Odometry getOdometryDelta(MotorsState motorsState)
+    protected Odometry getOdometryDelta(
+            TrcOdometrySensor.Odometry prevOdometries[], TrcOdometrySensor.Odometry currOdometries[])
     {
         final String funcName = "getOdometryDelta";
         Odometry delta = new Odometry();
@@ -361,19 +363,19 @@ public class TrcSimpleDriveBase extends TrcDriveBase
         double lPos = 0.0, rPos = 0.0;
         double lVel = 0.0, rVel = 0.0;
 
-        for (int i = 0; i < motorsState.motorPosDiffs.length; i++)
+        for (int i = 0; i < currOdometries.length; i++)
         {
-            double posDiff = motorsState.motorPosDiffs[i];
-            double vel = motorsState.currVelocities[i];
+            double posDelta = currOdometries[i].currPos - prevOdometries[i].currPos;
+            double vel = currOdometries[i].velocity;
 
             if (i % 2 == 0)
             {
-                lPos += posDiff;
+                lPos += posDelta;
                 lVel += vel;
             }
             else
             {
-                rPos += posDiff;
+                rPos += posDelta;
                 rVel += vel;
             }
         }

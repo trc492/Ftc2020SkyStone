@@ -79,6 +79,7 @@ public abstract class TrcServo
     private static final double DEF_PHYSICAL_MAX    = 1.0;
     private static final double DEF_LOGICAL_MIN     = 0.0;
     private static final double DEF_LOGICAL_MAX     = 1.0;
+    protected static TrcElapsedTimer servoSetPosElapsedTimer = null;
 
     private final String instanceName;
     private TrcTimer timer;
@@ -115,6 +116,39 @@ public abstract class TrcServo
     {
         return instanceName;
     }   //toString
+
+    /**
+     * This method enables/disables the elapsed timers for performance monitoring.
+     *
+     * @param enabled specifies true to enable elapsed timers, false to disable.
+     */
+    public static void setElapsedTimerEnabled(boolean enabled)
+    {
+        if (enabled)
+        {
+            if (servoSetPosElapsedTimer == null)
+            {
+                servoSetPosElapsedTimer = new TrcElapsedTimer("TrcServo.setPos", 2.0);
+            }
+        }
+        else
+        {
+            servoSetPosElapsedTimer = null;
+        }
+    }   //setElapsedTimerEnabled
+
+    /**
+     * This method prints the elapsed time info using the given tracer.
+     *
+     * @param tracer specifies the tracer to use for printing elapsed time info.
+     */
+    public static void printElapsedTime(TrcDbgTrace tracer)
+    {
+        if (servoSetPosElapsedTimer != null)
+        {
+            servoSetPosElapsedTimer.printElapsedTime(tracer);
+        }
+    }   //printElapsedTime
 
     /**
      * This method returns the current physical position of the servo as read by an encoder.

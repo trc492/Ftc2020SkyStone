@@ -47,13 +47,17 @@ import ftclib.FtcSongXml;
 import ftclib.FtcVuforia;
 import hallib.HalDashboard;
 import trclib.TrcDbgTrace;
+import trclib.TrcDigitalInput;
 import trclib.TrcDriveBase;
 import trclib.TrcGyro;
 import trclib.TrcHomographyMapper;
+import trclib.TrcMotor;
 import trclib.TrcPidController;
 import trclib.TrcPidDrive;
+import trclib.TrcPidMotor;
 import trclib.TrcPose2D;
 import trclib.TrcRobot;
+import trclib.TrcServo;
 import trclib.TrcSong;
 import trclib.TrcSongPlayer;
 import trclib.TrcUtil;
@@ -525,10 +529,26 @@ public class Robot
             //
             startSong(1, true);
         }
+
+        gyro.setElapsedTimerEnabled(true);
+        TrcDigitalInput.setElapsedTimerEnabled(true);
+        TrcMotor.setElapsedTimerEnabled(true);
+        TrcServo.setElapsedTimerEnabled(true);
     }   //startMode
 
     public void stopMode(TrcRobot.RunMode runMode)
     {
+        final String funcName = "Robot.stopMode";
+
+        gyro.printElapsedTime(globalTracer);
+        gyro.setElapsedTimerEnabled(false);
+        TrcDigitalInput.printElapsedTime(globalTracer);
+        TrcDigitalInput.setElapsedTimerEnabled(false);
+        TrcMotor.printElapsedTime(globalTracer);
+        TrcMotor.setElapsedTimerEnabled(false);
+        TrcServo.printElapsedTime(globalTracer);
+        TrcServo.setElapsedTimerEnabled(false);
+
         if (songPlayer != null && runMode == TrcRobot.RunMode.AUTO_MODE)
         {
             startSong(1, false);

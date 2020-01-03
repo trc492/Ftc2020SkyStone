@@ -35,7 +35,7 @@ import org.apache.commons.math3.linear.RealVector;
  */
 public class TrcSwerveDriveBase extends TrcSimpleDriveBase
 {
-    private final TrcSwerveModule lfModule, rfModule, lrModule, rrModule;
+    private final TrcSwerveModule lfModule, rfModule, lbModule, rbModule;
     private final double wheelBaseWidth, wheelBaseLength, wheelBaseDiagonal;
     private double[] lastWheelPos = new double[4];
 
@@ -59,8 +59,8 @@ public class TrcSwerveDriveBase extends TrcSimpleDriveBase
 
         this.lfModule = leftFrontMotor;
         this.rfModule = rightFrontMotor;
-        this.lrModule = leftBackMotor;
-        this.rrModule = rightBackMotor;
+        this.lbModule = leftBackMotor;
+        this.rbModule = rightBackMotor;
         this.wheelBaseWidth = wheelBaseWidth;
         this.wheelBaseLength = wheelBaseLength;
         this.wheelBaseDiagonal = TrcUtil.magnitude(wheelBaseWidth, wheelBaseLength);
@@ -91,8 +91,8 @@ public class TrcSwerveDriveBase extends TrcSimpleDriveBase
     {
         lfModule.zeroCalibrateSteering();
         rfModule.zeroCalibrateSteering();
-        lrModule.zeroCalibrateSteering();
-        rrModule.zeroCalibrateSteering();
+        lbModule.zeroCalibrateSteering();
+        rbModule.zeroCalibrateSteering();
     }   //zeroCalibrateSteering
 
     /**
@@ -160,8 +160,8 @@ public class TrcSwerveDriveBase extends TrcSimpleDriveBase
         {
             lfModule.setSteerAngle(angle, optimize);
             rfModule.setSteerAngle(angle, optimize);
-            lrModule.setSteerAngle(angle, optimize);
-            rrModule.setSteerAngle(angle, optimize);
+            lbModule.setSteerAngle(angle, optimize);
+            rbModule.setSteerAngle(angle, optimize);
         }
     }   //setSteerAngle
 
@@ -287,13 +287,13 @@ public class TrcSwerveDriveBase extends TrcSimpleDriveBase
             {
                 lfModule.set(0.0);
                 rfModule.set(0.0);
-                lrModule.set(0.0);
-                rrModule.set(0.0);
+                lbModule.set(0.0);
+                rbModule.set(0.0);
 
                 lfModule.setSteerAngle(lfModule.getSteerAngle());
                 rfModule.setSteerAngle(rfModule.getSteerAngle());
-                lrModule.setSteerAngle(lrModule.getSteerAngle());
-                rrModule.setSteerAngle(rrModule.getSteerAngle());
+                lbModule.setSteerAngle(lbModule.getSteerAngle());
+                rbModule.setSteerAngle(rbModule.getSteerAngle());
             }
             else
             {
@@ -326,43 +326,43 @@ public class TrcSwerveDriveBase extends TrcSimpleDriveBase
                 double c = y - (rotation * wheelBaseWidth/wheelBaseDiagonal);
                 double d = y + (rotation * wheelBaseWidth/wheelBaseDiagonal);
 
-                // The white paper goes in order rf, lf, lr, rr. We like to do lf, rf, lr, rr.
+                // The white paper goes in order rf, lf, lb, rb. We like to do lf, rf, lb, rb.
                 // Note: atan2(y, x) in java will take care of x being zero.
                 //       If will return pi/2 for positive y and -pi/2 for negative y.
                 double lfAngle = Math.toDegrees(Math.atan2(b, d));
                 double rfAngle = Math.toDegrees(Math.atan2(b, c));
-                double lrAngle = Math.toDegrees(Math.atan2(a, d));
-                double rrAngle = Math.toDegrees(Math.atan2(a, c));
+                double lbAngle = Math.toDegrees(Math.atan2(a, d));
+                double rbAngle = Math.toDegrees(Math.atan2(a, c));
 
-                // The white paper goes in order rf, lf, lr, rr. We like to do lf, rf, lr, rr.
+                // The white paper goes in order rf, lf, lb, rb. We like to do lf, rf, lb, rb.
                 double lfPower = TrcUtil.magnitude(b, d);
                 double rfPower = TrcUtil.magnitude(b, c);
-                double lrPower = TrcUtil.magnitude(a, d);
-                double rrPower = TrcUtil.magnitude(a, c);
+                double lbPower = TrcUtil.magnitude(a, d);
+                double rbPower = TrcUtil.magnitude(a, c);
 
-                double[] normalizedPowers = TrcUtil.normalize(lfPower, rfPower, lrPower, rrPower);
+                double[] normalizedPowers = TrcUtil.normalize(lfPower, rfPower, lbPower, rbPower);
                 lfPower = this.clipMotorOutput(normalizedPowers[0]);
                 rfPower = this.clipMotorOutput(normalizedPowers[1]);
-                lrPower = this.clipMotorOutput(normalizedPowers[2]);
-                rrPower = this.clipMotorOutput(normalizedPowers[3]);
+                lbPower = this.clipMotorOutput(normalizedPowers[2]);
+                rbPower = this.clipMotorOutput(normalizedPowers[3]);
 
                 if (motorPowerMapper != null)
                 {
                     lfPower = motorPowerMapper.translateMotorPower(lfPower, lfModule.getVelocity());
                     rfPower = motorPowerMapper.translateMotorPower(rfPower, rfModule.getVelocity());
-                    lrPower = motorPowerMapper.translateMotorPower(lrPower, lrModule.getVelocity());
-                    rrPower = motorPowerMapper.translateMotorPower(rrPower, rrModule.getVelocity());
+                    lbPower = motorPowerMapper.translateMotorPower(lbPower, lbModule.getVelocity());
+                    rbPower = motorPowerMapper.translateMotorPower(rbPower, rbModule.getVelocity());
                 }
 
                 lfModule.setSteerAngle(lfAngle);
                 rfModule.setSteerAngle(rfAngle);
-                lrModule.setSteerAngle(lrAngle);
-                rrModule.setSteerAngle(rrAngle);
+                lbModule.setSteerAngle(lbAngle);
+                rbModule.setSteerAngle(rbAngle);
 
                 lfModule.set(lfPower);
                 rfModule.set(rfPower);
-                lrModule.set(lrPower);
-                rrModule.set(rrPower);
+                lbModule.set(lbPower);
+                rbModule.set(rbPower);
             }
         }
 
@@ -373,50 +373,50 @@ public class TrcSwerveDriveBase extends TrcSimpleDriveBase
     }   //holonomicDrive
 
     /**
-     * This method is called periodically to calculate the position delta from the previous pose as well as velocity.
+     * This method is called periodically to calculate the delta between the previous and current motor odometries.
      *
-     * @param motorsState specifies the state information of the drivebase motors for calculating pose delta.
-     * @return a TrcPose2D object describing the change in position since the last call.
+     * @param prevOdometries specifies the previous motor odometries.
+     * @param currOdometries specifies the current motor odometries.
+     * @return an Odometry object describing the odometry changes since the last update.
      */
     @Override
-    protected Odometry getOdometryDelta(MotorsState motorsState)
+    protected Odometry getOdometryDelta(
+            TrcOdometrySensor.Odometry prevOdometries[], TrcOdometrySensor.Odometry currOdometries[])
     {
         final String funcName = "getOdometryDelta";
+        Odometry delta = new Odometry();
 
         if (debugEnabled)
         {
             dbgTrace.traceEnter(funcName, TrcDbgTrace.TraceLevel.TASK);
         }
-
-        TrcSwerveModule[] modules = new TrcSwerveModule[] { lfModule, rfModule, lrModule, rrModule };
-        RealVector[] wheelVectors = new RealVector[4];
-        RealVector[] wheelVelocities = new RealVector[4];
-
-        for (int i = 0; i < modules.length; i++)
-        {
-            double angle = modules[i].getSteerAngle();
-            double pos = modules[i].getPosition();
-            double posDiff = pos - lastWheelPos[i];
-
-            lastWheelPos[i] = pos;
-            wheelVectors[i] = TrcUtil.polarToCartesian(posDiff, angle).mapMultiply(xScale); // x and y scales are same
-            wheelVelocities[i] = TrcUtil.polarToCartesian(modules[i].getVelocity(), angle).mapMultiply(xScale);
-        }
-
+        //
+        // Average the posDelta vectors and velocity vectors of all four wheels:
+        //  (sum posDelta vectors of all wheels)/num_of_wheels
+        //  (sum velocity vectors of all wheels)/num_of_wheels
+        //
+        int numMotors = currOdometries.length;
+        RealVector[] wheelPosVectors = new RealVector[numMotors];
+        RealVector[] wheelVelVectors = new RealVector[numMotors];
         RealVector posSum = new ArrayRealVector(2);
         RealVector velSum = new ArrayRealVector(2);
-
-        for (int i = 0; i < 4; i++)
+        for (int i = 0; i < numMotors; i++)
         {
-            posSum = posSum.add(wheelVectors[i]);
-            velSum = velSum.add(wheelVelocities[i]);
+            double angle = ((TrcSwerveModule) currOdometries[i].sensor).getSteerAngle();
+            double posDelta = currOdometries[i].currPos - prevOdometries[i].currPos;
+            // xScale and yScale on SwerveDrive should be identical.
+            wheelPosVectors[i] = TrcUtil.polarToCartesian(posDelta, angle).mapMultiply(xScale);
+            wheelVelVectors[i] =
+                    TrcUtil.polarToCartesian(currOdometries[i].velocity, angle).mapMultiply(xScale);
+            posSum = posSum.add(wheelPosVectors[i]);
+            velSum = velSum.add(wheelVelVectors[i]);
         }
-
-        posSum.mapMultiplyToSelf(0.25);
-        velSum.mapMultiplyToSelf(0.25);
-
-        Odometry delta = new Odometry();
-
+        double multiplier = 1 / numMotors;
+        posSum.mapMultiplyToSelf(multiplier);
+        velSum.mapMultiplyToSelf(multiplier);
+        //
+        // Calculate the odometry delta.
+        //
         delta.position.x = posSum.getEntry(0);
         delta.position.y = posSum.getEntry(1);
 
@@ -426,19 +426,20 @@ public class TrcSwerveDriveBase extends TrcSimpleDriveBase
         double x = wheelBaseWidth / 2;
         double y = wheelBaseLength / 2;
         // This is black magic math, and it actually needs to be tested.
-        double dRot = x * (wheelVectors[0].getEntry(1) + wheelVectors[2].getEntry(1) -
-                           wheelVectors[1].getEntry(1) - wheelVectors[3].getEntry(1)) +
-                      y * (wheelVectors[0].getEntry(0) + wheelVectors[1].getEntry(0) -
-                           wheelVectors[2].getEntry(0) - wheelVectors[3].getEntry(0));
+        // CodeReview: Please put a reference to your research material so we know where it came from.
+        double dRot = x * (wheelPosVectors[0].getEntry(1) + wheelPosVectors[2].getEntry(1) -
+                           wheelPosVectors[1].getEntry(1) - wheelPosVectors[3].getEntry(1)) +
+                      y * (wheelPosVectors[0].getEntry(0) + wheelPosVectors[1].getEntry(0) -
+                           wheelPosVectors[2].getEntry(0) - wheelPosVectors[3].getEntry(0));
 
         dRot /= 4 * Math.pow(wheelBaseDiagonal, 2);
         dRot = Math.toDegrees(dRot);
         delta.position.angle = dRot;
 
-        double rotVel = x * (wheelVelocities[0].getEntry(1) + wheelVelocities[2].getEntry(1) -
-                             wheelVelocities[1].getEntry(1) - wheelVelocities[3].getEntry(1)) +
-                        y * (wheelVelocities[0].getEntry(0) + wheelVelocities[1].getEntry(0) -
-                             wheelVelocities[2].getEntry(0) - wheelVelocities[3].getEntry(0));
+        double rotVel = x * (wheelVelVectors[0].getEntry(1) + wheelVelVectors[2].getEntry(1) -
+                             wheelVelVectors[1].getEntry(1) - wheelVelVectors[3].getEntry(1)) +
+                        y * (wheelVelVectors[0].getEntry(0) + wheelVelVectors[1].getEntry(0) -
+                             wheelVelVectors[2].getEntry(0) - wheelVelVectors[3].getEntry(0));
         rotVel /= 4 * Math.pow(wheelBaseDiagonal, 2);
         rotVel = Math.toDegrees(rotVel);
         delta.velocity.angle = rotVel;

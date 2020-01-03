@@ -591,7 +591,6 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                     // to make sure it hits the wall and we will correct the odometry and Absolute Target Pose in the
                     // Y direction.
                     //
-
                     robot.elevator.setPosition(5.0);
                     robot.extenderArm.setPosition(RobotInfo3543.EXTENDER_ARM_RETRACT_POS);
 
@@ -673,9 +672,8 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                     nextState = autoChoices.parkUnderBridge == CommonAuto.ParkPosition.PARK_CLOSE_TO_CENTER?
                                     State.MOVE_UNDER_BRIDGE: State.MOVE_BACK_TO_WALL;
                     sm.setState(nextState);
-                    //
-                    // Intentionally falling through to the next state.
-                    //
+                    break;
+
                 case MOVE_BACK_TO_WALL:
                     //
                     // We are going to either park by the wall under the bridge or just park by the wall.

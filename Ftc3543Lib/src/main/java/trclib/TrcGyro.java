@@ -31,7 +31,7 @@ package trclib;
  * INTEGRATE option and let the built-in integrator handle it. Or if it provides a Cardinal heading instead of
  * Cartesian, it can set the CONVERT_TO_CARTESIAN option to enable the CardinalConverter to do the conversion.
  */
-public abstract class TrcGyro extends TrcSensor<TrcGyro.DataType> implements TrcDriveBaseOdometry.OdometrySensor
+public abstract class TrcGyro extends TrcSensor<TrcGyro.DataType> implements TrcOdometrySensor
 {
     protected static final String moduleName = "TrcGyro";
     protected static final boolean debugEnabled = false;
@@ -130,7 +130,7 @@ public abstract class TrcGyro extends TrcSensor<TrcGyro.DataType> implements Trc
          */
         void resetZIntegrator();
 
-    }
+    }   //interface GyroData
     //
     // Gyro data types.
     //
@@ -174,11 +174,13 @@ public abstract class TrcGyro extends TrcSensor<TrcGyro.DataType> implements Trc
     public static final int GYRO_CONVERT_TO_CARTESIAN   = (1 << 4);
 
     protected final String instanceName;
+    private final Odometry odometry;
     private TrcDataIntegrator<DataType> integrator = null;
     private TrcCardinalConverter<DataType> cardinalConverter = null;
     private int xIndex = -1;
     private int yIndex = -1;
     private int zIndex = -1;
+    private TrcElapsedTimer getDataElapsedTimer = null;
 
     /**
      * Constructor: Creates an instance of the object.
@@ -207,6 +209,7 @@ public abstract class TrcGyro extends TrcSensor<TrcGyro.DataType> implements Trc
                 new TrcDbgTrace(moduleName + "." + instanceName, tracingEnabled, traceLevel, msgLevel);
         }
 
+        odometry = new Odometry(this);
         //
         // Count the number of axes and set up the indices for each axis.
         //
@@ -327,6 +330,39 @@ public abstract class TrcGyro extends TrcSensor<TrcGyro.DataType> implements Trc
             cardinalConverter.setEnabled(enabled);
         }
     }   //setEnabled
+
+    /**
+     * This method enables/disables the elapsed timers for performance monitoring.
+     *
+     * @param enabled specifies true to enable elapsed timers, false to disable.
+     */
+    public void setElapsedTimerEnabled(boolean enabled)
+    {
+        if (enabled)
+        {
+            if (getDataElapsedTimer == null)
+            {
+                getDataElapsedTimer = new TrcElapsedTimer(instanceName + ".getGyroData", 2.0);
+            }
+        }
+        else
+        {
+            getDataElapsedTimer = null;
+        }
+    }   //setElapsedTimerEnabled
+
+    /**
+     * This method prints the elapsed time info using the given tracer.
+     *
+     * @param tracer specifies the tracer to use for printing elapsed time info.
+     */
+    public void printElapsedTime(TrcDbgTrace tracer)
+    {
+        if (getDataElapsedTimer != null)
+        {
+            getDataElapsedTimer.printElapsedTime(tracer);
+        }
+    }   //printElapsedTime
 
     /**
      * This method inverts the x-axis. This is useful if the orientation of the gyro x-axis is such that the data
@@ -808,6 +844,7 @@ public abstract class TrcGyro extends TrcSensor<TrcGyro.DataType> implements Trc
         final String funcName = "getRawData";
         SensorData<Double> data = null;
 
+        if (getDataElapsedTimer != null) getDataElapsedTimer.recordStartTime();
         if (index == xIndex)
         {
             data = getRawXData(dataType);
@@ -820,6 +857,7 @@ public abstract class TrcGyro extends TrcSensor<TrcGyro.DataType> implements Trc
         {
             data = getRawZData(dataType);
         }
+        if (getDataElapsedTimer != null) getDataElapsedTimer.recordEndTime();
 
         if (debugEnabled)
         {
@@ -834,41 +872,49 @@ public abstract class TrcGyro extends TrcSensor<TrcGyro.DataType> implements Trc
     }   //getRawData
 
     //
-    // Implements TrcDriveBase.OdometrySensor interface.
+    // Implements TrcOdometrySensor interface.
     //
 
     /**
-     * This method is called by the odometry device to reset the sensor.
+     * This method resets the odometry data and sensor.
      *
      * @param resetHardware specifies true to do a hardware reset, false to do a software reset. Hardware reset may
      *                      require some time to complete and will block this method from returning until finish.
      */
     @Override
-    public void resetPosition(boolean resetHardware)
+    public void resetOdometry(boolean resetHardware)
     {
-        resetZIntegrator();
-    }   //resetPosition
+        synchronized (odometry)
+        {
+            if (resetHardware)
+            {
+                resetZIntegrator();
+            }
+            odometry.prevTimestamp = odometry.currTimestamp = TrcUtil.getCurrentTime();
+            odometry.prevPos = odometry.currPos = getZHeading().value;
+            odometry.velocity = getZRotationRate().value;
+        }
+    }   //resetOdometry
 
     /**
-     * This method returns the position data from the sensor.
+     * This method returns a copy of the odometry data. It must be a copy so it won't change while the caller is
+     * accessing the data fields.
      *
-     * @return position data.
+     * @return odometry data.
      */
     @Override
-    public double getPosition()
+    public Odometry getOdometry()
     {
-        return getZHeading().value;
-    }   //getPosition
+        synchronized (odometry)
+        {
+            odometry.prevTimestamp = odometry.currTimestamp;
+            odometry.prevPos = odometry.currPos;
+            odometry.currTimestamp = TrcUtil.getCurrentTime();
+            odometry.currPos = getZHeading().value;
+            odometry.velocity = getZRotationRate().value;
 
-    /**
-     * This method returns the velocity data from the sensor.
-     *
-     * @return velocity data.
-     */
-    @Override
-    public double getVelocity()
-    {
-        return getZRotationRate().value;
-    }   //getVelocity
+            return odometry.clone();
+        }
+    }   //getOdometry
 
 }   //class TrcGyro

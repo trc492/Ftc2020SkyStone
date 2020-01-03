@@ -163,37 +163,37 @@ public class TrcMecanumDriveBase extends TrcSimpleDriveBase
     }   //holonomicDrive
 
     /**
-     * This method is called periodically to calculate the position delta from the previous pose as well as velocity.
+     * This method is called periodically to calculate the delta between the previous and current motor odometries.
      *
-     * @param motorsState specifies the state information of the drivebase motors for calculating pose delta.
-     * @return a TrcPose2D object describing the change in position since the last call.
+     * @param prevOdometries specifies the previous motor odometries.
+     * @param currOdometries specifies the current motor odometries.
+     * @return an Odometry object describing the odometry changes since the last update.
      */
     @Override
-    protected Odometry getOdometryDelta(MotorsState motorsState)
+    protected Odometry getOdometryDelta(
+            TrcOdometrySensor.Odometry prevOdometries[], TrcOdometrySensor.Odometry currOdometries[])
     {
         final String funcName = "getOdometryDelta";
         //
         // Call super class to get Y and turn data.
         //
-        Odometry delta = super.getOdometryDelta(motorsState);
+        Odometry delta = super.getOdometryDelta(prevOdometries, currOdometries);
 
         delta.position.x = xScale * TrcUtil.average(
-                motorsState.motorPosDiffs[MotorType.LEFT_FRONT.value],
-                motorsState.motorPosDiffs[MotorType.RIGHT_BACK.value],
-                -motorsState.motorPosDiffs[MotorType.RIGHT_FRONT.value],
-                -motorsState.motorPosDiffs[MotorType.LEFT_BACK.value]);
+                currOdometries[MotorType.LEFT_FRONT.value].currPos
+                - prevOdometries[MotorType.LEFT_FRONT.value].currPos,
+                currOdometries[MotorType.RIGHT_BACK.value].currPos
+                - prevOdometries[MotorType.RIGHT_BACK.value].currPos,
+                -(currOdometries[MotorType.RIGHT_FRONT.value].currPos
+                  - prevOdometries[MotorType.RIGHT_FRONT.value].currPos),
+                -(currOdometries[MotorType.LEFT_BACK.value].currPos
+                  - prevOdometries[MotorType.LEFT_BACK.value].currPos));
 
         delta.velocity.x = xScale * TrcUtil.average(
-                motorsState.currVelocities[MotorType.LEFT_FRONT.value],
-                motorsState.currVelocities[MotorType.RIGHT_BACK.value],
-                -motorsState.currVelocities[MotorType.RIGHT_FRONT.value],
-                -motorsState.currVelocities[MotorType.LEFT_BACK.value]);
-
-        if (debugEnabled)
-        {
-            dbgTrace.traceInfo(funcName, "motorsState=%s", motorsState);
-            dbgTrace.traceInfo(funcName, "delta=%s", delta);
-        }
+                currOdometries[MotorType.LEFT_FRONT.value].velocity,
+                currOdometries[MotorType.RIGHT_BACK.value].velocity,
+                -currOdometries[MotorType.RIGHT_FRONT.value].velocity,
+                -currOdometries[MotorType.LEFT_BACK.value].velocity);
 
         return delta;
     }   //getOdometryDelta

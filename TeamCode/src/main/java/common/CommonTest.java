@@ -27,8 +27,8 @@ import java.util.Locale;
 import ftclib.FtcChoiceMenu;
 import ftclib.FtcMenu;
 import ftclib.FtcValueMenu;
+import trclib.TrcElapsedTimer;
 import trclib.TrcEvent;
-import trclib.TrcLoopPerformanceMonitor;
 import trclib.TrcPidController;
 import trclib.TrcPose2D;
 import trclib.TrcRobot;
@@ -64,7 +64,7 @@ public class CommonTest
 
     private Robot robot;
     private String moduleName;
-    private TrcLoopPerformanceMonitor loopPerformanceMonitor = null;
+    private TrcElapsedTimer elapsedTimer = null;
     //
     // State machine.
     //
@@ -103,7 +103,7 @@ public class CommonTest
         this.moduleName = moduleName;
         if (robot.preferences.useLoopPerformanceMonitor)
         {
-            loopPerformanceMonitor = new TrcLoopPerformanceMonitor("TestLoopMonitor", 1.0);
+            elapsedTimer = new TrcElapsedTimer("TestLoopMonitor", 2.0);
         }
         //
         // Initialize additional objects.
@@ -346,14 +346,13 @@ public class CommonTest
                 break;
         }
 
-        if (loopPerformanceMonitor != null)
+        if (elapsedTimer != null)
         {
-            loopPerformanceMonitor.update();
+            elapsedTimer.recordPeriodTime();
             robot.dashboard.displayPrintf(
-                    6, "Period: %.3f/%.3f/%3f, Frequency: %.2f/%.2f/%.2f",
-                    loopPerformanceMonitor.getMinPeriod(), loopPerformanceMonitor.getAveragePeriod(),
-                    loopPerformanceMonitor.getMaxPeriod(), loopPerformanceMonitor.getMinFrequency(),
-                    loopPerformanceMonitor.getAverageFrequency(), loopPerformanceMonitor.getMaxFrequency());
+                    6, "Period: %.3f(%.3f/%.3f)",
+                    elapsedTimer.getAverageElapsedTime(), elapsedTimer.getMinElapsedTime(),
+                    elapsedTimer.getMaxElapsedTime());
         }
     }   //runContinuous
 
