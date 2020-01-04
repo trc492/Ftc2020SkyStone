@@ -59,6 +59,7 @@ class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
         CLEAR_OF_FOUNDATION,
         MOVE_TO_FOUNDATION_SIDE,
         PUSH_FOUNDATION_TO_WALL,
+        RESYNC_ROBOT_X,
         MOVE_BACK_TO_WALL,
         MOVE_UNDER_BRIDGE_Y,
         MOVE_UNDER_BRIDGE_X,
@@ -426,9 +427,21 @@ class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
                     // Bump the foundation toward the wall to make sure it lands inside the building site.
                     //
                     xTarget = -6.0 * allianceDirection;
+                    simplePidDrive.setRelativeXTarget(xTarget, State.RESYNC_ROBOT_X);
+                    break;
+
+                case RESYNC_ROBOT_X:
+                    pose = robot.driveBase.getFieldPosition();
+                    pose.x = RobotInfo.ABS_FOUNDATION_SIDE_X * allianceDirection;
+                    robot.driveBase.setFieldPosition(pose);
+
+                    pose = robot.pidDrive.getAbsoluteTargetPose();
+                    pose.x = RobotInfo.ABS_FOUNDATION_SIDE_X * allianceDirection;
+                    robot.pidDrive.setAbsoluteTargetPose(pose);
+
                     nextState = autoChoices.parkUnderBridge == CommonAuto.ParkPosition.PARK_CLOSE_TO_CENTER?
-                                    State.MOVE_UNDER_BRIDGE_Y : State.MOVE_BACK_TO_WALL;
-                    simplePidDrive.setRelativeXTarget(xTarget, nextState);
+                            State.MOVE_UNDER_BRIDGE_Y : State.MOVE_BACK_TO_WALL;
+                    sm.setState(nextState);
                     break;
 
                 case MOVE_BACK_TO_WALL:
