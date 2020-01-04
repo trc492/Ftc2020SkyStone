@@ -538,8 +538,6 @@ public class Robot
 
     public void stopMode(TrcRobot.RunMode runMode)
     {
-        final String funcName = "Robot.stopMode";
-
         gyro.printElapsedTime(globalTracer);
         gyro.setElapsedTimerEnabled(false);
         TrcDigitalInput.printElapsedTime(globalTracer);
