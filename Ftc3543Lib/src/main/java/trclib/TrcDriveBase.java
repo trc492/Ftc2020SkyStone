@@ -1560,23 +1560,25 @@ public abstract class TrcDriveBase implements TrcExclusiveSubsystem
                 {
                     double refTimestamp = motorsState.currMotorOdometries[0].currTimestamp;
                     TrcOdometrySensor.Odometry gyroOdometry = gyro.getOdometry();
-
-                    if (debugEnabled)
-                    {
-                        dbgTrace.traceInfo(funcName, "Gyro Before: timestamp=%.3f, pos=%.1f, vel=%.1f",
-                                gyroOdometry.currTimestamp, gyroOdometry.currPos, gyroOdometry.velocity);
-                    }
-                    gyroOdometry.currPos -= gyroOdometry.velocity * (gyroOdometry.currTimestamp - refTimestamp);
-                    gyroOdometry.currTimestamp = refTimestamp;
-                    if (debugEnabled)
-                    {
-                        dbgTrace.traceInfo(funcName, "Gyro After: timestamp=%.3f, pos=%.1f, vel=%.1f",
-                                gyroOdometry.currTimestamp, gyroOdometry.currPos, gyroOdometry.velocity);
-                    }
+//
+//                    if (debugEnabled)
+//                    {
+//                        dbgTrace.traceInfo(funcName, "Gyro Before: timestamp=%.3f, pos=%.1f, vel=%.1f",
+//                                gyroOdometry.currTimestamp, gyroOdometry.currPos, gyroOdometry.velocity);
+//                    }
+//                    gyroOdometry.currPos -= gyroOdometry.velocity * (gyroOdometry.currTimestamp - refTimestamp);
+//                    gyroOdometry.currTimestamp = refTimestamp;
+//                    if (debugEnabled)
+//                    {
+//                        dbgTrace.traceInfo(funcName, "Gyro After: timestamp=%.3f, pos=%.1f, vel=%.1f",
+//                                gyroOdometry.currTimestamp, gyroOdometry.currPos, gyroOdometry.velocity);
+//                    }
 
                     // Overwrite the angle/turnrate values if gyro present, since that's more accurate
-                    odometryDelta.position.angle = gyroOdometry.currPos - odometry.position.angle;
-                    odometryDelta.velocity.angle = gyroOdometry.velocity;
+//                    odometryDelta.position.angle = gyroOdometry.currPos - odometry.position.angle;
+//                    odometryDelta.velocity.angle = gyroOdometry.velocity;
+                    odometryDelta.position.angle = gyro.getZHeading().value - odometry.position.angle;
+                    odometryDelta.velocity.angle = gyro.getZRotationRate().value;
                 }
 
                 updateOdometry(odometryDelta, odometry.position.angle);
