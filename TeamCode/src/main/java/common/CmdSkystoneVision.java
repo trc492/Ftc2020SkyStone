@@ -58,6 +58,7 @@ public class CmdSkystoneVision implements TrcRobot.RobotCommand
         double grabberOffsetX = 0.0;
         double grabberOffsetY = 0.0;
         double scanDirection = -1.0;
+        double giveUpDistance = 9.0;
 
         public Parameters setUseVisionTrigger(boolean useVisionTrigger)
         {
@@ -88,6 +89,12 @@ public class CmdSkystoneVision implements TrcRobot.RobotCommand
         {
             this.grabberOffsetX = grabberOffsetX;
             this.grabberOffsetY = grabberOffsetY;
+            return this;
+        }
+
+        public Parameters setGiveUpDistance(double giveUpDistance)
+        {
+            this.giveUpDistance = giveUpDistance;
             return this;
         }
 
@@ -294,6 +301,7 @@ public class CmdSkystoneVision implements TrcRobot.RobotCommand
                                 //
                                 if (visionParams.scootCount == 0)
                                 {
+                                    xTarget = -visionParams.giveUpDistance * allianceDirection * visionParams.scanDirection;
                                     nextState = State.ALIGN_SKYSTONE;
                                     sentence.append("give up.");
                                 }
