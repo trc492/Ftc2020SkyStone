@@ -808,6 +808,14 @@ public class TrcPidDrive
 
             TrcPose2D newTargetPose = new TrcPose2D(absX, absY, absHeading);
             TrcPose2D currRobotPose = driveBase.getFieldPosition();
+            //
+            // RelativeTo will calculate delta X and delta Y between the target and current positions. In addition,
+            // it will also rotate the (deltaX, deltaY) vector to the current robot heading which is wrong because
+            // that will change the delta X and delta Y values by the sine/cosine amount of the rotated angle.
+            // We want the delta X delta Y values unchanged. So we change the currRobotPose angle to be the target
+            // angle, that will result in a zero rotation thus making delta X and delta Y values unchanged.
+            //
+            currRobotPose.angle = absHeading;
             TrcPose2D relativePose = newTargetPose.relativeTo(currRobotPose);
             double turnTarget = turnPidCtrl.hasAbsoluteSetPoint()? newTargetPose.angle : relativePose.angle;
 

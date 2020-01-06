@@ -1558,8 +1558,8 @@ public abstract class TrcDriveBase implements TrcExclusiveSubsystem
                 odometryDelta = getOdometryDelta(motorsState.prevMotorOdometries, motorsState.currMotorOdometries);
                 if (gyro != null)
                 {
-                    double refTimestamp = motorsState.currMotorOdometries[0].currTimestamp;
-                    TrcOdometrySensor.Odometry gyroOdometry = gyro.getOdometry();
+//                    double refTimestamp = motorsState.currMotorOdometries[0].currTimestamp;
+//                    TrcOdometrySensor.Odometry gyroOdometry = gyro.getOdometry();
 //
 //                    if (debugEnabled)
 //                    {
@@ -1575,10 +1575,10 @@ public abstract class TrcDriveBase implements TrcExclusiveSubsystem
 //                    }
 
                     // Overwrite the angle/turnrate values if gyro present, since that's more accurate
-//                    odometryDelta.position.angle = gyroOdometry.currPos - odometry.position.angle;
-//                    odometryDelta.velocity.angle = gyroOdometry.velocity;
                     odometryDelta.position.angle = gyro.getZHeading().value - odometry.position.angle;
                     odometryDelta.velocity.angle = gyro.getZRotationRate().value;
+//                    odometryDelta.position.angle = gyroOdometry.currPos - odometry.position.angle;
+//                    odometryDelta.velocity.angle = gyroOdometry.velocity;
                 }
 
                 updateOdometry(odometryDelta, odometry.position.angle);

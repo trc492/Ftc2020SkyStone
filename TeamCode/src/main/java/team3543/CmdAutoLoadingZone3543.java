@@ -446,10 +446,10 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                     //
                     // Travel long distance to the foundation. So we need to travel in full speed to save time.
                     //
-                    nextState = autoChoices.strafeToFoundation?
-                                    State.APPROACH_FOUNDATION: State.TURN_BACK_TO_FOUNDATION;
                     xPidCtrl.setOutputLimit(1.0);
                     yPidCtrl.setOutputLimit(1.0);
+                    nextState = autoChoices.strafeToFoundation?
+                                    State.APPROACH_FOUNDATION: State.TURN_BACK_TO_FOUNDATION;
                     xTarget = autoChoices.strategy == CommonAuto.AutoStrategy.LOADING_ZONE_SINGLE_SKYSTONE?
                                     RobotInfo.ABS_FOUNDATION_DROP_MID_X:
                               (autoChoices.strategy == CommonAuto.AutoStrategy.LOADING_ZONE_DOUBLE_SKYSTONE_CENTER ||
