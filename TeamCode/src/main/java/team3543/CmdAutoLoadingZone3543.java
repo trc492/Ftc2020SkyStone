@@ -35,7 +35,7 @@ import trclib.TrcTimer;
 
 class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
 {
-    private static final double AUTONOMOUS_END_TIME = 100.0;//30.0; //TODO: set it back to 30 sec when done debugging.
+    private static final double AUTONOMOUS_END_TIME = 30.0;
     private static final int MAX_SCORE_SINGLE_SKYSTONE = 29;
 
     private enum State
@@ -138,7 +138,7 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
             double projectedTime = elapsedTime;
             int projectedScore = 14;    //We already have one skystone on the foundation, so that's 14 points.
 
-            projectedTime += autoChoices.strafeToFoundation? 16.0: 20.0; //TODO: determine extra time for not strafing.
+            projectedTime += autoChoices.strafeToFoundation? 16.0: 20.0;
             //
             // If we are within time limit, we gain an extra 14 points (10 for carrying the skystone crossing the
             // bridge line and 4 for dropping it off to the foundation).
@@ -149,9 +149,9 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
             // the SINGLE_SKYSTONE strategy.
             //
             projectedTime += autoChoices.parkUnderBridge == CommonAuto.ParkPosition.PARK_CLOSE_TO_CENTER?
-                                3.5:
+                                1.0:
                              autoChoices.parkUnderBridge == CommonAuto.ParkPosition.PARK_CLOSE_TO_WALL?
-                                0.1: 0.0;   //TODO: determine these times.
+                                2.0: 1.0;
             //
             // If we are within time limit, we gain an extra 5 points for parking under the bridge.
             //
@@ -180,15 +180,15 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
             }
             else
             {
-                projectedTime += 7.0;   //Time to pull foundation to wall, and bump it in.
+                projectedTime += 6.5;   //Time to pull foundation to wall, and bump it in and park at bridge center.
                 //
                 // If we are doing DOUBLE_SKYSTONE and we want to move the foundation, let's check if we have enough time to
                 // do so.
                 //
 //                projectedTime += autoChoices.parkUnderBridge == CommonAuto.ParkPosition.PARK_CLOSE_TO_CENTER ?
-//                                    0.6 :   //Time to just move sideways under the bridge.
+//                                    1.5 :   //Time to just move sideways under the bridge.
 //                                 autoChoices.parkUnderBridge == CommonAuto.ParkPosition.PARK_CLOSE_TO_WALL ?
-//                                    1.0 : 0.5;  //Even NO_PARK still need time to move back to the wall.
+//                                    2.0 : 0.5;  //Even NO_PARK still need time to move back to the wall.
                 willDo = projectedTime < AUTONOMOUS_END_TIME;
             }
         }

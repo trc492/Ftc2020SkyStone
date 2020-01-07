@@ -54,6 +54,7 @@ public abstract class TrcDriveBase implements TrcExclusiveSubsystem
     // If false, use zero curvature (assume path is a bunch of straight lines). This is less accurate.
     //
     private static final boolean USE_CURVED_PATH = true;
+    private static final boolean SYNC_GYRO_DATA = false;
 
     /**
      * This class implements the drive base odometry. It consists of the position as well as velocity info in all
@@ -1558,27 +1559,28 @@ public abstract class TrcDriveBase implements TrcExclusiveSubsystem
                 odometryDelta = getOdometryDelta(motorsState.prevMotorOdometries, motorsState.currMotorOdometries);
                 if (gyro != null)
                 {
-//                    double refTimestamp = motorsState.currMotorOdometries[0].currTimestamp;
-//                    TrcOdometrySensor.Odometry gyroOdometry = gyro.getOdometry();
-//
-//                    if (debugEnabled)
-//                    {
-//                        dbgTrace.traceInfo(funcName, "Gyro Before: timestamp=%.3f, pos=%.1f, vel=%.1f",
-//                                gyroOdometry.currTimestamp, gyroOdometry.currPos, gyroOdometry.velocity);
-//                    }
-//                    gyroOdometry.currPos -= gyroOdometry.velocity * (gyroOdometry.currTimestamp - refTimestamp);
-//                    gyroOdometry.currTimestamp = refTimestamp;
-//                    if (debugEnabled)
-//                    {
-//                        dbgTrace.traceInfo(funcName, "Gyro After: timestamp=%.3f, pos=%.1f, vel=%.1f",
-//                                gyroOdometry.currTimestamp, gyroOdometry.currPos, gyroOdometry.velocity);
-//                    }
+                    TrcOdometrySensor.Odometry gyroOdometry = gyro.getOdometry();
 
+                    if (SYNC_GYRO_DATA)
+                    {
+                        if (debugEnabled)
+                        {
+                            dbgTrace.traceInfo(funcName, "Gyro Before: timestamp=%.3f, pos=%.1f, vel=%.1f",
+                                    gyroOdometry.currTimestamp, gyroOdometry.currPos, gyroOdometry.velocity);
+                        }
+
+                        double refTimestamp = motorsState.currMotorOdometries[0].currTimestamp;
+                        gyroOdometry.currPos -= gyroOdometry.velocity * (gyroOdometry.currTimestamp - refTimestamp);
+                        gyroOdometry.currTimestamp = refTimestamp;
+                        if (debugEnabled)
+                        {
+                            dbgTrace.traceInfo(funcName, "Gyro After: timestamp=%.3f, pos=%.1f, vel=%.1f",
+                                    gyroOdometry.currTimestamp, gyroOdometry.currPos, gyroOdometry.velocity);
+                        }
+                    }
                     // Overwrite the angle/turnrate values if gyro present, since that's more accurate
-                    odometryDelta.position.angle = gyro.getZHeading().value - odometry.position.angle;
-                    odometryDelta.velocity.angle = gyro.getZRotationRate().value;
-//                    odometryDelta.position.angle = gyroOdometry.currPos - odometry.position.angle;
-//                    odometryDelta.velocity.angle = gyroOdometry.velocity;
+                    odometryDelta.position.angle = gyroOdometry.currPos - odometry.position.angle;
+                    odometryDelta.velocity.angle = gyroOdometry.velocity;
                 }
 
                 updateOdometry(odometryDelta, odometry.position.angle);

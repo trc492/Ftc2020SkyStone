@@ -69,10 +69,11 @@ class RobotInfo3543
     // 2019-11-13: Kp=0.02, Ki=0.0, Kd=0.001
     // 2019-12-29: Kp=0.01, Ki=0.0, Kd=0.001
     // 2020-01-05: Kp=0.015, Ki=0.0, Kd=0.001
+    // 2020-01-06: Kp=0.009, Ki=0.0, Kd=0.0005
     //
-    static final double GYRO_KP                                 = 0.015;
+    static final double GYRO_KP                                 = 0.009;
     static final double GYRO_KI                                 = 0.0;
-    static final double GYRO_KD                                 = 0.001;
+    static final double GYRO_KD                                 = 0.0005;
     static final double GYRO_TOLERANCE                          = 2.0;
 
     static final double PIDDRIVE_STALL_TIMEOUT                  = 0.2;  //in seconds.

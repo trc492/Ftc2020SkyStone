@@ -876,8 +876,7 @@ public abstract class TrcGyro extends TrcSensor<TrcGyro.DataType> implements Trc
      */
     private void updateOdometry()
     {
-        TrcSensor.SensorData<Double> zHeading = getRawZData(DataType.HEADING);
-//        TrcSensor.SensorData<Double> zRotationRate = getRawZData(DataType.ROTATION_RATE);
+        TrcSensor.SensorData<Double> zHeading = getZHeading();
 
         odometry.prevTimestamp = odometry.currTimestamp;
         odometry.prevPos = odometry.currPos;
@@ -888,7 +887,6 @@ public abstract class TrcGyro extends TrcSensor<TrcGyro.DataType> implements Trc
         {
             odometry.velocity = (odometry.currPos - odometry.prevPos) / timeDelta;
         }
-//        odometry.velocity = zRotationRate.value;
     }   //updateOdometry
 
     //
