@@ -160,7 +160,7 @@ class RobotInfo3543
     static final double ELEVATOR_MAX_HEIGHT                     = 19.0;
     static final double ELEVATOR_SCALE                          = 17.0/4718.0;
     static final double ELEVATOR_OFFSET                         = 0.0;
-    static final double ELEVATOR_DROP_HEIGHT                    = 3.0;
+    static final double ELEVATOR_DROP_HEIGHT                    = 4.0;
     //
     // ExtenderArm subsystem (3543-only).
     //

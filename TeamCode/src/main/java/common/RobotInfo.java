@@ -48,7 +48,7 @@ public class RobotInfo
     // Absolute position waypoint coordinates
     public static final double ABS_FOUNDATION_DROP_FAR_X                = 128.0;
     public static final double ABS_FOUNDATION_DROP_MID_X                = 120.0;
-    public static final double ABS_FOUNDATION_DROP_NEAR_X               = 112.0;
+    public static final double ABS_FOUNDATION_DROP_NEAR_X               = 114.0;
     public static final double ABS_NEXT_TO_PARTNER_PARK_X               = 86.0;
     public static final double ABS_CENTER_BRIDGE_PARK_Y                 = 32.0;
     public static final double ABS_UNDER_BRIDGE_PARK_X                  = 70.0;

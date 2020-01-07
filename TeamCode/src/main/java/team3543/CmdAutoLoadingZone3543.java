@@ -54,6 +54,7 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
         TURN_BACK_TO_FOUNDATION,
         APPROACH_FOUNDATION,
         DROP_SKYSTONE,
+        CLEAR_OF_SKYSTONE,
         BACK_OFF_FOUNDATION,
         TURN_TOWARDS_QUARRY,
         GOTO_SECOND_SKYSTONE,
@@ -489,7 +490,7 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                     if (doSecondSkystone(elapsedTime))
                     {
                         // Wait until the skystone has dropped before moving.
-                        nextState = State.BACK_OFF_FOUNDATION;
+                        nextState = State.CLEAR_OF_SKYSTONE;
                         timer.set(0.5, event);
                     }
                     else if (doPullFoundation(elapsedTime))
@@ -508,18 +509,27 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                         //
                         nextState = autoChoices.parkUnderBridge == CommonAuto.ParkPosition.PARK_CLOSE_TO_CENTER?
                                         State.MOVE_TOWARDS_CENTER: State.SKIP_MOVE_FOUNDATION_PARK_WALL;
-                        timer.set(0.5, event);
+                        timer.set(1.5, event);
+                        robot.elevator.setPosition(8.0);
                     }
                     sm.waitForSingleEvent(event, nextState);
+                    break;
+
+                case CLEAR_OF_SKYSTONE:
+                    //
+                    // Move sideway to be clear of the skystone before moving back.
+                    //
+                    robot.elevator.setPosition(6.0);
+                    robot.extenderArm.zeroCalibrate();
+
+                    xTarget = -12.0 * allianceDirection;
+                    simplePidDrive.setRelativeXTarget(xTarget, State.BACK_OFF_FOUNDATION);
                     break;
 
                 case BACK_OFF_FOUNDATION:
                     //
                     // We are going for the second skystone. Need to back up a little to clear the bridge.
                     //
-                    robot.elevator.setPosition(5.0);
-                    robot.extenderArm.zeroCalibrate();
-
                     nextState = autoChoices.strafeToFoundation? State.GOTO_SECOND_SKYSTONE: State.TURN_TOWARDS_QUARRY;
                     yTarget = RobotInfo.ABS_ROBOT_TRAVEL_Y;
                     simplePidDrive.setAbsoluteYTarget(yTarget, nextState);
