@@ -44,9 +44,6 @@ import trclib.TrcUtil;
  */
 public class CmdSkystoneVision implements TrcRobot.RobotCommand
 {
-    private static final boolean debugXPid = true;
-    private static final boolean debugYPid = true;
-    private static final boolean debugTurnPid = true;
     private static final double VISION_TIMEOUT = 1.0;
 
     public static class Parameters
@@ -58,7 +55,7 @@ public class CmdSkystoneVision implements TrcRobot.RobotCommand
         double grabberOffsetX = 0.0;
         double grabberOffsetY = 0.0;
         double scanDirection = -1.0;
-        double giveUpDistance = 9.0;
+//        double giveUpDistance = 9.0;
 
         public Parameters setUseVisionTrigger(boolean useVisionTrigger)
         {
@@ -92,11 +89,11 @@ public class CmdSkystoneVision implements TrcRobot.RobotCommand
             return this;
         }
 
-        public Parameters setGiveUpDistance(double giveUpDistance)
-        {
-            this.giveUpDistance = giveUpDistance;
-            return this;
-        }
+//        public Parameters setGiveUpDistance(double giveUpDistance)
+//        {
+//            this.giveUpDistance = giveUpDistance;
+//            return this;
+//        }
 
     }   //class Parameters
 
@@ -118,9 +115,6 @@ public class CmdSkystoneVision implements TrcRobot.RobotCommand
     private final TrcStateMachine<State> sm;
     private final TrcTrigger visionTrigger;
     private final double allianceDirection;
-    private final TrcPidController xPidCtrl;
-    private final TrcPidController yPidCtrl;
-    private final TrcPidController turnPidCtrl;
     private TrcPose2D skystonePose = null;
     private double visionTimeout = 0.0;
     private double skystoneXPos = 0.0;
@@ -141,9 +135,6 @@ public class CmdSkystoneVision implements TrcRobot.RobotCommand
         visionTrigger = visionParams.useVisionTrigger?
                 new TrcTrigger("VisionTrigger", this::isTriggered, this::targetDetected): null;
         allianceDirection = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE? 1.0: -1.0;
-        xPidCtrl = robot.pidDrive.getXPidCtrl();
-        yPidCtrl = robot.pidDrive.getYPidCtrl();
-        turnPidCtrl = robot.pidDrive.getTurnPidCtrl();
     }   //CmdSkystoneVision
 
     public void start()
@@ -301,7 +292,7 @@ public class CmdSkystoneVision implements TrcRobot.RobotCommand
                                 //
                                 if (visionParams.scootCount == 0)
                                 {
-                                    xTarget = -visionParams.giveUpDistance * allianceDirection * visionParams.scanDirection;
+//                                    xTarget = -visionParams.giveUpDistance * allianceDirection * visionParams.scanDirection;
                                     nextState = State.ALIGN_SKYSTONE;
                                     sentence.append("give up.");
                                 }
@@ -372,10 +363,11 @@ public class CmdSkystoneVision implements TrcRobot.RobotCommand
                         visionTrigger.setEnabled(false);
                     }
 
-                    xTarget = visionParams.grabberOffsetX;
+//                    xTarget = visionParams.grabberOffsetX;
+                    xTarget = 0.0;
                     if (skystonePose != null)
                     {
-                        xTarget += skystonePose.x;
+                        xTarget += skystonePose.x + visionParams.grabberOffsetX;
                     }
                     else if (visionParams.assumeLeftIfNotFound)
                     {

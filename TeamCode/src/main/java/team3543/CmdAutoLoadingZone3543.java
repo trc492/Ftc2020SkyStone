@@ -48,12 +48,13 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
         DO_VISION,
         GO_DOWN_ON_SKYSTONE,
         PULL_SKYSTONE,
-        START_EXTENDER_ARM_RETRACTION,
+        LIFT_SKYSTONE,
         TURN_TOWARDS_FOUNDATION,
         GOTO_FOUNDATION,
         TURN_BACK_TO_FOUNDATION,
         APPROACH_FOUNDATION,
         DROP_SKYSTONE,
+        RETRACT_TO_MIN_HEIGHT,
         CLEAR_OF_SKYSTONE,
         BACK_OFF_FOUNDATION,
         TURN_TOWARDS_QUARRY,
@@ -70,7 +71,6 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
         MOVE_UNDER_BRIDGE,
         SKIP_MOVE_FOUNDATION_PARK_WALL,
         MOVE_TOWARDS_CENTER,
-        START_RETRACTIONS,
         DONE
     }   //enum State
 
@@ -88,6 +88,7 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
     private final TrcPidController xPidCtrl;
     private final TrcPidController yPidCtrl;
     private final TrcPidController turnPidCtrl;
+    private State nextState = null;
     private TrcPidController.PidCoefficients savedYPidCoeff = null;
     private double startX = 0.0;
     private int skystonesDropped = 0;
@@ -139,7 +140,7 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
             double projectedTime = elapsedTime;
             int projectedScore = 14;    //We already have one skystone on the foundation, so that's 14 points.
 
-            projectedTime += autoChoices.strafeToFoundation? 16.0: 20.0;
+            projectedTime += autoChoices.strafeToFoundation? 15.0: 20.0;
             //
             // If we are within time limit, we gain an extra 14 points (10 for carrying the skystone crossing the
             // bridge line and 4 for dropping it off to the foundation).
@@ -164,6 +165,7 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                     funcName, "[%.3f] >>> WillDo=%s, ProjectedTotalTime=%.3f, AchievableMaxScore=%d",
                     elapsedTime, willDo, projectedTime, projectedScore);
         }
+
         return willDo;
     }   //doSecondSkystone
 
@@ -183,13 +185,9 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
             {
                 projectedTime += 6.5;   //Time to pull foundation to wall, and bump it in and park at bridge center.
                 //
-                // If we are doing DOUBLE_SKYSTONE and we want to move the foundation, let's check if we have enough time to
-                // do so.
+                // If we are doing DOUBLE_SKYSTONE and we want to move the foundation, let's check if we have enough
+                // time to do so.
                 //
-//                projectedTime += autoChoices.parkUnderBridge == CommonAuto.ParkPosition.PARK_CLOSE_TO_CENTER ?
-//                                    1.5 :   //Time to just move sideways under the bridge.
-//                                 autoChoices.parkUnderBridge == CommonAuto.ParkPosition.PARK_CLOSE_TO_WALL ?
-//                                    2.0 : 0.5;  //Even NO_PARK still need time to move back to the wall.
                 willDo = projectedTime < AUTONOMOUS_END_TIME;
             }
         }
@@ -252,7 +250,6 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
             double xTarget = 0.0;
             double yTarget = 0.0;
             double turnTarget = 0.0;
-            State nextState;
 
             robot.dashboard.displayPrintf(1, "State: %s", state);
 
@@ -261,7 +258,7 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                 case BEGIN:
                     robot.setFlashLightOn(true, true);
                     //
-                    // Set the robot's absolute field starting position.
+                    // Set the robot's absolute starting field position.
                     //
                     if (autoChoices.strategy == CommonAuto.AutoStrategy.LOADING_ZONE_SINGLE_SKYSTONE ||
                         autoChoices.strategy == CommonAuto.AutoStrategy.LOADING_ZONE_DOUBLE_SKYSTONE_SOLO)
@@ -421,17 +418,17 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                     //
                     robot.grabber.grab();
                     yTarget = RobotInfo.ABS_ROBOT_TRAVEL_Y;
-                    simplePidDrive.setAbsoluteYTarget(yTarget, State.START_EXTENDER_ARM_RETRACTION);
+                    simplePidDrive.setAbsoluteYTarget(yTarget, State.LIFT_SKYSTONE);
                     break;
 
-                case START_EXTENDER_ARM_RETRACTION:
+                case LIFT_SKYSTONE:
                     //
-                    // TODO: may want to use a timer so we don't need to wait for the slow arm extender.
                     // Bring the extender arm back so we don't run into the bridge during travel.
                     //
                     nextState = autoChoices.strafeToFoundation?
                                     State.GOTO_FOUNDATION: State.TURN_TOWARDS_FOUNDATION;
-                    robot.extenderArm.setPosition(RobotInfo3543.EXTENDER_ARM_CARRY_POS, event);
+                    robot.extenderArm.setPosition(RobotInfo3543.EXTENDER_ARM_CARRY_POS);
+                    timer.set(0.5, event);
                     sm.waitForSingleEvent(event, nextState);
                     break;
 
@@ -475,7 +472,7 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                     //
                     robot.elevator.setPosition(RobotInfo3543.ELEVATOR_DROP_HEIGHT);
                     robot.extenderArm.setPosition(RobotInfo3543.EXTENDER_ARM_DROP_POS);
-                    yTarget =  RobotInfo.ABS_FOUNDATION_Y + 1.0; //TODO: Temporary inconsistency fix
+                    yTarget =  RobotInfo.ABS_FOUNDATION_Y;
                     if (skystonesDropped > 0) yTarget += 2.0;
                     simplePidDrive.setAbsoluteYTarget(yTarget, State.DROP_SKYSTONE);
                     break;
@@ -490,8 +487,8 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                     if (doSecondSkystone(elapsedTime))
                     {
                         // Wait until the skystone has dropped before moving.
-                        nextState = State.CLEAR_OF_SKYSTONE;
                         timer.set(0.5, event);
+                        sm.waitForSingleEvent(event, State.CLEAR_OF_SKYSTONE);
                     }
                     else if (doPullFoundation(elapsedTime))
                     {
@@ -499,8 +496,8 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                         // Start dropping the skystone but we don't have to wait for it. Just wait for the foundation
                         // to be latched and the robot can move immediately. The skystone can continue to drop enroute.
                         //
-                        nextState = State.FINISH_DELAY;
                         robot.frontFoundationLatch.grab(event);
+                        sm.waitForSingleEvent(event, State.FINISH_DELAY);
                     }
                     else
                     {
@@ -509,10 +506,16 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                         //
                         nextState = autoChoices.parkUnderBridge == CommonAuto.ParkPosition.PARK_CLOSE_TO_CENTER?
                                         State.MOVE_TOWARDS_CENTER: State.SKIP_MOVE_FOUNDATION_PARK_WALL;
-                        timer.set(1.5, event);
-                        robot.elevator.setPosition(8.0);
+                        timer.set(1.0, event);
+                        robot.elevator.setPosition(6.0);
+                        sm.waitForSingleEvent(event, State.RETRACT_TO_MIN_HEIGHT);
                     }
-                    sm.waitForSingleEvent(event, nextState);
+                    break;
+
+                case RETRACT_TO_MIN_HEIGHT:
+                    robot.elevator.zeroCalibrate(1.0);
+                    robot.extenderArm.zeroCalibrate();
+                    sm.setState(nextState);
                     break;
 
                 case CLEAR_OF_SKYSTONE:
@@ -532,14 +535,13 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                     //
                     nextState = autoChoices.strafeToFoundation? State.GOTO_SECOND_SKYSTONE: State.TURN_TOWARDS_QUARRY;
                     yTarget = RobotInfo.ABS_ROBOT_TRAVEL_Y;
-                    simplePidDrive.setAbsoluteYTarget(yTarget, nextState);
+                    simplePidDrive.setAbsoluteYTarget(yTarget, State.RETRACT_TO_MIN_HEIGHT);
                     break;
 
                 case TURN_TOWARDS_QUARRY:
                     //
                     // For some reason, strafing was crappy. So we will turn, run in Y and turn back.
                     //
-                    robot.elevator.zeroCalibrate(1.0);
                     turnTarget = -90.0 * allianceDirection;
                     simplePidDrive.setAbsoluteHeadingTarget(turnTarget, State.GOTO_SECOND_SKYSTONE);
                     break;
@@ -550,7 +552,6 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                     // If the second skystone is the one closest to the wall, we can't get to it so just get the
                     // regular stone closest to the robot.
                     //
-                    robot.elevator.zeroCalibrate(1.0);
                     nextState = autoChoices.strafeToFoundation? State.SETUP_VISION: State.TURN_TO_SECOND_SKYSTONE;
                     xTarget = skystoneVisionCommand.getSkystoneXPos() - 24.0*allianceDirection;
                     if (Math.abs(xTarget) < 8.0)
@@ -645,16 +646,12 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                     // is still in contact with the foundation. Besides, we need to bump the foundations closer to
                     // the wall to make sure it's in the building site.
                     //
+                    nextState = State.MOVE_TO_FOUNDATION_SIDE;
                     xTarget = RobotInfo.ABS_NEXT_TO_PARTNER_PARK_X * allianceDirection;
-                    simplePidDrive.setAbsoluteXTarget(xTarget, State.MOVE_TO_FOUNDATION_SIDE);
+                    simplePidDrive.setAbsoluteXTarget(xTarget, State.RETRACT_TO_MIN_HEIGHT);
                     break;
 
                 case MOVE_TO_FOUNDATION_SIDE:
-                    //
-                    // We can safely retract everything here because the skystone should be dropped by now.
-                    //
-                    robot.wrist.retract();
-                    robot.elevator.zeroCalibrate();
                     //
                     // Move to the side of the foundation so we can bump it to the wall.
                     //
@@ -666,7 +663,7 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                     //
                     // Bump the foundation toward the wall to make sure it lands inside the building site.
                     //
-                    xTarget = (skystonesDropped > 1? 16.0: 13.0) * allianceDirection;
+                    xTarget = (skystonesDropped > 1? 18.0: 15.0) * allianceDirection;
                     simplePidDrive.setRelativeXTarget(xTarget, State.RESYNC_ROBOT_X);
                     break;
 
@@ -708,30 +705,20 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                     // We did not move the foundation and we are going to park by the wall under the bridge.
                     // So let's get back to the wall.
                     //
+                    nextState = autoChoices.parkUnderBridge == CommonAuto.ParkPosition.NO_PARK?
+                                    State.DONE: State.MOVE_UNDER_BRIDGE;
                     yTarget = RobotInfo.ABS_ROBOT_START_Y;
-                    simplePidDrive.setAbsoluteYTarget(yTarget, State.START_RETRACTIONS);
+                    simplePidDrive.setAbsoluteYTarget(yTarget, nextState);
                     break;
 
                 case MOVE_TOWARDS_CENTER:
                     //
                     // Move the robot toward the bridge so we won't hit our alliance partner's robot.
                     //
-                    yTarget = RobotInfo.ABS_CENTER_BRIDGE_PARK_Y;
-                    simplePidDrive.setAbsoluteYTarget(yTarget, State.START_RETRACTIONS);
-                    break;
-
-                case START_RETRACTIONS:
-                    //
-                    // We are done with the grabber, arm and elevator. Let's retract everything before moving under
-                    // the bridge.
-                    //
-                    robot.elevator.zeroCalibrate();
-                    robot.extenderArm.zeroCalibrate();
-                    robot.wrist.retract(event);
-
                     nextState = autoChoices.parkUnderBridge == CommonAuto.ParkPosition.NO_PARK?
                                     State.DONE: State.MOVE_UNDER_BRIDGE;
-                    sm.waitForSingleEvent(event, nextState);
+                    yTarget = RobotInfo.ABS_CENTER_BRIDGE_PARK_Y;
+                    simplePidDrive.setAbsoluteYTarget(yTarget, nextState);
                     break;
 
                 case DONE:
@@ -739,6 +726,7 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                     //
                     // We are done.
                     //
+                    robot.wrist.retract(event);
                     cancel();
                     break;
             }
