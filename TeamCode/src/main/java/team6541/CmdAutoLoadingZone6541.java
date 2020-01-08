@@ -102,6 +102,7 @@ class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
                 .setScootCount(2)
                 .setGrabberOffset(RobotInfo6541.GRABBER_OFFSET_X, RobotInfo6541.GRABBER_OFFSET_Y)
                 .setGiveUpDistance(12.0);
+                //.setGiveUpDistance(autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE ? 7.0 : 12.0);
         timer = new TrcTimer(moduleName);
         event = new TrcEvent(moduleName);
         sm = new TrcStateMachine<>(moduleName);
@@ -461,9 +462,8 @@ class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
                      */
 
                 case MOVE_UNDER_BRIDGE_Y:
-                    yTarget = (autoChoices.parkUnderBridge == CommonAuto.ParkPosition.PARK_CLOSE_TO_WALL ? -20.0 :
-                            autoChoices.parkUnderBridge == CommonAuto.ParkPosition.PARK_CLOSE_TO_CENTER ? 0.0 : -20.0)
-                            * allianceDirection;
+                    yTarget = (autoChoices.parkUnderBridge == CommonAuto.ParkPosition.PARK_CLOSE_TO_WALL ? 20.0 :
+                            autoChoices.parkUnderBridge == CommonAuto.ParkPosition.PARK_CLOSE_TO_CENTER ? 0.0 : 20.0);
                     simplePidDrive.setRelativeYTarget(yTarget, autoChoices.parkUnderBridge == CommonAuto.ParkPosition.NO_PARK ?
                                                                 State.DONE : State.MOVE_UNDER_BRIDGE_X);
                     break;
