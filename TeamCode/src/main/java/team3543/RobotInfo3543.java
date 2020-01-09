@@ -219,9 +219,9 @@ class RobotInfo3543
     // FrontFoundationLatch subsystem.
     //
     static final double FRONT_FOUNDATION_LATCH_MAX_STEPRATE     = 0.0;
-    static final double FRONT_FOUNDATION_LATCH_MIN_POS          = 0.0;
+    static final double FRONT_FOUNDATION_LATCH_MIN_POS          = 0.2;
     static final double FRONT_FOUNDATION_LATCH_MAX_POS          = 1.0;
-    static final double FRONT_FOUNDATION_LATCH_RELEASE_POS      = 0.0;
+    static final double FRONT_FOUNDATION_LATCH_RELEASE_POS      = 0.2;
     static final double FRONT_FOUNDATION_LATCH_RELEASE_TIME     = 0.5;
     static final double FRONT_FOUNDATION_LATCH_GRAB_POS         = 1.0;
     static final double FRONT_FOUNDATION_LATCH_GRAB_TIME        = 0.5;
