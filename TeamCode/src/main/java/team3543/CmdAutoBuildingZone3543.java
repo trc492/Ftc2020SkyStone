@@ -118,6 +118,9 @@ class CmdAutoBuildingZone3543 implements TrcRobot.RobotCommand
             switch (state)
             {
                 case BEGIN:
+                    //
+                    // Set the robot's absolute starting field position.
+                    //
                     robot.pidDrive.setAbsolutePose(new TrcPose2D(
                             (RobotInfo.ABS_BUILDING_ZONE_ROBOT_START_X - 12.0) * allianceDirection,
                             RobotInfo.ABS_ROBOT_START_Y));
@@ -152,16 +155,25 @@ class CmdAutoBuildingZone3543 implements TrcRobot.RobotCommand
                     break;
 
                 case SCOOT_CLOSER_TO_LINE:
+                    //
+                    // Scoot clear of the foundation in case our alliance partner is dropping off skystone.
+                    //
                     xTarget = RobotInfo.ABS_NEXT_TO_PARTNER_PARK_X * allianceDirection;
                     simplePidDrive.setAbsoluteXTarget(xTarget,State.MOVE_CLOSER_TO_CENTER);
                     break;
 
                 case MOVE_CLOSER_TO_CENTER:
+                    //
+                    // Move toward the bridge so we can park away from the wall.
+                    //
                     yTarget = RobotInfo.ABS_CENTER_BRIDGE_PARK_Y;
                     simplePidDrive.setAbsoluteYTarget(yTarget, State.MOVE_UNDER_BRIDGE);
                     break;
 
                 case GOTO_FOUNDATION:
+                    //
+                    // Go to the foundation so we can grab it.
+                    //
                     yTarget = 30;
                     xTarget = 12.0 * allianceDirection;
                     simplePidDrive.setRelativeTarget(xTarget, yTarget, 0.0, State.HOOK_FOUNDATION);
@@ -182,21 +194,34 @@ class CmdAutoBuildingZone3543 implements TrcRobot.RobotCommand
                     // to make sure it hits the wall and we will correct the odometry and Absolute Target Pose in the
                     // Y direction.
                     //
+                    // To compensate for the higher friction while pulling the foundation, we will use a stronger set
+                    // of PID constants and restore the original set after we are done pulling.
+                    //
                     savedYPidCoeff = yPidCtrl.getPidCoefficients();
                     TrcPidController.PidCoefficients loadedYPidCoeff = savedYPidCoeff.clone();
                     loadedYPidCoeff.kP = RobotInfo3543.ENCODER_Y_LOADED_KP;
                     yPidCtrl.setPidCoefficients(loadedYPidCoeff);
+                    //
+                    // Pull the foundation a little further to make sure we hit the wall because the wheels may have
+                    // slipped and the Y odometry could be off.
+                    //
                     yTarget = -40.0;
                     simplePidDrive.setRelativeYTarget(yTarget, State.UNHOOK_FOUNDATION);
                     break;
 
                 case UNHOOK_FOUNDATION:
+                    //
+                    // We are done pulling the heavy foundation, restore the Y PID constants to the original set.
+                    //
                     if (savedYPidCoeff != null)
                     {
                         yPidCtrl.setPidCoefficients(savedYPidCoeff);
                         savedYPidCoeff = null;
                     }
-                    // Correct odometry and absTargetPose after wheel slippage.
+                    //
+                    // Pulling the heavy foundation to the wall may cause the wheels to slip so we need to correct
+                    // the Y odometry and Y absolute target pose.
+                    //
                     TrcPose2D pose = robot.driveBase.getFieldPosition();
                     pose.y = RobotInfo.ABS_ROBOT_START_Y;
                     robot.driveBase.setFieldPosition(pose);
@@ -239,6 +264,10 @@ class CmdAutoBuildingZone3543 implements TrcRobot.RobotCommand
                     break;
 
                 case MOVE_BACK_TO_WALL:
+                    //
+                    // We are going to either park by the wall under the bridge or just park by the wall.
+                    // Either way, let's get back to the wall.
+                    //
                     nextState = autoChoices.parkUnderBridge == CommonAuto.ParkPosition.NO_PARK?
                             State.DONE: State.MOVE_UNDER_BRIDGE;
                     yTarget = RobotInfo.ABS_ROBOT_START_Y;
@@ -246,6 +275,9 @@ class CmdAutoBuildingZone3543 implements TrcRobot.RobotCommand
                     break;
 
                 case MOVE_UNDER_BRIDGE:
+                    //
+                    // Slide under the bridge.
+                    //
                     xTarget = RobotInfo.ABS_UNDER_BRIDGE_PARK_X * allianceDirection;
                     simplePidDrive.setAbsoluteXTarget(xTarget, State.DONE);
                     break;

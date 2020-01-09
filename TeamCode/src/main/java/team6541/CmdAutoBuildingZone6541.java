@@ -26,13 +26,11 @@ import common.CommonAuto;
 import common.RobotInfo;
 import common.SimplePidDrive;
 import trclib.TrcEvent;
-import trclib.TrcPidController;
 import trclib.TrcPose2D;
 import trclib.TrcRobot;
 import trclib.TrcStateMachine;
 import trclib.TrcTimer;
 
-// CodeReview: This code need to be revised to be compatible with the new grabber.
 class CmdAutoBuildingZone6541 implements TrcRobot.RobotCommand
 {
     private enum State

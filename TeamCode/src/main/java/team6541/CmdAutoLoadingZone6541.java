@@ -60,7 +60,7 @@ class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
         MOVE_TO_FOUNDATION_SIDE,
         PUSH_FOUNDATION_TO_WALL,
         RESYNC_ROBOT_X,
-        MOVE_UNDER_BRIDGE_X,
+        MOVE_UNDER_BRIDGE,
         MOVE_TOWARDS_CENTER,
         DONE
     }   //enum State
@@ -231,6 +231,9 @@ class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
                     break;
 
                 case MOVE_TO_FIRST_STONE:
+                    //
+                    // The robot start position may be anywhere so we need to strafe to the first stone.
+                    //
                     xTarget = (autoChoices.strategy == CommonAuto.AutoStrategy.LOADING_ZONE_SINGLE_SKYSTONE ||
                                Math.abs(startX) > RobotInfo.ABS_LOADING_ZONE_ROBOT_START_X_MID)?
                                     RobotInfo.ABS_FAR_STONE1_X: RobotInfo.ABS_WALL_STONE3_X;
@@ -262,28 +265,37 @@ class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
                     }
 
                 case GRAB_SKYSTONE:
-                    // CodeReview: Can we tune this time down? 1 sec seems very long.
                     robot.grabber.grab(1.0, event);
                     sm.waitForSingleEvent(event, State.PULL_SKYSTONE);
                     break;
 
                 case PULL_SKYSTONE:
+                    //
+                    // Pull the skystone out to the travel Y position so we don't hit the bridge.
+                    //
                     nextState = autoChoices.strafeToFoundation? State.GOTO_FOUNDATION: State.TURN_TOWARDS_FOUNDATION;
                     yTarget = RobotInfo.ABS_ROBOT_TRAVEL_Y - 2.0;
                     simplePidDrive.setAbsoluteYTarget(yTarget, nextState);
                     break;
 
                 case TURN_TOWARDS_FOUNDATION:
+                    //
+                    // If for some reason strafing is crappy, we will turn, run in Y and turn back.
+                    //
                     turnTarget = 90.0 * allianceDirection;
                     simplePidDrive.setAbsoluteHeadingTarget(turnTarget, State.GOTO_FOUNDATION);
                     break;
 
                 case GOTO_FOUNDATION:
-                    nextState = autoChoices.strafeToFoundation?
-                                    State.APPROACH_FOUNDATION: State.TURN_BACK_TO_FOUNDATION;
-                    // Need to go full speed to save time.
+                    //
+                    // Travel long distance to the foundation. So we need to travel in full speed to save time.
+                    // Since we are using absolute target, PidDrive will figure out whether it will strafe or
+                    // travel in Y according to the robot's heading.
+                    //
                     xPidCtrl.setOutputLimit(1.0);
                     yPidCtrl.setOutputLimit(1.0);
+                    nextState = autoChoices.strafeToFoundation?
+                                    State.APPROACH_FOUNDATION: State.TURN_BACK_TO_FOUNDATION;
                     xTarget = autoChoices.strategy == CommonAuto.AutoStrategy.LOADING_ZONE_SINGLE_SKYSTONE?
                                     RobotInfo.ABS_FOUNDATION_DROP_MID_X:
                               autoChoices.strategy == CommonAuto.AutoStrategy.LOADING_ZONE_DOUBLE_SKYSTONE_CENTER?
@@ -293,20 +305,30 @@ class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
                     break;
 
                 case TURN_BACK_TO_FOUNDATION:
+                    //
+                    // We were traveling in the Y direction, so turn back to face the foundation.
+                    //
                     robot.elevator.setPosition(4.0);
                     turnTarget = 0.0;
                     simplePidDrive.setAbsoluteHeadingTarget(turnTarget, State.APPROACH_FOUNDATION);
                     break;
 
                 case APPROACH_FOUNDATION:
+                    //
+                    // Raise the elevator to drop position while approaching the foundation.
+                    //
                     xPidCtrl.setOutputLimit(0.5); // don't push the foundation too forcefully.
                     yPidCtrl.setOutputLimit(0.5);
                     robot.elevator.setPosition(3.0);
-                    yTarget = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE ? RobotInfo.ABS_FOUNDATION_Y + 2.0 : RobotInfo.ABS_FOUNDATION_Y;
+                    yTarget = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE ?
+                                RobotInfo.ABS_FOUNDATION_Y + 2.0 : RobotInfo.ABS_FOUNDATION_Y;
                     simplePidDrive.setAbsoluteYTarget(yTarget, State.DROP_SKYSTONE);
                     break;
 
                 case DROP_SKYSTONE:
+                    //
+                    // Drop off the skystone.
+                    //
                     xPidCtrl.setOutputLimit(1.0);
                     yPidCtrl.setOutputLimit(1.0);
                     robot.grabber.release(0.5, event);
@@ -316,6 +338,10 @@ class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
                 case BACK_OFF_FOUNDATION:
                     if (autoChoices.moveFoundation)
                     {
+                        //
+                        // The foundation grabber is in the back, so we need to back off the foundation to give us
+                        // room to turn around if we are going to pull the foundation.
+                        //
                         yTarget = -6.0;
                         simplePidDrive.setRelativeYTarget(yTarget, State.TURN_AROUND);
                     }
@@ -323,25 +349,39 @@ class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
                     {
                         if (autoChoices.parkUnderBridge == CommonAuto.ParkPosition.PARK_CLOSE_TO_CENTER)
                         {
+                            //
+                            // We are going to park close to the center. So go to the appropriate Y position before
+                            // we can slide under the bridge.
+                            //
                             yTarget = RobotInfo.ABS_CENTER_BRIDGE_PARK_Y;
-                            nextState = State.MOVE_UNDER_BRIDGE_X;
+                            nextState = State.MOVE_UNDER_BRIDGE;
                         }
                         else
                         {
+                            //
+                            // We are either parking under the bridge closer to the wall or not park at all.
+                            // Regardless, let's go back to the wall.
+                            //
                             yTarget = RobotInfo.ABS_ROBOT_START_Y;
                             nextState = autoChoices.parkUnderBridge == CommonAuto.ParkPosition.PARK_CLOSE_TO_WALL ?
-                                            State.MOVE_UNDER_BRIDGE_X : State.DONE;
+                                            State.MOVE_UNDER_BRIDGE : State.DONE;
                         }
                         simplePidDrive.setAbsoluteYTarget(yTarget, nextState);
                     }
                     break;
 
                 case TURN_AROUND:
+                    //
+                    // The foundation grabber is in the back, so turn around.
+                    //
                     turnTarget = 180.0;
                     simplePidDrive.setRelativeTurnTarget(turnTarget, State.BACKUP_TO_FOUNDATION);
                     break;
 
                 case BACKUP_TO_FOUNDATION:
+                    //
+                    // Move closer to the foundation so we can grab it.
+                    //
                     robot.elevator.zeroCalibrate();
                     robot.elbow.retract();
                     robot.grabber.setPosition(1.0);
@@ -350,6 +390,9 @@ class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
                     break;
 
                 case HOOK_FOUNDATION:
+                    //
+                    // Grab the foundation.
+                    //
                     robot.backFoundationLatch.grab(event);
                     sm.waitForSingleEvent(event, State.FINISH_DELAY);
                     break;
@@ -385,21 +428,35 @@ class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
                     // to make sure it hits the wall and we will correct the odometry and Absolute Target Pose in the
                     // Y direction.
                     //
+                    // To compensate for the higher friction while pulling the foundation, we will use a stronger set
+                    // of PID constants and restore the original set after we are done pulling.
+                    //
                     savedYPidCoeff = yPidCtrl.getPidCoefficients();
                     TrcPidController.PidCoefficients loadedYPidCoeff = savedYPidCoeff.clone();
                     loadedYPidCoeff.kP = RobotInfo6541.ENCODER_Y_LOADED_KP;
                     yPidCtrl.setPidCoefficients(loadedYPidCoeff);
-                    yTarget = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE ? RobotInfo.ABS_ROBOT_START_Y : RobotInfo.ABS_ROBOT_START_Y - 6.0;
+                    //
+                    // Pull the foundation a little further to make sure we hit the wall because the wheels may have
+                    // slipped and the Y odometry could be off.
+                    //
+                    yTarget = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE ?
+                                RobotInfo.ABS_ROBOT_START_Y : RobotInfo.ABS_ROBOT_START_Y - 6.0;
                     simplePidDrive.setAbsoluteYTarget(yTarget, State.UNHOOK_FOUNDATION);
                     break;
 
                 case UNHOOK_FOUNDATION:
+                    //
+                    // We are done pulling the heavy foundation, restore the Y PID constants to the original set.
+                    //
                     if (savedYPidCoeff != null)
                     {
                         yPidCtrl.setPidCoefficients(savedYPidCoeff);
                         savedYPidCoeff = null;
                     }
-                    // Correct odometry and absTargetPose after wheel slippage.
+                    //
+                    // Pulling the heavy foundation to the wall may cause the wheels to slip so we need to correct
+                    // the Y odometry and Y absolute target pose.
+                    //
                     TrcPose2D pose = robot.driveBase.getFieldPosition();
                     pose.y = RobotInfo.ABS_ROBOT_START_Y;
                     robot.driveBase.setFieldPosition(pose);
@@ -433,7 +490,8 @@ class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
                         robot.elbow.retract();
                         robot.grabber.setPosition(1.0);
                     }
-                    yTarget = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE ? RobotInfo.ABS_CENTER_BRIDGE_PARK_Y + 6.0 : RobotInfo.ABS_CENTER_BRIDGE_PARK_Y;
+                    yTarget = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE ?
+                                RobotInfo.ABS_CENTER_BRIDGE_PARK_Y + 6.0 : RobotInfo.ABS_CENTER_BRIDGE_PARK_Y;
                     simplePidDrive.setAbsoluteYTarget(yTarget, State.PUSH_FOUNDATION_TO_WALL);
                     break;
 
@@ -441,12 +499,19 @@ class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
                     //
                     // Bump the foundation toward the wall to make sure it lands inside the building site.
                     //
-                    xTarget = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE ? -20.0 * allianceDirection : -6.0 * allianceDirection;
+                    xTarget = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE ?
+                                -20.0 * allianceDirection : -6.0 * allianceDirection;
                     simplePidDrive.setRelativeXTarget(xTarget, State.RESYNC_ROBOT_X);
                     sm.waitForSingleEvent(event, State.RESYNC_ROBOT_X);
                     break;
 
                 case RESYNC_ROBOT_X:
+                    //
+                    // Bumping the foundation back to the side wall gives us an opportunity to resync the robot's
+                    // X odometry because pulling the heavy foundation especially when pulling it lopsided will
+                    // throw the odometry off. By bumping the foundation to the side wall, we know where we are
+                    // exactly in the X direction. So let's correct the X odometry accordingly.
+                    //
                     pose = robot.driveBase.getFieldPosition();
                     pose.x = RobotInfo.ABS_FOUNDATION_SIDE_X * allianceDirection;
                     robot.driveBase.setFieldPosition(pose);
@@ -464,17 +529,23 @@ class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
                     {
                         yTarget = RobotInfo.ABS_ROBOT_START_Y;
                         nextState = autoChoices.parkUnderBridge == CommonAuto.ParkPosition.PARK_CLOSE_TO_WALL ?
-                                        State.MOVE_UNDER_BRIDGE_X : State.DONE;
+                                        State.MOVE_UNDER_BRIDGE : State.DONE;
                         simplePidDrive.setAbsoluteYTarget(yTarget, nextState);
                     }
                     break;
 
-                case MOVE_UNDER_BRIDGE_X:
+                case MOVE_UNDER_BRIDGE:
+                    //
+                    // Slide under the bridge.
+                    //
                     xTarget = RobotInfo.ABS_UNDER_BRIDGE_PARK_X * allianceDirection;
                     simplePidDrive.setAbsoluteXTarget(xTarget, State.DONE);
                     break;
 
                 case MOVE_TOWARDS_CENTER:
+                    //
+                    // Move the robot toward the bridge so we won't hit our alliance partner's robot by the wall.
+                    //
                     yTarget = RobotInfo.ABS_CENTER_BRIDGE_PARK_Y;
                     simplePidDrive.setAbsoluteYTarget(yTarget, State.DONE);
                     break;
