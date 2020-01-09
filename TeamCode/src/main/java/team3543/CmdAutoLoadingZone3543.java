@@ -253,23 +253,28 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
 
             robot.dashboard.displayPrintf(1, "State: %s", state);
 
-            switch (state) {
+            switch (state)
+            {
                 case BEGIN:
                     robot.setFlashLightOn(true, true);
                     //
                     // Set the robot's absolute starting field position.
                     //
                     if (autoChoices.strategy == CommonAuto.AutoStrategy.LOADING_ZONE_SINGLE_SKYSTONE ||
-                            autoChoices.strategy == CommonAuto.AutoStrategy.LOADING_ZONE_DOUBLE_SKYSTONE_SOLO) {
+                        autoChoices.strategy == CommonAuto.AutoStrategy.LOADING_ZONE_DOUBLE_SKYSTONE_SOLO)
+                    {
                         visionParams.setScootCount(0);
                         visionParams.setAssumeLeftIfNotFound(true);
                         startX = RobotInfo.ABS_LOADING_ZONE_ROBOT_START_X_MID;
-                    } else if (autoChoices.robotStartX != 0.0) {
+                    }
+                    else if (autoChoices.robotStartX != 0.0)
+                    {
                         //
                         // We are doing a double skystone with our alliance partner and we are flexible enough to
                         // start at any starting position specified during auto choice menu selection.
                         //
-                        if (Math.abs(startX) < RobotInfo.ABS_LOADING_ZONE_ROBOT_START_X_MID) {
+                        if (Math.abs(startX) < RobotInfo.ABS_LOADING_ZONE_ROBOT_START_X_MID)
+                        {
                             //
                             // We are handling the stone set closer to the wall. Since our grabber design cannot
                             // get to the stone closest to the wall, we will skip that stone.
@@ -277,12 +282,16 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                             visionParams.setScootCount(1);
                         }
                         startX = autoChoices.robotStartX;
-                    } else if (autoChoices.strategy == CommonAuto.AutoStrategy.LOADING_ZONE_DOUBLE_SKYSTONE_FAR) {
+                    }
+                    else if (autoChoices.strategy == CommonAuto.AutoStrategy.LOADING_ZONE_DOUBLE_SKYSTONE_FAR)
+                    {
                         //
                         // We are handling the stone set away from the wall.
                         //
                         startX = RobotInfo.ABS_LOADING_ZONE_ROBOT_START_X_FAR;
-                    } else {
+                    }
+                    else
+                    {
                         //
                         // We are dealing with the stone set closer to the wall. Since our grabber design cannot
                         // get to the stone closest to the wall, we will skip that stone.
@@ -304,12 +313,15 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                     //
                     // Do start delay if any.
                     //
-                    if (autoChoices.startDelay == 0.0) {
+                    if (autoChoices.startDelay == 0.0)
+                    {
                         sm.setState(State.MOVE_CLOSER);
                         //
                         // Intentionally falling through to the next state.
                         //
-                    } else {
+                    }
+                    else
+                    {
                         timer.set(autoChoices.startDelay, event);
                         sm.waitForSingleEvent(event, State.MOVE_CLOSER);
                         break;
@@ -334,23 +346,27 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                     // The robot start position may be anywhere so we need to strafe to the first stone.
                     //
                     xTarget = (autoChoices.strategy == CommonAuto.AutoStrategy.LOADING_ZONE_SINGLE_SKYSTONE ||
-                            autoChoices.strategy == CommonAuto.AutoStrategy.LOADING_ZONE_DOUBLE_SKYSTONE_SOLO) ?
-                            0.0 :
-                            (Math.abs(startX) > RobotInfo.ABS_LOADING_ZONE_ROBOT_START_X_MID) ?
+                               autoChoices.strategy == CommonAuto.AutoStrategy.LOADING_ZONE_DOUBLE_SKYSTONE_SOLO) ?
+                                    0.0 :
+                              (Math.abs(startX) > RobotInfo.ABS_LOADING_ZONE_ROBOT_START_X_MID) ?
                                     RobotInfo.ABS_FAR_STONE3_X : RobotInfo.ABS_WALL_STONE3_X;
-                    if (xTarget == 0.0) {
+                    if (xTarget == 0.0)
+                    {
                         sm.setState(State.SETUP_VISION);
                         //
                         // Intentionally falling through to the next state.
                         //
-                    } else {
+                    }
+                    else
+                    {
                         xTarget *= allianceDirection;
                         simplePidDrive.setAbsoluteXTarget(xTarget, State.SETUP_VISION);
                         break;
                     }
 
                 case SETUP_VISION:
-                    if (skystonesDropped > 0) {
+                    if (skystonesDropped > 0)
+                    {
                         //
                         // We are looking for the second skystone. We should be in front of it approximately so
                         // we don't need to scoot to the next stone but we do need to detect the exact alignment
@@ -372,7 +388,8 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                     // Do vision to detect and go to the skystone. If vision did not detect skystone, it will stop
                     // at the last stone.
                     //
-                    if (skystoneVisionCommand.cmdPeriodic(elapsedTime)) {
+                    if (skystoneVisionCommand.cmdPeriodic(elapsedTime))
+                    {
                         //
                         // Skystone vision is done, continue on.
                         //
@@ -380,7 +397,9 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                         //
                         // Intentionally falling through to the next state.
                         //
-                    } else {
+                    }
+                    else
+                    {
                         traceState = false;
                         break;
                     }
@@ -402,17 +421,18 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                     // pick it up and running the double skystone routine to grab a normal stone
                     // is too risky.
                     //
-                    double xPosTolerance = 4.0;
-                    if (skystonesDropped == 0 &&
-                            autoChoices.strategy == CommonAuto.AutoStrategy.LOADING_ZONE_DOUBLE_SKYSTONE_SOLO &&
-                            Math.abs(robot.driveBase.getFieldPosition().x) < RobotInfo.ABS_FAR_STONE1_X + xPosTolerance)
+                    double skystoneX = Math.abs(robot.driveBase.getFieldPosition().x);
+                    robot.globalTracer.traceInfo("pullSkystone",
+                            ">>> Skystone X position=%.2f", skystoneX);
+                    if (autoChoices.strategy == CommonAuto.AutoStrategy.LOADING_ZONE_DOUBLE_SKYSTONE_SOLO &&
+                        skystonesDropped == 0 &&
+                        Math.abs(skystoneX - RobotInfo.ABS_FAR_STONE1_X) < 4.0)
                     {
                         robot.globalTracer.traceInfo("pullSkystone",
-                                "Skystone closest to wall chosen (%.1f < %.1f + %.1f), switching strategy to single skystone",
-                                Math.abs(robot.driveBase.getFieldPosition().x),
-                                RobotInfo.ABS_FAR_STONE1_X, xPosTolerance);
+                                ">>> Can't reach 2nd skystone, switching strategy to single skystone.");
                         autoChoices.strategy = CommonAuto.AutoStrategy.LOADING_ZONE_SINGLE_SKYSTONE;
                     }
+
                     robot.grabber.grab();
                     yTarget = RobotInfo.ABS_ROBOT_TRAVEL_Y;
                     simplePidDrive.setAbsoluteYTarget(yTarget, State.LIFT_SKYSTONE);
