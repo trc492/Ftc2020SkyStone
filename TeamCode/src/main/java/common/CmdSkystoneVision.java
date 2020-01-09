@@ -25,7 +25,6 @@ package common;
 import java.util.Locale;
 
 import trclib.TrcEvent;
-import trclib.TrcPidController;
 import trclib.TrcPose2D;
 import trclib.TrcRobot;
 import trclib.TrcStateMachine;
@@ -55,7 +54,6 @@ public class CmdSkystoneVision implements TrcRobot.RobotCommand
         double grabberOffsetX = 0.0;
         double grabberOffsetY = 0.0;
         double scanDirection = -1.0;
-//        double giveUpDistance = 9.0;
 
         public Parameters setUseVisionTrigger(boolean useVisionTrigger)
         {
@@ -88,12 +86,6 @@ public class CmdSkystoneVision implements TrcRobot.RobotCommand
             this.grabberOffsetY = grabberOffsetY;
             return this;
         }
-
-//        public Parameters setGiveUpDistance(double giveUpDistance)
-//        {
-//            this.giveUpDistance = giveUpDistance;
-//            return this;
-//        }
 
     }   //class Parameters
 
