@@ -375,8 +375,10 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                         visionParams.setScootCount(0);
                     }
                     skystoneVisionCommand.start();
+                    //
                     // Delay turning the wrist until now so to give vision a chance to detect skystone before the
                     // grabber blocks the camera view.
+                    //
                     robot.wrist.extend();
                     sm.setState(State.DO_VISION);
                     //
