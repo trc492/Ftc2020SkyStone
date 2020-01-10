@@ -148,6 +148,7 @@ class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
      * @param elapsedTime specifies the elapsed time in seconds since the start of the robot mode.
      * @return true if the command sequence is completed, false otherwise.
      */
+
     @Override
     public boolean cmdPeriodic(double elapsedTime)
     {
@@ -320,8 +321,7 @@ class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
                     xPidCtrl.setOutputLimit(0.5); // don't push the foundation too forcefully.
                     yPidCtrl.setOutputLimit(0.5);
                     robot.elevator.setPosition(3.0);
-                    yTarget = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE ?
-                            RobotInfo.ABS_FOUNDATION_Y + 2.0 : RobotInfo.ABS_FOUNDATION_Y;
+                    yTarget = RobotInfo.ABS_FOUNDATION_Y + 2.0;
                     simplePidDrive.setAbsoluteYTarget(yTarget, State.DROP_SKYSTONE);
                     break;
 
@@ -495,6 +495,7 @@ class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
                         robot.elbow.retract();
                         robot.grabber.setPosition(1.0);
                     }
+                    yTarget = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE  ? RobotInfo.ABS_CENTER_BRIDGE_PARK_Y - 3.0 : RobotInfo.ABS_CENTER_BRIDGE_PARK_Y;
                     simplePidDrive.setAbsoluteYTarget(yTarget, State.PUSH_FOUNDATION_TO_WALL);
                     break;
 
