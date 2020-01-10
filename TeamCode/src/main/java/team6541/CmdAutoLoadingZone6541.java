@@ -79,7 +79,7 @@ class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
     private final TrcPidController xPidCtrl;
     private final TrcPidController yPidCtrl;
     private final TrcPidController turnPidCtrl;
-    private TrcPidController.PidCoefficients savedYPidCoeff = null;
+//    private TrcPidController.PidCoefficients savedYPidCoeff = null;
     private double startX = 0.0;
 
     /**
@@ -148,7 +148,6 @@ class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
      * @param elapsedTime specifies the elapsed time in seconds since the start of the robot mode.
      * @return true if the command sequence is completed, false otherwise.
      */
-
     @Override
     public boolean cmdPeriodic(double elapsedTime)
     {
@@ -176,12 +175,12 @@ class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
                     // Set the robot's absolute field starting position.
                     //
                     startX = autoChoices.strategy == CommonAuto.AutoStrategy.LOADING_ZONE_SINGLE_SKYSTONE?
-                            RobotInfo.ABS_LOADING_ZONE_ROBOT_START_X_WALL:
-                            autoChoices.robotStartX != 0.0?
+                                    RobotInfo.ABS_LOADING_ZONE_ROBOT_START_X_WALL:
+                             autoChoices.robotStartX != 0.0?
                                     autoChoices.robotStartX:
-                                    autoChoices.strategy == CommonAuto.AutoStrategy.LOADING_ZONE_DOUBLE_SKYSTONE_FAR?
-                                            RobotInfo.ABS_LOADING_ZONE_ROBOT_START_X_FAR:
-                                            RobotInfo.ABS_LOADING_ZONE_ROBOT_START_X_WALL;
+                             autoChoices.strategy == CommonAuto.AutoStrategy.LOADING_ZONE_DOUBLE_SKYSTONE_FAR?
+                                    RobotInfo.ABS_LOADING_ZONE_ROBOT_START_X_FAR:
+                                    RobotInfo.ABS_LOADING_ZONE_ROBOT_START_X_WALL;
                     startX *= allianceDirection;
                     robot.pidDrive.setAbsolutePose(new TrcPose2D(startX, RobotInfo.ABS_ROBOT_START_Y));
                     robot.pidDrive.setAbsoluteTargetModeEnabled(true);
@@ -193,7 +192,7 @@ class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
                     robot.grabber.release();
 
                     if (autoChoices.strategy != CommonAuto.AutoStrategy.LOADING_ZONE_SINGLE_SKYSTONE &&
-                            Math.abs(startX) < RobotInfo.ABS_LOADING_ZONE_ROBOT_START_X_MID)
+                        Math.abs(startX) < RobotInfo.ABS_LOADING_ZONE_ROBOT_START_X_MID)
                     {
                         visionParams.setScootCount(1);
                     }
@@ -236,8 +235,8 @@ class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
                     // The robot start position may be anywhere so we need to strafe to the first stone.
                     //
                     xTarget = (autoChoices.strategy == CommonAuto.AutoStrategy.LOADING_ZONE_SINGLE_SKYSTONE ||
-                            Math.abs(startX) > RobotInfo.ABS_LOADING_ZONE_ROBOT_START_X_MID)?
-                            RobotInfo.ABS_FAR_STONE1_X: RobotInfo.ABS_WALL_STONE3_X;
+                               Math.abs(startX) > RobotInfo.ABS_LOADING_ZONE_ROBOT_START_X_MID)?
+                                    RobotInfo.ABS_FAR_STONE1_X: RobotInfo.ABS_WALL_STONE3_X;
                     visionParams.setScanTowardsWall(xTarget == RobotInfo.ABS_WALL_STONE3_X);
                     xTarget *= allianceDirection;
                     xTarget += RobotInfo6541.GRABBER_OFFSET_X;
@@ -296,10 +295,10 @@ class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
                     xPidCtrl.setOutputLimit(1.0);
                     yPidCtrl.setOutputLimit(1.0);
                     nextState = autoChoices.strafeToFoundation?
-                            State.APPROACH_FOUNDATION: State.TURN_BACK_TO_FOUNDATION;
+                                    State.APPROACH_FOUNDATION: State.TURN_BACK_TO_FOUNDATION;
                     xTarget = autoChoices.strategy == CommonAuto.AutoStrategy.LOADING_ZONE_SINGLE_SKYSTONE?
-                            RobotInfo.ABS_FOUNDATION_DROP_MID_X:
-                            autoChoices.strategy == CommonAuto.AutoStrategy.LOADING_ZONE_DOUBLE_SKYSTONE_CENTER?
+                                    RobotInfo.ABS_FOUNDATION_DROP_MID_X:
+                              autoChoices.strategy == CommonAuto.AutoStrategy.LOADING_ZONE_DOUBLE_SKYSTONE_CENTER?
                                     RobotInfo.ABS_FOUNDATION_DROP_NEAR_X: RobotInfo.ABS_FOUNDATION_DROP_FAR_X;
                     xTarget *= allianceDirection;
                     simplePidDrive.setAbsoluteXTarget(xTarget, nextState);
@@ -364,7 +363,7 @@ class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
                             //
                             yTarget = RobotInfo.ABS_ROBOT_START_Y;
                             nextState = autoChoices.parkUnderBridge == CommonAuto.ParkPosition.PARK_CLOSE_TO_WALL ?
-                                    State.MOVE_UNDER_BRIDGE : State.DONE;
+                                            State.MOVE_UNDER_BRIDGE : State.DONE;
                         }
                         simplePidDrive.setAbsoluteYTarget(yTarget, nextState);
                     }
@@ -428,36 +427,34 @@ class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
                     // to make sure it hits the wall and we will correct the odometry and Absolute Target Pose in the
                     // Y direction.
                     //
-                    /*
-                    // To compensate for the higher friction while pulling the foundation, we will use a stronger set
-                    // of PID constants and restore the original set after we are done pulling.
-                    //
-                    savedYPidCoeff = yPidCtrl.getPidCoefficients();
-                    TrcPidController.PidCoefficients loadedYPidCoeff = savedYPidCoeff.clone();
-                    loadedYPidCoeff.kP = RobotInfo6541.ENCODER_Y_LOADED_KP;
-                    yPidCtrl.setPidCoefficients(loadedYPidCoeff);
-                    //
-                    // Pull the foundation a little further to make sure we hit the wall because the wheels may have
-                    // slipped and the Y odometry could be off.
-                    //
-                    yTarget = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE ?
-                                RobotInfo.ABS_ROBOT_START_Y : RobotInfo.ABS_ROBOT_START_Y - 6.0;
-                    simplePidDrive.setAbsoluteYTarget(yTarget, State.UNHOOK_FOUNDATION);
-                     */
+//                    // To compensate for the higher friction while pulling the foundation, we will use a stronger set
+//                    // of PID constants and restore the original set after we are done pulling.
+//                    //
+//                    savedYPidCoeff = yPidCtrl.getPidCoefficients();
+//                    TrcPidController.PidCoefficients loadedYPidCoeff = savedYPidCoeff.clone();
+//                    loadedYPidCoeff.kP = RobotInfo6541.ENCODER_Y_LOADED_KP;
+//                    yPidCtrl.setPidCoefficients(loadedYPidCoeff);
+//                    //
+//                    // Pull the foundation a little further to make sure we hit the wall because the wheels may have
+//                    // slipped and the Y odometry could be off.
+//                    //
+//                    yTarget = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE ?
+//                                RobotInfo.ABS_ROBOT_START_Y : RobotInfo.ABS_ROBOT_START_Y - 6.0;
+//                    simplePidDrive.setAbsoluteYTarget(yTarget, State.UNHOOK_FOUNDATION);
                     robot.driveBase.holonomicDrive(0.0, 1.0, 0.0);
                     timer.set(1.5, event);
                     sm.waitForSingleEvent(event, State.UNHOOK_FOUNDATION);
                     break;
 
                 case UNHOOK_FOUNDATION:
-                    //
-                    // We are done pulling the heavy foundation, restore the Y PID constants to the original set.
-                    //
-                    if (savedYPidCoeff != null)
-                    {
-                        yPidCtrl.setPidCoefficients(savedYPidCoeff);
-                        savedYPidCoeff = null;
-                    }
+//                    //
+//                    // We are done pulling the heavy foundation, restore the Y PID constants to the original set.
+//                    //
+//                    if (savedYPidCoeff != null)
+//                    {
+//                        yPidCtrl.setPidCoefficients(savedYPidCoeff);
+//                        savedYPidCoeff = null;
+//                    }
                     //
                     // Pulling the heavy foundation to the wall may cause the wheels to slip so we need to correct
                     // the Y odometry and Y absolute target pose.
@@ -495,7 +492,8 @@ class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
                         robot.elbow.retract();
                         robot.grabber.setPosition(1.0);
                     }
-                    yTarget = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE  ? RobotInfo.ABS_CENTER_BRIDGE_PARK_Y - 3.0 : RobotInfo.ABS_CENTER_BRIDGE_PARK_Y;
+                    yTarget = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE ?
+                                    RobotInfo.ABS_CENTER_BRIDGE_PARK_Y - 3.0 : RobotInfo.ABS_CENTER_BRIDGE_PARK_Y;
                     simplePidDrive.setAbsoluteYTarget(yTarget, State.PUSH_FOUNDATION_TO_WALL);
                     break;
 
@@ -503,10 +501,10 @@ class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
                     //
                     // Bump the foundation toward the wall to make sure it lands inside the building site.
                     //
-                    //xTarget = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE ? -20.0 : 6.0;
-                    robot.driveBase.holonomicDrive(1.0 * -allianceDirection, 0.0 ,0.0);
-                    //simplePidDrive.setRelativeXTarget(xTarget, State.RESYNC_ROBOT_X);
-                    //sm.waitForSingleEvent(event, State.RESYNC_ROBOT_X);
+//                    xTarget = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE ? -20.0 : 6.0;
+//                    simplePidDrive.setRelativeXTarget(xTarget, State.RESYNC_ROBOT_X);
+//                    sm.waitForSingleEvent(event, State.RESYNC_ROBOT_X);
+                    robot.driveBase.holonomicDrive(-1.0 * allianceDirection, 0.0 ,0.0);
                     timer.set(1.0, event);
                     sm.waitForSingleEvent(event, State.RESYNC_ROBOT_X);
                     break;
@@ -535,7 +533,7 @@ class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
                     {
                         yTarget = RobotInfo.ABS_ROBOT_START_Y;
                         nextState = autoChoices.parkUnderBridge == CommonAuto.ParkPosition.PARK_CLOSE_TO_WALL ?
-                                State.MOVE_UNDER_BRIDGE : State.DONE;
+                                        State.MOVE_UNDER_BRIDGE : State.DONE;
                         simplePidDrive.setAbsoluteYTarget(yTarget, nextState);
                     }
                     break;
