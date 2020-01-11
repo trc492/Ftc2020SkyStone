@@ -230,6 +230,7 @@ class CmdAutoBuildingZone6541 implements TrcRobot.RobotCommand
                     // for both cases, we will first unhook the foundation.
                     // if we are parking under bridge, we will drive to the bridge.
                     // otherwise, we will remain at the site of the foundation until match end. (set state to done)
+                    robot.driveBase.stop();
                     nextState = autoChoices.parkUnderBridge != CommonAuto.ParkPosition.NO_PARK ?
                             State.BACK_OFF_FROM_FOUNDATION :
                             State.DONE;
