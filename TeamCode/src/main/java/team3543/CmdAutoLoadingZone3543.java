@@ -498,7 +498,7 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                     // If this is the second skystone, we need to scoot a little further because the foundation
                     // could have been pushed a little further for the first skystone drop.
                     //
-                    if (skystonesDropped > 0) yTarget += 2.0;
+                    if (skystonesDropped > 0) yTarget += 3.0;
                     simplePidDrive.setAbsoluteYTarget(yTarget, State.DROP_SKYSTONE);
                     break;
 
@@ -656,8 +656,8 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                     // slipped and the Y odometry could be off. If we did the second skystone, the foundation could be
                     // pushed further off, so we need to add even more distance.
                     //
-                    yTarget = RobotInfo.ABS_ROBOT_START_Y - 3.0;
-                    if (skystonesDropped > 1) yTarget -= 3.0;
+                    yTarget = RobotInfo.ABS_ROBOT_START_Y - 4.0;
+                    if (skystonesDropped > 1) yTarget -= 8.0;
                     simplePidDrive.setAbsoluteYTarget(yTarget, State.UNHOOK_FOUNDATION);
                     break;
 
@@ -714,8 +714,10 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                     // foundation is further off the side wall. So we need to push further for it to move back
                     // to the side wall.
                     //
-                    xTarget = (skystonesDropped > 1? 18.0: 15.0) * allianceDirection;
-                    simplePidDrive.setRelativeXTarget(xTarget, State.RESYNC_ROBOT_X);
+                    xTarget = RobotInfo.ABS_FOUNDATION_SIDE_X + 6.0;
+                    if (skystonesDropped > 1) xTarget += 3.0;
+                    xTarget *= allianceDirection;
+                    simplePidDrive.setAbsoluteXTarget(xTarget, State.RESYNC_ROBOT_X);
                     break;
 
                 case RESYNC_ROBOT_X:
