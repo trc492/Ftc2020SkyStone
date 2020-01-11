@@ -174,6 +174,8 @@ class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
                     //
                     // Set the robot's absolute field starting position.
                     //
+
+                    /*
                     startX = autoChoices.strategy == CommonAuto.AutoStrategy.LOADING_ZONE_SINGLE_SKYSTONE?
                                     RobotInfo.ABS_LOADING_ZONE_ROBOT_START_X_WALL:
                              autoChoices.robotStartX != 0.0?
@@ -181,6 +183,13 @@ class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
                              autoChoices.strategy == CommonAuto.AutoStrategy.LOADING_ZONE_DOUBLE_SKYSTONE_FAR?
                                     RobotInfo.ABS_LOADING_ZONE_ROBOT_START_X_FAR:
                                     RobotInfo.ABS_LOADING_ZONE_ROBOT_START_X_WALL;
+                     */
+
+                    // move to area where all visible.
+                    visionParams.setScootCount(0);
+                    visionParams.setAssumeLeftIfNotFound(true);
+                    startX = RobotInfo.ABS_LOADING_ZONE_ROBOT_START_X_MID - RobotInfo6541.GRABBER_OFFSET_X;
+
                     startX *= allianceDirection;
                     robot.pidDrive.setAbsolutePose(new TrcPose2D(startX, RobotInfo.ABS_ROBOT_START_Y));
                     robot.pidDrive.setAbsoluteTargetModeEnabled(true);
@@ -227,7 +236,7 @@ class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
                     xPidCtrl.setOutputLimit(0.5);
                     yPidCtrl.setOutputLimit(0.5);
                     yTarget = 17.5;
-                    simplePidDrive.setRelativeYTarget(yTarget, State.MOVE_TO_FIRST_STONE);
+                    simplePidDrive.setRelativeYTarget(yTarget, State.DO_VISION);
                     break;
 
                 case MOVE_TO_FIRST_STONE:
