@@ -329,7 +329,7 @@ public class CmdSkystoneVision implements TrcRobot.RobotCommand
                         // Vuforia found the skystone.
                         robot.globalTracer.traceInfo(
                                 msgTag, ">>> Skystone found at x=%.1f, y=%.1f.", skystonePose.x, skystonePose.y);
-                        if (Math.abs(skystonePose.x) > 12.0)
+                        if (Math.abs(skystonePose.x) > 6.0)
                         {
                             robot.globalTracer.traceInfo(msgTag, ">>> Vuforia is way off, ignore it!");
                             robot.speak(String.format(Locale.US, "Vuforia is way off."));
