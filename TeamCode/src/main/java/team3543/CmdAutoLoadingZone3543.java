@@ -774,7 +774,7 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                     //
                     // We are done.
                     //
-                    robot.wrist.retract(event);
+                    robot.wrist.retract();
                     cancel();
                     break;
             }

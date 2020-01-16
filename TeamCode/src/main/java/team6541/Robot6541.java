@@ -96,6 +96,16 @@ class Robot6541 extends Robot
                     RobotInfo6541.BACK_FOUNDATION_LATCH_RELEASE_POS, RobotInfo6541.BACK_FOUNDATION_LATCH_RELEASE_TIME)
             .setExtendParams(
                     RobotInfo6541.BACK_FOUNDATION_LATCH_GRAB_POS, RobotInfo6541.BACK_FOUNDATION_LATCH_GRAB_TIME);
+    private static final FtcServoActuator.Parameters frontFoundationLatchParams6541 = new FtcServoActuator.Parameters()
+            .setStepParams(
+                    RobotInfo6541.FRONT_FOUNDATION_LATCH_MAX_STEPRATE, RobotInfo6541.FRONT_FOUNDATION_LATCH_MIN_POS,
+                    RobotInfo6541.FRONT_FOUNDATION_LATCH_MAX_POS)
+            .setInverted(true, false)
+            .setRetractParams(
+                    RobotInfo6541.FRONT_FOUNDATION_LATCH_GRAB_POS, RobotInfo6541.FRONT_FOUNDATION_LATCH_GRAB_TIME)
+            .setExtendParams(
+                    RobotInfo6541.FRONT_FOUNDATION_LATCH_RELEASE_POS,
+                    RobotInfo6541.FRONT_FOUNDATION_LATCH_RELEASE_TIME);
     private static final FtcServoActuator.Parameters deployerParams6541 = new FtcServoActuator.Parameters()
             .setStepParams(RobotInfo6541.DEPLOYER_MAX_STEPRATE, RobotInfo6541.DEPLOYER_MIN_POS, RobotInfo6541.DEPLOYER_MAX_POS)
             .setInverted(false, false)
@@ -105,6 +115,7 @@ class Robot6541 extends Robot
     // Team specific subsystems.
     //
     FtcServoActuator elbow = null;
+    Grabber frontFoundationLatch = null;
     FtcServoActuator capstoneDeployer = null;
 
     Robot6541(TrcRobot.RunMode runMode)
@@ -163,6 +174,11 @@ class Robot6541 extends Robot
 
                 backFoundationLatch = new Grabber("backFoundationLatchServo", backFoundationLatchParams6541);
                 backFoundationLatch.release();
+
+                frontFoundationLatch = new Grabber(
+                        "leftFoundationLatchServo", "rightFoundationLatchServo",
+                        frontFoundationLatchParams6541);
+                frontFoundationLatch.release();
 
                 capstoneDeployer = new FtcServoActuator("capstoneDeployerServo", deployerParams6541);
                 capstoneDeployer.retract();
