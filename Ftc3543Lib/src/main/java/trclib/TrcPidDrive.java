@@ -717,12 +717,14 @@ public class TrcPidDrive
      * @param xDelta specifies the X target relative to the current X position.
      * @param yDelta specifies the Y target relative to the current Y position.
      * @param turnDelta specifies the turn target relative to the current angle.
-     * @param holdTarget specifies true for holding the target position at the end, false otherwise.
      * @param event specifies an event object to signal when done.
+     * @param timeout specifies a timeout value in seconds. If the operation is not completed without the specified
+     *                timeout, the operation will be canceled and the event will be signaled. If no timeout is
+     *                specified, it should be set to zero.
      */
-    public void setRelativeTarget(double xDelta, double yDelta, double turnDelta, boolean holdTarget, TrcEvent event)
+    public void setRelativeTarget(double xDelta, double yDelta, double turnDelta, TrcEvent event, double timeout)
     {
-        setRelativeTarget(null, xDelta, yDelta, turnDelta, holdTarget, event, 0.0);
+        setRelativeTarget(null, xDelta, yDelta, turnDelta, false, event, timeout);
     }   //setRelativeTarget
 
     /**
@@ -743,12 +745,54 @@ public class TrcPidDrive
      *
      * @param xDelta specifies the X target relative to the current X position.
      * @param yDelta specifies the Y target relative to the current Y position.
+     * @param turnDelta specifies the turn target relative to the current angle.
+     * @param holdTarget specifies true for holding the target position at the end, false otherwise.
+     */
+    public void setRelativeTarget(double xDelta, double yDelta, double turnDelta, boolean holdTarget)
+    {
+        setRelativeTarget(null, xDelta, yDelta, turnDelta, holdTarget, null, 0.0);
+    }   //setRelativeTarget
+
+    /**
+     * This method sets the PID controlled relative drive targets.
+     *
+     * @param xDelta specifies the X target relative to the current X position.
+     * @param yDelta specifies the Y target relative to the current Y position.
+     * @param event specifies an event object to signal when done.
+     * @param timeout specifies a timeout value in seconds. If the operation is not completed without the specified
+     *                timeout, the operation will be canceled and the event will be signaled. If no timeout is
+     *                specified, it should be set to zero.
+     */
+    public void setRelativeXYTarget(double xDelta, double yDelta, TrcEvent event, double timeout)
+    {
+        setRelativeTarget(null, xDelta, yDelta, 0.0, false, event, timeout);
+    }   //setRelativeXYTarget
+
+    /**
+     * This method sets the PID controlled relative drive targets.
+     *
+     * @param xDelta specifies the X target relative to the current X position.
+     * @param yDelta specifies the Y target relative to the current Y position.
      * @param event specifies an event object to signal when done.
      */
     public void setRelativeXYTarget(double xDelta, double yDelta, TrcEvent event)
     {
         setRelativeTarget(null, xDelta, yDelta, 0.0, false, event, 0.0);
     }   //setRelativeXYTarget
+
+    /**
+     * This method sets the PID controlled relative drive targets.
+     *
+     * @param xDelta specifies the X target relative to the current X position.
+     * @param event specifies an event object to signal when done.
+     * @param timeout specifies a timeout value in seconds. If the operation is not completed without the specified
+     *                timeout, the operation will be canceled and the event will be signaled. If no timeout is
+     *                specified, it should be set to zero.
+     */
+    public void setRelativeXTarget(double xDelta, TrcEvent event, double timeout)
+    {
+        setRelativeTarget(null, xDelta, 0.0, 0.0, false, event, timeout);
+    }   //setRelativeXTarget
 
     /**
      * This method sets the PID controlled relative drive targets.
@@ -766,11 +810,39 @@ public class TrcPidDrive
      *
      * @param yDelta specifies the Y target relative to the current Y position.
      * @param event specifies an event object to signal when done.
+     * @param timeout specifies a timeout value in seconds. If the operation is not completed without the specified
+     *                timeout, the operation will be canceled and the event will be signaled. If no timeout is
+     *                specified, it should be set to zero.
+     */
+    public void setRelativeYTarget(double yDelta, TrcEvent event, double timeout)
+    {
+        setRelativeTarget(null, 0.0, yDelta, 0.0, false, event, timeout);
+    }   //setRelativeYTarget
+
+    /**
+     * This method sets the PID controlled relative drive targets.
+     *
+     * @param yDelta specifies the Y target relative to the current Y position.
+     * @param event specifies an event object to signal when done.
      */
     public void setRelativeYTarget(double yDelta, TrcEvent event)
     {
         setRelativeTarget(null, 0.0, yDelta, 0.0, false, event, 0.0);
     }   //setRelativeYTarget
+
+    /**
+     * This method sets the PID controlled relative drive targets.
+     *
+     * @param turnDelta specifies the turn target relative to the current angle.
+     * @param event specifies an event object to signal when done.
+     * @param timeout specifies a timeout value in seconds. If the operation is not completed without the specified
+     *                timeout, the operation will be canceled and the event will be signaled. If no timeout is
+     *                specified, it should be set to zero.
+     */
+    public void setRelativeTurnTarget(double turnDelta, TrcEvent event, double timeout)
+    {
+        setRelativeTarget(null, 0.0, 0.0, turnDelta, false, event, timeout);
+    }   //setRelativeTurnTarget
 
     /**
      * This method sets the PID controlled relative drive targets.
@@ -859,12 +931,14 @@ public class TrcPidDrive
      * @param absX specifies the absolute X target position.
      * @param absY specifies the absolute Y target position.
      * @param absHeading specifies the absolute target angle.
-     * @param holdTarget specifies true for holding the target position at the end, false otherwise.
      * @param event specifies an event object to signal when done.
+     * @param timeout specifies a timeout value in seconds. If the operation is not completed without the specified
+     *                timeout, the operation will be canceled and the event will be signaled. If no timeout is
+     *                specified, it should be set to zero.
      */
-    public void setAbsoluteTarget(double absX, double absY, double absHeading, boolean holdTarget, TrcEvent event)
+    public void setAbsoluteTarget(double absX, double absY, double absHeading, TrcEvent event, double timeout)
     {
-        setAbsoluteTarget(null, absX, absY, absHeading, holdTarget, event, 0.0);
+        setAbsoluteTarget(null, absX, absY, absHeading, false, event, timeout);
     }   //setAbsoluteTarget
 
     /**
@@ -885,12 +959,54 @@ public class TrcPidDrive
      *
      * @param absX specifies the absolute X target position.
      * @param absY specifies the absolute Y target position.
+     * @param absHeading specifies the absolute target angle.
+     * @param holdTarget specifies true for holding the target position at the end, false otherwise.
+     */
+    public void setAbsoluteTarget(double absX, double absY, double absHeading, boolean holdTarget)
+    {
+        setAbsoluteTarget(null, absX, absY, absHeading, holdTarget, null, 0.0);
+    }   //setAbsoluteTarget
+
+    /**
+     * This method sets the PID controlled absolute drive targets.
+     *
+     * @param absX specifies the absolute X target position.
+     * @param absY specifies the absolute Y target position.
+     * @param event specifies an event object to signal when done.
+     * @param timeout specifies a timeout value in seconds. If the operation is not completed without the specified
+     *                timeout, the operation will be canceled and the event will be signaled. If no timeout is
+     *                specified, it should be set to zero.
+     */
+    public void setAbsoluteXYTarget(double absX, double absY, TrcEvent event, double timeout)
+    {
+        setAbsoluteTarget(null, absX, absY, absTargetPose.angle, false, event, timeout);
+    }   //setAbsoluteXYTarget
+
+    /**
+     * This method sets the PID controlled absolute drive targets.
+     *
+     * @param absX specifies the absolute X target position.
+     * @param absY specifies the absolute Y target position.
      * @param event specifies an event object to signal when done.
      */
     public void setAbsoluteXYTarget(double absX, double absY, TrcEvent event)
     {
         setAbsoluteTarget(null, absX, absY, absTargetPose.angle, false, event, 0.0);
     }   //setAbsoluteXYTarget
+
+    /**
+     * This method sets the PID controlled absolute drive targets.
+     *
+     * @param absX specifies the absolute X target position.
+     * @param event specifies an event object to signal when done.
+     * @param timeout specifies a timeout value in seconds. If the operation is not completed without the specified
+     *                timeout, the operation will be canceled and the event will be signaled. If no timeout is
+     *                specified, it should be set to zero.
+     */
+    public void setAbsoluteXTarget(double absX, TrcEvent event, double timeout)
+    {
+        setAbsoluteTarget(null, absX, absTargetPose.y, absTargetPose.angle, false, event, timeout);
+    }   //setAbsoluteXTarget
 
     /**
      * This method sets the PID controlled absolute drive targets.
@@ -908,6 +1024,20 @@ public class TrcPidDrive
      *
      * @param absY specifies the absolute Y target position.
      * @param event specifies an event object to signal when done.
+     * @param timeout specifies a timeout value in seconds. If the operation is not completed without the specified
+     *                timeout, the operation will be canceled and the event will be signaled. If no timeout is
+     *                specified, it should be set to zero.
+     */
+    public void setAbsoluteYTarget(double absY, TrcEvent event, double timeout)
+    {
+        setAbsoluteTarget(null, absTargetPose.x, absY, absTargetPose.angle, false, event, timeout);
+    }   //setAbsoluteYTarget
+
+    /**
+     * This method sets the PID controlled absolute drive targets.
+     *
+     * @param absY specifies the absolute Y target position.
+     * @param event specifies an event object to signal when done.
      */
     public void setAbsoluteYTarget(double absY, TrcEvent event)
     {
@@ -919,8 +1049,11 @@ public class TrcPidDrive
      *
      * @param absHeading specifies the absolute target angle.
      * @param event specifies an event object to signal when done.
+     * @param timeout specifies a timeout value in seconds. If the operation is not completed without the specified
+     *                timeout, the operation will be canceled and the event will be signaled. If no timeout is
+     *                specified, it should be set to zero.
      */
-    public void setAbsoluteHeadingTarget(double absHeading, TrcEvent event)
+    public void setAbsoluteHeadingTarget(double absHeading, TrcEvent event, double timeout)
     {
         //
         // Use the current absolute pose for X and Y to ensure that
@@ -928,7 +1061,19 @@ public class TrcPidDrive
         // and Y PID controllers are turned off during the turn.
         //
         final TrcPose2D currentAbsPose = driveBase.getFieldPosition();
-        setAbsoluteTarget(null, currentAbsPose.x, currentAbsPose.y, absHeading, false, event, 0.0);
+        setAbsoluteTarget(
+                null, currentAbsPose.x, currentAbsPose.y, absHeading, false, event, timeout);
+    }   //setAbsoluteHeadingTarget
+
+    /**
+     * This method sets the PID controlled absolute drive targets.
+     *
+     * @param absHeading specifies the absolute target angle.
+     * @param event specifies an event object to signal when done.
+     */
+    public void setAbsoluteHeadingTarget(double absHeading, TrcEvent event)
+    {
+        setAbsoluteHeadingTarget(absHeading, event, 0.0);
     }   //setAbsoluteHeadingTarget
 
     /**
