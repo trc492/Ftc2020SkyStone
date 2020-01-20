@@ -467,7 +467,7 @@ class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
                     nextState = autoChoices.strafeToFoundation?
                                     State.APPROACH_FOUNDATION: State.TURN_BACK_TO_FOUNDATION;
                     xTarget = autoChoices.strategy == CommonAuto.AutoStrategy.LOADING_ZONE_SINGLE_SKYSTONE?
-                                    RobotInfo.ABS_FOUNDATION_DROP_MID_X:
+                                    RobotInfo.ABS_FOUNDATION_DROP_MID_X + 4.0:
                               (autoChoices.strategy == CommonAuto.AutoStrategy.LOADING_ZONE_DOUBLE_SKYSTONE_CENTER ||
                                autoChoices.strategy == CommonAuto.AutoStrategy.LOADING_ZONE_DOUBLE_SKYSTONE_SOLO &&
                                skystonesDropped == 0)?
@@ -490,7 +490,7 @@ class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
                     //
                     robot.elevator.setPosition(3.0);
                     robot.elbow.extend();
-                    yTarget =  RobotInfo.ABS_FOUNDATION_Y;
+                    yTarget = RobotInfo.ABS_FOUNDATION_Y + 4.0;
                     //
                     // If this is the second skystone, we need to scoot a little further because the foundation
                     // could have been pushed a little further for the first skystone drop.
@@ -548,6 +548,7 @@ class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
                     //
                     robot.elevator.zeroCalibrate();
                     robot.elbow.retract();
+                    robot.grabber.grab();
                     sm.setState(nextState);
                     break;
 
@@ -675,7 +676,7 @@ class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
                     // the wall to make sure it's in the building site.
                     //
                     nextState = State.MOVE_TO_FOUNDATION_SIDE;
-                    xTarget = RobotInfo.ABS_NEXT_TO_PARTNER_PARK_X * allianceDirection;
+                    xTarget = (RobotInfo.ABS_NEXT_TO_PARTNER_PARK_X + 10.0) * allianceDirection;
                     simplePidDrive.setAbsoluteXTarget(xTarget, State.RETRACT_TO_MIN_HEIGHT);
                     break;
 
@@ -694,7 +695,7 @@ class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
                     // foundation is further off the side wall. So we need to push further for it to move back
                     // to the side wall.
                     //
-                    xTarget = RobotInfo.ABS_FOUNDATION_SIDE_X + 6.0;
+                    xTarget = RobotInfo.ABS_FOUNDATION_SIDE_X + 12.0;
                     if (skystonesDropped > 1) xTarget += 3.0;
                     xTarget *= allianceDirection;
                     simplePidDrive.setAbsoluteXTarget(xTarget, State.RESYNC_ROBOT_X, 1.0);
@@ -727,7 +728,7 @@ class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
                     //
                     nextState = autoChoices.parkUnderBridge == CommonAuto.ParkPosition.NO_PARK?
                                     State.DONE: State.MOVE_UNDER_BRIDGE;
-                    yTarget = RobotInfo.ABS_ROBOT_START_Y;
+                    yTarget = autoChoices.moveFoundation ? 0.0 : RobotInfo.ABS_ROBOT_START_Y;
                     simplePidDrive.setAbsoluteYTarget(yTarget, nextState);
                     break;
 
@@ -735,7 +736,7 @@ class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
                     //
                     // Slide under the bridge.
                     //
-                    xTarget = RobotInfo.ABS_UNDER_BRIDGE_PARK_X * allianceDirection;
+                    xTarget = (RobotInfo.ABS_UNDER_BRIDGE_PARK_X + 2.0) * allianceDirection;
                     simplePidDrive.setAbsoluteXTarget(xTarget, State.DONE);
                     break;
 

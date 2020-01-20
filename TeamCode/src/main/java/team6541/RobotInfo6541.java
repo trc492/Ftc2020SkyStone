@@ -44,13 +44,14 @@ class RobotInfo6541
     static final double MOTOR_KI                                = 0.0;
     static final double MOTOR_KD                                = 0.0;
     //
-    // 2019-10-29: Scale=0.0167169366150308, Kp=0.09, Ki=0.0, Kd=0.003
+    // 2019-10-29: Scale=0.0167169366150308, Kp=0.09, Ki=0.0, Kd=0.003167169366150308 / 1.0666666667
+    // 2019-01-20: Scale:0.015672128, Kp=0.09, Ki=0.0, Kd=0.003
     //
     static final double ENCODER_X_KP                            = 0.09;
     static final double ENCODER_X_KI                            = 0.0;
     static final double ENCODER_X_KD                            = 0.003;
     static final double ENCODER_X_TOLERANCE                     = 1.0;
-    static final double ENCODER_X_INCHES_PER_COUNT              = 0.0167169366150308;
+    static final double ENCODER_X_INCHES_PER_COUNT              = (0.0167169366150308 / 1.0666666667) * (120.0 / 121.4);
     //
     // 2019-10-29: Scale=0.0170448238583025, Kp=0.05, Ki=0.0, Kd=0.003
     //
@@ -106,9 +107,9 @@ class RobotInfo6541
     static final boolean PHONE_IS_PORTRAIT                      = false;
     static final double ROBOT_LENGTH                            = 18.0; //Robot length in inches
     static final double ROBOT_WIDTH                             = 18.0; //Robot width in inches
-    static final double PHONE_FRONT_OFFSET                      = 0.0;  //Phone offset from front of robot in inches
-    static final double PHONE_HEIGHT_OFFSET                     = 4.75; //Phone offset from floor in inches
-    static final double PHONE_LEFT_OFFSET                       = 10.0; //Phone offset from left of robot in inches
+    static final double PHONE_FRONT_OFFSET                      = 3.5;  //Phone offset from front of robot in inches
+    static final double PHONE_HEIGHT_OFFSET                     = 5.5; //Phone offset from floor in inches
+    static final double PHONE_LEFT_OFFSET                       = 11.5; //Phone offset from left of robot in inches
 
     static final double HOMOGRAPHY_CAMERA_TOPLEFT_X             = 0.0;
     static final double HOMOGRAPHY_CAMERA_TOPLEFT_Y             = 360.0;
@@ -191,8 +192,8 @@ class RobotInfo6541
     static final double FRONT_FOUNDATION_LATCH_MAX_STEPRATE     = 0.0;
     static final double FRONT_FOUNDATION_LATCH_MIN_POS          = 0.0;
     static final double FRONT_FOUNDATION_LATCH_MAX_POS          = 1.0;
-    static final double FRONT_FOUNDATION_LATCH_RELEASE_POS      = 0.2;
-    static final double FRONT_FOUNDATION_LATCH_RELEASE_TIME     = 0.5;
+    static final double FRONT_FOUNDATION_LATCH_RELEASE_POS      = 0.3;
+    static final double FRONT_FOUNDATION_LATCH_RELEASE_TIME     = 0.95;
     static final double FRONT_FOUNDATION_LATCH_GRAB_POS         = 1.0;
     static final double FRONT_FOUNDATION_LATCH_GRAB_TIME        = 0.5;
     //

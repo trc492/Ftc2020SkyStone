@@ -35,7 +35,7 @@ public class FtcTeleOp6541 extends CommonTeleOp
     protected Robot6541 robot6541;
 
     // elbow deployed checker
-    private boolean hasDeployedElbowDefault = false;
+    //private boolean hasDeployedElbowDefault = false;
     private boolean elbowExtended = false;
     private boolean backLatchExtended = false;
     private boolean frontLatchesExtended = false;
@@ -67,12 +67,15 @@ public class FtcTeleOp6541 extends CommonTeleOp
         //
         // Operate other team specific subsystems.
         //
+        /*
         if (!hasDeployedElbowDefault)
         {
             robot6541.elbow.extend();
             hasDeployedElbowDefault = true;
             elbowExtended = true;
         }
+
+         */
 
         robot6541.capstoneDeployer.setPosition(1.0 - operatorGamepad.getRightTrigger());
         dashboard.displayPrintf(5, "ElbowPos=%.2f", robot6541.elbow.getPosition());
