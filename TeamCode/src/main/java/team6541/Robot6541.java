@@ -100,7 +100,7 @@ class Robot6541 extends Robot
             .setStepParams(
                     RobotInfo6541.FRONT_FOUNDATION_LATCH_MAX_STEPRATE, RobotInfo6541.FRONT_FOUNDATION_LATCH_MIN_POS,
                     RobotInfo6541.FRONT_FOUNDATION_LATCH_MAX_POS)
-            .setInverted(true, false)
+            .setInverted(false, true)
             .setRetractParams(
                     RobotInfo6541.FRONT_FOUNDATION_LATCH_GRAB_POS, RobotInfo6541.FRONT_FOUNDATION_LATCH_GRAB_TIME)
             .setExtendParams(
