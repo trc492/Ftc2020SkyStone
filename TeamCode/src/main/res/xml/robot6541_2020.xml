@@ -38,6 +38,8 @@ SOFTWARE.
             <Servo name="elbowServo" port="1" />
             <Servo name="grabberServo" port="2" />
             <Servo name="capstoneDeployerServo" port="3" />
+            <Servo name="leftFoundationLatchServo" port="4" />
+            <Servo name="rightFoundationLatchServo" port="5" />
             <LynxEmbeddedIMU name="imu 1" port="0" bus="0" />
         </LynxModule>
     </LynxUsbDevice>

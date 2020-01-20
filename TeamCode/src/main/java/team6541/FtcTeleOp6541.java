@@ -37,6 +37,8 @@ public class FtcTeleOp6541 extends CommonTeleOp
     // elbow deployed checker
     private boolean hasDeployedElbowDefault = false;
     private boolean elbowExtended = false;
+    private boolean backLatchExtended = false;
+    private boolean frontLatchesExtended = false;
 
     //
     // Implements FtcOpMode abstract method.
@@ -99,9 +101,35 @@ public class FtcTeleOp6541 extends CommonTeleOp
                     break;
 
                 case FtcGamepad.GAMEPAD_X:
+                    if (pressed)
+                    {
+                        frontLatchesExtended = !frontLatchesExtended;
+                        if (frontLatchesExtended)
+                        {
+                            robot6541.frontFoundationLatch.grab();
+                        }
+                        else
+                        {
+                            robot6541.frontFoundationLatch.release();
+                        }
+                    }
+                    processed = true;
                     break;
 
                 case FtcGamepad.GAMEPAD_Y:
+                    if (pressed)
+                    {
+                        backLatchExtended = !backLatchExtended;
+                        if (backLatchExtended)
+                        {
+                            robot6541.backFoundationLatch.grab();
+                        }
+                        else
+                        {
+                            robot6541.backFoundationLatch.release();
+                        }
+                    }
+                    processed = true;
                     break;
 
                 case FtcGamepad.GAMEPAD_LBUMPER:
