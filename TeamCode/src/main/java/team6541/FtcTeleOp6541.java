@@ -164,10 +164,14 @@ public class FtcTeleOp6541 extends CommonTeleOp
                         elbowExtended = !elbowExtended;
                         if (elbowExtended)
                         {
+                            robot6541.elevator.zeroCalibrate();
                             robot6541.elbow.extend();
+                            robot6541.grabber.release();
                         }
                         else
                         {
+                            robot6541.elevator.zeroCalibrate();
+                            robot6541.grabber.grab();
                             robot6541.elbow.retract();
                         }
                     }
