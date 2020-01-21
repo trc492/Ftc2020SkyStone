@@ -197,7 +197,7 @@ class RobotInfo6541
     static final double FRONT_FOUNDATION_LATCH_GRAB_POS         = 1.0;
     static final double FRONT_FOUNDATION_LATCH_GRAB_TIME        = 0.5;
     //
-    // capstone deployer subsystem.
+    // CapstoneDeployer subsystem.
     //
     static final double DEPLOYER_MAX_STEPRATE                    = 0.0;
     static final double DEPLOYER_MIN_POS                         = 0.0;
