@@ -676,7 +676,8 @@ class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
                     // the wall to make sure it's in the building site.
                     //
                     nextState = State.MOVE_TO_FOUNDATION_SIDE;
-                    xTarget = (RobotInfo.ABS_NEXT_TO_PARTNER_PARK_X + 10.0) * allianceDirection;
+                    xTarget = RobotInfo.ABS_NEXT_TO_PARTNER_PARK_X + 10.0;
+                    xTarget *= allianceDirection;
                     simplePidDrive.setAbsoluteXTarget(xTarget, State.RETRACT_TO_MIN_HEIGHT);
                     break;
 
@@ -728,7 +729,8 @@ class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
                     //
                     nextState = autoChoices.parkUnderBridge == CommonAuto.ParkPosition.NO_PARK?
                                     State.DONE: State.MOVE_UNDER_BRIDGE;
-                    yTarget = autoChoices.moveFoundation ? 0.0 : RobotInfo.ABS_ROBOT_START_Y;
+                    yTarget = RobotInfo.ABS_ROBOT_START_Y;
+                    if (autoChoices.moveFoundation) yTarget -= 9.0;
                     simplePidDrive.setAbsoluteYTarget(yTarget, nextState);
                     break;
 

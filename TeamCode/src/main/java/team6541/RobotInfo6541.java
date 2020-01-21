@@ -44,14 +44,14 @@ class RobotInfo6541
     static final double MOTOR_KI                                = 0.0;
     static final double MOTOR_KD                                = 0.0;
     //
-    // 2019-10-29: Scale=0.0167169366150308, Kp=0.09, Ki=0.0, Kd=0.003167169366150308 / 1.0666666667
-    // 2019-01-20: Scale:0.015672128, Kp=0.09, Ki=0.0, Kd=0.003
+    // 2019-10-29: Scale=0.0167169366150308, Kp=0.09, Ki=0.0, Kd=0.003
+    // 2020-01-20: Scale:0.01549139513288463360555699276161, Kp=0.09, Ki=0.0, Kd=0.003
     //
     static final double ENCODER_X_KP                            = 0.09;
     static final double ENCODER_X_KI                            = 0.0;
     static final double ENCODER_X_KD                            = 0.003;
     static final double ENCODER_X_TOLERANCE                     = 1.0;
-    static final double ENCODER_X_INCHES_PER_COUNT              = (0.0167169366150308 / 1.0666666667) * (120.0 / 121.4);
+    static final double ENCODER_X_INCHES_PER_COUNT              = 0.01549139513288463360555699276161;
     //
     // 2019-10-29: Scale=0.0170448238583025, Kp=0.05, Ki=0.0, Kd=0.003
     //
@@ -193,7 +193,7 @@ class RobotInfo6541
     static final double FRONT_FOUNDATION_LATCH_MIN_POS          = 0.0;
     static final double FRONT_FOUNDATION_LATCH_MAX_POS          = 1.0;
     static final double FRONT_FOUNDATION_LATCH_RELEASE_POS      = 0.3;
-    static final double FRONT_FOUNDATION_LATCH_RELEASE_TIME     = 0.95;
+    static final double FRONT_FOUNDATION_LATCH_RELEASE_TIME     = 0.5;
     static final double FRONT_FOUNDATION_LATCH_GRAB_POS         = 1.0;
     static final double FRONT_FOUNDATION_LATCH_GRAB_TIME        = 0.5;
     //
