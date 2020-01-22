@@ -267,7 +267,7 @@ class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
                         visionParams.setScootCount(0);
                         visionParams.setAssumeLeftIfNotFound(true);
                         startX = RobotInfo.ABS_LOADING_ZONE_ROBOT_START_X_MID * allianceDirection;
-                        startX -= RobotInfo6541.GRABBER_OFFSET_X;
+                        startX += RobotInfo6541.GRABBER_OFFSET_X;
                     }
                     else if (autoChoices.robotStartX != 0.0)
                     {
@@ -364,6 +364,7 @@ class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
                     else
                     {
                         xTarget *= allianceDirection;
+                        xTarget += RobotInfo6541.GRABBER_OFFSET_X;
                         simplePidDrive.setAbsoluteXTarget(xTarget, State.SETUP_VISION);
                         break;
                     }
@@ -467,12 +468,14 @@ class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
                     nextState = autoChoices.strafeToFoundation?
                                     State.APPROACH_FOUNDATION: State.TURN_BACK_TO_FOUNDATION;
                     xTarget = autoChoices.strategy == CommonAuto.AutoStrategy.LOADING_ZONE_SINGLE_SKYSTONE?
-                                    RobotInfo.ABS_FOUNDATION_DROP_MID_X + 4.0:
+                                    RobotInfo.ABS_FOUNDATION_DROP_MID_X:
                               (autoChoices.strategy == CommonAuto.AutoStrategy.LOADING_ZONE_DOUBLE_SKYSTONE_CENTER ||
                                autoChoices.strategy == CommonAuto.AutoStrategy.LOADING_ZONE_DOUBLE_SKYSTONE_SOLO &&
                                skystonesDropped == 0)?
                                     RobotInfo.ABS_FOUNDATION_DROP_NEAR_X: RobotInfo.ABS_FOUNDATION_DROP_FAR_X;
+                    xTarget += 4.0;
                     xTarget *= allianceDirection;
+                    xTarget += RobotInfo6541.GRABBER_OFFSET_X;
                     simplePidDrive.setAbsoluteXTarget(xTarget, nextState);
                     break;
 
@@ -637,7 +640,7 @@ class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
                     // slipped and the Y odometry could be off. If we did the second skystone, the foundation could be
                     // pushed further off, so we need to add even more distance.
                     //
-                    yTarget = RobotInfo.ABS_ROBOT_START_Y - 4.0;
+                    yTarget = RobotInfo.ABS_ROBOT_START_Y - 6.0;
                     if (skystonesDropped > 1) yTarget -= 8.0;
                     simplePidDrive.setAbsoluteYTarget(yTarget, State.UNHOOK_FOUNDATION, 2.0);
                     break;
@@ -676,7 +679,7 @@ class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
                     // the wall to make sure it's in the building site.
                     //
                     nextState = State.MOVE_TO_FOUNDATION_SIDE;
-                    xTarget = RobotInfo.ABS_NEXT_TO_PARTNER_PARK_X + 10.0;
+                    xTarget = RobotInfo.ABS_NEXT_TO_PARTNER_PARK_X;
                     xTarget *= allianceDirection;
                     simplePidDrive.setAbsoluteXTarget(xTarget, State.RETRACT_TO_MIN_HEIGHT);
                     break;
@@ -696,7 +699,7 @@ class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
                     // foundation is further off the side wall. So we need to push further for it to move back
                     // to the side wall.
                     //
-                    xTarget = RobotInfo.ABS_FOUNDATION_SIDE_X + 12.0;
+                    xTarget = RobotInfo.ABS_FOUNDATION_SIDE_X + 6.0;
                     if (skystonesDropped > 1) xTarget += 3.0;
                     xTarget *= allianceDirection;
                     simplePidDrive.setAbsoluteXTarget(xTarget, State.RESYNC_ROBOT_X, 1.0);
@@ -738,7 +741,7 @@ class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
                     //
                     // Slide under the bridge.
                     //
-                    xTarget = (RobotInfo.ABS_UNDER_BRIDGE_PARK_X + 2.0) * allianceDirection;
+                    xTarget = RobotInfo.ABS_UNDER_BRIDGE_PARK_X * allianceDirection;
                     simplePidDrive.setAbsoluteXTarget(xTarget, State.DONE);
                     break;
 
