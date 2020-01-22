@@ -313,8 +313,7 @@ public class CommonTest
                     robot.dashboard.displayPrintf(9, "Timed Drive: %.0f sec", driveTime);
                     robot.dashboard.displayPrintf(10, "xPos=%.1f,yPos=%.1f,heading=%.1f",
                             robot.driveBase.getXPosition(), robot.driveBase.getYPosition(), robot.driveBase.getHeading());
-                    robot.dashboard.displayPrintf(
-                            11, "raw=lf:%.0f,rf:%.0f,lb:%.0f,rb:%.0f",
+                    robot.dashboard.displayPrintf(11, "raw=lf:%.0f,rf:%.0f,lb:%.0f,rb:%.0f",
                             robot.leftFrontWheel.getPosition(), robot.rightFrontWheel.getPosition(),
                             robot.leftBackWheel.getPosition(), robot.rightBackWheel.getPosition());
                 }

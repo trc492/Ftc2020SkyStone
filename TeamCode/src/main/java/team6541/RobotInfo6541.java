@@ -46,21 +46,23 @@ class RobotInfo6541
     //
     // 2019-10-29: Scale=0.0167169366150308, Kp=0.09, Ki=0.0, Kd=0.003
     // 2020-01-20: Scale:0.01549139513288463360555699276161, Kp=0.09, Ki=0.0, Kd=0.003
+    // 2020-01-22: Scale:0.01657963363395504175140190547627, Kp=0.09, Ki=0.0, Kd=0.003
     //
     static final double ENCODER_X_KP                            = 0.09;
     static final double ENCODER_X_KI                            = 0.0;
     static final double ENCODER_X_KD                            = 0.003;
     static final double ENCODER_X_TOLERANCE                     = 1.0;
-    static final double ENCODER_X_INCHES_PER_COUNT              = 0.01549139513288463360555699276161;
+    static final double ENCODER_X_INCHES_PER_COUNT              = 0.01657963363395504175140190547627;
     //
     // 2019-10-29: Scale=0.0170448238583025, Kp=0.05, Ki=0.0, Kd=0.003
+    // 2020-01-22: Scale=0.0175021669133240325077399380805, Kp=0.05, Ki=0.0, Kd=0.003
     //
     static final double ENCODER_Y_KP                            = 0.05;
     static final double ENCODER_Y_LOADED_KP                     = 0.075;
     static final double ENCODER_Y_KI                            = 0.0;
     static final double ENCODER_Y_KD                            = 0.003;
     static final double ENCODER_Y_TOLERANCE                     = 1.0;
-    static final double ENCODER_Y_INCHES_PER_COUNT              = 0.0170448238583025;
+    static final double ENCODER_Y_INCHES_PER_COUNT              = 0.0175021669133240325077399380805;
     //
     // 2019-10-29: Kp=0.02, Ki=0.0, Kd=0.0015
     //
