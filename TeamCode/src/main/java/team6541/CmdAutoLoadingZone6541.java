@@ -137,7 +137,7 @@ class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
             double projectedTime = elapsedTime;
             int projectedScore = 14;    //We already have one skystone on the foundation, so that's 14 points.
 
-            projectedTime += autoChoices.strafeToFoundation? 15.0: 20.0;
+            projectedTime += autoChoices.strafeToFoundation? 14.0: 20.0;
             //
             // If we are within time limit, we gain an extra 14 points (10 for carrying the skystone crossing the
             // bridge line and 4 for dropping it off to the foundation).
@@ -180,7 +180,7 @@ class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
             }
             else
             {
-                projectedTime += 6.5;   //Time to pull foundation to wall, and bump it in and park at bridge center.
+                projectedTime += 7.0;   //Time to pull foundation to wall, and bump it in and park at bridge center.
                 //
                 // If we are doing DOUBLE_SKYSTONE and we want to move the foundation, let's check if we have enough
                 // time to do so.

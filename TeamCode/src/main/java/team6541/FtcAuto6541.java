@@ -51,6 +51,7 @@ public class FtcAuto6541 extends CommonAuto
         switch (autoChoices.strategy)
         {
             case LOADING_ZONE_SINGLE_SKYSTONE:
+            case LOADING_ZONE_DOUBLE_SKYSTONE_SOLO:
             case LOADING_ZONE_DOUBLE_SKYSTONE_FAR:
             case LOADING_ZONE_DOUBLE_SKYSTONE_CENTER:
                 if (robot6541.preferences.hasRobot)
