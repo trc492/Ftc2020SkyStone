@@ -313,6 +313,10 @@ public class CommonTest
                     robot.dashboard.displayPrintf(9, "Timed Drive: %.0f sec", driveTime);
                     robot.dashboard.displayPrintf(10, "xPos=%.1f,yPos=%.1f,heading=%.1f",
                             robot.driveBase.getXPosition(), robot.driveBase.getYPosition(), robot.driveBase.getHeading());
+                    robot.dashboard.displayPrintf(
+                            11, "raw=lf:%.0f,rf:%.0f,lb:%.0f,rb:%.0f",
+                            robot.leftFrontWheel.getPosition(), robot.rightFrontWheel.getPosition(),
+                            robot.leftBackWheel.getPosition(), robot.rightBackWheel.getPosition());
                 }
                 break;
 
@@ -375,7 +379,7 @@ public class CommonTest
                 "Drive time:", testMenu, 1.0, 10.0, 1.0, 4.0,
                 " %.0f sec");
         FtcValueMenu drivePowerMenu = new FtcValueMenu(
-                "Drive power:", testMenu, 0.0, 1.0, 0.1, 0.5,
+                "Drive power:", testMenu, -1.0, 1.0, 0.1, 0.5,
                 " %.1f");
 
         if (tuneKpMenu == null)
