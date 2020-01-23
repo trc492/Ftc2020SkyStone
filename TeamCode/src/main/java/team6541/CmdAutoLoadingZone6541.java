@@ -413,17 +413,6 @@ class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
                     }
 
                 case GRAB_SKYSTONE:
-                    if (skystoneVisionCommand.isVuforiaFailureOnSecondStone())
-                    {
-                        TrcPose2D pose = robot.driveBase.getFieldPosition();
-                        pose = robot.driveBase.getFieldPosition();
-                        pose.x = 9.0 * allianceDirection;
-                        robot.driveBase.setFieldPosition(pose);
-
-                        pose = robot.pidDrive.getAbsoluteTargetPose();
-                        pose.x = 9.0 * allianceDirection;
-                        robot.pidDrive.setAbsoluteTargetPose(pose);
-                    }
                     robot.grabber.grab(0.5, event);
                     sm.waitForSingleEvent(event, State.PULL_SKYSTONE);
                     break;

@@ -103,6 +103,9 @@ public class CmdSkystoneVision implements TrcRobot.RobotCommand
         GET_TARGET_POSE,
         ALIGN_SKYSTONE,
         GOTO_SKYSTONE,
+        ALIGN_WITH_WALL,
+        RESYNC_ROBOT_X,
+        GO_TO_SECOND_SKYSTONE_SCAN_POSITION,
         DONE
     }   //enum State
 
@@ -119,6 +122,7 @@ public class CmdSkystoneVision implements TrcRobot.RobotCommand
     private double skystoneXPos = 0.0;
 
     private boolean vuforiaFailureOnSecondStone;
+    private boolean vuforiaFailureOnSecondStoneRetry;
 
     /**
      * Constructor: Create an instance of the object.
@@ -137,6 +141,7 @@ public class CmdSkystoneVision implements TrcRobot.RobotCommand
                 new TrcTrigger("VisionTrigger", this::isTriggered, this::targetDetected): null;
         allianceDirection = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE? 1.0: -1.0;
         vuforiaFailureOnSecondStone = false;
+        vuforiaFailureOnSecondStoneRetry = false;
     }   //CmdSkystoneVision
 
     public void start()
@@ -279,6 +284,10 @@ public class CmdSkystoneVision implements TrcRobot.RobotCommand
                         {
                             if (visionParams.skystonesDropped > 0)
                             {
+                                if (vuforiaFailureOnSecondStone)
+                                {
+                                    vuforiaFailureOnSecondStoneRetry = true;
+                                }
                                 vuforiaFailureOnSecondStone = true;
                             }
                             if (visionParams.scootCount > 0)
@@ -333,7 +342,7 @@ public class CmdSkystoneVision implements TrcRobot.RobotCommand
                                 robot.globalTracer.traceInfo(
                                         "GetTargetPose", ">>> Skystone not found, giving up.");
                                 robot.speak("Not found, give up.");
-                                sm.setState(State.ALIGN_SKYSTONE);
+                                sm.setState(vuforiaFailureOnSecondStone ? State.ALIGN_WITH_WALL : State.ALIGN_SKYSTONE);
                             }
                         }
                     }
@@ -350,6 +359,10 @@ public class CmdSkystoneVision implements TrcRobot.RobotCommand
                             skystonePose.x = 0.0;
                             if (visionParams.skystonesDropped > 0)
                             {
+                                if (vuforiaFailureOnSecondStone)
+                                {
+                                    vuforiaFailureOnSecondStoneRetry = true;
+                                }
                                 vuforiaFailureOnSecondStone = true;
                             }
                         }
@@ -395,13 +408,13 @@ public class CmdSkystoneVision implements TrcRobot.RobotCommand
                     {
                         if (vuforiaFailureOnSecondStone)
                         {
-                            robot.pidDrive.setAbsoluteXTarget(9.0 * allianceDirection, event);
+                            sm.waitForSingleEvent(event, State.ALIGN_WITH_WALL);
                         }
                         else
                         {
                             robot.pidDrive.setRelativeXTarget(xTarget, event);
+                            sm.waitForSingleEvent(event, State.GOTO_SKYSTONE);
                         }
-                        sm.waitForSingleEvent(event, State.GOTO_SKYSTONE);
                         break;
                     }
 
@@ -410,6 +423,32 @@ public class CmdSkystoneVision implements TrcRobot.RobotCommand
                     yTarget = RobotInfo.ABS_GRAB_SKYSTONE_POS_Y - visionParams.grabberOffsetY;
                     robot.pidDrive.setAbsoluteYTarget(yTarget, event);
                     sm.waitForSingleEvent(event, State.DONE);
+                    break;
+
+                case ALIGN_WITH_WALL:
+                    robot.pidDrive.setAbsoluteXTarget(9.0 * allianceDirection, event);
+                    sm.waitForSingleEvent(event, State.RESYNC_ROBOT_X);
+                    break;
+
+                case RESYNC_ROBOT_X:
+                    TrcPose2D pose = robot.driveBase.getFieldPosition();
+                    pose.x = 9.0 * allianceDirection;
+                    robot.driveBase.setFieldPosition(pose);
+
+                    pose = robot.pidDrive.getAbsoluteTargetPose();
+                    pose.x = 9.0 * allianceDirection;
+                    robot.pidDrive.setAbsoluteTargetPose(pose);
+                    sm.setState(vuforiaFailureOnSecondStoneRetry ? State.DONE : State.GO_TO_SECOND_SKYSTONE_SCAN_POSITION);
+                    break;
+
+                case GO_TO_SECOND_SKYSTONE_SCAN_POSITION:
+                    xTarget = this.getSkystoneXPos() - 24.0*allianceDirection;
+                    if (Math.abs(xTarget) < 8.0 && allianceDirection == -1.0) // blue alliance
+                    {
+                        xTarget = RobotInfo.ABS_FAR_STONE3_X * allianceDirection;
+                    }
+                    robot.pidDrive.setAbsoluteXTarget(xTarget, event);
+                    sm.waitForSingleEvent(event, State.SCAN_FOR_SKYSTONE);
                     break;
 
                 case DONE:
