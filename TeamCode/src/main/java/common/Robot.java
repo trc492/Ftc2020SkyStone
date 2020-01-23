@@ -589,10 +589,13 @@ public class Robot
             msg.append(String.format(Locale.US,
                     ">>>>> <StateInfo " +
                     "Time=%5.3f " +
-                    "State=%s " +
-                    "xPos=%6.2f/%6.2f " +
-                    "yPos=%6.2f/%6.2f " +
-                    "heading=%6.1f/%6.1f ",
+                    "State=\"%s\" " +
+                    "xPos=%6.2f " +
+                    "xTarget=%6.2f " +
+                    "yPos=%6.2f " +
+                    "yTarget=%6.2f " +
+                    "heading=%6.1f " +
+                    "headingTarget=%6.1f ",
                     elapsedTime, stateName, driveBase.getXPosition(), xTarget, driveBase.getYPosition(), yTarget,
                     driveBase.getHeading(), turnTarget));
 
