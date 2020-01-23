@@ -116,7 +116,7 @@ public abstract class CommonAuto extends FtcOpMode
                     "yTarget=%.1f " +
                     "turnTarget=%.0f " +
                     "driveTime=%.0f " +
-                    "drivePower=%.1f ",
+                    "drivePower=%.1f",
                     alliance, startDelay, strategy, robotStartX, finishDelay, strafeToFoundation, moveFoundation,
                     parkUnderBridge, xTarget, yTarget, turnTarget, driveTime, drivePower);
         }   //toString
@@ -173,8 +173,8 @@ public abstract class CommonAuto extends FtcOpMode
         }
         robot.globalTracer.traceInfo(moduleName, "***** Starting autonomous *****");
         matchInfo.matchDate = new Date();
-        robot.globalTracer.traceInfo(moduleName, "<Info name=MatchInfo %s />", matchInfo);
-        robot.globalTracer.traceInfo(moduleName, "<Info name=AutoChoices %s />", autoChoices);
+        robot.globalTracer.logInfo(moduleName, "MatchInfo", "%s", matchInfo);
+        robot.globalTracer.traceInfo(moduleName, "AutoChoices", "%s", autoChoices);
 
         robot.startMode(nextMode);
         if (robot.battery != null)
@@ -220,8 +220,7 @@ public abstract class CommonAuto extends FtcOpMode
                             robot.battery.getVoltage(), robot.battery.getLowestVoltage());
                 }
 
-                robot.globalTracer.traceInfo(moduleName,
-                        "<Event name=RobotPose time=%.3f pose=\"%s\" />", elapsedTime,
+                robot.globalTracer.logEvent(moduleName, "RobotPose", "pose=\"%s\"",
                         robot.driveBase.getFieldPosition());
 
                 if (debugXPid && robot.encoderXPidCtrl != null)

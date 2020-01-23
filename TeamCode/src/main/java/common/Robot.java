@@ -587,26 +587,24 @@ public class Robot
             StringBuilder msg = new StringBuilder();
 
             msg.append(String.format(Locale.US,
-                    ">>>>> <Event name=StateInfo " +
-                    "time=%5.3f " +
+                    "tag=\">>>>>\"" +
                     "state=\"%s\" " +
                     "xPos=%6.2f " +
                     "xTarget=%6.2f " +
                     "yPos=%6.2f " +
                     "yTarget=%6.2f " +
                     "heading=%6.1f " +
-                    "headingTarget=%6.1f ",
-                    elapsedTime, stateName, driveBase.getXPosition(), xTarget, driveBase.getYPosition(), yTarget,
+                    "headingTarget=%6.1f",
+                    stateName, driveBase.getXPosition(), xTarget, driveBase.getYPosition(), yTarget,
                     driveBase.getHeading(), turnTarget));
 
             if (battery != null)
             {
                 msg.append(String.format(Locale.US,
-                        "Volt=%5.2fV(%5.2fV ", battery.getVoltage(), battery.getLowestVoltage()));
+                        " volt=\"%5.2fV(%5.2fV)\"", battery.getVoltage(), battery.getLowestVoltage()));
             }
 
-            msg.append("/>");
-            globalTracer.traceInfo(robotName, "%s", msg);
+            globalTracer.logEvent(robotName, "StateInfo", "%s", msg);
         }
     }   //traceStateInfo
 

@@ -250,6 +250,35 @@ public class TrcDbgTrace
     }   //setDbgTraceConfig
 
     /**
+     * This method logs a MsgLevel.INFO entry that contains information about the match. The entry is in XML format
+     * and is intended to be parsed by tools such as TrcTraceLogVisualizer.
+     *
+     * @param funcName specifies the calling method name.
+     * @param infoName specifies the name to identify the information.
+     * @param format specifies the format string of the message.
+     * @param args specifies the message arguments.
+     */
+    public void logInfo(final String funcName, final String infoName, final String format, Object ... args)
+    {
+        traceMsg(funcName, MsgLevel.INFO, "<Info name=%s " + format + " />", infoName, args);
+    }   //logInfo
+
+    /**
+     * This method logs a MsgLevel.INFO entry that contains an event. The entry is in XML format and is intended to be
+     * parsed by tools such as TrcTraceLogVisualizer.
+     *
+     * @param funcName specifies the calling method name.
+     * @param eventName specifies the name to identify the event.
+     * @param format specifies the format string of the message.
+     * @param args specifies the message arguments.
+     */
+    public void logEvent(final String funcName, final String eventName, final String format, Object ... args)
+    {
+        traceMsg(funcName, MsgLevel.INFO, "<Event name=%s time=%.3f " + format + " />",
+                eventName, TrcUtil.getModeElapsedTime(), args);
+    }   //logEvent
+
+    /**
      * This method is typically called at the beginning of a method to trace the entry parameters of the method.
      *
      * @param funcName specifies the calling method name.
