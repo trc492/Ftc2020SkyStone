@@ -173,8 +173,8 @@ public abstract class CommonAuto extends FtcOpMode
         }
         robot.globalTracer.traceInfo(moduleName, "***** Starting autonomous *****");
         matchInfo.matchDate = new Date();
-        robot.globalTracer.traceInfo(moduleName, "<Menu name=MatchInfo %s />", matchInfo);
-        robot.globalTracer.traceInfo(moduleName, "<Menu name=AutoChoices %s />", autoChoices);
+        robot.globalTracer.traceInfo(moduleName, "<Info name=MatchInfo %s />", matchInfo);
+        robot.globalTracer.traceInfo(moduleName, "<Info name=AutoChoices %s />", autoChoices);
 
         robot.startMode(nextMode);
         if (robot.battery != null)
