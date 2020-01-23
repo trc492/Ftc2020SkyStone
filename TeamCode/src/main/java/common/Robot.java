@@ -586,19 +586,23 @@ public class Robot
         {
             StringBuilder msg = new StringBuilder();
 
-            msg.append(String.format(
-                    Locale.US, "[%5.3f] >>>>> %s: xPos=%6.2f/%6.2f,yPos=%6.2f/%6.2f,heading=%6.1f/%6.1f",
-                    elapsedTime, stateName,
-                    driveBase.getXPosition(), xTarget,
-                    driveBase.getYPosition(), yTarget,
+            msg.append(String.format(Locale.US,
+                    ">>>>> <StateInfo " +
+                    "Time=%5.3f " +
+                    "State=%s " +
+                    "xPos=%6.2f/%6.2f " +
+                    "yPos=%6.2f/%6.2f " +
+                    "heading=%6.1f/%6.1f ",
+                    elapsedTime, stateName, driveBase.getXPosition(), xTarget, driveBase.getYPosition(), yTarget,
                     driveBase.getHeading(), turnTarget));
 
             if (battery != null)
             {
-                msg.append(String.format(
-                        Locale.US, ",volt=%5.2fV(%5.2fV)", battery.getVoltage(), battery.getLowestVoltage()));
+                msg.append(String.format(Locale.US,
+                        "Volt=%5.2fV(%5.2fV ", battery.getVoltage(), battery.getLowestVoltage()));
             }
 
+            msg.append("/>");
             globalTracer.traceInfo(robotName, "%s", msg);
         }
     }   //traceStateInfo

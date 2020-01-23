@@ -48,12 +48,14 @@ public abstract class CommonAuto extends FtcOpMode
 
     public class MatchInfo
     {
+        Date matchDate;
         MatchType matchType;
         int matchNumber;
 
         public String toString()
         {
-            return matchType + "_" + matchNumber;
+            return String.format(Locale.US,
+                    "<MatchInfo Date=\"%s\" Type=\"%s\" Number=%d />", matchDate, matchType, matchNumber);
         }   //toString
     }   //class MatchInfo
 
@@ -102,10 +104,22 @@ public abstract class CommonAuto extends FtcOpMode
         public String toString()
         {
             return String.format(Locale.US,
-                    "%s: Strategy=%s, startDelay=%.0f, robotStartX=%.1f, finishDelay=%.0f, " +
-                    "strafeToFoundation=%s, moveFoundation=%s, park=%s, xTarget=%.1f, yTarget=%.1f, turnTarget=%.1f, " +
-                    "driveTime=%.1f, drivePower=%.1f",
-                    alliance, strategy, startDelay, robotStartX, finishDelay, strafeToFoundation, moveFoundation,
+                    "<AutoChoices " +
+                    "Alliance=\"%s\" " +
+                    "StartDelay=%.0f " +
+                    "Strategy=\"%s\" " +
+                    "RobotStartX=%.0f " +
+                    "FinishDelay=%.0f " +
+                    "StrafeToFoundation=\"%s\" " +
+                    "MoveFoundaton=\"%s\" " +
+                    "ParkUnderBridge=\"%s\" " +
+                    "XTarget=%.1f " +
+                    "YTarget=%.1f " +
+                    "TurnTarget=%.0f " +
+                    "DriveTime=%.0f " +
+                    "DrivePower=%.1f " +
+                    "/>",
+                    alliance, startDelay, strategy, robotStartX, finishDelay, strafeToFoundation, moveFoundation,
                     parkUnderBridge, xTarget, yTarget, turnTarget, driveTime, drivePower);
         }   //toString
     }   //class AutoChoices
@@ -159,8 +173,10 @@ public abstract class CommonAuto extends FtcOpMode
         {
             robot.globalTracer.setTraceLogEnabled(true);
         }
-        robot.globalTracer.traceInfo(moduleName, "%s: ***** Starting autonomous *****", new Date());
-        robot.globalTracer.traceInfo(moduleName, "[%s] %s", matchInfo, autoChoices);
+        robot.globalTracer.traceInfo(moduleName, "***** Starting autonomous *****");
+        matchInfo.matchDate = new Date();
+        robot.globalTracer.traceInfo(moduleName, "%s", matchInfo);
+        robot.globalTracer.traceInfo(moduleName, "%s", autoChoices);
 
         robot.startMode(nextMode);
         if (robot.battery != null)
@@ -191,11 +207,11 @@ public abstract class CommonAuto extends FtcOpMode
     {
         if (autoCommand != null)
         {
-            if (robot.vuforiaVision != null)
-            {
-                TrcPose2D robotPose = robot.getRobotPose(VuforiaVision.skystoneTargetName, true);
-                robot.dashboard.displayPrintf(2, "RobotPose: %s", robotPose);
-            }
+//            if (robot.vuforiaVision != null)
+//            {
+//                TrcPose2D robotPose = robot.getRobotPose(VuforiaVision.skystoneTargetName, true);
+//                robot.dashboard.displayPrintf(2, "RobotPose: %s", robotPose);
+//            }
             autoCommand.cmdPeriodic(elapsedTime);
 
             if (robot.pidDrive.isActive() && (debugXPid || debugYPid || debugTurnPid))
@@ -206,8 +222,8 @@ public abstract class CommonAuto extends FtcOpMode
                             robot.battery.getVoltage(), robot.battery.getLowestVoltage());
                 }
 
-                robot.globalTracer.traceInfo(moduleName, "[%.3f] RobotPose: %s",
-                        elapsedTime, robot.driveBase.getFieldPosition());
+                robot.globalTracer.traceInfo(moduleName,
+                        "<RobotPose Time=%.3f Pose=\"%s\" />", elapsedTime, robot.driveBase.getFieldPosition());
 
                 if (debugXPid && robot.encoderXPidCtrl != null)
                 {
