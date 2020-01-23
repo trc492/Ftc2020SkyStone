@@ -55,7 +55,7 @@ public abstract class CommonAuto extends FtcOpMode
         public String toString()
         {
             return String.format(Locale.US,
-                    "<MatchInfo Date=\"%s\" Type=\"%s\" Number=%d />", matchDate, matchType, matchNumber);
+                    "Date=\"%s\" Type=\"%s\" Number=%d", matchDate, matchType, matchNumber);
         }   //toString
     }   //class MatchInfo
 
@@ -104,7 +104,6 @@ public abstract class CommonAuto extends FtcOpMode
         public String toString()
         {
             return String.format(Locale.US,
-                    "<AutoChoices " +
                     "Alliance=\"%s\" " +
                     "StartDelay=%.0f " +
                     "Strategy=\"%s\" " +
@@ -117,8 +116,7 @@ public abstract class CommonAuto extends FtcOpMode
                     "YTarget=%.1f " +
                     "TurnTarget=%.0f " +
                     "DriveTime=%.0f " +
-                    "DrivePower=%.1f " +
-                    "/>",
+                    "DrivePower=%.1f ",
                     alliance, startDelay, strategy, robotStartX, finishDelay, strafeToFoundation, moveFoundation,
                     parkUnderBridge, xTarget, yTarget, turnTarget, driveTime, drivePower);
         }   //toString
@@ -175,8 +173,8 @@ public abstract class CommonAuto extends FtcOpMode
         }
         robot.globalTracer.traceInfo(moduleName, "***** Starting autonomous *****");
         matchInfo.matchDate = new Date();
-        robot.globalTracer.traceInfo(moduleName, "%s", matchInfo);
-        robot.globalTracer.traceInfo(moduleName, "%s", autoChoices);
+        robot.globalTracer.traceInfo(moduleName, "<MatchInfo %s />", matchInfo);
+        robot.globalTracer.traceInfo(moduleName, "<AutoChoices %s />", autoChoices);
 
         robot.startMode(nextMode);
         if (robot.battery != null)
