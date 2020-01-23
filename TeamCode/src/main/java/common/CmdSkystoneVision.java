@@ -328,7 +328,7 @@ public class CmdSkystoneVision implements TrcRobot.RobotCommand
                         if (Math.abs(skystonePose.x) > 8.0)
                         {
                             robot.globalTracer.traceInfo(msgTag, ">>> Vuforia is way off, ignore it!");
-                            robot.speak(String.format(Locale.US, "Vuforia is way off."));
+                            robot.speak("Vuforia is way off.");
                             skystonePose = null;
                         }
                         else
@@ -380,6 +380,9 @@ public class CmdSkystoneVision implements TrcRobot.RobotCommand
                         }
                         else
                         {
+                            //
+                            // Vuforia did not detect the first skystone, let's assume it's right in front.
+                            //
                             sm.setState(State.GOTO_SKYSTONE);
                             //
                             // Intentionally falling through to the next state.
