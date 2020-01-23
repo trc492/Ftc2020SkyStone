@@ -587,9 +587,9 @@ public class Robot
             StringBuilder msg = new StringBuilder();
 
             msg.append(String.format(Locale.US,
-                    ">>>>> <StateInfo " +
-                    "Time=%5.3f " +
-                    "State=\"%s\" " +
+                    ">>>>> <Event name=StateInfo " +
+                    "time=%5.3f " +
+                    "state=\"%s\" " +
                     "xPos=%6.2f " +
                     "xTarget=%6.2f " +
                     "yPos=%6.2f " +
