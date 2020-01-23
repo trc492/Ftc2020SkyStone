@@ -165,7 +165,8 @@ class RobotInfo6541
     static final double ELBOW_EXTEND_TIME                       = 1.0;
     static final double ELBOW_RETRACT_POS                       = 0.5;
     static final double ELBOW_RETRACT_TIME                      = 1.0;
-    static final double ELBOW_UPRIGHT_POS                       = 0.55;
+    static final double ELBOW_UPRIGHT_POS                       = 0.65;
+    static final double ELBOW_AUTO_DROP_POS                     = 0.9;
     //
     // Grabber subsystem.
     //

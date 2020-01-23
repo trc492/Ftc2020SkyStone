@@ -172,7 +172,7 @@ public class FtcTeleOp6541 extends CommonTeleOp
                         {
                             robot6541.elevator.zeroCalibrate();
                             robot6541.grabber.grab();
-                            robot6541.elbow.retract();
+                            robot6541.elbow.setPosition(RobotInfo6541.ELBOW_UPRIGHT_POS);
                         }
                     }
                     processed = true;

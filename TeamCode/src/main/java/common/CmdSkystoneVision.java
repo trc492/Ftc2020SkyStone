@@ -54,6 +54,7 @@ public class CmdSkystoneVision implements TrcRobot.RobotCommand
         double grabberOffsetX = 0.0;
         double grabberOffsetY = 0.0;
         double scanDirection = -1.0;
+        int skystonesDropped = 0;
 
         public Parameters setUseVisionTrigger(boolean useVisionTrigger)
         {
@@ -87,6 +88,12 @@ public class CmdSkystoneVision implements TrcRobot.RobotCommand
             return this;
         }
 
+        public Parameters setSkystonesDropped(int skystonesDropped)
+        {
+            this.skystonesDropped = skystonesDropped;
+            return this;
+        }
+
     }   //class Parameters
 
     private enum State
@@ -111,6 +118,8 @@ public class CmdSkystoneVision implements TrcRobot.RobotCommand
     private double visionTimeout = 0.0;
     private double skystoneXPos = 0.0;
 
+    private boolean vuforiaFailureOnSecondStone;
+
     /**
      * Constructor: Create an instance of the object.
      *
@@ -127,6 +136,7 @@ public class CmdSkystoneVision implements TrcRobot.RobotCommand
         visionTrigger = visionParams.useVisionTrigger?
                 new TrcTrigger("VisionTrigger", this::isTriggered, this::targetDetected): null;
         allianceDirection = autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE? 1.0: -1.0;
+        vuforiaFailureOnSecondStone = false;
     }   //CmdSkystoneVision
 
     public void start()
@@ -267,6 +277,10 @@ public class CmdSkystoneVision implements TrcRobot.RobotCommand
                     {
                         if (TrcUtil.getCurrentTime() > visionTimeout)
                         {
+                            if (visionParams.skystonesDropped > 0)
+                            {
+                                vuforiaFailureOnSecondStone = true;
+                            }
                             if (visionParams.scootCount > 0)
                             {
                                 StringBuilder sentence = new StringBuilder("Not found, ");
@@ -329,11 +343,15 @@ public class CmdSkystoneVision implements TrcRobot.RobotCommand
                         // Vuforia found the skystone.
                         robot.globalTracer.traceInfo(
                                 msgTag, ">>> Skystone found at x=%.1f, y=%.1f.", skystonePose.x, skystonePose.y);
-                        if (Math.abs(skystonePose.x) > 6.0)
+                        if (Math.abs(skystonePose.x) > 8.0)
                         {
                             robot.globalTracer.traceInfo(msgTag, ">>> Vuforia is way off, ignore it!");
                             robot.speak(String.format(Locale.US, "Vuforia is way off."));
                             skystonePose.x = 0.0;
+                            if (visionParams.skystonesDropped > 0)
+                            {
+                                vuforiaFailureOnSecondStone = true;
+                            }
                         }
                         else
                         {
@@ -375,7 +393,14 @@ public class CmdSkystoneVision implements TrcRobot.RobotCommand
                     }
                     else
                     {
-                        robot.pidDrive.setRelativeXTarget(xTarget, event);
+                        if (vuforiaFailureOnSecondStone)
+                        {
+                            robot.pidDrive.setAbsoluteXTarget(9.0 * allianceDirection, event);
+                        }
+                        else
+                        {
+                            robot.pidDrive.setRelativeXTarget(xTarget, event);
+                        }
                         sm.waitForSingleEvent(event, State.GOTO_SKYSTONE);
                         break;
                     }
@@ -401,5 +426,10 @@ public class CmdSkystoneVision implements TrcRobot.RobotCommand
 
         return !sm.isEnabled();
     }   //cmdPeriodic
+
+    public boolean isVuforiaFailureOnSecondStone()
+    {
+        return this.vuforiaFailureOnSecondStone;
+    }
 
 }   //class CmdSkystoneVision

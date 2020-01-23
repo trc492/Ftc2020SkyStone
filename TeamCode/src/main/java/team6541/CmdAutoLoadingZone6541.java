@@ -413,6 +413,17 @@ class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
                     }
 
                 case GRAB_SKYSTONE:
+                    if (skystoneVisionCommand.isVuforiaFailureOnSecondStone())
+                    {
+                        TrcPose2D pose = robot.driveBase.getFieldPosition();
+                        pose = robot.driveBase.getFieldPosition();
+                        pose.x = 9.0 * allianceDirection;
+                        robot.driveBase.setFieldPosition(pose);
+
+                        pose = robot.pidDrive.getAbsoluteTargetPose();
+                        pose.x = 9.0 * allianceDirection;
+                        robot.pidDrive.setAbsoluteTargetPose(pose);
+                    }
                     robot.grabber.grab(0.5, event);
                     sm.waitForSingleEvent(event, State.PULL_SKYSTONE);
                     break;
@@ -491,8 +502,8 @@ class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
                     //
                     // Raise the elevator and extend elbow to drop position while approaching the foundation.
                     //
-                    robot.elevator.setPosition(3.0);
-                    robot.elbow.extend();
+                    //robot.elevator.setPosition(3.0);
+                    robot.elbow.setPosition(RobotInfo6541.ELBOW_AUTO_DROP_POS);
                     yTarget = RobotInfo.ABS_FOUNDATION_Y + 4.0;
                     //
                     // If this is the second skystone, we need to scoot a little further because the foundation
@@ -508,6 +519,7 @@ class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
                     //
                     robot.grabber.release();
                     skystonesDropped++;
+                    visionParams.setSkystonesDropped(skystonesDropped);
                     //
                     // If this is the first skystone, check if we want to go for the second skystone.
                     //
@@ -549,7 +561,7 @@ class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
                     // This is a commonly used state by many paths. So it is the caller's responsibility to set
                     // the nextState before coming to this state.
                     //
-                    robot.elevator.zeroCalibrate();
+                    //robot.elevator.zeroCalibrate();
                     robot.elbow.retract();
                     robot.grabber.grab();
                     sm.setState(nextState);
