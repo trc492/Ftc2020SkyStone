@@ -27,6 +27,7 @@ public class RobotInfo
     //
     // Game element distances: all referenced as red alliance.
     //
+    public static final double ABS_ROBOT_X_ORIGIN                       = 9.0;
     public static final double ABS_ROBOT_START_Y                        = 9.0;
     public static final double ABS_ROBOT_TRAVEL_Y                       = 32.0;
     public static final double ABS_LOADING_ZONE_ROBOT_START_X_WALL      = 32.0;

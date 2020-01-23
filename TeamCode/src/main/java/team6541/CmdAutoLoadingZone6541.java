@@ -508,7 +508,6 @@ class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
                     //
                     robot.grabber.release();
                     skystonesDropped++;
-                    visionParams.setSkystonesDropped(skystonesDropped);
                     //
                     // If this is the first skystone, check if we want to go for the second skystone.
                     //
