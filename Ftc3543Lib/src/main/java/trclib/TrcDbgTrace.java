@@ -258,9 +258,9 @@ public class TrcDbgTrace
      * @param format specifies the format string of the message.
      * @param args specifies the message arguments.
      */
-    public void logInfo(final String funcName, final String infoName, final String format, Object ... args)
+    public void logInfo(String funcName, String infoName, String format, Object ... args)
     {
-        traceMsg(funcName, MsgLevel.INFO, "<Info name=%s " + format + " />", infoName, args);
+        traceMsg(funcName, MsgLevel.INFO, "<Info name=\"" + infoName + "\" " + format + " />", args);
     }   //logInfo
 
     /**
@@ -274,8 +274,9 @@ public class TrcDbgTrace
      */
     public void logEvent(final String funcName, final String eventName, final String format, Object ... args)
     {
-        traceMsg(funcName, MsgLevel.INFO, "<Event name=%s time=%.3f " + format + " />",
-                eventName, TrcUtil.getModeElapsedTime(), args);
+        String newFormat = String.format("<Event name=\"%s\" time=%.3f %s />", eventName,
+                TrcUtil.getModeElapsedTime(), format);
+        traceMsg(funcName, MsgLevel.INFO, newFormat, args);
     }   //logEvent
 
     /**
