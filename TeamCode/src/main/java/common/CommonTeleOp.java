@@ -145,7 +145,7 @@ public abstract class CommonTeleOp extends FtcOpMode
         if (robot.grabber != null && robot.backFoundationLatch != null)
         {
             dashboard.displayPrintf(
-                    4, "GrabberPos=%.1f, FoundationLatchPos=%.1f",
+                    4, "GrabberPos=%.1f, BackFoundationLatchPos=%.1f",
                     robot.grabber.getPosition(), robot.backFoundationLatch.getPosition());
         }
     }   //runPeriodic

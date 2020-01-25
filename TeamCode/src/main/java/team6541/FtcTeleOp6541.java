@@ -25,6 +25,7 @@ package team6541;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import common.CommonTeleOp;
+import common.Robot;
 import ftclib.FtcGamepad;
 import trclib.TrcEvent;
 import trclib.TrcGameController;
@@ -125,8 +126,9 @@ public class FtcTeleOp6541 extends CommonTeleOp
 
          */
 
-        robot6541.capstoneDeployer.setPosition(RobotInfo6541.DEPLOYER_RETRACT_POS - operatorGamepad.getRightTrigger());
-        dashboard.displayPrintf(5, "ElbowPos=%.2f", robot6541.elbow.getPosition());
+        robot6541.capstoneDeployer.setPosition(operatorGamepad.getRightTrigger() > 0.7 ? RobotInfo6541.DEPLOYER_EXTEND_POS :
+                RobotInfo6541.DEPLOYER_RETRACT_POS);
+        dashboard.displayPrintf(5, "ElbowPos=%.2f, FrontFoundationLatchPos=%.2f", robot6541.elbow.getPosition(), robot6541.frontFoundationLatch.getPosition());
     }   //runPeriodic
 
     //
