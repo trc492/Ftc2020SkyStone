@@ -77,7 +77,7 @@ public class FtcTeleOp6541 extends CommonTeleOp
 
          */
 
-        robot6541.capstoneDeployer.setPosition(1.0 - operatorGamepad.getRightTrigger());
+        robot6541.capstoneDeployer.setPosition(RobotInfo6541.DEPLOYER_RETRACT_POS - operatorGamepad.getRightTrigger());
         dashboard.displayPrintf(5, "ElbowPos=%.2f", robot6541.elbow.getPosition());
     }   //runPeriodic
 
@@ -153,9 +153,19 @@ public class FtcTeleOp6541 extends CommonTeleOp
                     break;
 
                 case FtcGamepad.GAMEPAD_X:
+                    if (robot6541.elbow != null && pressed)
+                    {
+                        robot6541.elbow.extend();
+                    }
+                    processed = true;
                     break;
 
                 case FtcGamepad.GAMEPAD_Y:
+                    if (robot6541.elbow != null && pressed)
+                    {
+                        robot6541.elbow.setPosition(RobotInfo6541.ELBOW_UPRIGHT_POS);
+                    }
+                    processed = true;
                     break;
 
                 case FtcGamepad.GAMEPAD_LBUMPER:

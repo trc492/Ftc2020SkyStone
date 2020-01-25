@@ -100,7 +100,7 @@ class Robot6541 extends Robot
             .setStepParams(
                     RobotInfo6541.FRONT_FOUNDATION_LATCH_MAX_STEPRATE, RobotInfo6541.FRONT_FOUNDATION_LATCH_MIN_POS,
                     RobotInfo6541.FRONT_FOUNDATION_LATCH_MAX_POS)
-            .setInverted(false, true)
+            .setInverted(true, false)
             .setRetractParams(
                     RobotInfo6541.FRONT_FOUNDATION_LATCH_GRAB_POS, RobotInfo6541.FRONT_FOUNDATION_LATCH_GRAB_TIME)
             .setExtendParams(
@@ -181,7 +181,7 @@ class Robot6541 extends Robot
                 frontFoundationLatch.release();
 
                 capstoneDeployer = new FtcServoActuator("capstoneDeployerServo", deployerParams6541);
-                capstoneDeployer.retract();
+                capstoneDeployer.setPosition(RobotInfo6541.DEPLOYER_RETRACT_POS);
             }
         }
         //

@@ -429,7 +429,7 @@ public class CmdSkystoneVision implements TrcRobot.RobotCommand
                     break;
             }
 
-            robot.traceStateInfo(elapsedTime, state.toString(), xTarget, yTarget, turnTarget);
+            robot.traceStateInfo(sm.getState());
         }
 
         return !sm.isEnabled();

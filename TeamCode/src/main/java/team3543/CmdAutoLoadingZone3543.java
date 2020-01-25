@@ -781,7 +781,7 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
 
             if (traceState)
             {
-                robot.traceStateInfo(elapsedTime, state.toString(), xTarget, yTarget, turnTarget);
+                robot.traceStateInfo(sm.getState());
             }
         }
 

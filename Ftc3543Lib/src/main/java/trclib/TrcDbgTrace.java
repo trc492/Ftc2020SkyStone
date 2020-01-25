@@ -23,6 +23,7 @@
 package trclib;
 
 import java.io.File;
+import java.util.Locale;
 
 import hallib.HalDbgLog;
 
@@ -274,8 +275,8 @@ public class TrcDbgTrace
      */
     public void logEvent(final String funcName, final String eventName, final String format, Object ... args)
     {
-        String newFormat = String.format("<Event name=\"%s\" time=%.3f %s />", eventName,
-                TrcUtil.getModeElapsedTime(), format);
+        String newFormat = String.format(Locale.US, "<Event name=\"%s\" time=%.3f %s />",
+                eventName, TrcUtil.getModeElapsedTime(), format);
         traceMsg(funcName, MsgLevel.INFO, newFormat, args);
     }   //logEvent
 

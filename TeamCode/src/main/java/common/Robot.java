@@ -580,25 +580,34 @@ public class Robot
         }
     }   //stopMode
 
-    public void traceStateInfo(double elapsedTime, String stateName, double xTarget, double yTarget, double turnTarget)
+    public void traceStateInfo(Object state)
     {
         if (driveBase != null)
         {
             StringBuilder msg = new StringBuilder();
 
-            msg.append(String.format(Locale.US,
-//                    "<Event name=\"StateInfo\" " +
-//                    "time=%.3f " +
-                    "tag=\">>>>>\" " +
-                    "state=\"%s\" " +
-                    "xPos=%6.2f " +
-                    "xTarget=%6.2f " +
-                    "yPos=%6.2f " +
-                    "yTarget=%6.2f " +
-                    "heading=%6.1f " +
-                    "headingTarget=%6.1f",
-                    elapsedTime, stateName, driveBase.getXPosition(), xTarget, driveBase.getYPosition(), yTarget,
-                    driveBase.getHeading(), turnTarget));
+            msg.append(String.format(Locale.US, "tag=\">>>>>\" state=\"%s\"", state));
+            if (pidDrive.isActive())
+            {
+                TrcPose2D robotPose = driveBase.getFieldPosition();
+                TrcPose2D targetPose = pidDrive.getAbsoluteTargetPose();
+
+                if (encoderXPidCtrl != null)
+                {
+                    msg.append(String.format(Locale.US, " xPos=%6.2f xTarget=%6.2f", robotPose.x, targetPose.x));
+                }
+
+                if (encoderYPidCtrl != null)
+                {
+                    msg.append(String.format(Locale.US, " yPos=%6.2f yTarget=%6.2f", robotPose.y, targetPose.y));
+                }
+
+                if (gyroPidCtrl != null)
+                {
+                    msg.append(String.format(Locale.US, " heading=%6.2f headingTarget=%6.2f",
+                            robotPose.angle, targetPose.angle));
+                }
+            }
 
             if (battery != null)
             {
@@ -607,8 +616,6 @@ public class Robot
             }
 
             globalTracer.logEvent(robotName, "StateInfo", "%s", msg);
-//            msg.append(" />");
-//            globalTracer.traceInfo(robotName, "%s", msg);
         }
     }   //traceStateInfo
 
