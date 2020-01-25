@@ -26,8 +26,10 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import common.CommonTeleOp;
 import ftclib.FtcGamepad;
+import trclib.TrcEvent;
 import trclib.TrcGameController;
 import trclib.TrcRobot;
+import trclib.TrcTimer;
 
 @TeleOp(name="FtcTeleOp6541", group="FtcTeleOp")
 public class FtcTeleOp6541 extends CommonTeleOp
@@ -39,6 +41,52 @@ public class FtcTeleOp6541 extends CommonTeleOp
     private boolean elbowExtended = false;
     private boolean backLatchExtended = false;
     private boolean frontLatchesExtended = false;
+
+    private TrcTimer timer = new TrcTimer("elbowGrabberClusterTimer");
+    private TrcEvent finishedEvent = null;
+    private boolean timerActive = false;
+
+    private void timerNotify(Object context)
+    {
+        timerActive = false;
+
+        if (elbowExtended)
+        {
+            robot6541.grabber.release();
+        }
+        else
+        {
+            robot6541.elbow.setPosition(RobotInfo6541.ELBOW_UPRIGHT_POS);
+        }
+
+        //Signal finishedEvent and consume it if any.
+        if (finishedEvent != null)
+        {
+            finishedEvent.set(true);
+            finishedEvent = null;
+        }
+    }   //timerNotify
+
+    private void setElbowGrabberClusterPosition(boolean elbowExtended, double time, TrcEvent finishedEvent)
+    {
+        if (!timerActive)
+        {
+            if (elbowExtended)
+            {
+                robot6541.elevator.zeroCalibrate();
+                robot6541.elbow.extend();
+            }
+            else
+            {
+                robot6541.elevator.zeroCalibrate();
+                robot6541.grabber.grab();
+            }
+            timer.set(time, this::timerNotify);
+            timerActive = true;
+            this.finishedEvent = finishedEvent;
+        }
+    }   //setElbowGrabberClusterPosition
+
 
     //
     // Implements FtcOpMode abstract method.
@@ -172,18 +220,7 @@ public class FtcTeleOp6541 extends CommonTeleOp
                     if (pressed)
                     {
                         elbowExtended = !elbowExtended;
-                        if (elbowExtended)
-                        {
-                            robot6541.elevator.zeroCalibrate();
-                            robot6541.elbow.extend();
-                            robot6541.grabber.release();
-                        }
-                        else
-                        {
-                            robot6541.elevator.zeroCalibrate();
-                            robot6541.grabber.grab();
-                            robot6541.elbow.setPosition(RobotInfo6541.ELBOW_UPRIGHT_POS);
-                        }
+                        setElbowGrabberClusterPosition(elbowExtended, 0.35, null);
                     }
                     processed = true;
                     break;
