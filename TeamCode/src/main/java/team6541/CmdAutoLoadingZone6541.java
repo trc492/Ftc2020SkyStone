@@ -38,7 +38,7 @@ class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
     private static final double AUTONOMOUS_END_TIME = 30.0;
     private static final int MAX_SCORE_SINGLE_SKYSTONE = 29;
 
-    private static final boolean USE_OLD_STRATEGY = true;
+    private static final boolean USE_OLD_STRATEGY = false;
 
     private enum State
     {
