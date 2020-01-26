@@ -48,7 +48,6 @@ class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
         DO_VISION,
         GRAB_SKYSTONE,
         PULL_SKYSTONE,
-        BACK_OFF_A_BIT_IF_RED,
         TURN_TOWARDS_FOUNDATION,
         GOTO_FOUNDATION,
         TURN_BACK_TO_FOUNDATION,
@@ -445,18 +444,9 @@ class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
                     }
 
                     robot.elbow.setPosition(RobotInfo6541.ELBOW_UPRIGHT_POS);
-                    /*
-                    nextState = autoChoices.strafeToFoundation?
-                            (autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE ? State.BACK_OFF_A_BIT_IF_RED :
-                                    State.GOTO_FOUNDATION) : State.TURN_TOWARDS_FOUNDATION;
-                     */
-                    nextState = autoChoices.strafeToFoundation?  State.GOTO_FOUNDATION : State.TURN_TOWARDS_FOUNDATION;
+                    nextState = autoChoices.strafeToFoundation? State.GOTO_FOUNDATION: State.TURN_TOWARDS_FOUNDATION;
                     yTarget = RobotInfo.ABS_ROBOT_TRAVEL_Y;
                     simplePidDrive.setAbsoluteYTarget(yTarget, nextState);
-                    break;
-
-                case BACK_OFF_A_BIT_IF_RED:
-                    simplePidDrive.setRelativeYTarget(-6.0, State.GOTO_FOUNDATION);
                     break;
 
                 case TURN_TOWARDS_FOUNDATION:
