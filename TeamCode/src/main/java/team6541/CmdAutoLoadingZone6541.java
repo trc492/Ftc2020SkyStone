@@ -48,6 +48,7 @@ class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
         DO_VISION,
         GRAB_SKYSTONE,
         PULL_SKYSTONE,
+        BACK_OFF_A_BIT_IF_RED,
         TURN_TOWARDS_FOUNDATION,
         GOTO_FOUNDATION,
         TURN_BACK_TO_FOUNDATION,
@@ -444,9 +445,18 @@ class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
                     }
 
                     robot.elbow.setPosition(RobotInfo6541.ELBOW_UPRIGHT_POS);
-                    nextState = autoChoices.strafeToFoundation? State.GOTO_FOUNDATION: State.TURN_TOWARDS_FOUNDATION;
+                    /*
+                    nextState = autoChoices.strafeToFoundation?
+                            (autoChoices.alliance == CommonAuto.Alliance.RED_ALLIANCE ? State.BACK_OFF_A_BIT_IF_RED :
+                                    State.GOTO_FOUNDATION) : State.TURN_TOWARDS_FOUNDATION;
+                     */
+                    nextState = autoChoices.strafeToFoundation?  State.GOTO_FOUNDATION : State.TURN_TOWARDS_FOUNDATION;
                     yTarget = RobotInfo.ABS_ROBOT_TRAVEL_Y;
                     simplePidDrive.setAbsoluteYTarget(yTarget, nextState);
+                    break;
+
+                case BACK_OFF_A_BIT_IF_RED:
+                    simplePidDrive.setRelativeYTarget(-6.0, State.GOTO_FOUNDATION);
                     break;
 
                 case TURN_TOWARDS_FOUNDATION:
@@ -498,7 +508,10 @@ class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
                     // If this is the second skystone, we need to scoot a little further because the foundation
                     // could have been pushed a little further for the first skystone drop.
                     //
-                    if (skystonesDropped > 0) yTarget += 3.0;
+                    if (skystonesDropped > 0)
+                    {
+                        yTarget += 3.0;
+                    }
                     simplePidDrive.setAbsoluteYTarget(yTarget, State.DROP_SKYSTONE);
                     break;
 
