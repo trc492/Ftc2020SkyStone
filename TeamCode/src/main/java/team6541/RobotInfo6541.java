@@ -140,7 +140,7 @@ class RobotInfo6541
     static final double ELEVATOR_KI                             = 0.0;
     static final double ELEVATOR_KD                             = 0.01;
     static final double ELEVATOR_TOLERANCE                      = 0.5;
-    static final boolean ELEVATOR_INVERTED                      = false;
+    static final boolean ELEVATOR_INVERTED                      = true;
     static final boolean ELEVATOR_HAS_LOWER_LIMIT_SWITCH        = true;
     static final boolean ELEVATOR_HAS_UPPER_LIMIT_SWITCH        = false;
     static final double ELEVATOR_CAL_POWER                      = 0.025;
@@ -161,11 +161,11 @@ class RobotInfo6541
     static final double ELBOW_MAX_STEPRATE                      = 0.0;
     static final double ELBOW_MIN_POS                           = 0.0;
     static final double ELBOW_MAX_POS                           = 1.0;
-    static final double ELBOW_EXTEND_POS                        = 0.7;
+    static final double ELBOW_EXTEND_POS                        = 0.55;
     static final double ELBOW_EXTEND_TIME                       = 1.0;
     static final double ELBOW_RETRACT_POS                       = 0.0;
     static final double ELBOW_RETRACT_TIME                      = 1.0;
-    static final double ELBOW_UPRIGHT_POS                       = 0.15;
+    static final double ELBOW_UPRIGHT_POS                       = 0.25;
     static final double ELBOW_AUTO_DROP_POS                     = 0.4;
     //
     // Grabber subsystem.
