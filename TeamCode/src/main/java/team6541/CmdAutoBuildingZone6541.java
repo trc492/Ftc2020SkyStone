@@ -124,6 +124,7 @@ class CmdAutoBuildingZone6541 implements TrcRobot.RobotCommand
                     robot.encoderXPidCtrl.setNoOscillation(true);
                     robot.encoderYPidCtrl.setNoOscillation(true);
                     robot.gyroPidCtrl.setNoOscillation(true);
+//                    robot.pidDrive.setNoOscillation(true);
                     robot.grabber.setPosition(1.0);
                     robot.elbow.extend(event);
                     sm.waitForSingleEvent(event, State.DO_DELAY);

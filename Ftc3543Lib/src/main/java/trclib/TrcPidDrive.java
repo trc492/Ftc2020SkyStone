@@ -89,6 +89,7 @@ public class TrcPidDrive
     private TrcWarpSpace warpSpace = null;
     private boolean warpSpaceEnabled = true;
     private boolean absTargetModeEnabled = false;
+    private boolean noOscillation = false;
     private StuckWheelHandler stuckWheelHandler = null;
     private double stuckTimeout = 0.0;
     private TurnMode turnMode = TurnMode.IN_PLACE;
@@ -172,6 +173,26 @@ public class TrcPidDrive
             resetAbsoluteTargetPose();
         }
     }   //setAbsoluteTargetModeEnabled
+
+    /**
+     * This method enables/disables NoOscillation mode. When NoOscillation is enabled, PIDDrive will determine which
+     * degrees of freedom are moving and set the corresponding PID controllers to enable noOscillation mode. For
+     * the degrees of freedom that are maintaining previous position, we need to allow oscillation.
+     *
+     * @param noOscillation specifies true to enable no oscillation, false to disable.
+     */
+    public synchronized void setNoOscillation(boolean noOscillation)
+    {
+        final String funcName = "setNoOscillation";
+
+        if (debugEnabled)
+        {
+            dbgTrace.traceEnter(funcName, TrcDbgTrace.TraceLevel.API, "noOsc=%s", Boolean.toString(noOscillation));
+            dbgTrace.traceExit(funcName, TrcDbgTrace.TraceLevel.API);
+        }
+
+        this.noOscillation = noOscillation;
+    }   //setNoOscillation
 
     /**
      * This method checks if Absolute Target Mode is enabled.
@@ -565,6 +586,16 @@ public class TrcPidDrive
         {
             throw new UnsupportedOperationException("SensorTarget cannot use Absolute Target Mode.");
         }
+        //
+        // In setSensorTarget, we do not honor noOscillation because we generally want the sensor to achieve target
+        // accurately in the degree of freedom that the sensor is monitoring. Since we don't know which degree of
+        // freedom the caller want to maintain accuracy, we want to let the caller decide which PID controller to set
+        // noOscillation mode ON.
+        //
+        if (noOscillation)
+        {
+            throw new UnsupportedOperationException("SensorTarget cannot have noOscaillation mode ON.");
+        }
 
         if (driveBase.validateOwnership(owner))
         {
@@ -679,8 +710,33 @@ public class TrcPidDrive
                 xTarget = xDelta;
                 yTarget = yDelta;
             }
+            //
             // Adjust the turn target.
+            //
             turnTarget = turnPidCtrl.hasAbsoluteSetPoint()? newTargetPose.angle : turnDelta;
+
+            if (noOscillation)
+            {
+                //
+                // In noOscillation mode, we want no oscillation only in the degrees of freedom that are actually
+                // moving. For degrees of freedom that we are maintaining previous position, we need to allow
+                // oscillation.
+                //
+                if (xPidCtrl != null)
+                {
+                    xPidCtrl.setNoOscillation(xDelta != 0.0);
+                }
+
+                if (yPidCtrl != null)
+                {
+                    yPidCtrl.setNoOscillation(yDelta != 0.0);
+                }
+
+                if (turnPidCtrl != null)
+                {
+                    turnPidCtrl.setNoOscillation(turnDelta != 0.0);
+                }
+            }
 
             if (debugEnabled)
             {
@@ -900,6 +956,29 @@ public class TrcPidDrive
                         owner, absX, absY, absHeading, currRobotPose, absTargetPose);
                 dbgTrace.traceInfo(funcName, "xTarget=%.1f, yTarget=%.1f, turnTarget=%.1f, NewPose:%s",
                         relativePose.x, relativePose.y, turnTarget, newTargetPose);
+            }
+
+            if (noOscillation)
+            {
+                //
+                // In noOscillation mode, we want no oscillation only in the degrees of freedom that are actually
+                // moving. For degrees of freedom that we are maintaining previous position, we need to allow
+                // oscillation.
+                //
+                if (xPidCtrl != null)
+                {
+                    xPidCtrl.setNoOscillation(absX != absTargetPose.x);
+                }
+
+                if (yPidCtrl != null)
+                {
+                    yPidCtrl.setNoOscillation(absY != absTargetPose.y);
+                }
+
+                if (turnPidCtrl != null)
+                {
+                    turnPidCtrl.setNoOscillation(absHeading != absTargetPose.angle);
+                }
             }
 
             absTargetPose = newTargetPose;

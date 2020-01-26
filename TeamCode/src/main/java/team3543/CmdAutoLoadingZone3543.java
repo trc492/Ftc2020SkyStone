@@ -301,9 +301,7 @@ class CmdAutoLoadingZone3543 implements TrcRobot.RobotCommand
                     startX *= allianceDirection;
                     robot.pidDrive.setAbsolutePose(new TrcPose2D(startX, RobotInfo.ABS_ROBOT_START_Y));
 
-                    xPidCtrl.setNoOscillation(true);
-                    yPidCtrl.setNoOscillation(true);
-                    turnPidCtrl.setNoOscillation(true);
+                    robot.pidDrive.setNoOscillation(true);
                     sm.setState(State.START_DELAY);
                     //
                     // Intentionally falling through to the next state.

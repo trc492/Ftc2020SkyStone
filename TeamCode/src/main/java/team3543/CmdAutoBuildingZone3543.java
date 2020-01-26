@@ -126,9 +126,7 @@ class CmdAutoBuildingZone3543 implements TrcRobot.RobotCommand
                             RobotInfo.ABS_ROBOT_START_Y));
                     xPidCtrl.saveAndSetOutputLimit(0.5);
                     yPidCtrl.saveAndSetOutputLimit(0.5);
-                    xPidCtrl.setNoOscillation(true);
-                    yPidCtrl.setNoOscillation(true);
-                    turnPidCtrl.setNoOscillation(true);
+                    robot.pidDrive.setNoOscillation(true);
                     sm.setState(State.DO_DELAY);
                     //
                     // Intentionally falling through to the next state.

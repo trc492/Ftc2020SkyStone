@@ -312,6 +312,7 @@ class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
                     xPidCtrl.setNoOscillation(true);
                     yPidCtrl.setNoOscillation(true);
                     turnPidCtrl.setNoOscillation(true);
+//                    robot.pidDrive.setNoOscillation(true);
 
                     sm.setState(State.START_DELAY);
                     //
