@@ -379,6 +379,7 @@ class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
                         // grabbing.
                         //
                         visionParams.setScootCount(0);
+                        visionParams.setAssumeLeftIfNotFound(false);
                     }
                     skystoneVisionCommand.start();
                     //
