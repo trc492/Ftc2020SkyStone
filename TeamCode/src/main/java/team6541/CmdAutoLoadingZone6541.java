@@ -434,12 +434,11 @@ class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
                         robot.globalTracer.traceInfo("pullSkystone",
                                 ">>> Skystone X position=%.2f", skystoneX);
                         if (autoChoices.strategy == CommonAuto.AutoStrategy.LOADING_ZONE_DOUBLE_SKYSTONE_SOLO &&
-                                skystonesDropped == 0 &&
-                                Math.abs(skystoneX - RobotInfo.ABS_FAR_STONE1_X) < 4.0)
+                            skystonesDropped == 0 && Math.abs(skystoneX - RobotInfo.ABS_FAR_STONE1_X) < 4.0)
                         {
                             robot.globalTracer.traceInfo("pullSkystone",
-                                    ">>> Can't reach 2nd skystone, switching strategy to single skystone.");
-                            autoChoices.strategy = CommonAuto.AutoStrategy.LOADING_ZONE_SINGLE_SKYSTONE;
+                                    ">>> Can't reach 2nd skystone, try the regular stone next to it.");
+                            skystoneX -= 9.0;
                         }
                     }
 
