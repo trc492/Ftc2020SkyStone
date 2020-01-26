@@ -38,6 +38,8 @@ class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
     private static final double AUTONOMOUS_END_TIME = 30.0;
     private static final int MAX_SCORE_SINGLE_SKYSTONE = 29;
 
+    private static final boolean USE_OLD_STRATEGY = true;
+
     private enum State
     {
         BEGIN,
@@ -380,7 +382,10 @@ class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
                         // grabbing.
                         //
                         visionParams.setScootCount(0);
-                        visionParams.setAssumeLeftIfNotFound(false);
+                        if (!USE_OLD_STRATEGY)
+                        {
+                            visionParams.setAssumeLeftIfNotFound(false);
+                        }
                     }
                     skystoneVisionCommand.start();
                     //
@@ -438,9 +443,17 @@ class CmdAutoLoadingZone6541 implements TrcRobot.RobotCommand
                         if (autoChoices.strategy == CommonAuto.AutoStrategy.LOADING_ZONE_DOUBLE_SKYSTONE_SOLO &&
                             skystonesDropped == 0 && Math.abs(skystoneX - RobotInfo.ABS_FAR_STONE1_X) < 4.0)
                         {
-                            robot.globalTracer.traceInfo("pullSkystone",
-                                    ">>> Can't reach 2nd skystone, try the regular stone next to it.");
-                            skystoneX -= 9.0;
+                            if (USE_OLD_STRATEGY)
+                            {
+                                robot.globalTracer.traceInfo("pullSkystone", ">>> Can't reach 2nd skystone, switching strategy to single skystone.");
+                                autoChoices.strategy = CommonAuto.AutoStrategy.LOADING_ZONE_SINGLE_SKYSTONE;
+                            }
+                            else
+                            {
+                                robot.globalTracer.traceInfo("pullSkystone",
+                                        ">>> Can't reach 2nd skystone, try the regular stone next to it.");
+                                skystoneX -= 9.0;
+                            }
                         }
                     }
 
