@@ -25,13 +25,16 @@ package trclib;
 import java.util.Locale;
 
 /**
- * This class implements a platform independent value sensor that has one or more axes or data type. Typically,
- * this class is extended by a platform dependent value sensor class. The platform dependent sensor class must
- * implement the abstract methods required by this class. The abstract methods allow this class to get raw data
- * for each axis. This class also allows the caller to register an array of DataProcessors. The data processors
- * will be called one at a time in the array order to filter/process the sensor data.
+ * This class implements a platform independent generic sensor that has one or more axes. Typically, this class is
+ * extended by a platform dependent sensor class. This class also allows the caller to specify a number of data
+ * processor options, one of which is to register an array of filters, one for each axis. Another one is to adjust
+ * the data by its calibration. It also allows the caller to specify scale and offset adjustment to the data as well
+ * as the inverting sensor data.
+ *
+ * @param <S> specifies the sensor data selector enum. A sensor may report multiple data for each axis. Data selector
+ *            enum is used to select what data to process.
  */
-public abstract class TrcSensor<D>
+public class TrcSensor<S>
 {
     protected static final String moduleName = "TrcSensor";
     protected static final boolean debugEnabled = false;
@@ -42,83 +45,95 @@ public abstract class TrcSensor<D>
     protected TrcDbgTrace dbgTrace = null;
 
     /**
-     * This class implements the SensorData object that consists of the sensor value as well as a timestamp when the
+     * This class implements the SensorData object that consists of the sensor data as well as a timestamp when the
      * data sample is taken.
      *
-     * @param <T> specifies the sensor value type. It could be integer, double, enum or any type.
+     * @param <T> specifies the sensor data type. It could be integer, double, enum, object or even an array of types.
      */
-    public static class SensorData<T>
+    public static class SensorData<T> implements Cloneable
     {
         public double timestamp;
-        public T value;
+        public T data;
 
         /**
-         * Constructor: Creates an instance of the object with the given timestamp and data value.
+         * Constructor: Creates an instance of the object.
          *
-         * @param timestamp specifies the timestamp.
-         * @param value specifies the data value.
+         * @param timestamp specifies the timestamp of the sensor data.
+         * @param data specifies the sensor data.
          */
-        public SensorData(double timestamp, T value)
+        public SensorData(double timestamp, T data)
         {
             this.timestamp = timestamp;
-            this.value = value;
+            this.data = data;
         }   //SensorData
+
+        /**
+         * Constructor: Creates an instance of the object.
+         *
+         * @param data specifies the sensor data.
+         */
+        public SensorData(T data)
+        {
+            this.timestamp = TrcUtil.getCurrentTime();
+            this.data = data;
+        }   //SensorData
+
+        /**
+         * Constructor: Creates an instance of the object.
+         */
+        public SensorData()
+        {
+            this.timestamp = 0.0;
+            this.data = null;
+        }   //SensorData
+
+        /**
+         * This method returns the string format of the object data.
+         *
+         * @return string form of the object data.
+         */
+        @Override
+        public String toString()
+        {
+            return String.format(Locale.US, "(timestamp=%.3f,data=%s)", timestamp, data);
+        }   //toString
+
+        @Override
+        public SensorData clone() throws CloneNotSupportedException
+        {
+            
+        }   //clone
 
     }   //class SensorData
 
     /**
-     * This interface will be implemented by sensor classes that provide multiple data types. For example, a 3-axis
-     * gyro may provide "rotation rate" as well as "integrated heading" on each of its axes.
-     * Normally, sensor classes should extend this class and implement its abstract method which is the same thing.
-     * However, since Java supports only single inheritance and if the sensor class already extended another class,
-     * it cannot extend this class. In this case, it may just implement the DataSource interface instead.
-     *
-     * @param <D> specifies the data type enum.
+     * This class stores the parameters for the sensor data processor that control how the sensor data is processed.
+     * Some parameters is an array for which each element is for each axis of the sensor.
      */
-    public interface DataSource<D>
+    private class ProcessorParams
     {
-        /**
-         * This method returns the selected raw sensor data.
-         *
-         * @param index specifies the index if the sensor provides some sort of array data (e.g. the axis index of a
-         *              3-axis gyro).
-         * @param dataType specifies the data type to return (e.g. rotation rate or heading of a gyro axis).
-         * @return selected sensor data.
-         */
-        SensorData<?> getRawData(int index, D dataType);
+        TrcSensorCalibrator<S> calibrator;
+        boolean calibrating;
+        TrcFilter[] filters;
+        double[] scales;
+        double[] offsets;
+        int[] signs;
+    }   //class ProcessorParams
 
-    }   //interface DataSource
+    private static final int NUM_CAL_SAMPLES = 100;
+    private static final long CAL_INTERVAL = 10;    //in msec.
 
-    /**
-     * This method returns the selected raw sensor data.
-     *
-     * @param index specifies the index if the sensor provides some sort of array data (e.g. the axis index of a
-     *              3-axis gyro).
-     * @param dataType specifies the data type to return (e.g. rotation rate or heading of a gyro axis).
-     * @return selected sensor data.
-     */
-    public abstract SensorData<?> getRawData(int index, D dataType);
-
-    private static final int NUM_CAL_SAMPLES    = 100;
-    private static final long CAL_INTERVAL      = 10;   //in msec.
-
-    private final String instanceName;
-    private int numAxes;
-    private TrcFilter[] filters;
-    private int[] signs;
-    private double[] scales;
-    private double[] offsets;
-    private TrcSensorCalibrator<D> calibrator = null;
+    protected final String instanceName;
+    private final int numAxes;
+    private final TrcHashMap<S, ProcessorParams> processorParamsMap = new TrcHashMap<>();
 
     /**
      * Constructor: Creates an instance of the object.
      *
      * @param instanceName specifies the instance name.
      * @param numAxes specifies the number of axes.
-     * @param filters specifies an array of filter objects, one for each axis, to filter sensor data.
-     *                If no filter is used, this can be set to null.
      */
-    public TrcSensor(final String instanceName, int numAxes, TrcFilter[] filters)
+    public TrcSensor(String instanceName, int numAxes)
     {
         if (debugEnabled)
         {
@@ -133,46 +148,9 @@ public abstract class TrcSensor<D>
         {
             throw new IllegalArgumentException("Sensor must have at least one axis.");
         }
-        //
-        // If no filters are provided, create an array of null filters.
-        //
-        if (filters == null)
-        {
-            filters = new TrcFilter[numAxes];
-        }
-        //
-        // Make sure the filter array must have numAxes elements. Even if we don't filter on some axes, we still
-        // must have numAxes elements but the elements of those axes can be null.
-        //
-        if (filters.length != numAxes)
-        {
-            throw new IllegalArgumentException(
-                    String.format(Locale.US, "filters must be an array of %d elements.", numAxes));
-        }
 
         this.instanceName = instanceName;
         this.numAxes = numAxes;
-        this.filters = filters;
-        signs = new int[numAxes];
-        scales = new double[numAxes];
-        offsets = new double[numAxes];
-        for (int i = 0; i < numAxes; i++)
-        {
-            signs[i] = 1;
-            scales[i] = 1.0;
-            offsets[i] = 0.0;
-        }
-    }   //TrcSensor
-
-    /**
-     * Constructor: Creates an instance of the object.
-     *
-     * @param instanceName specifies the instance name.
-     * @param numAxes specifies the number of axes.
-     */
-    public TrcSensor(final String instanceName, int numAxes)
-    {
-        this(instanceName, numAxes, null);
     }   //TrcSensor
 
     /**
@@ -205,142 +183,310 @@ public abstract class TrcSensor<D>
     }   //getNumAxes
 
     /**
-     * This method inverts the specified axis of the sensor. This is useful if the orientation of the sensor axis
-     * is such that the data goes the wrong direction, if the sensor is mounted up-side-down, for example.
+     * This method creates a processor parameters object for the sensor data type.
      *
-     * @param index specifies the axis index.
-     * @param inverted specifies true to invert the axis, false otherwise.
+     * @param dataSelector specifies the data selector enum for selecting the sensor data.
+     * @return newly created processor parameters object
      */
-    public void setInverted(int index, boolean inverted)
+    private ProcessorParams createProcessorParams(S dataSelector)
     {
-        final String funcName = "setInverted";
+        ProcessorParams processorParams = new ProcessorParams();
 
-        if (debugEnabled)
+        processorParams.calibrator = null;
+        processorParams.calibrating = false;
+        processorParams.filters = new TrcFilter[numAxes];
+        processorParams.scales = new double[numAxes];
+        processorParams.offsets = new double[numAxes];
+        processorParams.signs = new int[numAxes];
+        for (int i = 0; i < numAxes; i++)
         {
-            dbgTrace.traceEnter(funcName, TrcDbgTrace.TraceLevel.API,
-                                "index=%d,inverted=%s", index, Boolean.toString(inverted));
-            dbgTrace.traceExit(funcName, TrcDbgTrace.TraceLevel.API);
+            processorParams.scales[i] = 1.0;
+            processorParams.offsets[i] = 0.0;
+            processorParams.signs[i] = 1;
         }
+        processorParamsMap.add(dataSelector, processorParams);
 
-        signs[index] = inverted? -1: 1;
-    }   //setInverted
+        return processorParams;
+    }   //createProcessorParams
 
     /**
-     * This method sets the scale factor for the data of the specified axis.
+     * This method sets a filter for the data of the specified axis. This is useful if the data is susceptible to noise,
+     * for example.
      *
      * @param index specifies the axis index.
-     * @param scale specifies the scale factor for the axis.
-     * @param offset specifies the offset to be subtracted from the scaled data.
+     * @param dataSelector specifies the data selector for selecting the sensor data.
+     * @param filter specifies filter to be used on the data.
      */
-    public void setScale(int index, double scale, double offset)
+    public void setFilter(int index, S dataSelector, TrcFilter filter)
     {
-        final String funcName = "setScale";
+        final String funcName = "setFilter";
 
         if (debugEnabled)
         {
-            dbgTrace.traceEnter(funcName, TrcDbgTrace.TraceLevel.API, "index=%d,scale=%f", index, scale);
-            dbgTrace.traceExit(funcName, TrcDbgTrace.TraceLevel.API);
+            dbgTrace.traceEnter(
+                funcName, TrcDbgTrace.TraceLevel.API, "index=%d,selector=%s,filter=%s",
+                index, dataSelector, filter);
         }
 
-        scales[index] = scale;
-        offsets[index] = offset;
-    }   //setScale
+        ProcessorParams processorParams;
+        try
+        {
+            processorParams = processorParamsMap.get(dataSelector);
+        }
+        catch (IllegalArgumentException e)
+        {
+            // There is no processor for the specified data selector, so create one.
+            processorParams = createProcessorParams(dataSelector);
+        }
+
+        synchronized (processorParams)
+        {
+            processorParams.filters[index] = filter;
+        }
+
+        if (debugEnabled)
+        {
+            dbgTrace.traceExit(funcName, TrcDbgTrace.TraceLevel.API);
+        }
+    }   //setFilter
 
     /**
      * This method calibrates the sensor by creating a calibrator if none exist yet. It then calls the calibrator
-     * to do the calibration.
+     * to do the calibration. Note: this is a synchronous method so it won't return until the sensor calibration is
+     * done.
      *
+     * @param dataSource specifies the DataSource object to get sensor data.
+     * @param dataSelector specifies the data selector for selecting the sensor data.
      * @param numCalSamples specifies the number of calibration sample to take.
      * @param calInterval specifies the interval between each calibration sample in msec.
-     * @param dataType specifies the data type needed calibration.
      */
-    protected void calibrate(int numCalSamples, long calInterval, D dataType)
+    protected void calibrate(
+            TrcSensorCalibrator.InputSource<S> dataSource, S dataSelector, int numCalSamples, long calInterval)
     {
-        if (calibrator == null)
+        final String funcName = "calibrate";
+
+        if (debugEnabled)
         {
-            calibrator = new TrcSensorCalibrator<>(instanceName, this, numAxes, dataType);
+            dbgTrace.traceEnter(
+                funcName, TrcDbgTrace.TraceLevel.API,
+                "selector=%s,numSamples=%d,calInterval=%d", dataSelector, numCalSamples, calInterval);
         }
 
-        calibrator.calibrate(numCalSamples, calInterval);
+        ProcessorParams processorParams;
+        try
+        {
+            processorParams = processorParamsMap.get(dataSelector);
+        }
+        catch (IllegalArgumentException e)
+        {
+            processorParams = createProcessorParams(dataSelector);
+        }
+
+        synchronized (processorParams)
+        {
+            if (processorParams.calibrator == null)
+            {
+                processorParams.calibrator = new TrcSensorCalibrator<>(instanceName, numAxes);
+            }
+
+            processorParams.calibrating = true;
+            processorParams.calibrator.calibrate(dataSource, dataSelector, numCalSamples, calInterval);
+            processorParams.calibrating = false;
+        }
+
+        if (debugEnabled)
+        {
+            dbgTrace.traceExit(funcName, TrcDbgTrace.TraceLevel.API);
+        }
     }   //calibrate
 
     /**
      * This method calibrates the sensor by creating a calibrator if none exist yet. It then calls the calibrator
-     * to do the calibration.
+     * to do the calibration. Note: this is a synchronous method so it won't return until the sensor calibration is
+     * done.
      *
-     * @param dataType specifies the data type needed calibration.
+     * @param dataSource specifies the DataSource object to get sensor data.
+     * @param dataSelector specifies the data selector for selecting the sensor data.
      */
-    protected void calibrate(D dataType)
+    protected void calibrate(TrcSensorCalibrator.InputSource<S> dataSource, S dataSelector)
     {
-        calibrate(NUM_CAL_SAMPLES, CAL_INTERVAL, dataType);
+        calibrate(dataSource, dataSelector, NUM_CAL_SAMPLES, CAL_INTERVAL);
     }   //calibrate
 
     /**
      * This method always returns false because the built-in calibrator is synchronous.
      *
-     * @return false.
+     * @param dataSelector specifies the data selector for selecting the sensor data to check for calibration.
+     * @return true if the specified sensor data is being calibrated, false otherwise.
      */
-    public boolean isCalibrating()
+    public boolean isCalibrating(S dataSelector)
     {
         final String funcName = "isCalibrating";
+        boolean calibrating;
 
         if (debugEnabled)
         {
-            dbgTrace.traceEnter(funcName, TrcDbgTrace.TraceLevel.API);
+            dbgTrace.traceEnter(funcName, TrcDbgTrace.TraceLevel.API, "selector=%s", dataSelector);
             dbgTrace.traceExit(funcName, TrcDbgTrace.TraceLevel.API, "=false");
         }
-        //
-        // The built-in calibrator is synchronous, so we always return false.
-        //
-        return false;
+
+        ProcessorParams processorParams;
+        try
+        {
+            processorParams = processorParamsMap.get(dataSelector);
+            synchronized (processorParams)
+            {
+                calibrating = processorParams.calibrating;
+            }
+        }
+        catch (IllegalArgumentException e)
+        {
+            calibrating = false;
+        }
+
+        return calibrating;
     }   //isCalibrating
 
     /**
-     * This method returns the processed data for the specified axis and type. The data will go through a filter
-     * if a filter is supplied for the axis. The calibration data will be applied to the sensor data if applicable.
-     * The sign and scale will also be applied.
+     * This method sets the scale factor and offset for the data of the specified axis.
      *
      * @param index specifies the axis index.
-     * @param dataType specifies the data type object.
+     * @param dataSelector specifies the data selector for selecting the sensor data.
+     * @param scale specifies the scale factor for the axis.
+     * @param offset specifies the offset to be subtracted from the scaled data.
+     */
+    public void setScaleOffset(int index, S dataSelector, double scale, double offset)
+    {
+        final String funcName = "setScaleOffset";
+
+        if (debugEnabled)
+        {
+            dbgTrace.traceEnter(
+                funcName, TrcDbgTrace.TraceLevel.API,
+                "index=%d,selector=%s,scale=%f,offset=%f", index, dataSelector, scale, offset);
+            dbgTrace.traceExit(funcName, TrcDbgTrace.TraceLevel.API);
+        }
+
+        ProcessorParams processorParams;
+        try
+        {
+            processorParams = processorParamsMap.get(dataSelector);
+        }
+        catch (IllegalArgumentException e)
+        {
+            processorParams = createProcessorParams(dataSelector);
+        }
+
+        synchronized (processorParams)
+        {
+            processorParams.scales[index] = scale;
+            processorParams.offsets[index] = offset;
+        }
+    }   //setScaleOffset
+
+    /**
+     * This method inverts the data of the specified axis of the sensor. This is useful if the orientation of the
+     * sensor axis is such that the data goes the wrong direction, if the sensor is mounted up-side-down, for example.
+     *
+     * @param index specifies the axis index.
+     * @param dataSelector specifies the data selector for selecting the sensor data.
+     * @param inverted specifies true to invert the axis, false otherwise.
+     */
+    public void setInverted(int index, S dataSelector, boolean inverted)
+    {
+        final String funcName = "setInverted";
+
+        if (debugEnabled)
+        {
+            dbgTrace.traceEnter(
+                    funcName, TrcDbgTrace.TraceLevel.API, "index=%d,selector=%s,inverted=%s",
+                    index, dataSelector, inverted);
+            dbgTrace.traceExit(funcName, TrcDbgTrace.TraceLevel.API);
+        }
+
+        ProcessorParams processorParams;
+        try
+        {
+            processorParams = processorParamsMap.get(dataSelector);
+        }
+        catch (IllegalArgumentException e)
+        {
+            processorParams = createProcessorParams(dataSelector);
+        }
+
+        synchronized (processorParams)
+        {
+            processorParams.signs[index] = inverted? -1: 1;
+        }
+    }   //setInverted
+
+    /**
+     * This method returns the processed sensor data for the specified axis. The data will go through a filter if a
+     * filter is supplied for the axis. The calibration data will be applied to the sensor data if applicable. The
+     * sign and scale/offset will also be applied.
+     *
+     * @param data specifies the raw data to be processed.
+     * @param index specifies which axis of the data processor to use to process the data.
+     * @param dataSelector specifies which data processor to use to proecess the data.
      * @return processed sensor data for the axis.
      */
-    public SensorData<Double> getProcessedData(int index, D dataType)
+    protected double processData(double data, int index, S dataSelector)
     {
-        final String funcName = "getProcessedData";
-        @SuppressWarnings("unchecked")
-        SensorData<Double> data = (SensorData<Double>)getRawData(index, dataType);
+        final String funcName = "processData";
 
-        if (data != null)
+        if (debugEnabled)
         {
-            double value = data.value;
+            dbgTrace.traceEnter(
+                    funcName, TrcDbgTrace.TraceLevel.API,
+                    "data=%f,index=%d,selector=%s", data, index, dataSelector);
+            dbgTrace.traceInfo(funcName, "raw=%.3f", data);
+        }
 
-            if (debugEnabled) dbgTrace.traceInfo(funcName, "raw=%.3f", value);
-            if (filters[index] != null)
+        ProcessorParams processorParams;
+        try
+        {
+            processorParams = processorParamsMap.get(dataSelector);
+            synchronized (processorParams)
             {
-                value = filters[index].filterData(value);
-                if (debugEnabled) dbgTrace.traceInfo(funcName, "filtered=%.3f", value);
-            }
+                if (processorParams.filters[index] != null)
+                {
+                    data = processorParams.filters[index].filterData(data);
+                    if (debugEnabled)
+                    {
+                        dbgTrace.traceInfo(funcName, "filtered=%.3f", data);
+                    }
+                }
 
-            if (calibrator != null)
-            {
-                value = calibrator.getCalibratedData(index, value);
-                if (debugEnabled) dbgTrace.traceInfo(funcName, "calibrated=%.3f", value);
-            }
+                if (processorParams.calibrator != null)
+                {
+                    data = processorParams.calibrator.getCalibratedData(index, data);
+                    if (debugEnabled)
+                    {
+                        dbgTrace.traceInfo(funcName, "calibrated=%.3f", data);
+                    }
+                }
 
-            value *= signs[index]*scales[index] + offsets[index];
-            if (debugEnabled) dbgTrace.traceInfo(
-                funcName, "scaled=%.3f (scale=%f,offset=%f)", value, scales[index], offsets[index]);
-            data.value = value;
+                data *= processorParams.scales[index];
+                data += processorParams.offsets[index];
+                data *= processorParams.signs[index];
 
-            if (debugEnabled)
-            {
-                dbgTrace.traceEnter(funcName, TrcDbgTrace.TraceLevel.API, "index=%d", index);
-                dbgTrace.traceExit(funcName, TrcDbgTrace.TraceLevel.API,
-                                   "=(timestamp=%0.3f,value=%f", data.timestamp, value);
+                if (debugEnabled)
+                {
+                    dbgTrace.traceInfo(funcName, "scaled=%.3f (scale=%f,offset=%f)",
+                            data, processorParams.scales[index], processorParams.offsets[index]);
+                }
             }
+        }
+        catch (IllegalArgumentException e)
+        {
+        }
+
+        if (debugEnabled)
+        {
+            dbgTrace.traceExit(funcName, TrcDbgTrace.TraceLevel.API, "=%f", data);
         }
 
         return data;
-    }   //getProcessedData
+    }   //processData
 
 }   //class TrcSensor
